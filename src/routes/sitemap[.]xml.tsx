@@ -13,6 +13,8 @@ const pages: Array<{ path: string; priority: string; changefreq: string }> = [
   { path: "/blog", priority: "0.9", changefreq: "weekly" },
   { path: "/faq", priority: "0.8", changefreq: "monthly" },
   { path: "/forum", priority: "0.8", changefreq: "daily" },
+  { path: "/membres", priority: "0.7", changefreq: "weekly" },
+  { path: "/temoignages", priority: "0.8", changefreq: "weekly" },
   { path: "/avis", priority: "0.8", changefreq: "weekly" },
   { path: "/guide", priority: "0.9", changefreq: "monthly" },
   { path: "/plan-du-site", priority: "0.6", changefreq: "monthly" },

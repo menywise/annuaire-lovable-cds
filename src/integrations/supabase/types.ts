@@ -14,6 +14,77 @@ export type Database = {
   }
   public: {
     Tables: {
+      audit_findings: {
+        Row: {
+          audit_id: string
+          code: string
+          created_at: string
+          description: string
+          id: string
+          location: string
+          resolved: boolean
+          severity: string
+        }
+        Insert: {
+          audit_id: string
+          code: string
+          created_at?: string
+          description?: string
+          id?: string
+          location?: string
+          resolved?: boolean
+          severity?: string
+        }
+        Update: {
+          audit_id?: string
+          code?: string
+          created_at?: string
+          description?: string
+          id?: string
+          location?: string
+          resolved?: boolean
+          severity?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "audit_findings_audit_id_fkey"
+            columns: ["audit_id"]
+            isOneToOne: false
+            referencedRelation: "audits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      audits: {
+        Row: {
+          created_at: string
+          id: string
+          label: string
+          max_score: number
+          performed_at: string
+          score: number
+          summary: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          label: string
+          max_score?: number
+          performed_at?: string
+          score?: number
+          summary?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          label?: string
+          max_score?: number
+          performed_at?: string
+          score?: number
+          summary?: string
+        }
+        Relationships: []
+      }
       blog_comments: {
         Row: {
           approved: boolean
@@ -121,6 +192,30 @@ export type Database = {
         }
         Relationships: []
       }
+      conversations: {
+        Row: {
+          created_at: string
+          id: string
+          last_message_at: string
+          user_a: string
+          user_b: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_message_at?: string
+          user_a: string
+          user_b: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_message_at?: string
+          user_a?: string
+          user_b?: string
+        }
+        Relationships: []
+      }
       faq_items: {
         Row: {
           answer: string
@@ -154,8 +249,110 @@ export type Database = {
         }
         Relationships: []
       }
+      forum_categories: {
+        Row: {
+          color: string
+          created_at: string
+          description: string
+          id: string
+          name: string
+          position: number
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          color?: string
+          created_at?: string
+          description?: string
+          id?: string
+          name: string
+          position?: number
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          color?: string
+          created_at?: string
+          description?: string
+          id?: string
+          name?: string
+          position?: number
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      forum_follows: {
+        Row: {
+          created_at: string
+          id: string
+          topic_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          topic_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          topic_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "forum_follows_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "forum_topics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      forum_likes: {
+        Row: {
+          created_at: string
+          id: string
+          reply_id: string | null
+          topic_id: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          reply_id?: string | null
+          topic_id?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          reply_id?: string | null
+          topic_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "forum_likes_reply_id_fkey"
+            columns: ["reply_id"]
+            isOneToOne: false
+            referencedRelation: "forum_replies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "forum_likes_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "forum_topics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       forum_replies: {
         Row: {
+          accepted: boolean
           author_id: string
           author_name: string
           content: string
@@ -164,6 +361,7 @@ export type Database = {
           topic_id: string
         }
         Insert: {
+          accepted?: boolean
           author_id: string
           author_name?: string
           content: string
@@ -172,6 +370,7 @@ export type Database = {
           topic_id: string
         }
         Update: {
+          accepted?: boolean
           author_id?: string
           author_name?: string
           content?: string
@@ -193,34 +392,152 @@ export type Database = {
         Row: {
           author_id: string
           author_name: string
+          category_id: string | null
           content: string
           created_at: string
           id: string
+          last_activity_at: string
           locked: boolean
           title: string
           updated_at: string
+          views: number
         }
         Insert: {
           author_id: string
           author_name?: string
+          category_id?: string | null
           content: string
           created_at?: string
           id?: string
+          last_activity_at?: string
           locked?: boolean
           title: string
           updated_at?: string
+          views?: number
         }
         Update: {
           author_id?: string
           author_name?: string
+          category_id?: string | null
           content?: string
           created_at?: string
           id?: string
+          last_activity_at?: string
           locked?: boolean
+          title?: string
+          updated_at?: string
+          views?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "forum_topics_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "forum_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      masterplan_sections: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          position: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          content?: string
+          created_at?: string
+          id?: string
+          position?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          position?: number
           title?: string
           updated_at?: string
         }
         Relationships: []
+      }
+      member_profiles: {
+        Row: {
+          accepts_messages: boolean
+          avatar_url: string | null
+          bio: string
+          created_at: string
+          display_name: string
+          job_title: string
+          listed: boolean
+          updated_at: string
+          user_id: string
+          website: string | null
+        }
+        Insert: {
+          accepts_messages?: boolean
+          avatar_url?: string | null
+          bio?: string
+          created_at?: string
+          display_name?: string
+          job_title?: string
+          listed?: boolean
+          updated_at?: string
+          user_id: string
+          website?: string | null
+        }
+        Update: {
+          accepts_messages?: boolean
+          avatar_url?: string | null
+          bio?: string
+          created_at?: string
+          display_name?: string
+          job_title?: string
+          listed?: boolean
+          updated_at?: string
+          user_id?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
+      messages: {
+        Row: {
+          content: string
+          conversation_id: string
+          created_at: string
+          id: string
+          read_at: string | null
+          sender_id: string
+        }
+        Insert: {
+          content: string
+          conversation_id: string
+          created_at?: string
+          id?: string
+          read_at?: string | null
+          sender_id: string
+        }
+        Update: {
+          content?: string
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          read_at?: string | null
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       newsletter_subscribers: {
         Row: {
@@ -354,6 +671,45 @@ export type Database = {
         }
         Relationships: []
       }
+      roadmap_items: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          lot: string
+          position: number
+          priority: string
+          public_visible: boolean
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          id?: string
+          lot?: string
+          position?: number
+          priority?: string
+          public_visible?: boolean
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          lot?: string
+          position?: number
+          priority?: string
+          public_visible?: boolean
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       site_settings: {
         Row: {
           key: string
@@ -372,6 +728,54 @@ export type Database = {
           updated_at?: string
           updated_by?: string | null
           value?: Json
+        }
+        Relationships: []
+      }
+      testimonials: {
+        Row: {
+          approved: boolean
+          author_id: string | null
+          author_name: string
+          avatar_url: string | null
+          company: string
+          content: string
+          created_at: string
+          featured: boolean
+          id: string
+          outcome: string
+          position: number
+          role_title: string
+          updated_at: string
+        }
+        Insert: {
+          approved?: boolean
+          author_id?: string | null
+          author_name: string
+          avatar_url?: string | null
+          company?: string
+          content: string
+          created_at?: string
+          featured?: boolean
+          id?: string
+          outcome?: string
+          position?: number
+          role_title?: string
+          updated_at?: string
+        }
+        Update: {
+          approved?: boolean
+          author_id?: string | null
+          author_name?: string
+          avatar_url?: string | null
+          company?: string
+          content?: string
+          created_at?: string
+          featured?: boolean
+          id?: string
+          outcome?: string
+          position?: number
+          role_title?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -405,11 +809,27 @@ export type Database = {
         Args: { _full_name?: string }
         Returns: Database["public"]["Enums"]["app_role"]
       }
+      forum_top_members: {
+        Args: { _since?: string }
+        Returns: {
+          display_name: string
+          likes: number
+          replies: number
+          score: number
+          topics: number
+          user_id: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
+        Returns: boolean
+      }
+      increment_topic_views: { Args: { _topic_id: string }; Returns: undefined }
+      is_conversation_participant: {
+        Args: { _conversation_id: string; _user_id: string }
         Returns: boolean
       }
     }

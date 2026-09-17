@@ -10,6 +10,9 @@ const adminNav = [
   { to: "/admin", label: "Paramètres", title: "Identité du site, mentions légales et hébergeur" },
   { to: "/admin/contenus", label: "Contenus", title: "Gérer la FAQ, les offres et les articles" },
   { to: "/admin/moderation", label: "Modération", title: "Valider les avis, commentaires et discussions" },
+  { to: "/admin/forum", label: "Forum", title: "Gérer les thématiques du forum" },
+  { to: "/admin/temoignages", label: "Témoignages", title: "Valider et mettre en avant les témoignages" },
+  { to: "/admin/pilotage", label: "Pilotage", title: "Feuille de route, plan directeur et audits" },
   { to: "/admin/abonnes", label: "Abonnés", title: "Consulter et exporter la liste d'abonnés" },
   { to: "/compte", label: "Messages", title: "Consulter les messages du formulaire de contact" },
 ] as const;

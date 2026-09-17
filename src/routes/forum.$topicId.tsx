@@ -1,19 +1,21 @@
 import { createFileRoute, Link, notFound, useRouter } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { PageShell } from "@/components/cds/SiteHeader";
 import { ShareButtons } from "@/components/cds/ShareButtons";
+import { CategoryBadge, FollowButton, LikeButton } from "@/components/cds/ForumParts";
+import { RichText, RichTextEditor, richTextToPlain } from "@/lib/richtext";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { getTopic } from "@/lib/content.functions";
+import { getTopicDetail } from "@/lib/community.functions";
 import { breadcrumbJsonLd, seo } from "@/lib/seo";
 
 export const Route = createFileRoute("/forum/$topicId")({
   loader: async ({ params }) => {
-    const data = await getTopic({ data: { id: params.topicId } });
+    const data = await getTopicDetail({ data: { id: params.topicId } });
     if (!data) throw notFound();
     return data;
   },
@@ -21,7 +23,7 @@ export const Route = createFileRoute("/forum/$topicId")({
     const topic = loaderData?.topic;
     const base = seo({
       title: topic?.title ?? "Discussion",
-      description: (topic?.content ?? "Discussion du forum.").slice(0, 155),
+      description: richTextToPlain(topic?.content ?? "Discussion du forum.").slice(0, 155),
       path: `/forum/${params.topicId}`,
       type: "article",
     });
@@ -55,10 +57,15 @@ export const Route = createFileRoute("/forum/$topicId")({
 });
 
 function TopicPage() {
-  const { topic, replies } = Route.useLoaderData();
+  const { topic, replies, category } = Route.useLoaderData();
   const { user } = useAuth();
   const router = useRouter();
   const [busy, setBusy] = useState(false);
+  const isOwner = user?.id === topic.author_id;
+
+  useEffect(() => {
+    void supabase.rpc("increment_topic_views", { _topic_id: topic.id });
+  }, [topic.id]);
 
   async function reply(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -82,25 +89,70 @@ function TopicPage() {
     router.invalidate();
   }
 
+  async function accept(replyId: string, current: boolean) {
+    const { error } = await supabase
+      .from("forum_replies")
+      .update({ accepted: !current })
+      .eq("id", replyId);
+    if (error) {
+      toast.error("Marquage impossible.", { description: "Seul l'auteur du sujet peut valider une réponse." });
+      return;
+    }
+    toast.success(current ? "Réponse retirée des solutions." : "Réponse marquée comme solution.");
+    router.invalidate();
+  }
+
   return (
     <PageShell>
-      <article className="mx-auto max-w-[760px]">
-        <Link to="/forum" title="Revenir à la liste des discussions" className="text-xs font-medium text-primary-text hover:underline">
-          ← Forum
-        </Link>
-        <h1 className="mt-3 text-2xl font-bold text-foreground">{topic.title}</h1>
-        <p className="mt-1 text-xs text-muted-foreground">
-          {topic.author_name} — {new Date(topic.created_at).toLocaleDateString("fr-FR")}
-        </p>
-        <p className="mt-4 whitespace-pre-line text-sm text-muted-foreground">{topic.content}</p>
+      <article className="mx-auto max-w-[820px]">
+        <nav aria-label="Fil d'Ariane" className="text-xs text-muted-foreground">
+          <Link to="/forum" title="Revenir à la liste des discussions" className="font-medium text-primary-text hover:underline">
+            Forum
+          </Link>
+          {category ? (
+            <>
+              {" / "}
+              <Link
+                to="/forum/categorie/$slug"
+                params={{ slug: category.slug }}
+                title={`Voir les discussions de la thématique ${category.name}`}
+                className="font-medium text-primary-text hover:underline"
+              >
+                {category.name}
+              </Link>
+            </>
+          ) : null}
+        </nav>
 
-        <div className="mt-6 border-t border-border pt-5">
-          <ShareButtons path={`/forum/${topic.id}`} title={topic.title} />
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          {category ? <CategoryBadge name={category.name} color={category.color} /> : null}
+          <span className="text-xs text-muted-foreground">{topic.views} vues</span>
         </div>
 
-        <h2 className="mt-10 text-lg font-semibold text-foreground">
-          Réponses ({replies.length})
-        </h2>
+        <h1 className="mt-2 text-2xl font-bold text-foreground">{topic.title}</h1>
+        <p className="mt-1 text-xs text-muted-foreground">
+          <Link
+            to="/membres/$memberId"
+            params={{ memberId: topic.author_id }}
+            title={`Voir le profil de ${topic.author_name}`}
+            className="hover:text-primary-text"
+          >
+            {topic.author_name}
+          </Link>{" "}
+          — {new Date(topic.created_at).toLocaleDateString("fr-FR")}
+        </p>
+
+        <RichText value={topic.content} className="mt-4 text-sm text-muted-foreground" />
+
+        <div className="mt-6 flex flex-wrap items-center gap-2 border-t border-border pt-5">
+          <LikeButton topicId={topic.id} initialCount={topic.likes} />
+          <FollowButton topicId={topic.id} />
+          <div className="ml-auto">
+            <ShareButtons path={`/forum/${topic.id}`} title={topic.title} />
+          </div>
+        </div>
+
+        <h2 className="mt-10 text-lg font-semibold text-foreground">Réponses ({replies.length})</h2>
         {replies.length === 0 ? (
           <p className="mt-3 text-sm text-muted-foreground">
             Aucune réponse pour l'instant. La vôtre sera la bienvenue.
@@ -108,12 +160,46 @@ function TopicPage() {
         ) : (
           <ul className="mt-4 space-y-3">
             {replies.map((item) => (
-              <li key={item.id} className="rounded-lg border border-border bg-card p-4">
-                <p className="text-sm font-medium text-foreground">{item.author_name}</p>
+              <li
+                key={item.id}
+                className={`rounded-lg border bg-card p-4 ${
+                  item.accepted ? "border-success" : "border-border"
+                }`}
+              >
+                {item.accepted ? (
+                  <p className="mb-2 inline-flex items-center gap-1.5 text-xs font-medium text-success-text">
+                    <CheckCircle2 className="size-4" aria-hidden="true" />
+                    Réponse retenue
+                  </p>
+                ) : null}
+                <p className="text-sm font-medium text-foreground">
+                  <Link
+                    to="/membres/$memberId"
+                    params={{ memberId: item.author_id }}
+                    title={`Voir le profil de ${item.author_name}`}
+                    className="hover:text-primary-text"
+                  >
+                    {item.author_name}
+                  </Link>
+                </p>
                 <p className="mt-1 text-xs text-muted-foreground">
                   {new Date(item.created_at).toLocaleDateString("fr-FR")}
                 </p>
-                <p className="mt-2 whitespace-pre-line text-sm text-muted-foreground">{item.content}</p>
+                <RichText value={item.content} className="mt-2 text-sm text-muted-foreground" />
+                <div className="mt-3 flex flex-wrap items-center gap-2">
+                  <LikeButton replyId={item.id} initialCount={item.likes} />
+                  {isOwner ? (
+                    <button
+                      type="button"
+                      onClick={() => accept(item.id, item.accepted)}
+                      title={item.accepted ? "Retirer cette réponse des solutions" : "Marquer cette réponse comme solution"}
+                      className="inline-flex min-h-11 items-center gap-1.5 rounded-md border border-border px-3 text-xs font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                    >
+                      <CheckCircle2 className="size-4" aria-hidden="true" />
+                      {item.accepted ? "Retirer la solution" : "C'est la solution"}
+                    </button>
+                  ) : null}
+                </div>
               </li>
             ))}
           </ul>
@@ -127,7 +213,7 @@ function TopicPage() {
           <form onSubmit={reply} className="mt-6 space-y-3">
             <div className="space-y-1.5">
               <Label htmlFor="reply">Votre réponse</Label>
-              <Textarea id="reply" name="content" rows={4} required placeholder="Votre contribution…" />
+              <RichTextEditor id="reply" name="content" rows={5} required placeholder="Votre contribution…" />
             </div>
             <Button type="submit" disabled={busy} title="Publier votre réponse">
               {busy ? "Envoi…" : "Répondre"}
