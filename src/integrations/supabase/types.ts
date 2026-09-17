@@ -14,6 +14,86 @@ export type Database = {
   }
   public: {
     Tables: {
+      blog_comments: {
+        Row: {
+          approved: boolean
+          author_id: string
+          author_name: string
+          content: string
+          created_at: string
+          id: string
+          post_id: string
+        }
+        Insert: {
+          approved?: boolean
+          author_id: string
+          author_name?: string
+          content: string
+          created_at?: string
+          id?: string
+          post_id: string
+        }
+        Update: {
+          approved?: boolean
+          author_id?: string
+          author_name?: string
+          content?: string
+          created_at?: string
+          id?: string
+          post_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blog_comments_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "blog_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      blog_posts: {
+        Row: {
+          author_id: string | null
+          content: string
+          cover_url: string | null
+          created_at: string
+          excerpt: string
+          id: string
+          published: boolean
+          published_at: string | null
+          slug: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author_id?: string | null
+          content?: string
+          cover_url?: string | null
+          created_at?: string
+          excerpt?: string
+          id?: string
+          published?: boolean
+          published_at?: string | null
+          slug: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string | null
+          content?: string
+          cover_url?: string | null
+          created_at?: string
+          excerpt?: string
+          id?: string
+          published?: boolean
+          published_at?: string | null
+          slug?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       contact_messages: {
         Row: {
           created_at: string
@@ -41,6 +121,185 @@ export type Database = {
         }
         Relationships: []
       }
+      faq_items: {
+        Row: {
+          answer: string
+          category: string
+          created_at: string
+          id: string
+          position: number
+          published: boolean
+          question: string
+          updated_at: string
+        }
+        Insert: {
+          answer: string
+          category?: string
+          created_at?: string
+          id?: string
+          position?: number
+          published?: boolean
+          question: string
+          updated_at?: string
+        }
+        Update: {
+          answer?: string
+          category?: string
+          created_at?: string
+          id?: string
+          position?: number
+          published?: boolean
+          question?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      forum_replies: {
+        Row: {
+          author_id: string
+          author_name: string
+          content: string
+          created_at: string
+          id: string
+          topic_id: string
+        }
+        Insert: {
+          author_id: string
+          author_name?: string
+          content: string
+          created_at?: string
+          id?: string
+          topic_id: string
+        }
+        Update: {
+          author_id?: string
+          author_name?: string
+          content?: string
+          created_at?: string
+          id?: string
+          topic_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "forum_replies_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "forum_topics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      forum_topics: {
+        Row: {
+          author_id: string
+          author_name: string
+          content: string
+          created_at: string
+          id: string
+          locked: boolean
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author_id: string
+          author_name?: string
+          content: string
+          created_at?: string
+          id?: string
+          locked?: boolean
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string
+          author_name?: string
+          content?: string
+          created_at?: string
+          id?: string
+          locked?: boolean
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      newsletter_subscribers: {
+        Row: {
+          consent_at: string
+          created_at: string
+          email: string
+          first_name: string | null
+          id: string
+          source: string
+          unsubscribed_at: string | null
+        }
+        Insert: {
+          consent_at?: string
+          created_at?: string
+          email: string
+          first_name?: string | null
+          id?: string
+          source?: string
+          unsubscribed_at?: string | null
+        }
+        Update: {
+          consent_at?: string
+          created_at?: string
+          email?: string
+          first_name?: string | null
+          id?: string
+          source?: string
+          unsubscribed_at?: string | null
+        }
+        Relationships: []
+      }
+      pricing_plans: {
+        Row: {
+          active: boolean
+          created_at: string
+          cta_label: string
+          currency: string
+          features: Json
+          highlighted: boolean
+          id: string
+          name: string
+          period: string
+          position: number
+          price_cents: number
+          tagline: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          cta_label?: string
+          currency?: string
+          features?: Json
+          highlighted?: boolean
+          id?: string
+          name: string
+          period?: string
+          position?: number
+          price_cents?: number
+          tagline?: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          cta_label?: string
+          currency?: string
+          features?: Json
+          highlighted?: boolean
+          id?: string
+          name?: string
+          period?: string
+          position?: number
+          price_cents?: number
+          tagline?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -59,6 +318,39 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id?: string
+        }
+        Relationships: []
+      }
+      reviews: {
+        Row: {
+          approved: boolean
+          author_id: string
+          author_name: string
+          content: string
+          created_at: string
+          id: string
+          rating: number
+          title: string
+        }
+        Insert: {
+          approved?: boolean
+          author_id: string
+          author_name?: string
+          content: string
+          created_at?: string
+          id?: string
+          rating: number
+          title?: string
+        }
+        Update: {
+          approved?: boolean
+          author_id?: string
+          author_name?: string
+          content?: string
+          created_at?: string
+          id?: string
+          rating?: number
+          title?: string
         }
         Relationships: []
       }
