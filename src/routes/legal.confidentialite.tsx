@@ -1,21 +1,17 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { LegalPage, Section } from "@/components/cds/LegalPage";
 
+import { seo } from "@/lib/seo";
+
 export const Route = createFileRoute("/legal/confidentialite")({
-  head: () => ({
-    meta: [
-      { title: "Politique de confidentialité — PMM RDS" },
-      {
-        name: "description",
-        content:
-          "Politique de confidentialité PMM RDS : données collectées, finalités, durées de conservation et droits RGPD.",
-      },
-      { property: "og:title", content: "Politique de confidentialité — PMM RDS" },
-      { property: "og:description", content: "Données personnelles, finalités et droits RGPD chez PMM RDS." },
-      { property: "og:type", content: "article" },
-      { name: "twitter:card", content: "summary" },
-    ],
-  }),
+  head: () =>
+    seo({
+      title: "Politique de confidentialité",
+      description:
+        "Politique de confidentialité PMM RDS : données collectées, finalités, durées de conservation et droits RGPD.",
+      path: "/legal/confidentialite",
+      type: "article",
+    }),
   component: () => (
     <LegalPage title="Politique de confidentialité" updatedAt="17 septembre 2026">
       <Section title="Responsable du traitement">

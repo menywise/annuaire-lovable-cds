@@ -8,17 +8,17 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { supabase } from "@/integrations/supabase/client";
 
+import { seo } from "@/lib/seo";
+
 export const Route = createFileRoute("/signup")({
-  head: () => ({
-    meta: [
-      { title: "Créer un compte — PMM RDS" },
-      { name: "description", content: "Créez votre compte en quelques secondes : nom, adresse e-mail et mot de passe." },
-      { property: "og:title", content: "Créer un compte — PMM RDS" },
-      { property: "og:description", content: "Création de compte." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-    ],
-  }),
+  head: () =>
+    seo({
+      title: "Créer un compte",
+      description:
+        "Créez votre compte PMM RDS en quelques secondes : nom, adresse e-mail et mot de passe, avec confirmation par e-mail.",
+      path: "/signup",
+      type: "website",
+    }),
   component: SignupPage,
 });
 

@@ -7,17 +7,18 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { supabase } from "@/integrations/supabase/client";
 
+import { seo } from "@/lib/seo";
+
 export const Route = createFileRoute("/reset-password")({
-  head: () => ({
-    meta: [
-      { title: "Nouveau mot de passe — PMM RDS" },
-      { name: "description", content: "Choisissez un nouveau mot de passe pour votre compte." },
-      { property: "og:title", content: "Nouveau mot de passe — PMM RDS" },
-      { property: "og:description", content: "Définition d'un nouveau mot de passe." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-    ],
-  }),
+  head: () =>
+    seo({
+      title: "Nouveau mot de passe",
+      description:
+        "Choisissez un nouveau mot de passe pour votre compte.",
+      path: "/reset-password",
+      type: "website",
+      noindex: true,
+    }),
   component: ResetPasswordPage,
 });
 

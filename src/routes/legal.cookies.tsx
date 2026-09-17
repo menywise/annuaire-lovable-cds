@@ -1,21 +1,17 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { LegalPage, Section } from "@/components/cds/LegalPage";
 
+import { seo } from "@/lib/seo";
+
 export const Route = createFileRoute("/legal/cookies")({
-  head: () => ({
-    meta: [
-      { title: "Politique cookies — PMM RDS" },
-      {
-        name: "description",
-        content:
-          "Politique cookies PMM RDS : catégories de traceurs, durées de conservation et gestion du consentement.",
-      },
-      { property: "og:title", content: "Politique cookies — PMM RDS" },
-      { property: "og:description", content: "Traceurs utilisés et gestion du consentement." },
-      { property: "og:type", content: "article" },
-      { name: "twitter:card", content: "summary" },
-    ],
-  }),
+  head: () =>
+    seo({
+      title: "Politique de cookies",
+      description:
+        "Politique de gestion des cookies PMM RDS : traceurs utilisés, consentement, durée de conservation et paramétrage.",
+      path: "/legal/cookies",
+      type: "article",
+    }),
   component: () => (
     <LegalPage title="Politique cookies" updatedAt="17 septembre 2026">
       <Section title="Qu'est-ce qu'un cookie ?">

@@ -1,21 +1,17 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { LegalPage, Section } from "@/components/cds/LegalPage";
 
+import { seo } from "@/lib/seo";
+
 export const Route = createFileRoute("/legal/mentions-legales")({
-  head: () => ({
-    meta: [
-      { title: "Mentions légales — PMM RDS" },
-      {
-        name: "description",
-        content:
-          "Mentions légales de PMM RDS, SAS au capital de 1 000 € — siège social à Limoges, site hébergé par OVH.",
-      },
-      { property: "og:title", content: "Mentions légales — PMM RDS" },
-      { property: "og:description", content: "Éditeur, hébergeur et propriété intellectuelle du site PMM RDS." },
-      { property: "og:type", content: "article" },
-      { name: "twitter:card", content: "summary" },
-    ],
-  }),
+  head: () =>
+    seo({
+      title: "Mentions légales",
+      description:
+        "Mentions légales de PMM RDS, SAS au capital de 1 000 €, siège social à Limoges — site hébergé par OVH.",
+      path: "/legal/mentions-legales",
+      type: "article",
+    }),
   component: () => (
     <LegalPage title="Mentions légales" updatedAt="17 septembre 2026">
       <Section title="Éditeur du site">

@@ -10,17 +10,17 @@ import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 
+import { seo } from "@/lib/seo";
+
 export const Route = createFileRoute("/composants")({
-  head: () => ({
-    meta: [
-      { title: "Composants — CDS" },
-      { name: "description", content: "Aperçu des composants CDS : boutons, champs, cartes, badges, alertes." },
-      { property: "og:title", content: "Composants — CDS" },
-      { property: "og:description", content: "Aperçu des composants du Consensus Design System." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-    ],
-  }),
+  head: () =>
+    seo({
+      title: "Composants",
+      description:
+        "Bibliothèque de composants du Consensus Design System : boutons, champs, tableaux, badges, alertes, onglets, pagination, fenêtres modales et états de chargement.",
+      path: "/composants",
+      type: "website",
+    }),
   component: ComposantsPage,
 });
 

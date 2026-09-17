@@ -1,21 +1,17 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { LegalPage, Section } from "@/components/cds/LegalPage";
 
+import { seo } from "@/lib/seo";
+
 export const Route = createFileRoute("/legal/cgu")({
-  head: () => ({
-    meta: [
-      { title: "Conditions générales d'utilisation — PMM RDS" },
-      {
-        name: "description",
-        content:
-          "Conditions générales d'utilisation des services PMM RDS : accès, compte, obligations, résiliation, droit applicable.",
-      },
-      { property: "og:title", content: "Conditions générales d'utilisation — PMM RDS" },
-      { property: "og:description", content: "Règles d'accès et d'utilisation des services PMM RDS." },
-      { property: "og:type", content: "article" },
-      { name: "twitter:card", content: "summary" },
-    ],
-  }),
+  head: () =>
+    seo({
+      title: "Conditions générales d'utilisation",
+      description:
+        "Conditions générales d'utilisation des services PMM RDS : accès, compte, obligations, résiliation et droit applicable.",
+      path: "/legal/cgu",
+      type: "article",
+    }),
   component: () => (
     <LegalPage title="Conditions générales d'utilisation" updatedAt="17 septembre 2026">
       <Section title="Objet">
