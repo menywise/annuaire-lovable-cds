@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import type { Json } from "@/integrations/supabase/types";
 import { brand } from "@/config/brand";
 
 /** Paramètres de marque modifiables depuis l'espace d'administration. */
@@ -62,7 +63,7 @@ export async function saveBrandSettings(next: BrandSettings) {
   const { error } = await supabase.from("site_settings").upsert(
     {
       key: BRAND_SETTINGS_KEY,
-      value: next as unknown as Record<string, unknown>,
+      value: next as unknown as Json,
       updated_at: new Date().toISOString(),
       updated_by: userData.user?.id ?? null,
     },
