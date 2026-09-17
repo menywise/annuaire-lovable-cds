@@ -1,38 +1,77 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { Menu, X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useBrandSettings } from "@/hooks/useSiteSettings";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { CookieBanner } from "@/components/cds/CookieBanner";
+import { NewsletterForm } from "@/components/cds/NewsletterForm";
 
-const nav = [
-  { to: "/", label: "Tokens", title: "Couleurs, typographie, rayons et ombres du design system" },
-  { to: "/composants", label: "Composants", title: "Bibliothèque de composants d'interface CDS" },
+/** Menu des visiteurs : découvrir, comparer, échanger. */
+const publicNav = [
   { to: "/demarrer", label: "Démarrer", title: "Le parcours en trois étapes jusqu'à votre compte" },
   { to: "/tarifs", label: "Tarifs", title: "Comparer les offres et choisir celle qui vous convient" },
   { to: "/blog", label: "Blog", title: "Articles et méthodes pour faire avancer votre projet" },
-  { to: "/faq", label: "FAQ", title: "Réponses aux questions les plus fréquentes" },
   { to: "/forum", label: "Forum", title: "Poser une question à la communauté" },
-  { to: "/avis", label: "Avis", title: "Lire les retours d'expérience des utilisateurs" },
-  { to: "/a-propos", label: "À propos", title: "Qui édite le site et selon quels engagements" },
+  { to: "/temoignages", label: "Témoignages", title: "Lire ce que la communauté a obtenu concrètement" },
+  { to: "/faq", label: "FAQ", title: "Réponses aux questions les plus fréquentes" },
   { to: "/contact", label: "Contact", title: "Écrire via le formulaire de contact protégé" },
 ] as const;
 
-const legalNav = [
-  { to: "/legal/mentions-legales", label: "Mentions légales", title: "Éditeur, hébergeur et propriété intellectuelle" },
-  { to: "/legal/confidentialite", label: "Confidentialité", title: "Traitement des données personnelles et droits RGPD" },
-  { to: "/legal/cgu", label: "CGU", title: "Conditions générales d'utilisation du site" },
-  { to: "/legal/cgv", label: "CGV", title: "Conditions générales de vente des offres payantes" },
-  { to: "/legal/cookies", label: "Cookies", title: "Politique de gestion des cookies" },
-  { to: "/plan-du-site", label: "Plan du site", title: "Toutes les pages du site réunies sur une page" },
-  { to: "/guide", label: "Guide", title: "Comment réutiliser CDS sur un nouveau projet" },
-  { to: "/contact", label: "Contact", title: "Formulaire de contact protégé anti-spam" },
+/** Menu des membres connectés : agir dans son espace. */
+const memberNav = [
+  { to: "/tableau-de-bord", label: "Tableau de bord", title: "Vue d'ensemble de votre activité" },
+  { to: "/forum", label: "Forum", title: "Participer aux discussions de la communauté" },
+  { to: "/membres", label: "Annuaire", title: "Découvrir les autres membres" },
+  { to: "/messagerie", label: "Messagerie", title: "Consulter vos échanges privés" },
+  { to: "/blog", label: "Blog", title: "Lire les derniers articles" },
 ] as const;
 
+const footerColumns = [
+  {
+    title: "Découvrir",
+    links: [
+      { to: "/", label: "Accueil", title: "Revenir à la page d'accueil" },
+      { to: "/demarrer", label: "Démarrer", title: "Le parcours en trois étapes" },
+      { to: "/tarifs", label: "Tarifs", title: "Comparer les offres" },
+      { to: "/composants", label: "Composants", title: "Bibliothèque de composants d'interface" },
+      { to: "/guide", label: "Guide", title: "Comment réutiliser CDS sur un nouveau projet" },
+    ],
+  },
+  {
+    title: "Communauté",
+    links: [
+      { to: "/forum", label: "Forum", title: "Poser une question à la communauté" },
+      { to: "/membres", label: "Annuaire", title: "Découvrir les membres" },
+      { to: "/temoignages", label: "Témoignages", title: "Lire les retours d'expérience" },
+      { to: "/avis", label: "Avis", title: "Consulter les notes et avis" },
+      { to: "/blog", label: "Blog", title: "Articles et méthodes" },
+    ],
+  },
+  {
+    title: "Aide",
+    links: [
+      { to: "/faq", label: "FAQ", title: "Réponses aux questions fréquentes" },
+      { to: "/contact", label: "Contact", title: "Formulaire de contact protégé" },
+      { to: "/a-propos", label: "À propos", title: "Qui édite le site et selon quels engagements" },
+      { to: "/plan-du-site", label: "Plan du site", title: "Toutes les pages réunies sur une page" },
+      { to: "/login", label: "Connexion", title: "Accéder à son espace personnel" },
+    ],
+  },
+  {
+    title: "Informations légales",
+    links: [
+      { to: "/legal/mentions-legales", label: "Mentions légales", title: "Éditeur, hébergeur et propriété intellectuelle" },
+      { to: "/legal/confidentialite", label: "Confidentialité", title: "Données personnelles et droits RGPD" },
+      { to: "/legal/cgu", label: "CGU", title: "Conditions générales d'utilisation" },
+      { to: "/legal/cgv", label: "CGV", title: "Conditions générales de vente" },
+      { to: "/legal/cookies", label: "Cookies", title: "Politique de gestion des cookies" },
+    ],
+  },
+] as const;
 
 const linkClass =
-  "rounded px-3 py-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
+  "inline-flex min-h-11 items-center rounded px-3 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 lg:min-h-9";
 
 function AccountLinks({ onNavigate }: { onNavigate?: () => void }) {
   const { user, loading } = useAuth();
@@ -48,32 +87,32 @@ function AccountLinks({ onNavigate }: { onNavigate?: () => void }) {
 
   if (!user) {
     return (
-      <Link
-        to="/login"
-        title="Se connecter à son espace personnel"
-        onClick={onNavigate}
-        className={`block ${linkClass}`}
-      >
-        Connexion
-      </Link>
+      <>
+        <Link to="/login" title="Se connecter à son espace personnel" onClick={onNavigate} className={`flex w-full lg:w-auto ${linkClass}`}>
+          Connexion
+        </Link>
+        <Link
+          to="/signup"
+          title="Créer un compte gratuitement"
+          onClick={onNavigate}
+          className="inline-flex min-h-11 items-center rounded-md bg-primary px-3 text-sm font-medium text-primary-foreground transition-colors hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 lg:min-h-9"
+        >
+          Créer un compte
+        </Link>
+      </>
     );
   }
 
   return (
     <>
-      <Link
-        to="/tableau-de-bord"
-        title="Ouvrir mon tableau de bord"
-        onClick={onNavigate}
-        className={`block ${linkClass}`}
-      >
-        Mon espace
+      <Link to="/profil" title="Modifier mon profil" onClick={onNavigate} className={`flex w-full lg:w-auto ${linkClass}`}>
+        Mon profil
       </Link>
       <button
         type="button"
         onClick={signOut}
         title="Fermer la session en cours"
-        className={`block w-full text-left ${linkClass}`}
+        className={`w-full text-left lg:w-auto ${linkClass}`}
       >
         Se déconnecter
       </button>
@@ -84,16 +123,25 @@ function AccountLinks({ onNavigate }: { onNavigate?: () => void }) {
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const { settings } = useBrandSettings();
+  const { user } = useAuth();
+  const nav = user ? memberNav : publicNav;
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open]);
 
   return (
-    <header className="sticky top-0 z-30 border-b border-border bg-card/90 backdrop-blur">
-      <div className="mx-auto flex h-14 max-w-[1200px] items-center gap-4 px-6">
+    <header className="sticky top-0 z-30 border-b border-border bg-card/95 backdrop-blur">
+      <div className="mx-auto flex h-16 max-w-[1200px] items-center gap-4 px-6">
         <Link
           to="/"
           title={`${settings.name} — accueil`}
           className="flex items-center gap-2 font-semibold text-foreground"
         >
-          <span className="grid size-6 place-items-center rounded bg-primary text-[11px] font-bold text-primary-foreground">
+          <span className="grid size-7 place-items-center rounded bg-primary text-xs font-bold text-primary-foreground">
             {settings.shortName.slice(0, 1).toUpperCase()}
           </span>
           {settings.shortName}
@@ -114,7 +162,7 @@ export function SiteHeader() {
           ))}
         </nav>
 
-        <div className="ml-auto hidden items-center gap-0.5 text-sm lg:flex">
+        <div className="ml-auto hidden items-center gap-2 text-sm lg:flex">
           <AccountLinks />
         </div>
 
@@ -125,9 +173,9 @@ export function SiteHeader() {
           aria-controls="cds-mobile-nav"
           aria-label={open ? "Fermer le menu" : "Ouvrir le menu"}
           title={open ? "Fermer le menu de navigation" : "Ouvrir le menu de navigation"}
-          className="ml-auto grid size-9 place-items-center rounded-md border border-border text-foreground lg:hidden"
+          className="ml-auto grid size-11 place-items-center rounded-md border border-border text-foreground lg:hidden"
         >
-          {open ? <X className="size-4" /> : <Menu className="size-4" />}
+          {open ? <X className="size-5" /> : <Menu className="size-5" />}
         </button>
       </div>
 
@@ -135,7 +183,7 @@ export function SiteHeader() {
         <nav
           id="cds-mobile-nav"
           aria-label="Navigation mobile"
-          className="border-t border-border bg-card px-6 py-3 lg:hidden"
+          className="max-h-[70vh] overflow-y-auto border-t border-border bg-card px-6 py-3 lg:hidden"
         >
           <ul className="flex flex-col gap-1 text-sm">
             {nav.map((item) => (
@@ -144,7 +192,7 @@ export function SiteHeader() {
                   to={item.to}
                   title={item.title}
                   onClick={() => setOpen(false)}
-                  className={`block ${linkClass}`}
+                  className={`flex w-full ${linkClass}`}
                   activeProps={{ className: "bg-accent text-foreground" }}
                   activeOptions={{ exact: item.to === "/" }}
                 >
@@ -152,7 +200,7 @@ export function SiteHeader() {
                 </Link>
               </li>
             ))}
-            <li className="mt-1 border-t border-border pt-1">
+            <li className="mt-1 flex flex-col gap-1 border-t border-border pt-2">
               <AccountLinks onNavigate={() => setOpen(false)} />
             </li>
           </ul>
@@ -167,20 +215,35 @@ export function SiteFooter() {
 
   return (
     <footer className="border-t border-border bg-card">
-      <div className="mx-auto flex max-w-[1200px] flex-wrap items-center justify-between gap-3 px-6 py-6 text-xs text-muted-foreground">
-        <span>{settings.tagline}</span>
-        <nav aria-label="Liens légaux" className="flex flex-wrap gap-4">
-          {legalNav.map((item) => (
-            <Link
-              key={item.to + item.label}
-              to={item.to}
-              title={item.title}
-              className="rounded hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            >
-              {item.label}
-            </Link>
+      <div className="mx-auto max-w-[1200px] px-6 py-10">
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          {footerColumns.map((column) => (
+            <nav key={column.title} aria-label={column.title}>
+              <h2 className="text-sm font-semibold text-foreground">{column.title}</h2>
+              <ul className="mt-3 space-y-1.5 text-sm">
+                {column.links.map((link) => (
+                  <li key={link.to + link.label}>
+                    <Link
+                      to={link.to}
+                      title={link.title}
+                      className="inline-flex min-h-11 items-center rounded text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:min-h-8"
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
           ))}
-        </nav>
+        </div>
+
+        <div className="mt-10">
+          <NewsletterForm source="pied-de-page" />
+        </div>
+
+        <p className="mt-8 border-t border-border pt-6 text-xs text-muted-foreground">
+          {settings.tagline} — © {new Date().getFullYear()} {settings.name}
+        </p>
       </div>
     </footer>
   );
