@@ -1,10 +1,17 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { brand } from "@/config/brand";
+import { listPosts, listTopics } from "@/lib/content.functions";
+
 
 /** Pages publiques indexables, avec leur priorité de référencement. */
 const pages: Array<{ path: string; priority: string; changefreq: string }> = [
   { path: "/", priority: "1.0", changefreq: "weekly" },
   { path: "/composants", priority: "0.9", changefreq: "weekly" },
+  { path: "/tarifs", priority: "0.9", changefreq: "monthly" },
+  { path: "/blog", priority: "0.9", changefreq: "weekly" },
+  { path: "/faq", priority: "0.8", changefreq: "monthly" },
+  { path: "/forum", priority: "0.8", changefreq: "daily" },
+  { path: "/avis", priority: "0.8", changefreq: "weekly" },
   { path: "/guide", priority: "0.9", changefreq: "monthly" },
   { path: "/contact", priority: "0.7", changefreq: "yearly" },
   { path: "/login", priority: "0.5", changefreq: "yearly" },
@@ -16,14 +23,27 @@ const pages: Array<{ path: string; priority: string; changefreq: string }> = [
   { path: "/legal/cookies", priority: "0.4", changefreq: "yearly" },
 ];
 
+
 export const Route = createFileRoute("/sitemap.xml")({
   server: {
     handlers: {
-      GET: () => {
+      GET: async () => {
         const lastmod = new Date().toISOString().slice(0, 10);
+        const dynamic: Array<{ path: string; priority: string; changefreq: string }> = [];
+        try {
+          const [posts, topics] = await Promise.all([listPosts(), listTopics()]);
+          for (const post of posts) {
+            dynamic.push({ path: `/blog/${post.slug}`, priority: "0.8", changefreq: "monthly" });
+          }
+          for (const topic of topics) {
+            dynamic.push({ path: `/forum/${topic.id}`, priority: "0.6", changefreq: "weekly" });
+          }
+        } catch {
+          /* le plan du site reste valide avec les pages statiques */
+        }
         const body = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${pages
+${[...pages, ...dynamic]
   .map(
     (page) =>
       `  <url>\n    <loc>${brand.url}${page.path === "/" ? "/" : page.path}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>${page.changefreq}</changefreq>\n    <priority>${page.priority}</priority>\n  </url>`,
@@ -31,6 +51,7 @@ ${pages
   .join("\n")}
 </urlset>
 `;
+
         return new Response(body, {
           headers: {
             "Content-Type": "application/xml; charset=utf-8",
