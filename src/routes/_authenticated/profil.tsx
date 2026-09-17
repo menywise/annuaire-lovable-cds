@@ -83,7 +83,7 @@ function ProfilPage() {
     <PageShell>
       <div className="mx-auto max-w-[620px]">
         <nav aria-label="Fil d'Ariane" className="text-xs text-muted-foreground">
-          <Link to="/_authenticated/compte" title="Revenir à mon compte" className="hover:text-foreground">
+          <Link to="/compte" title="Revenir à mon compte" className="hover:text-foreground">
             Mon compte
           </Link>
           <span aria-hidden="true"> / </span>
