@@ -21,8 +21,8 @@ export function LegalPage({
           {children}
         </div>
         <p className="mt-10 rounded-lg border border-border bg-muted p-4 text-xs text-muted-foreground">
-          Gabarit CDS : remplacez les mentions entre crochets par les informations réelles de
-          l'entreprise avant publication.
+          PMM RDS — SAS au capital de 1 000 €, Rue du Champfour, 87000 Limoges. Site hébergé par
+          OVH.
         </p>
       </article>
     </PageShell>

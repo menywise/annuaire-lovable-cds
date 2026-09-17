@@ -5,6 +5,7 @@ const nav = [
   { to: "/composants", label: "Composants" },
   { to: "/login", label: "Connexion" },
   { to: "/legal/mentions-legales", label: "Légal" },
+  { to: "/contact", label: "Contact" },
 ] as const;
 
 export function SiteHeader() {
