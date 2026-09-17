@@ -66,11 +66,16 @@
   --accent: #f3f4f6;
   --accent-foreground: #1e293b;
   --success: #198754;
+  --success-text: #15803d; /* texte / icônes : contraste AA sur fond clair */
   --warning: #ffc107;
+  --warning-text: #b45200; /* texte / icônes : contraste AA sur fond clair */
   --destructive: #dc3545;
   --destructive-foreground: #ffffff;
   --info: #0dcaf0;
+  --info-text: #0891b2;
   --cds-purple: #7c3aed;
+  --primary-text: #0a58ca; /* bleu CDS en texte : contraste AA sur fond clair */
+  --text-light: #5b6472;
   --border: #e5e7eb;
   --input: #e5e7eb;
   --ring: #0d6efd;
