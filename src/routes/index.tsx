@@ -54,6 +54,10 @@ const templates = [
   { to: "/legal/cgu", label: "CGU", desc: "Conditions générales d'utilisation" },
   { to: "/legal/cookies", label: "Cookies", desc: "Traceurs et consentement" },
   { to: "/contact", label: "Contact", desc: "Formulaire protégé anti-spam" },
+  { to: "/guide", label: "Guide de réutilisation", desc: "Quoi copier, quoi modifier" },
+  { to: "/composants", label: "Composants", desc: "Tableaux, onglets, fenêtres, états" },
+  { to: "/maintenance", label: "Maintenance", desc: "Écran d'interruption de service" },
+  { to: "/merci", label: "Confirmation", desc: "Page de remerciement après envoi" },
 ] as const;
 
 function Index() {
@@ -73,6 +77,7 @@ function Index() {
             <Link
               key={t.to}
               to={t.to}
+              title={`${t.label} — ${t.desc}`}
               className="rounded-xl border border-border bg-card p-4 transition-shadow hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)]"
             >
               <p className="text-sm font-semibold text-foreground">{t.label}</p>
