@@ -17,7 +17,16 @@ type SeoInput = {
  * Métadonnées SEO cohérentes pour toutes les routes :
  * title, description, canonical auto-référent, Open Graph et Twitter.
  */
-export function seo({ title, description, path, type = "website", noindex, image }: SeoInput) {
+const DEFAULT_IMAGE = absoluteUrl("/og-cds.jpg");
+
+export function seo({
+  title,
+  description,
+  path,
+  type = "website",
+  noindex,
+  image = DEFAULT_IMAGE,
+}: SeoInput) {
   const fullTitle = title.includes(brand.shortName) ? title : `${title} — ${brand.shortName}`;
   const url = absoluteUrl(path);
 
