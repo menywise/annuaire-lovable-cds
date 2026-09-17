@@ -37,6 +37,7 @@ import { Route as LegalConfidentialiteRouteImport } from './routes/legal.confide
 import { Route as LegalCookiesRouteImport } from './routes/legal.cookies'
 import { Route as LegalMentionsLegalesRouteImport } from './routes/legal.mentions-legales'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
+import { Route as AuthenticatedAdminAbonnesRouteImport } from './routes/_authenticated/admin.abonnes'
 import { Route as AuthenticatedAdminContenusRouteImport } from './routes/_authenticated/admin.contenus'
 import { Route as AuthenticatedAdminModerationRouteImport } from './routes/_authenticated/admin.moderation'
 
@@ -180,6 +181,12 @@ const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   path: '/admin/',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAdminAbonnesRoute =
+  AuthenticatedAdminAbonnesRouteImport.update({
+    id: '/admin/abonnes',
+    path: '/admin/abonnes',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminContenusRoute =
   AuthenticatedAdminContenusRouteImport.update({
     id: '/admin/contenus',
@@ -220,6 +227,7 @@ export interface FileRoutesByFullPath {
   '/legal/mentions-legales': typeof LegalMentionsLegalesRoute
   '/blog/': typeof BlogIndexRoute
   '/forum/': typeof ForumIndexRoute
+  '/admin/abonnes': typeof AuthenticatedAdminAbonnesRoute
   '/admin/contenus': typeof AuthenticatedAdminContenusRoute
   '/admin/moderation': typeof AuthenticatedAdminModerationRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
@@ -251,6 +259,7 @@ export interface FileRoutesByTo {
   '/legal/mentions-legales': typeof LegalMentionsLegalesRoute
   '/blog': typeof BlogIndexRoute
   '/forum': typeof ForumIndexRoute
+  '/admin/abonnes': typeof AuthenticatedAdminAbonnesRoute
   '/admin/contenus': typeof AuthenticatedAdminContenusRoute
   '/admin/moderation': typeof AuthenticatedAdminModerationRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
@@ -284,6 +293,7 @@ export interface FileRoutesById {
   '/legal/mentions-legales': typeof LegalMentionsLegalesRoute
   '/blog/': typeof BlogIndexRoute
   '/forum/': typeof ForumIndexRoute
+  '/_authenticated/admin/abonnes': typeof AuthenticatedAdminAbonnesRoute
   '/_authenticated/admin/contenus': typeof AuthenticatedAdminContenusRoute
   '/_authenticated/admin/moderation': typeof AuthenticatedAdminModerationRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
@@ -317,6 +327,7 @@ export interface FileRouteTypes {
     | '/legal/mentions-legales'
     | '/blog/'
     | '/forum/'
+    | '/admin/abonnes'
     | '/admin/contenus'
     | '/admin/moderation'
     | '/admin/'
@@ -348,6 +359,7 @@ export interface FileRouteTypes {
     | '/legal/mentions-legales'
     | '/blog'
     | '/forum'
+    | '/admin/abonnes'
     | '/admin/contenus'
     | '/admin/moderation'
     | '/admin'
@@ -380,6 +392,7 @@ export interface FileRouteTypes {
     | '/legal/mentions-legales'
     | '/blog/'
     | '/forum/'
+    | '/_authenticated/admin/abonnes'
     | '/_authenticated/admin/contenus'
     | '/_authenticated/admin/moderation'
     | '/_authenticated/admin/'
@@ -610,6 +623,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/abonnes': {
+      id: '/_authenticated/admin/abonnes'
+      path: '/admin/abonnes'
+      fullPath: '/admin/abonnes'
+      preLoaderRoute: typeof AuthenticatedAdminAbonnesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/contenus': {
       id: '/_authenticated/admin/contenus'
       path: '/admin/contenus'
@@ -631,6 +651,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedCompteRoute: typeof AuthenticatedCompteRoute
   AuthenticatedProfilRoute: typeof AuthenticatedProfilRoute
   AuthenticatedTableauDeBordRoute: typeof AuthenticatedTableauDeBordRoute
+  AuthenticatedAdminAbonnesRoute: typeof AuthenticatedAdminAbonnesRoute
   AuthenticatedAdminContenusRoute: typeof AuthenticatedAdminContenusRoute
   AuthenticatedAdminModerationRoute: typeof AuthenticatedAdminModerationRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
@@ -640,6 +661,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCompteRoute: AuthenticatedCompteRoute,
   AuthenticatedProfilRoute: AuthenticatedProfilRoute,
   AuthenticatedTableauDeBordRoute: AuthenticatedTableauDeBordRoute,
+  AuthenticatedAdminAbonnesRoute: AuthenticatedAdminAbonnesRoute,
   AuthenticatedAdminContenusRoute: AuthenticatedAdminContenusRoute,
   AuthenticatedAdminModerationRoute: AuthenticatedAdminModerationRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
