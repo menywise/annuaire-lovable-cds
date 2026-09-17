@@ -25,7 +25,6 @@ import { Route as SignupRouteImport } from './routes/signup'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TarifsRouteImport } from './routes/tarifs'
 import { Route as VerificationEmailRouteImport } from './routes/verification-email'
-import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedCompteRouteImport } from './routes/_authenticated/compte'
 import { Route as AuthenticatedProfilRouteImport } from './routes/_authenticated/profil'
 import { Route as AuthenticatedTableauDeBordRouteImport } from './routes/_authenticated/tableau-de-bord'
@@ -37,6 +36,7 @@ import { Route as LegalCguRouteImport } from './routes/legal.cgu'
 import { Route as LegalConfidentialiteRouteImport } from './routes/legal.confidentialite'
 import { Route as LegalCookiesRouteImport } from './routes/legal.cookies'
 import { Route as LegalMentionsLegalesRouteImport } from './routes/legal.mentions-legales'
+import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -117,11 +117,6 @@ const VerificationEmailRoute = VerificationEmailRouteImport.update({
   path: '/verification-email',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
 const AuthenticatedCompteRoute = AuthenticatedCompteRouteImport.update({
   id: '/compte',
   path: '/compte',
@@ -178,6 +173,11 @@ const LegalMentionsLegalesRoute = LegalMentionsLegalesRouteImport.update({
   path: '/legal/mentions-legales',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -195,7 +195,6 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tarifs': typeof TarifsRoute
   '/verification-email': typeof VerificationEmailRoute
-  '/admin': typeof AuthenticatedAdminRoute
   '/compte': typeof AuthenticatedCompteRoute
   '/profil': typeof AuthenticatedProfilRoute
   '/tableau-de-bord': typeof AuthenticatedTableauDeBordRoute
@@ -207,6 +206,7 @@ export interface FileRoutesByFullPath {
   '/legal/mentions-legales': typeof LegalMentionsLegalesRoute
   '/blog/': typeof BlogIndexRoute
   '/forum/': typeof ForumIndexRoute
+  '/admin/': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -224,7 +224,6 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tarifs': typeof TarifsRoute
   '/verification-email': typeof VerificationEmailRoute
-  '/admin': typeof AuthenticatedAdminRoute
   '/compte': typeof AuthenticatedCompteRoute
   '/profil': typeof AuthenticatedProfilRoute
   '/tableau-de-bord': typeof AuthenticatedTableauDeBordRoute
@@ -236,6 +235,7 @@ export interface FileRoutesByTo {
   '/legal/mentions-legales': typeof LegalMentionsLegalesRoute
   '/blog': typeof BlogIndexRoute
   '/forum': typeof ForumIndexRoute
+  '/admin': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -255,7 +255,6 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tarifs': typeof TarifsRoute
   '/verification-email': typeof VerificationEmailRoute
-  '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/compte': typeof AuthenticatedCompteRoute
   '/_authenticated/profil': typeof AuthenticatedProfilRoute
   '/_authenticated/tableau-de-bord': typeof AuthenticatedTableauDeBordRoute
@@ -267,6 +266,7 @@ export interface FileRoutesById {
   '/legal/mentions-legales': typeof LegalMentionsLegalesRoute
   '/blog/': typeof BlogIndexRoute
   '/forum/': typeof ForumIndexRoute
+  '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -286,7 +286,6 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/tarifs'
     | '/verification-email'
-    | '/admin'
     | '/compte'
     | '/profil'
     | '/tableau-de-bord'
@@ -298,6 +297,7 @@ export interface FileRouteTypes {
     | '/legal/mentions-legales'
     | '/blog/'
     | '/forum/'
+    | '/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -315,7 +315,6 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/tarifs'
     | '/verification-email'
-    | '/admin'
     | '/compte'
     | '/profil'
     | '/tableau-de-bord'
@@ -327,6 +326,7 @@ export interface FileRouteTypes {
     | '/legal/mentions-legales'
     | '/blog'
     | '/forum'
+    | '/admin'
   id:
     | '__root__'
     | '/'
@@ -345,7 +345,6 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/tarifs'
     | '/verification-email'
-    | '/_authenticated/admin'
     | '/_authenticated/compte'
     | '/_authenticated/profil'
     | '/_authenticated/tableau-de-bord'
@@ -357,6 +356,7 @@ export interface FileRouteTypes {
     | '/legal/mentions-legales'
     | '/blog/'
     | '/forum/'
+    | '/_authenticated/admin/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -500,13 +500,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VerificationEmailRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/admin': {
-      id: '/_authenticated/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AuthenticatedAdminRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/compte': {
       id: '/_authenticated/compte'
       path: '/compte'
@@ -584,21 +577,28 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LegalMentionsLegalesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/admin/': {
+      id: '/_authenticated/admin/'
+      path: '/admin'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
-  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedCompteRoute: typeof AuthenticatedCompteRoute
   AuthenticatedProfilRoute: typeof AuthenticatedProfilRoute
   AuthenticatedTableauDeBordRoute: typeof AuthenticatedTableauDeBordRoute
+  AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedCompteRoute: AuthenticatedCompteRoute,
   AuthenticatedProfilRoute: AuthenticatedProfilRoute,
   AuthenticatedTableauDeBordRoute: AuthenticatedTableauDeBordRoute,
+  AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
