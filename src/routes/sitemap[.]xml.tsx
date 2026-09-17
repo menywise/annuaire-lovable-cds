@@ -5,6 +5,11 @@ import { brand } from "@/config/brand";
 const pages: Array<{ path: string; priority: string; changefreq: string }> = [
   { path: "/", priority: "1.0", changefreq: "weekly" },
   { path: "/composants", priority: "0.9", changefreq: "weekly" },
+  { path: "/tarifs", priority: "0.9", changefreq: "monthly" },
+  { path: "/blog", priority: "0.9", changefreq: "weekly" },
+  { path: "/faq", priority: "0.8", changefreq: "monthly" },
+  { path: "/forum", priority: "0.8", changefreq: "daily" },
+  { path: "/avis", priority: "0.8", changefreq: "weekly" },
   { path: "/guide", priority: "0.9", changefreq: "monthly" },
   { path: "/contact", priority: "0.7", changefreq: "yearly" },
   { path: "/login", priority: "0.5", changefreq: "yearly" },
@@ -15,6 +20,7 @@ const pages: Array<{ path: string; priority: string; changefreq: string }> = [
   { path: "/legal/cgu", priority: "0.4", changefreq: "yearly" },
   { path: "/legal/cookies", priority: "0.4", changefreq: "yearly" },
 ];
+
 
 export const Route = createFileRoute("/sitemap.xml")({
   server: {
