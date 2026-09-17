@@ -64,6 +64,7 @@ const templates = [
   { to: "/legal/mentions-legales", label: "Mentions légales", desc: "Éditeur, hébergeur, propriété" },
   { to: "/legal/confidentialite", label: "Confidentialité", desc: "RGPD, données, droits" },
   { to: "/legal/cgu", label: "CGU", desc: "Conditions générales d'utilisation" },
+  { to: "/legal/cgv", label: "CGV", desc: "Offres payantes, paiement, rétractation" },
   { to: "/legal/cookies", label: "Cookies", desc: "Traceurs et consentement" },
   { to: "/contact", label: "Contact", desc: "Formulaire protégé anti-spam" },
   { to: "/guide", label: "Guide de réutilisation", desc: "Quoi copier, quoi modifier" },
