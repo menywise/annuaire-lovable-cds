@@ -25,11 +25,23 @@ const pages: Array<{ path: string; priority: string; changefreq: string }> = [
 export const Route = createFileRoute("/sitemap.xml")({
   server: {
     handlers: {
-      GET: () => {
+      GET: async () => {
         const lastmod = new Date().toISOString().slice(0, 10);
+        const dynamic: Array<{ path: string; priority: string; changefreq: string }> = [];
+        try {
+          const [posts, topics] = await Promise.all([listPosts(), listTopics()]);
+          for (const post of posts) {
+            dynamic.push({ path: `/blog/${post.slug}`, priority: "0.8", changefreq: "monthly" });
+          }
+          for (const topic of topics) {
+            dynamic.push({ path: `/forum/${topic.id}`, priority: "0.6", changefreq: "weekly" });
+          }
+        } catch {
+          /* le plan du site reste valide avec les pages statiques */
+        }
         const body = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${pages
+${[...pages, ...dynamic]
   .map(
     (page) =>
       `  <url>\n    <loc>${brand.url}${page.path === "/" ? "/" : page.path}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>${page.changefreq}</changefreq>\n    <priority>${page.priority}</priority>\n  </url>`,
@@ -37,6 +49,7 @@ ${pages
   .join("\n")}
 </urlset>
 `;
+
         return new Response(body, {
           headers: {
             "Content-Type": "application/xml; charset=utf-8",
