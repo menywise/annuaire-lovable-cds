@@ -9,9 +9,14 @@ export function useAuth() {
   useEffect(() => {
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+    } = supabase.auth.onAuthStateChange((event, nextSession) => {
       setSession(nextSession);
       setLoading(false);
+      if (event === "SIGNED_IN" && nextSession) {
+        void bootstrapCurrentUser().catch(() => {
+          /* le profil sera recréé à la prochaine connexion */
+        });
+      }
     });
 
     supabase.auth.getSession().then(({ data }) => {
