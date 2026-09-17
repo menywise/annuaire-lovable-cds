@@ -30,6 +30,7 @@ import { Route as TarifsRouteImport } from './routes/tarifs'
 import { Route as TemoignagesRouteImport } from './routes/temoignages'
 import { Route as VerificationEmailRouteImport } from './routes/verification-email'
 import { Route as AuthenticatedCompteRouteImport } from './routes/_authenticated/compte'
+import { Route as AuthenticatedPilotageRouteImport } from './routes/_authenticated/pilotage'
 import { Route as AuthenticatedProfilRouteImport } from './routes/_authenticated/profil'
 import { Route as AuthenticatedTableauDeBordRouteImport } from './routes/_authenticated/tableau-de-bord'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
@@ -48,6 +49,7 @@ import { Route as AuthenticatedAdminAbonnesRouteImport } from './routes/_authent
 import { Route as AuthenticatedAdminContenusRouteImport } from './routes/_authenticated/admin.contenus'
 import { Route as AuthenticatedAdminForumRouteImport } from './routes/_authenticated/admin.forum'
 import { Route as AuthenticatedAdminModerationRouteImport } from './routes/_authenticated/admin.moderation'
+import { Route as AuthenticatedAdminPilotageRouteImport } from './routes/_authenticated/admin.pilotage'
 import { Route as AuthenticatedAdminTemoignagesRouteImport } from './routes/_authenticated/admin.temoignages'
 import { Route as AuthenticatedMessagerieIndexRouteImport } from './routes/_authenticated/messagerie.index'
 import { Route as AuthenticatedMessagerieConversationIdRouteImport } from './routes/_authenticated/messagerie.$conversationId'
@@ -157,6 +159,11 @@ const AuthenticatedCompteRoute = AuthenticatedCompteRouteImport.update({
   path: '/compte',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedPilotageRoute = AuthenticatedPilotageRouteImport.update({
+  id: '/pilotage',
+  path: '/pilotage',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedProfilRoute = AuthenticatedProfilRouteImport.update({
   id: '/profil',
   path: '/profil',
@@ -251,6 +258,12 @@ const AuthenticatedAdminModerationRoute =
     path: '/admin/moderation',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAdminPilotageRoute =
+  AuthenticatedAdminPilotageRouteImport.update({
+    id: '/admin/pilotage',
+    path: '/admin/pilotage',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminTemoignagesRoute =
   AuthenticatedAdminTemoignagesRouteImport.update({
     id: '/admin/temoignages',
@@ -296,6 +309,7 @@ export interface FileRoutesByFullPath {
   '/temoignages': typeof TemoignagesRoute
   '/verification-email': typeof VerificationEmailRoute
   '/compte': typeof AuthenticatedCompteRoute
+  '/pilotage': typeof AuthenticatedPilotageRoute
   '/profil': typeof AuthenticatedProfilRoute
   '/tableau-de-bord': typeof AuthenticatedTableauDeBordRoute
   '/blog/$slug': typeof BlogSlugRoute
@@ -313,6 +327,7 @@ export interface FileRoutesByFullPath {
   '/admin/contenus': typeof AuthenticatedAdminContenusRoute
   '/admin/forum': typeof AuthenticatedAdminForumRoute
   '/admin/moderation': typeof AuthenticatedAdminModerationRoute
+  '/admin/pilotage': typeof AuthenticatedAdminPilotageRoute
   '/admin/temoignages': typeof AuthenticatedAdminTemoignagesRoute
   '/messagerie/$conversationId': typeof AuthenticatedMessagerieConversationIdRoute
   '/forum/categorie/$slug': typeof ForumCategorieSlugRoute
@@ -340,6 +355,7 @@ export interface FileRoutesByTo {
   '/temoignages': typeof TemoignagesRoute
   '/verification-email': typeof VerificationEmailRoute
   '/compte': typeof AuthenticatedCompteRoute
+  '/pilotage': typeof AuthenticatedPilotageRoute
   '/profil': typeof AuthenticatedProfilRoute
   '/tableau-de-bord': typeof AuthenticatedTableauDeBordRoute
   '/blog/$slug': typeof BlogSlugRoute
@@ -357,6 +373,7 @@ export interface FileRoutesByTo {
   '/admin/contenus': typeof AuthenticatedAdminContenusRoute
   '/admin/forum': typeof AuthenticatedAdminForumRoute
   '/admin/moderation': typeof AuthenticatedAdminModerationRoute
+  '/admin/pilotage': typeof AuthenticatedAdminPilotageRoute
   '/admin/temoignages': typeof AuthenticatedAdminTemoignagesRoute
   '/messagerie/$conversationId': typeof AuthenticatedMessagerieConversationIdRoute
   '/forum/categorie/$slug': typeof ForumCategorieSlugRoute
@@ -386,6 +403,7 @@ export interface FileRoutesById {
   '/temoignages': typeof TemoignagesRoute
   '/verification-email': typeof VerificationEmailRoute
   '/_authenticated/compte': typeof AuthenticatedCompteRoute
+  '/_authenticated/pilotage': typeof AuthenticatedPilotageRoute
   '/_authenticated/profil': typeof AuthenticatedProfilRoute
   '/_authenticated/tableau-de-bord': typeof AuthenticatedTableauDeBordRoute
   '/blog/$slug': typeof BlogSlugRoute
@@ -403,6 +421,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/contenus': typeof AuthenticatedAdminContenusRoute
   '/_authenticated/admin/forum': typeof AuthenticatedAdminForumRoute
   '/_authenticated/admin/moderation': typeof AuthenticatedAdminModerationRoute
+  '/_authenticated/admin/pilotage': typeof AuthenticatedAdminPilotageRoute
   '/_authenticated/admin/temoignages': typeof AuthenticatedAdminTemoignagesRoute
   '/_authenticated/messagerie/$conversationId': typeof AuthenticatedMessagerieConversationIdRoute
   '/forum/categorie/$slug': typeof ForumCategorieSlugRoute
@@ -432,6 +451,7 @@ export interface FileRouteTypes {
     | '/temoignages'
     | '/verification-email'
     | '/compte'
+    | '/pilotage'
     | '/profil'
     | '/tableau-de-bord'
     | '/blog/$slug'
@@ -449,6 +469,7 @@ export interface FileRouteTypes {
     | '/admin/contenus'
     | '/admin/forum'
     | '/admin/moderation'
+    | '/admin/pilotage'
     | '/admin/temoignages'
     | '/messagerie/$conversationId'
     | '/forum/categorie/$slug'
@@ -476,6 +497,7 @@ export interface FileRouteTypes {
     | '/temoignages'
     | '/verification-email'
     | '/compte'
+    | '/pilotage'
     | '/profil'
     | '/tableau-de-bord'
     | '/blog/$slug'
@@ -493,6 +515,7 @@ export interface FileRouteTypes {
     | '/admin/contenus'
     | '/admin/forum'
     | '/admin/moderation'
+    | '/admin/pilotage'
     | '/admin/temoignages'
     | '/messagerie/$conversationId'
     | '/forum/categorie/$slug'
@@ -521,6 +544,7 @@ export interface FileRouteTypes {
     | '/temoignages'
     | '/verification-email'
     | '/_authenticated/compte'
+    | '/_authenticated/pilotage'
     | '/_authenticated/profil'
     | '/_authenticated/tableau-de-bord'
     | '/blog/$slug'
@@ -538,6 +562,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/contenus'
     | '/_authenticated/admin/forum'
     | '/_authenticated/admin/moderation'
+    | '/_authenticated/admin/pilotage'
     | '/_authenticated/admin/temoignages'
     | '/_authenticated/messagerie/$conversationId'
     | '/forum/categorie/$slug'
@@ -729,6 +754,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCompteRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/pilotage': {
+      id: '/_authenticated/pilotage'
+      path: '/pilotage'
+      fullPath: '/pilotage'
+      preLoaderRoute: typeof AuthenticatedPilotageRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/profil': {
       id: '/_authenticated/profil'
       path: '/profil'
@@ -855,6 +887,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminModerationRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/pilotage': {
+      id: '/_authenticated/admin/pilotage'
+      path: '/admin/pilotage'
+      fullPath: '/admin/pilotage'
+      preLoaderRoute: typeof AuthenticatedAdminPilotageRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/temoignages': {
       id: '/_authenticated/admin/temoignages'
       path: '/admin/temoignages'
@@ -888,12 +927,14 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedCompteRoute: typeof AuthenticatedCompteRoute
+  AuthenticatedPilotageRoute: typeof AuthenticatedPilotageRoute
   AuthenticatedProfilRoute: typeof AuthenticatedProfilRoute
   AuthenticatedTableauDeBordRoute: typeof AuthenticatedTableauDeBordRoute
   AuthenticatedAdminAbonnesRoute: typeof AuthenticatedAdminAbonnesRoute
   AuthenticatedAdminContenusRoute: typeof AuthenticatedAdminContenusRoute
   AuthenticatedAdminForumRoute: typeof AuthenticatedAdminForumRoute
   AuthenticatedAdminModerationRoute: typeof AuthenticatedAdminModerationRoute
+  AuthenticatedAdminPilotageRoute: typeof AuthenticatedAdminPilotageRoute
   AuthenticatedAdminTemoignagesRoute: typeof AuthenticatedAdminTemoignagesRoute
   AuthenticatedMessagerieConversationIdRoute: typeof AuthenticatedMessagerieConversationIdRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
@@ -902,12 +943,14 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCompteRoute: AuthenticatedCompteRoute,
+  AuthenticatedPilotageRoute: AuthenticatedPilotageRoute,
   AuthenticatedProfilRoute: AuthenticatedProfilRoute,
   AuthenticatedTableauDeBordRoute: AuthenticatedTableauDeBordRoute,
   AuthenticatedAdminAbonnesRoute: AuthenticatedAdminAbonnesRoute,
   AuthenticatedAdminContenusRoute: AuthenticatedAdminContenusRoute,
   AuthenticatedAdminForumRoute: AuthenticatedAdminForumRoute,
   AuthenticatedAdminModerationRoute: AuthenticatedAdminModerationRoute,
+  AuthenticatedAdminPilotageRoute: AuthenticatedAdminPilotageRoute,
   AuthenticatedAdminTemoignagesRoute: AuthenticatedAdminTemoignagesRoute,
   AuthenticatedMessagerieConversationIdRoute:
     AuthenticatedMessagerieConversationIdRoute,
