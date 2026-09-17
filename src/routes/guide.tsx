@@ -25,27 +25,39 @@ const steps = [
   },
   {
     title: "3. Reprendre les pages fournies",
-    body: "Connexion, création de compte, mot de passe oublié, nouveau mot de passe, profil, contact protégé anti-spam, mentions légales, confidentialité, CGU, cookies, page introuvable et page de maintenance.",
+    body: "Connexion, création de compte, vérification de l'adresse e-mail, mot de passe oublié, nouveau mot de passe, profil, tableau de bord, contact protégé anti-spam, mentions légales, confidentialité, CGU, cookies, page introuvable et page de maintenance.",
   },
   {
-    title: "4. Vérifier le référencement",
-    body: "Chaque page appelle seo() : titre unique, description, adresse canonique et aperçu de partage. Ajouter la nouvelle page dans le plan du site (sitemap.xml) et lui donner un titre de lien explicite.",
+    title: "4. Activer les modules utiles au projet",
+    body: "FAQ, blog avec commentaires modérés, forum, avis et notations, lettre d'information, offres tarifaires et tunnel de vente sont déjà branchés. Tout se remplit et se modère depuis l'administration : Contenus, Modération, Abonnés.",
   },
   {
-    title: "5. Garder les règles CDS",
-    body: "Thème clair uniquement, police Inter, fond #f8fafc, texte #1e293b, bleu #0d6efd, rayon 6 px pour les boutons et 12 px pour les cartes.",
+    title: "5. Vérifier le référencement",
+    body: "Chaque page appelle seo() : titre unique, description, adresse canonique et aperçu de partage. Les articles et discussions entrent automatiquement dans le plan du site, et la FAQ est balisée pour les moteurs de recherche.",
+  },
+  {
+    title: "6. Garder les règles CDS",
+    body: "Thème clair uniquement, police Inter, fond #f8fafc, texte #1e293b, bleu #0d6efd, rayon 6 px pour les boutons et 12 px pour les cartes. Un ton orienté bénéfices, jamais générique.",
   },
 ];
 
 const shipped = [
   { to: "/", label: "Tokens et fondations", title: "Couleurs, typographie, rayons et ombres" },
-  { to: "/admin", label: "Espace d'administration", title: "Régler le nom du site, les coordonnées légales et l'hébergeur" },
+  { to: "/admin", label: "Espace d'administration", title: "Paramètres, contenus, modération, abonnés" },
   { to: "/composants", label: "Bibliothèque de composants", title: "Boutons, champs, tableaux, fenêtres, pagination" },
-  { to: "/login", label: "Écrans de connexion", title: "Connexion à un compte existant" },
+  { to: "/demarrer", label: "Tunnel de vente", title: "Parcours en trois étapes jusqu'à la création de compte" },
+  { to: "/tarifs", label: "Offres tarifaires", title: "Grille d'offres pilotée depuis l'administration" },
+  { to: "/faq", label: "Questions fréquentes", title: "FAQ balisée pour les moteurs de recherche" },
+  { to: "/blog", label: "Blog et commentaires", title: "Articles publiés et commentaires modérés" },
+  { to: "/forum", label: "Forum", title: "Sujets et réponses entre membres" },
+  { to: "/avis", label: "Avis et notations", title: "Notes sur cinq étoiles validées avant publication" },
+  { to: "/tableau-de-bord", label: "Tableau de bord", title: "Chiffres clés et raccourcis du compte" },
+  { to: "/login", label: "Écrans de connexion", title: "Connexion, inscription, vérification et mot de passe" },
   { to: "/contact", label: "Formulaire de contact", title: "Formulaire protégé anti-spam" },
   { to: "/legal/mentions-legales", label: "Pages légales", title: "Mentions légales, confidentialité, CGU, cookies" },
   { to: "/maintenance", label: "Page de maintenance", title: "Écran affiché pendant une interruption de service" },
 ] as const;
+
 
 function GuidePage() {
   return (

@@ -1,27 +1,19 @@
 # CDS — Feuille de route
 
 ## Fait
-- [x] Tokens CDS (src/styles.css, src/lib/cds-tokens.ts) — thème clair uniquement
-- [x] Back-office /admin : identité du site, coordonnées légales, hébergeur (table site_settings)
-- [x] Notifications colorées par motif (succès, erreur, alerte, information)
-- [x] En-tête + menu mobile + pied de page + lien d'évitement (accessibilité)
-- [x] Bandeau de consentement cookies (accepter / refuser)
-- [x] Pages : accueil, composants, guide de réutilisation, contact, merci, maintenance, 404, erreur
-- [x] Comptes réels : connexion, inscription (confirmation e-mail), mot de passe oublié, nouveau mot de passe
-- [x] Espace connecté : Mon compte (messages reçus pour les admins), Mon profil (nom + mot de passe)
-- [x] Pages légales réelles, alimentées par les paramètres du back-office
-- [x] Bibliothèque de composants
-- [x] SEO : seo(), canonical, Open Graph / Twitter, JSON-LD, sitemap.xml, robots.txt, title sur les liens
+- Tokens CDS (thème clair uniquement), typographie Inter, rayons et ombres
+- Bibliothèque de composants (`/composants`)
+- Comptes réels : inscription, connexion, vérification e-mail, mot de passe oublié, nouveau mot de passe
+- Espace connecté : tableau de bord, mon compte, mon profil
+- Back-office `/admin` : paramètres du site, contenus (FAQ, offres, articles), modération (avis, commentaires, forum), abonnés + export CSV
+- Modules publics : FAQ, blog + commentaires modérés, forum, avis et notations, lettre d'information, tarifs, tunnel de vente `/demarrer`
+- Notifications colorées par type, menu mobile, bandeau cookies, liens avec attribut `title`
+- Pages légales dynamiques (pilotées par l'administration), page de maintenance, page de remerciement, 404 et erreur en français
+- SEO : `seo()` sur chaque page, canonical, Open Graph/Twitter, JSON-LD Organization / FAQPage / BlogPosting / fil d'Ariane, sitemap dynamique (articles + discussions), robots.txt
 
-## À venir (modules du modèle)
-- [ ] Tableau de bord + page de vérification d'e-mail dédiée
-- [ ] FAQ (avec données structurées FAQPage)
-- [ ] Newsletter (inscription, confirmation, gestion en back-office)
-- [ ] Notations et avis
-- [ ] Forum / discussions
-- [ ] Tarifs, freemium et paiements
-- [ ] Tunnel de vente (page de vente, offre, confirmation)
-- [ ] Réécriture des textes au ton DISC S/C orienté bénéfices
+## À venir
+- Paiements réels (Stripe ou Paddle) branchés sur les offres tarifaires
+- Réécriture DISC des derniers textes hérités (pages légales, écrans d'authentification)
 
-## Ouvert
-- [ ] Envoi réel par e-mail des messages de contact — nécessite de connecter un service d'envoi
+## Ouvert (bloqué)
+- Envoi réel par e-mail des messages de contact : nécessite la configuration d'un domaine d'envoi

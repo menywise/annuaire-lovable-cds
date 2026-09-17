@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AvisRouteImport } from './routes/avis'
 import { Route as ComposantsRouteImport } from './routes/composants'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as DemarrerRouteImport } from './routes/demarrer'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as GuideRouteImport } from './routes/guide'
@@ -63,6 +64,11 @@ const ComposantsRoute = ComposantsRouteImport.update({
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DemarrerRoute = DemarrerRouteImport.update({
+  id: '/demarrer',
+  path: '/demarrer',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FaqRoute = FaqRouteImport.update({
@@ -205,6 +211,7 @@ export interface FileRoutesByFullPath {
   '/avis': typeof AvisRoute
   '/composants': typeof ComposantsRoute
   '/contact': typeof ContactRoute
+  '/demarrer': typeof DemarrerRoute
   '/faq': typeof FaqRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/guide': typeof GuideRoute
@@ -237,6 +244,7 @@ export interface FileRoutesByTo {
   '/avis': typeof AvisRoute
   '/composants': typeof ComposantsRoute
   '/contact': typeof ContactRoute
+  '/demarrer': typeof DemarrerRoute
   '/faq': typeof FaqRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/guide': typeof GuideRoute
@@ -271,6 +279,7 @@ export interface FileRoutesById {
   '/avis': typeof AvisRoute
   '/composants': typeof ComposantsRoute
   '/contact': typeof ContactRoute
+  '/demarrer': typeof DemarrerRoute
   '/faq': typeof FaqRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/guide': typeof GuideRoute
@@ -305,6 +314,7 @@ export interface FileRouteTypes {
     | '/avis'
     | '/composants'
     | '/contact'
+    | '/demarrer'
     | '/faq'
     | '/forgot-password'
     | '/guide'
@@ -337,6 +347,7 @@ export interface FileRouteTypes {
     | '/avis'
     | '/composants'
     | '/contact'
+    | '/demarrer'
     | '/faq'
     | '/forgot-password'
     | '/guide'
@@ -370,6 +381,7 @@ export interface FileRouteTypes {
     | '/avis'
     | '/composants'
     | '/contact'
+    | '/demarrer'
     | '/faq'
     | '/forgot-password'
     | '/guide'
@@ -404,6 +416,7 @@ export interface RootRouteChildren {
   AvisRoute: typeof AvisRoute
   ComposantsRoute: typeof ComposantsRoute
   ContactRoute: typeof ContactRoute
+  DemarrerRoute: typeof DemarrerRoute
   FaqRoute: typeof FaqRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   GuideRoute: typeof GuideRoute
@@ -460,6 +473,13 @@ declare module '@tanstack/react-router' {
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/demarrer': {
+      id: '/demarrer'
+      path: '/demarrer'
+      fullPath: '/demarrer'
+      preLoaderRoute: typeof DemarrerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/faq': {
@@ -676,6 +696,7 @@ const rootRouteChildren: RootRouteChildren = {
   AvisRoute: AvisRoute,
   ComposantsRoute: ComposantsRoute,
   ContactRoute: ContactRoute,
+  DemarrerRoute: DemarrerRoute,
   FaqRoute: FaqRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
   GuideRoute: GuideRoute,
