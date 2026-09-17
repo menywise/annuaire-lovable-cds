@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { brand } from "@/config/brand";
+import { listPosts, listTopics } from "@/lib/content.functions";
+
 
 /** Pages publiques indexables, avec leur priorité de référencement. */
 const pages: Array<{ path: string; priority: string; changefreq: string }> = [
