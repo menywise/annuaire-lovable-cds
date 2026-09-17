@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
-import { brand } from "@/config/brand";
+import { useBrandSettings } from "@/hooks/useSiteSettings";
 import { CookieBanner } from "@/components/cds/CookieBanner";
 
 const nav = [
@@ -26,19 +26,20 @@ const linkClass =
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
+  const { settings } = useBrandSettings();
 
   return (
     <header className="sticky top-0 z-30 border-b border-border bg-card/90 backdrop-blur">
       <div className="mx-auto flex h-14 max-w-[1200px] items-center gap-6 px-6">
         <Link
           to="/"
-          title={`${brand.name} — accueil`}
+          title={`${settings.name} — accueil`}
           className="flex items-center gap-2 font-semibold text-foreground"
         >
           <span className="grid size-6 place-items-center rounded bg-primary text-[11px] font-bold text-primary-foreground">
-            C
+            {settings.shortName.slice(0, 1).toUpperCase()}
           </span>
-          {brand.shortName}
+          {settings.shortName}
         </Link>
 
         <nav aria-label="Navigation principale" className="hidden items-center gap-1 text-sm md:flex">
