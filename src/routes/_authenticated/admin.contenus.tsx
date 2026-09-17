@@ -123,7 +123,7 @@ function AdminContenusPage() {
   }
 
   /* ---------------- Offres ---------------- */
-  async function savePlan(plan: Plan, patch: Partial<Plan>) {
+  async function savePlan(plan: Plan, patch: Partial<Omit<Plan, "features">>) {
     const { error } = await supabase.from("pricing_plans").update(patch).eq("id", plan.id);
     notifyResult(error, "Offre mise à jour.");
   }
