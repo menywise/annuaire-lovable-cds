@@ -39,6 +39,7 @@ const steps = [
 
 const shipped = [
   { to: "/", label: "Tokens et fondations", title: "Couleurs, typographie, rayons et ombres" },
+  { to: "/admin", label: "Espace d'administration", title: "Régler le nom du site, les coordonnées légales et l'hébergeur" },
   { to: "/composants", label: "Bibliothèque de composants", title: "Boutons, champs, tableaux, fenêtres, pagination" },
   { to: "/login", label: "Écrans de connexion", title: "Connexion à un compte existant" },
   { to: "/contact", label: "Formulaire de contact", title: "Formulaire protégé anti-spam" },
