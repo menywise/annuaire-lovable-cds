@@ -9,7 +9,7 @@ export const Route = createFileRoute("/")({
     seo({
       title: "CDS — Consensus Design System",
       description:
-        "Design system réutilisable : tokens, composants et gabarits prêts à l'emploi (connexion, mot de passe oublié, contact, pages légales) pour les sites et applications GNOSIA.",
+        "Le socle complet pour les indépendants, artisans et solopreneurs : comptes, pages légales, blog, forum, avis, FAQ, tarifs et administration, déjà reliés et prêts à servir.",
       path: "/",
       type: "website",
     }),
