@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useRef, useState } from "react";
 import { PageShell } from "@/components/cds/SiteHeader";
 import { Button } from "@/components/ui/button";
@@ -132,7 +132,10 @@ function ContactPage() {
             </Button>
             <p className="text-xs text-muted-foreground">
               Les informations transmises servent uniquement à traiter votre demande. Voir la{" "}
-              politique de confidentialité.
+              <Link to="/legal/confidentialite" className="text-primary hover:underline">
+                politique de confidentialité
+              </Link>
+              .
             </p>
           </form>
         )}
