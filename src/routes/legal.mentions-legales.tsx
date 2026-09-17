@@ -23,7 +23,7 @@ export const Route = createFileRoute("/legal/mentions-legales")({
         <p>Directeur de la publication : Manuel ROHAUT.</p>
         <p>
           Contact :{" "}
-          <Link to="/contact" className="font-medium text-primary hover:underline">
+          <Link to="/contact" title="Nous écrire via le formulaire de contact protégé" className="font-medium text-primary hover:underline">
             formulaire de contact
           </Link>{" "}
           (aucune adresse e-mail n'est publiée en clair, afin de limiter le spam).

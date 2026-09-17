@@ -41,7 +41,7 @@ function ForgotPasswordPage() {
       title="Mot de passe oublié"
       subtitle="Indiquez votre adresse e-mail : vous recevrez un lien pour choisir un nouveau mot de passe."
       footer={
-        <Link to="/login" className="font-medium text-primary hover:underline">
+        <Link to="/login" title="Se connecter à son espace personnel" className="font-medium text-primary hover:underline">
           Retour à la connexion
         </Link>
       }
