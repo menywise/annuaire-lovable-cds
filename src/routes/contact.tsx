@@ -8,21 +8,17 @@ import { Textarea } from "@/components/ui/textarea";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { supabase } from "@/integrations/supabase/client";
 
+import { seo } from "@/lib/seo";
+
 export const Route = createFileRoute("/contact")({
-  head: () => ({
-    meta: [
-      { title: "Contact — CDS" },
-      {
-        name: "description",
-        content:
-          "Formulaire de contact protégé anti-spam (piège à robots) — aucune adresse e-mail affichée en clair.",
-      },
-      { property: "og:title", content: "Contact — CDS" },
-      { property: "og:description", content: "Formulaire de contact protégé anti-spam." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-    ],
-  }),
+  head: () =>
+    seo({
+      title: "Contact",
+      description:
+        "Formulaire de contact PMM RDS protégé anti-spam par piège à robots : aucune adresse e-mail n'est affichée en clair.",
+      path: "/contact",
+      type: "website",
+    }),
   component: ContactPage,
 });
 
@@ -132,7 +128,7 @@ function ContactPage() {
             </Button>
             <p className="text-xs text-muted-foreground">
               Les informations transmises servent uniquement à traiter votre demande. Voir la{" "}
-              <Link to="/legal/confidentialite" className="text-primary hover:underline">
+              <Link to="/legal/confidentialite" title="Lire la politique de confidentialité" className="text-primary hover:underline">
                 politique de confidentialité
               </Link>
               .

@@ -7,17 +7,17 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { supabase } from "@/integrations/supabase/client";
 
+import { seo } from "@/lib/seo";
+
 export const Route = createFileRoute("/forgot-password")({
-  head: () => ({
-    meta: [
-      { title: "Mot de passe oublié — PMM RDS" },
-      { name: "description", content: "Recevez un lien par e-mail pour choisir un nouveau mot de passe." },
-      { property: "og:title", content: "Mot de passe oublié — PMM RDS" },
-      { property: "og:description", content: "Récupération de mot de passe." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-    ],
-  }),
+  head: () =>
+    seo({
+      title: "Mot de passe oublié",
+      description:
+        "Recevez un lien par e-mail pour choisir un nouveau mot de passe en toute sécurité.",
+      path: "/forgot-password",
+      type: "website",
+    }),
   component: ForgotPasswordPage,
 });
 
@@ -41,7 +41,7 @@ function ForgotPasswordPage() {
       title="Mot de passe oublié"
       subtitle="Indiquez votre adresse e-mail : vous recevrez un lien pour choisir un nouveau mot de passe."
       footer={
-        <Link to="/login" className="font-medium text-primary hover:underline">
+        <Link to="/login" title="Se connecter à son espace personnel" className="font-medium text-primary hover:underline">
           Retour à la connexion
         </Link>
       }

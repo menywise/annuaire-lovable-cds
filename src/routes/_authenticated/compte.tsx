@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { PageShell } from "@/components/cds/SiteHeader";
 import { Button } from "@/components/ui/button";
@@ -6,18 +6,16 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { bootstrapCurrentUser, useAuth } from "@/hooks/useAuth";
+import { seo } from "@/lib/seo";
 
 export const Route = createFileRoute("/_authenticated/compte")({
-  head: () => ({
-    meta: [
-      { title: "Mon compte — PMM RDS" },
-      { name: "description", content: "Espace personnel : informations du compte et, pour les administrateurs, messages reçus." },
-      { property: "og:title", content: "Mon compte — PMM RDS" },
-      { property: "og:description", content: "Espace personnel." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-    ],
-  }),
+  head: () =>
+    seo({
+      title: "Mon compte",
+      description: "Espace personnel : informations du compte et messages reçus pour les administrateurs.",
+      path: "/compte",
+      noindex: true,
+    }),
   component: ComptePage,
 });
 
@@ -79,7 +77,14 @@ function ComptePage() {
               {role === "admin" ? "Administrateur" : "Utilisateur"}
             </Badge>
           )}
-          <Button variant="outline" onClick={signOut}>
+          <Link
+            to="/profil"
+            title="Modifier mon nom et mon mot de passe"
+            className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
+          >
+            Mon profil
+          </Link>
+          <Button variant="outline" onClick={signOut} title="Fermer la session en cours">
             Se déconnecter
           </Button>
         </div>

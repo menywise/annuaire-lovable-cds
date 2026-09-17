@@ -8,17 +8,17 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { supabase } from "@/integrations/supabase/client";
 import { bootstrapCurrentUser } from "@/hooks/useAuth";
 
+import { seo } from "@/lib/seo";
+
 export const Route = createFileRoute("/login")({
-  head: () => ({
-    meta: [
-      { title: "Connexion — PMM RDS" },
-      { name: "description", content: "Connectez-vous à votre espace personnel avec votre adresse e-mail et votre mot de passe." },
-      { property: "og:title", content: "Connexion — PMM RDS" },
-      { property: "og:description", content: "Accès à votre espace personnel." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-    ],
-  }),
+  head: () =>
+    seo({
+      title: "Connexion",
+      description:
+        "Connectez-vous à votre espace personnel PMM RDS avec votre adresse e-mail et votre mot de passe.",
+      path: "/login",
+      type: "website",
+    }),
   component: LoginPage,
 });
 
@@ -57,7 +57,7 @@ function LoginPage() {
       footer={
         <>
           Pas encore de compte ?{" "}
-          <Link to="/signup" className="font-medium text-primary hover:underline">
+          <Link to="/signup" title="Créer un compte PMM RDS" className="font-medium text-primary hover:underline">
             Créer un compte
           </Link>
         </>
@@ -85,7 +85,7 @@ function LoginPage() {
         <div className="space-y-1.5">
           <div className="flex items-center justify-between">
             <Label htmlFor="password">Mot de passe</Label>
-            <Link to="/forgot-password" className="text-xs text-primary hover:underline">
+            <Link to="/forgot-password" title="Recevoir un lien de réinitialisation du mot de passe" className="text-xs text-primary hover:underline">
               Mot de passe oublié ?
             </Link>
           </div>

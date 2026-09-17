@@ -8,17 +8,17 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { supabase } from "@/integrations/supabase/client";
 
+import { seo } from "@/lib/seo";
+
 export const Route = createFileRoute("/signup")({
-  head: () => ({
-    meta: [
-      { title: "Créer un compte — PMM RDS" },
-      { name: "description", content: "Créez votre compte en quelques secondes : nom, adresse e-mail et mot de passe." },
-      { property: "og:title", content: "Créer un compte — PMM RDS" },
-      { property: "og:description", content: "Création de compte." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-    ],
-  }),
+  head: () =>
+    seo({
+      title: "Créer un compte",
+      description:
+        "Créez votre compte PMM RDS en quelques secondes : nom, adresse e-mail et mot de passe, avec confirmation par e-mail.",
+      path: "/signup",
+      type: "website",
+    }),
   component: SignupPage,
 });
 
@@ -66,7 +66,7 @@ function SignupPage() {
       footer={
         <>
           Déjà inscrit ?{" "}
-          <Link to="/login" className="font-medium text-primary hover:underline">
+          <Link to="/login" title="Se connecter à son espace personnel" className="font-medium text-primary hover:underline">
             Se connecter
           </Link>
         </>
@@ -132,8 +132,8 @@ function SignupPage() {
             />
             <Label htmlFor="cgu" className="text-xs font-normal leading-relaxed text-muted-foreground">
               J'accepte les{" "}
-              <Link to="/legal/cgu" className="text-primary hover:underline">conditions générales</Link> et la{" "}
-              <Link to="/legal/confidentialite" className="text-primary hover:underline">politique de confidentialité</Link>.
+              <Link to="/legal/cgu" title="Lire les conditions générales d'utilisation" className="text-primary hover:underline">conditions générales</Link> et la{" "}
+              <Link to="/legal/confidentialite" title="Lire la politique de confidentialité" className="text-primary hover:underline">politique de confidentialité</Link>.
             </Label>
           </div>
           <Button type="submit" className="w-full" disabled={busy}>

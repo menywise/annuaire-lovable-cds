@@ -2,25 +2,17 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageShell } from "@/components/cds/SiteHeader";
 import { cds } from "@/lib/cds-tokens";
 
+import { seo } from "@/lib/seo";
+
 export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "CDS — Consensus Design System" },
-      {
-        name: "description",
-        content:
-          "Consensus Design System : tokens, composants et gabarits réutilisables (connexion, mot de passe oublié, pages légales) pour les projets GNOSIA.",
-      },
-      { property: "og:title", content: "CDS — Consensus Design System" },
-      {
-        property: "og:description",
-        content:
-          "Tokens, composants et gabarits réutilisables pour les projets GNOSIA. Thème clair, Inter, bleu #0d6efd.",
-      },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-    ],
-  }),
+  head: () =>
+    seo({
+      title: "CDS — Consensus Design System",
+      description:
+        "Design system réutilisable : tokens, composants et gabarits prêts à l'emploi (connexion, mot de passe oublié, contact, pages légales) pour les sites et applications GNOSIA.",
+      path: "/",
+      type: "website",
+    }),
   component: Index,
 });
 
@@ -62,6 +54,10 @@ const templates = [
   { to: "/legal/cgu", label: "CGU", desc: "Conditions générales d'utilisation" },
   { to: "/legal/cookies", label: "Cookies", desc: "Traceurs et consentement" },
   { to: "/contact", label: "Contact", desc: "Formulaire protégé anti-spam" },
+  { to: "/guide", label: "Guide de réutilisation", desc: "Quoi copier, quoi modifier" },
+  { to: "/composants", label: "Composants", desc: "Tableaux, onglets, fenêtres, états" },
+  { to: "/maintenance", label: "Maintenance", desc: "Écran d'interruption de service" },
+  { to: "/merci", label: "Confirmation", desc: "Page de remerciement après envoi" },
 ] as const;
 
 function Index() {
@@ -81,6 +77,7 @@ function Index() {
             <Link
               key={t.to}
               to={t.to}
+              title={`${t.label} — ${t.desc}`}
               className="rounded-xl border border-border bg-card p-4 transition-shadow hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)]"
             >
               <p className="text-sm font-semibold text-foreground">{t.label}</p>
