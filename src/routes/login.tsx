@@ -1,17 +1,20 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
 import { AuthLayout } from "@/components/cds/AuthLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { supabase } from "@/integrations/supabase/client";
+import { bootstrapCurrentUser } from "@/hooks/useAuth";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
     meta: [
-      { title: "Connexion — CDS" },
-      { name: "description", content: "Gabarit CDS de page de connexion : e-mail, mot de passe, lien de récupération." },
-      { property: "og:title", content: "Connexion — CDS" },
-      { property: "og:description", content: "Gabarit CDS de page de connexion." },
+      { title: "Connexion — PMM RDS" },
+      { name: "description", content: "Connectez-vous à votre espace personnel avec votre adresse e-mail et votre mot de passe." },
+      { property: "og:title", content: "Connexion — PMM RDS" },
+      { property: "og:description", content: "Accès à votre espace personnel." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -20,6 +23,33 @@ export const Route = createFileRoute("/login")({
 });
 
 function LoginPage() {
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  async function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setBusy(true);
+    setError(null);
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email: email.trim(),
+      password,
+    });
+    if (signInError) {
+      setError("Adresse e-mail ou mot de passe incorrect.");
+      setBusy(false);
+      return;
+    }
+    try {
+      await bootstrapCurrentUser();
+    } catch {
+      /* le profil sera recréé à la prochaine connexion */
+    }
+    navigate({ to: "/compte" });
+  }
+
   return (
     <AuthLayout
       title="Connexion"
@@ -33,10 +63,24 @@ function LoginPage() {
         </>
       }
     >
-      <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+      <form className="space-y-4" onSubmit={onSubmit}>
+        {error && (
+          <Alert variant="destructive">
+            <AlertTitle>Connexion impossible</AlertTitle>
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
         <div className="space-y-1.5">
           <Label htmlFor="email">Adresse e-mail</Label>
-          <Input id="email" type="email" autoComplete="email" placeholder="nom@exemple.fr" />
+          <Input
+            id="email"
+            type="email"
+            autoComplete="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="nom@exemple.fr"
+          />
         </div>
         <div className="space-y-1.5">
           <div className="flex items-center justify-between">
@@ -45,16 +89,18 @@ function LoginPage() {
               Mot de passe oublié ?
             </Link>
           </div>
-          <Input id="password" type="password" autoComplete="current-password" placeholder="••••••••" />
+          <Input
+            id="password"
+            type="password"
+            autoComplete="current-password"
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="••••••••"
+          />
         </div>
-        <div className="flex items-center gap-2">
-          <Checkbox id="remember" />
-          <Label htmlFor="remember" className="text-sm font-normal text-muted-foreground">
-            Rester connecté
-          </Label>
-        </div>
-        <Button type="submit" className="w-full">
-          Se connecter
+        <Button type="submit" className="w-full" disabled={busy}>
+          {busy ? "Connexion…" : "Se connecter"}
         </Button>
       </form>
     </AuthLayout>

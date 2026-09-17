@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -28,9 +29,11 @@ export const Route = createFileRoute("/contact")({
 function ContactPage() {
   const [sent, setSent] = useState(false);
   const [blocked, setBlocked] = useState(false);
+  const [failed, setFailed] = useState(false);
+  const [busy, setBusy] = useState(false);
   const openedAt = useRef(Date.now());
 
-  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = new FormData(e.currentTarget);
     // Piège à robots : champ invisible qui doit rester vide + délai minimal de saisie.
@@ -41,6 +44,19 @@ function ContactPage() {
       return;
     }
     setBlocked(false);
+    setFailed(false);
+    setBusy(true);
+    const { error } = await supabase.from("contact_messages").insert({
+      name: String(form.get("name") ?? "").trim(),
+      email: String(form.get("email") ?? "").trim(),
+      subject: String(form.get("subject") ?? "").trim(),
+      message: String(form.get("message") ?? "").trim(),
+    });
+    setBusy(false);
+    if (error) {
+      setFailed(true);
+      return;
+    }
     setSent(true);
   }
 
@@ -55,10 +71,9 @@ function ContactPage() {
 
         {sent ? (
           <Alert className="mt-8">
-            <AlertTitle>Message prêt à être envoyé</AlertTitle>
+            <AlertTitle>Message envoyé</AlertTitle>
             <AlertDescription>
-              Merci, votre message a bien été pris en compte. Nous vous répondons sous 48 heures
-              ouvrées.
+              Merci, votre message a bien été transmis. Nous vous répondons sous 48 heures ouvrées.
             </AlertDescription>
           </Alert>
         ) : (
@@ -71,6 +86,16 @@ function ContactPage() {
                 </AlertDescription>
               </Alert>
             )}
+
+            {failed && (
+              <Alert variant="destructive">
+                <AlertTitle>Envoi impossible</AlertTitle>
+                <AlertDescription>
+                  Votre message n'a pas pu être transmis. Merci de réessayer dans un instant.
+                </AlertDescription>
+              </Alert>
+            )}
+
 
             <div className="space-y-1.5">
               <Label htmlFor="name">Nom</Label>
@@ -102,8 +127,8 @@ function ContactPage() {
               <input id="company" name="company" type="text" tabIndex={-1} autoComplete="off" />
             </div>
 
-            <Button type="submit" className="w-full sm:w-auto">
-              Envoyer le message
+            <Button type="submit" className="w-full sm:w-auto" disabled={busy}>
+              {busy ? "Envoi…" : "Envoyer le message"}
             </Button>
             <p className="text-xs text-muted-foreground">
               Les informations transmises servent uniquement à traiter votre demande. Voir la{" "}
