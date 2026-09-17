@@ -61,6 +61,7 @@ const templates = [
   { to: "/legal/confidentialite", label: "Confidentialité", desc: "RGPD, données, droits" },
   { to: "/legal/cgu", label: "CGU", desc: "Conditions générales d'utilisation" },
   { to: "/legal/cookies", label: "Cookies", desc: "Traceurs et consentement" },
+  { to: "/contact", label: "Contact", desc: "Formulaire protégé anti-spam" },
 ] as const;
 
 function Index() {

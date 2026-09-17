@@ -1,13 +1,17 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { LegalPage, Section } from "@/components/cds/LegalPage";
 
 export const Route = createFileRoute("/legal/cgu")({
   head: () => ({
     meta: [
-      { title: "Conditions générales d'utilisation — CDS" },
-      { name: "description", content: "Gabarit CDS de conditions générales d'utilisation : accès, compte, obligations, résiliation." },
-      { property: "og:title", content: "Conditions générales d'utilisation — CDS" },
-      { property: "og:description", content: "Gabarit CDS de conditions générales d'utilisation." },
+      { title: "Conditions générales d'utilisation — PMM RDS" },
+      {
+        name: "description",
+        content:
+          "Conditions générales d'utilisation des services PMM RDS : accès, compte, obligations, résiliation, droit applicable.",
+      },
+      { property: "og:title", content: "Conditions générales d'utilisation — PMM RDS" },
+      { property: "og:description", content: "Règles d'accès et d'utilisation des services PMM RDS." },
       { property: "og:type", content: "article" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -16,15 +20,17 @@ export const Route = createFileRoute("/legal/cgu")({
     <LegalPage title="Conditions générales d'utilisation" updatedAt="17 septembre 2026">
       <Section title="Objet">
         <p>
-          Les présentes conditions régissent l'accès au service [nom du service] et son utilisation
-          par tout utilisateur.
+          Les présentes conditions régissent l'accès aux services édités par PMM RDS et leur
+          utilisation par tout utilisateur.
         </p>
       </Section>
       <Section title="Compte utilisateur">
         <ul>
           <li>Les informations fournies à l'inscription doivent être exactes et à jour.</li>
           <li>L'utilisateur est responsable de la confidentialité de ses identifiants.</li>
-          <li>Tout usage frauduleux doit être signalé sans délai à [e-mail].</li>
+          <li>
+            Tout usage frauduleux doit être signalé sans délai via le formulaire de contact.
+          </li>
         </ul>
       </Section>
       <Section title="Obligations de l'utilisateur">
@@ -41,14 +47,18 @@ export const Route = createFileRoute("/legal/cgu")({
       </Section>
       <Section title="Résiliation">
         <p>
-          L'utilisateur peut supprimer son compte à tout moment. L'éditeur peut suspendre un compte
-          en cas de manquement aux présentes conditions.
+          L'utilisateur peut supprimer son compte à tout moment. PMM RDS peut suspendre un compte en
+          cas de manquement aux présentes conditions.
         </p>
       </Section>
-      <Section title="Droit applicable">
+      <Section title="Contact et droit applicable">
         <p>
-          Les présentes conditions sont soumises au droit français. À défaut d'accord amiable, les
-          tribunaux de [ville] sont compétents.
+          Toute question peut être adressée via le{" "}
+          <Link to="/contact" className="font-medium text-primary hover:underline">
+            formulaire de contact
+          </Link>
+          . Les présentes conditions sont soumises au droit français ; à défaut d'accord amiable,
+          les tribunaux de Limoges sont compétents.
         </p>
       </Section>
     </LegalPage>

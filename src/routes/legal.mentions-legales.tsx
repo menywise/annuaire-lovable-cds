@@ -1,13 +1,17 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { LegalPage, Section } from "@/components/cds/LegalPage";
 
 export const Route = createFileRoute("/legal/mentions-legales")({
   head: () => ({
     meta: [
-      { title: "Mentions légales — CDS" },
-      { name: "description", content: "Gabarit CDS de mentions légales : éditeur, hébergeur, propriété intellectuelle." },
-      { property: "og:title", content: "Mentions légales — CDS" },
-      { property: "og:description", content: "Gabarit CDS de mentions légales." },
+      { title: "Mentions légales — PMM RDS" },
+      {
+        name: "description",
+        content:
+          "Mentions légales de PMM RDS, SAS au capital de 1 000 € — siège social à Limoges, site hébergé par OVH.",
+      },
+      { property: "og:title", content: "Mentions légales — PMM RDS" },
+      { property: "og:description", content: "Éditeur, hébergeur et propriété intellectuelle du site PMM RDS." },
       { property: "og:type", content: "article" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -16,31 +20,54 @@ export const Route = createFileRoute("/legal/mentions-legales")({
     <LegalPage title="Mentions légales" updatedAt="17 septembre 2026">
       <Section title="Éditeur du site">
         <p>
-          [Raison sociale], [forme juridique] au capital de [montant] €, immatriculée au RCS de
-          [ville] sous le numéro [SIREN], siège social : [adresse complète].
+          PMM RDS, société par actions simplifiée (SAS) au capital de 1 000 €, immatriculée au
+          Registre du commerce et des sociétés de Limoges, siège social : Rue du Champfour, 87000
+          Limoges, France.
         </p>
-        <p>Directeur de la publication : [nom]. Contact : [e-mail] — [téléphone].</p>
+        <p>Directeur de la publication : Manuel ROHAUT.</p>
+        <p>
+          Contact :{" "}
+          <Link to="/contact" className="font-medium text-primary hover:underline">
+            formulaire de contact
+          </Link>{" "}
+          (aucune adresse e-mail n'est publiée en clair, afin de limiter le spam).
+        </p>
       </Section>
+
       <Section title="Hébergement">
-        <p>Le site est hébergé par [hébergeur], [adresse], [contact].</p>
+        <p>
+          Le site est hébergé par OVH SAS, société par actions simplifiée au capital de 50 000 000 €,
+          immatriculée au RCS de Lille Métropole sous le numéro 424 761 419, siège social : 2 rue
+          Kellermann, 59100 Roubaix, France — téléphone : 1007.
+        </p>
       </Section>
+
       <Section title="Propriété intellectuelle">
         <p>
-          L'ensemble des contenus (textes, images, marques, logos, code) est protégé. Toute
-          reproduction ou représentation, totale ou partielle, sans autorisation écrite préalable
-          est interdite.
+          L'ensemble des contenus du site (textes, images, marques, logos, code source) est la
+          propriété de PMM RDS ou de ses partenaires. Toute reproduction ou représentation, totale
+          ou partielle, sans autorisation écrite préalable est interdite.
         </p>
       </Section>
+
       <Section title="Responsabilité">
         <p>
-          L'éditeur s'efforce d'assurer l'exactitude des informations publiées mais ne saurait être
-          tenu responsable des erreurs, omissions ou indisponibilités du service.
+          PMM RDS s'efforce d'assurer l'exactitude des informations publiées mais ne saurait être
+          tenue responsable des erreurs, omissions ou indisponibilités temporaires du service.
         </p>
       </Section>
+
       <Section title="Liens externes">
         <p>
-          Les liens vers des sites tiers sont fournis à titre informatif ; l'éditeur n'exerce aucun
-          contrôle sur leur contenu.
+          Les liens vers des sites tiers sont fournis à titre informatif ; PMM RDS n'exerce aucun
+          contrôle sur leur contenu et décline toute responsabilité à leur égard.
+        </p>
+      </Section>
+
+      <Section title="Litiges">
+        <p>
+          Les présentes mentions sont soumises au droit français. À défaut d'accord amiable, les
+          tribunaux compétents sont ceux de Limoges.
         </p>
       </Section>
     </LegalPage>
