@@ -18,7 +18,7 @@ export const Route = createFileRoute("/legal/confidentialite")({
         <p>
           PMM RDS (SAS), Rue du Champfour, 87000 Limoges, France. Responsable : Manuel ROHAUT.
           Pour toute demande, utilisez le{" "}
-          <Link to="/contact" title="Nous écrire via le formulaire de contact protégé" className="font-medium text-primary hover:underline">
+          <Link to="/contact" title="Nous écrire via le formulaire de contact protégé" className="font-medium text-primary-text hover:underline">
             formulaire de contact
           </Link>
           .
@@ -56,7 +56,7 @@ export const Route = createFileRoute("/legal/confidentialite")({
         <p>
           Vous disposez des droits d'accès, de rectification, d'effacement, de limitation,
           d'opposition et de portabilité. Exercez-les via le{" "}
-          <Link to="/contact" title="Nous écrire via le formulaire de contact protégé" className="font-medium text-primary hover:underline">
+          <Link to="/contact" title="Nous écrire via le formulaire de contact protégé" className="font-medium text-primary-text hover:underline">
             formulaire de contact
           </Link>
           . Vous pouvez également introduire une réclamation auprès de la CNIL.

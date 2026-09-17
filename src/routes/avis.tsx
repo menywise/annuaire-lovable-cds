@@ -41,7 +41,7 @@ function Stars({ value }: { value: number }) {
       {[1, 2, 3, 4, 5].map((n) => (
         <Star
           key={n}
-          className={`size-4 ${n <= value ? "fill-warning text-warning" : "text-border"}`}
+          className={`size-4 ${n <= value ? "fill-warning-text text-warning-text" : "text-border"}`}
           aria-hidden="true"
         />
       ))}
@@ -85,7 +85,7 @@ function AvisPage() {
   return (
     <PageShell>
       <div className="mx-auto max-w-[820px]">
-        <p className="text-xs font-medium uppercase tracking-wide text-primary">Avis</p>
+        <p className="text-xs font-medium uppercase tracking-wide text-primary-text">Avis</p>
         <h1 className="mt-2 text-3xl font-bold text-foreground">
           Ce que disent celles et ceux qui l'utilisent déjà
         </h1>
@@ -151,7 +151,7 @@ function AvisPage() {
                         className="rounded p-1"
                       >
                         <Star
-                          className={`size-6 ${n <= rating ? "fill-warning text-warning" : "text-border"}`}
+                          className={`size-6 ${n <= rating ? "fill-warning-text text-warning-text" : "text-border"}`}
                           aria-hidden="true"
                         />
                       </button>
@@ -180,7 +180,7 @@ function AvisPage() {
           ) : (
             <p className="mt-3 text-sm text-muted-foreground">
               Pour garantir des avis authentiques, seuls les membres connectés peuvent en déposer.{" "}
-              <Link to="/login" title="Se connecter pour déposer un avis" className="text-primary hover:underline">
+              <Link to="/login" title="Se connecter pour déposer un avis" className="text-primary-text hover:underline">
                 Se connecter
               </Link>
               .

@@ -58,7 +58,7 @@ export const Route = createFileRoute("/blog/$slug")({
       <h1 className="text-2xl font-bold text-foreground">Article introuvable</h1>
       <p className="mt-2 text-sm text-muted-foreground">
         Cet article n'existe plus ou n'est pas encore publié.{" "}
-        <Link to="/blog" title="Revenir à la liste des articles" className="text-primary hover:underline">
+        <Link to="/blog" title="Revenir à la liste des articles" className="text-primary-text hover:underline">
           Revenir au blog
         </Link>
       </p>
@@ -100,7 +100,7 @@ function BlogPostPage() {
   return (
     <PageShell>
       <article className="mx-auto max-w-[760px]">
-        <Link to="/blog" title="Revenir à la liste des articles" className="text-xs font-medium text-primary hover:underline">
+        <Link to="/blog" title="Revenir à la liste des articles" className="text-xs font-medium text-primary-text hover:underline">
           ← Blog
         </Link>
         <h1 className="mt-3 text-3xl font-bold text-foreground">{post.title}</h1>
@@ -172,11 +172,11 @@ function BlogPostPage() {
           ) : (
             <p className="mt-6 rounded-lg border border-dashed border-border p-5 text-sm text-muted-foreground">
               Vous souhaitez réagir ?{" "}
-              <Link to="/login" title="Se connecter pour commenter" className="text-primary hover:underline">
+              <Link to="/login" title="Se connecter pour commenter" className="text-primary-text hover:underline">
                 Connectez-vous
               </Link>{" "}
               ou{" "}
-              <Link to="/signup" title="Créer un compte pour commenter" className="text-primary hover:underline">
+              <Link to="/signup" title="Créer un compte pour commenter" className="text-primary-text hover:underline">
                 créez un compte
               </Link>
               , cela prend une minute.

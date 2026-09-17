@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AProposRouteImport } from './routes/a-propos'
 import { Route as AvisRouteImport } from './routes/avis'
 import { Route as ComposantsRouteImport } from './routes/composants'
 import { Route as ContactRouteImport } from './routes/contact'
@@ -21,6 +22,7 @@ import { Route as GuideRouteImport } from './routes/guide'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as MaintenanceRouteImport } from './routes/maintenance'
 import { Route as MerciRouteImport } from './routes/merci'
+import { Route as PlanDuSiteRouteImport } from './routes/plan-du-site'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
@@ -34,6 +36,7 @@ import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as ForumIndexRouteImport } from './routes/forum.index'
 import { Route as ForumTopicIdRouteImport } from './routes/forum.$topicId'
 import { Route as LegalCguRouteImport } from './routes/legal.cgu'
+import { Route as LegalCgvRouteImport } from './routes/legal.cgv'
 import { Route as LegalConfidentialiteRouteImport } from './routes/legal.confidentialite'
 import { Route as LegalCookiesRouteImport } from './routes/legal.cookies'
 import { Route as LegalMentionsLegalesRouteImport } from './routes/legal.mentions-legales'
@@ -49,6 +52,11 @@ const IndexRoute = IndexRouteImport.update({
 } as any)
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AProposRoute = AProposRouteImport.update({
+  id: '/a-propos',
+  path: '/a-propos',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AvisRoute = AvisRouteImport.update({
@@ -99,6 +107,11 @@ const MaintenanceRoute = MaintenanceRouteImport.update({
 const MerciRoute = MerciRouteImport.update({
   id: '/merci',
   path: '/merci',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlanDuSiteRoute = PlanDuSiteRouteImport.update({
+  id: '/plan-du-site',
+  path: '/plan-du-site',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
@@ -167,6 +180,11 @@ const LegalCguRoute = LegalCguRouteImport.update({
   path: '/legal/cgu',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LegalCgvRoute = LegalCgvRouteImport.update({
+  id: '/legal/cgv',
+  path: '/legal/cgv',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LegalConfidentialiteRoute = LegalConfidentialiteRouteImport.update({
   id: '/legal/confidentialite',
   path: '/legal/confidentialite',
@@ -208,6 +226,7 @@ const AuthenticatedAdminModerationRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/a-propos': typeof AProposRoute
   '/avis': typeof AvisRoute
   '/composants': typeof ComposantsRoute
   '/contact': typeof ContactRoute
@@ -218,6 +237,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/maintenance': typeof MaintenanceRoute
   '/merci': typeof MerciRoute
+  '/plan-du-site': typeof PlanDuSiteRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -229,6 +249,7 @@ export interface FileRoutesByFullPath {
   '/blog/$slug': typeof BlogSlugRoute
   '/forum/$topicId': typeof ForumTopicIdRoute
   '/legal/cgu': typeof LegalCguRoute
+  '/legal/cgv': typeof LegalCgvRoute
   '/legal/confidentialite': typeof LegalConfidentialiteRoute
   '/legal/cookies': typeof LegalCookiesRoute
   '/legal/mentions-legales': typeof LegalMentionsLegalesRoute
@@ -241,6 +262,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/a-propos': typeof AProposRoute
   '/avis': typeof AvisRoute
   '/composants': typeof ComposantsRoute
   '/contact': typeof ContactRoute
@@ -251,6 +273,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/maintenance': typeof MaintenanceRoute
   '/merci': typeof MerciRoute
+  '/plan-du-site': typeof PlanDuSiteRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -262,6 +285,7 @@ export interface FileRoutesByTo {
   '/blog/$slug': typeof BlogSlugRoute
   '/forum/$topicId': typeof ForumTopicIdRoute
   '/legal/cgu': typeof LegalCguRoute
+  '/legal/cgv': typeof LegalCgvRoute
   '/legal/confidentialite': typeof LegalConfidentialiteRoute
   '/legal/cookies': typeof LegalCookiesRoute
   '/legal/mentions-legales': typeof LegalMentionsLegalesRoute
@@ -276,6 +300,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/a-propos': typeof AProposRoute
   '/avis': typeof AvisRoute
   '/composants': typeof ComposantsRoute
   '/contact': typeof ContactRoute
@@ -286,6 +311,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/maintenance': typeof MaintenanceRoute
   '/merci': typeof MerciRoute
+  '/plan-du-site': typeof PlanDuSiteRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -297,6 +323,7 @@ export interface FileRoutesById {
   '/blog/$slug': typeof BlogSlugRoute
   '/forum/$topicId': typeof ForumTopicIdRoute
   '/legal/cgu': typeof LegalCguRoute
+  '/legal/cgv': typeof LegalCgvRoute
   '/legal/confidentialite': typeof LegalConfidentialiteRoute
   '/legal/cookies': typeof LegalCookiesRoute
   '/legal/mentions-legales': typeof LegalMentionsLegalesRoute
@@ -311,6 +338,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/a-propos'
     | '/avis'
     | '/composants'
     | '/contact'
@@ -321,6 +349,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/maintenance'
     | '/merci'
+    | '/plan-du-site'
     | '/reset-password'
     | '/signup'
     | '/sitemap.xml'
@@ -332,6 +361,7 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/forum/$topicId'
     | '/legal/cgu'
+    | '/legal/cgv'
     | '/legal/confidentialite'
     | '/legal/cookies'
     | '/legal/mentions-legales'
@@ -344,6 +374,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/a-propos'
     | '/avis'
     | '/composants'
     | '/contact'
@@ -354,6 +385,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/maintenance'
     | '/merci'
+    | '/plan-du-site'
     | '/reset-password'
     | '/signup'
     | '/sitemap.xml'
@@ -365,6 +397,7 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/forum/$topicId'
     | '/legal/cgu'
+    | '/legal/cgv'
     | '/legal/confidentialite'
     | '/legal/cookies'
     | '/legal/mentions-legales'
@@ -378,6 +411,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_authenticated'
+    | '/a-propos'
     | '/avis'
     | '/composants'
     | '/contact'
@@ -388,6 +422,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/maintenance'
     | '/merci'
+    | '/plan-du-site'
     | '/reset-password'
     | '/signup'
     | '/sitemap.xml'
@@ -399,6 +434,7 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/forum/$topicId'
     | '/legal/cgu'
+    | '/legal/cgv'
     | '/legal/confidentialite'
     | '/legal/cookies'
     | '/legal/mentions-legales'
@@ -413,6 +449,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AProposRoute: typeof AProposRoute
   AvisRoute: typeof AvisRoute
   ComposantsRoute: typeof ComposantsRoute
   ContactRoute: typeof ContactRoute
@@ -423,6 +460,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   MaintenanceRoute: typeof MaintenanceRoute
   MerciRoute: typeof MerciRoute
+  PlanDuSiteRoute: typeof PlanDuSiteRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SignupRoute: typeof SignupRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
@@ -431,6 +469,7 @@ export interface RootRouteChildren {
   BlogSlugRoute: typeof BlogSlugRoute
   ForumTopicIdRoute: typeof ForumTopicIdRoute
   LegalCguRoute: typeof LegalCguRoute
+  LegalCgvRoute: typeof LegalCgvRoute
   LegalConfidentialiteRoute: typeof LegalConfidentialiteRoute
   LegalCookiesRoute: typeof LegalCookiesRoute
   LegalMentionsLegalesRoute: typeof LegalMentionsLegalesRoute
@@ -452,6 +491,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/a-propos': {
+      id: '/a-propos'
+      path: '/a-propos'
+      fullPath: '/a-propos'
+      preLoaderRoute: typeof AProposRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/avis': {
@@ -522,6 +568,13 @@ declare module '@tanstack/react-router' {
       path: '/merci'
       fullPath: '/merci'
       preLoaderRoute: typeof MerciRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/plan-du-site': {
+      id: '/plan-du-site'
+      path: '/plan-du-site'
+      fullPath: '/plan-du-site'
+      preLoaderRoute: typeof PlanDuSiteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/reset-password': {
@@ -615,6 +668,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LegalCguRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/legal/cgv': {
+      id: '/legal/cgv'
+      path: '/legal/cgv'
+      fullPath: '/legal/cgv'
+      preLoaderRoute: typeof LegalCgvRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/legal/confidentialite': {
       id: '/legal/confidentialite'
       path: '/legal/confidentialite'
@@ -693,6 +753,7 @@ const AuthenticatedRouteRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AProposRoute: AProposRoute,
   AvisRoute: AvisRoute,
   ComposantsRoute: ComposantsRoute,
   ContactRoute: ContactRoute,
@@ -703,6 +764,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   MaintenanceRoute: MaintenanceRoute,
   MerciRoute: MerciRoute,
+  PlanDuSiteRoute: PlanDuSiteRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SignupRoute: SignupRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
@@ -711,6 +773,7 @@ const rootRouteChildren: RootRouteChildren = {
   BlogSlugRoute: BlogSlugRoute,
   ForumTopicIdRoute: ForumTopicIdRoute,
   LegalCguRoute: LegalCguRoute,
+  LegalCgvRoute: LegalCgvRoute,
   LegalConfidentialiteRoute: LegalConfidentialiteRoute,
   LegalCookiesRoute: LegalCookiesRoute,
   LegalMentionsLegalesRoute: LegalMentionsLegalesRoute,

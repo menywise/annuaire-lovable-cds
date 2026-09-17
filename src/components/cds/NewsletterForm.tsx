@@ -97,7 +97,7 @@ export function NewsletterForm({ source = "site" }: { source?: string }) {
         <Link
           to="/legal/confidentialite"
           title="Lire la politique de confidentialité"
-          className="text-primary hover:underline"
+          className="text-primary-text hover:underline"
         >
           Politique de confidentialité
         </Link>

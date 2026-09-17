@@ -30,7 +30,7 @@ function MentionsLegalesPage() {
         <p>Directeur de la publication : {legal.publisher}.</p>
         <p>
           Contact :{" "}
-          <Link to="/contact" title="Nous écrire via le formulaire de contact protégé" className="font-medium text-primary hover:underline">
+          <Link to="/contact" title="Nous écrire via le formulaire de contact protégé" className="font-medium text-primary-text hover:underline">
             formulaire de contact
           </Link>{" "}
           (aucune adresse e-mail n'est publiée en clair, afin de limiter le spam).

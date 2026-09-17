@@ -9,11 +9,13 @@ import { CookieBanner } from "@/components/cds/CookieBanner";
 const nav = [
   { to: "/", label: "Tokens", title: "Couleurs, typographie, rayons et ombres du design system" },
   { to: "/composants", label: "Composants", title: "Bibliothèque de composants d'interface CDS" },
+  { to: "/demarrer", label: "Démarrer", title: "Le parcours en trois étapes jusqu'à votre compte" },
   { to: "/tarifs", label: "Tarifs", title: "Comparer les offres et choisir celle qui vous convient" },
   { to: "/blog", label: "Blog", title: "Articles et méthodes pour faire avancer votre projet" },
   { to: "/faq", label: "FAQ", title: "Réponses aux questions les plus fréquentes" },
   { to: "/forum", label: "Forum", title: "Poser une question à la communauté" },
   { to: "/avis", label: "Avis", title: "Lire les retours d'expérience des utilisateurs" },
+  { to: "/a-propos", label: "À propos", title: "Qui édite le site et selon quels engagements" },
   { to: "/contact", label: "Contact", title: "Écrire via le formulaire de contact protégé" },
 ] as const;
 
@@ -21,10 +23,13 @@ const legalNav = [
   { to: "/legal/mentions-legales", label: "Mentions légales", title: "Éditeur, hébergeur et propriété intellectuelle" },
   { to: "/legal/confidentialite", label: "Confidentialité", title: "Traitement des données personnelles et droits RGPD" },
   { to: "/legal/cgu", label: "CGU", title: "Conditions générales d'utilisation du site" },
+  { to: "/legal/cgv", label: "CGV", title: "Conditions générales de vente des offres payantes" },
   { to: "/legal/cookies", label: "Cookies", title: "Politique de gestion des cookies" },
+  { to: "/plan-du-site", label: "Plan du site", title: "Toutes les pages du site réunies sur une page" },
   { to: "/guide", label: "Guide", title: "Comment réutiliser CDS sur un nouveau projet" },
   { to: "/contact", label: "Contact", title: "Formulaire de contact protégé anti-spam" },
 ] as const;
+
 
 const linkClass =
   "rounded px-3 py-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";

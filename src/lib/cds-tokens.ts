@@ -1,32 +1,38 @@
 /**
  * CDS — Consensus Design System — Tokens TypeScript
- * VERSION  : 1.0.0
+ * VERSION  : 1.1.0
  * DATE     : 2026-09-17
  * SOURCE   : CDS_TOKENS.md (source de vérité unique)
  * USAGE    : import { cds } from '@/lib/cds-tokens'
+ *
+ * Les couleurs suffixées « Text » sont les seules autorisées pour du texte
+ * ou des icônes sur fond clair (contraste WCAG AA vérifié).
  */
 
 export const cds = {
   colors: {
     primary: "#0d6efd",
     primaryHover: "#0a58ca",
+    primaryText: "#0a58ca",
     success: "#198754",
+    successText: "#15803d",
     warning: "#ffc107",
-    warningDark: "#973600",
+    warningText: "#b45200",
     danger: "#dc3545",
     info: "#0dcaf0",
-    infoDark: "#0891b2",
+    infoText: "#0891b2",
     secondary: "#6c757d",
     purple: "#7c3aed",
     purpleLight: "#ede9fe",
     text: "#1e293b",
     textMuted: "#64748b",
-    textLight: "#8e95a1",
+    textLight: "#5b6472",
     bg: "#f8fafc",
     bgAlt: "#f3f4f6",
     border: "#e5e7eb",
     white: "#ffffff",
   },
+
   subtle: {
     blue: { bg: "#dbeafe", text: "#205ee6" },
     green: { bg: "#dcfce7", text: "#008229" },

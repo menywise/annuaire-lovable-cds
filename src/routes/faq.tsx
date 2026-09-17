@@ -16,7 +16,7 @@ export const Route = createFileRoute("/faq")({
     const base = seo({
       title: "Questions fréquentes",
       description:
-        "Vos questions avant de démarrer : délais, administration sans code, sécurité des données, référencement. Des réponses directes, sans jargon.",
+        "Les questions que se posent les indépendants, artisans et solopreneurs avant de démarrer : délais, administration sans code, sécurité des données, référencement. Des réponses directes, sans jargon.",
       path: "/faq",
       type: "website",
     });
@@ -61,7 +61,7 @@ function FaqPage() {
   return (
     <PageShell>
       <div className="mx-auto max-w-[760px]">
-        <p className="text-xs font-medium uppercase tracking-wide text-primary">Questions fréquentes</p>
+        <p className="text-xs font-medium uppercase tracking-wide text-primary-text">Questions fréquentes</p>
         <h1 className="mt-2 text-3xl font-bold text-foreground">
           Ce que vous vous demandez avant de vous lancer
         </h1>
@@ -90,7 +90,7 @@ function FaqPage() {
 
         <p className="mt-8 text-sm text-muted-foreground">
           Votre question n'y figure pas ?{" "}
-          <Link to="/contact" title="Poser votre question via le formulaire de contact" className="text-primary hover:underline">
+          <Link to="/contact" title="Poser votre question via le formulaire de contact" className="text-primary-text hover:underline">
             Posez-la ici
           </Link>
           , vous aurez une réponse sous 48 heures ouvrées.

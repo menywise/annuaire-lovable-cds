@@ -12,7 +12,7 @@ export const Route = createFileRoute("/tarifs")({
     seo({
       title: "Tarifs",
       description:
-        "Trois offres claires, sans engagement : démarrez gratuitement, passez au niveau professionnel quand votre site doit convertir, choisissez Expert pour piloter plusieurs projets.",
+        "Trois offres claires et sans engagement pour les indépendants, artisans et solopreneurs : démarrez gratuitement, passez au niveau professionnel quand votre site doit convertir, choisissez Expert pour piloter plusieurs projets.",
       path: "/tarifs",
       type: "website",
     }),
@@ -45,7 +45,7 @@ function TarifsPage() {
     <PageShell>
       <div className="mx-auto max-w-[1000px]">
         <div className="mx-auto max-w-[680px] text-center">
-          <p className="text-xs font-medium uppercase tracking-wide text-primary">Tarifs</p>
+          <p className="text-xs font-medium uppercase tracking-wide text-primary-text">Tarifs</p>
           <h1 className="mt-2 text-3xl font-bold text-foreground">
             Payez pour ce qui vous fait avancer, rien de plus
           </h1>
@@ -79,7 +79,7 @@ function TarifsPage() {
                 <ul className="mt-5 flex-1 space-y-2 text-sm text-muted-foreground">
                   {features.map((feature) => (
                     <li key={feature} className="flex items-start gap-2">
-                      <Check className="mt-0.5 size-4 shrink-0 text-success" aria-hidden="true" />
+                      <Check className="mt-0.5 size-4 shrink-0 text-success-text" aria-hidden="true" />
                       <span>{feature}</span>
                     </li>
                   ))}

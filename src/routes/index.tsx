@@ -9,7 +9,7 @@ export const Route = createFileRoute("/")({
     seo({
       title: "CDS — Consensus Design System",
       description:
-        "Design system réutilisable : tokens, composants et gabarits prêts à l'emploi (connexion, mot de passe oublié, contact, pages légales) pour les sites et applications GNOSIA.",
+        "Le socle complet pour les indépendants, artisans et solopreneurs : comptes, pages légales, blog, forum, avis, FAQ, tarifs et administration, déjà reliés et prêts à servir.",
       path: "/",
       type: "website",
     }),
@@ -46,7 +46,10 @@ function Block({
 
 const templates = [
   { to: "/demarrer", label: "Tunnel de vente", desc: "Trois étapes, du besoin au compte créé" },
+  { to: "/a-propos", label: "À propos", desc: "Qui édite le site et ses engagements" },
+  { to: "/plan-du-site", label: "Plan du site", desc: "Toutes les pages sur une seule page" },
   { to: "/tarifs", label: "Tarifs", desc: "Offres, mise en avant, appels à l'action" },
+
   { to: "/faq", label: "FAQ", desc: "Questions structurées et balisage FAQPage" },
   { to: "/blog", label: "Blog", desc: "Articles, commentaires modérés, partage" },
   { to: "/forum", label: "Forum", desc: "Sujets, réponses, modération" },
@@ -61,6 +64,7 @@ const templates = [
   { to: "/legal/mentions-legales", label: "Mentions légales", desc: "Éditeur, hébergeur, propriété" },
   { to: "/legal/confidentialite", label: "Confidentialité", desc: "RGPD, données, droits" },
   { to: "/legal/cgu", label: "CGU", desc: "Conditions générales d'utilisation" },
+  { to: "/legal/cgv", label: "CGV", desc: "Offres payantes, paiement, rétractation" },
   { to: "/legal/cookies", label: "Cookies", desc: "Traceurs et consentement" },
   { to: "/contact", label: "Contact", desc: "Formulaire protégé anti-spam" },
   { to: "/guide", label: "Guide de réutilisation", desc: "Quoi copier, quoi modifier" },
@@ -72,7 +76,7 @@ const templates = [
 function Index() {
   return (
     <PageShell>
-      <p className="text-xs font-medium uppercase tracking-wide text-primary">Design System</p>
+      <p className="text-xs font-medium uppercase tracking-wide text-primary-text">Design System</p>
       <h1 className="mt-2 text-3xl font-bold text-foreground">Consensus Design System</h1>
       <p className="mt-2 max-w-[680px] text-sm text-muted-foreground">
         Vous voulez lancer un site sérieux sans repartir de zéro à chaque fois. CDS vous donne le

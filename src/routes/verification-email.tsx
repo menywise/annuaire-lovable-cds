@@ -78,7 +78,7 @@ function VerificationEmailPage() {
 
       <p className="mt-6 text-sm text-muted-foreground">
         Adresse déjà confirmée ?{" "}
-        <Link to="/login" title="Se connecter à son espace" className="text-primary hover:underline">
+        <Link to="/login" title="Se connecter à son espace" className="text-primary-text hover:underline">
           Se connecter
         </Link>
       </p>

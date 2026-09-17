@@ -65,7 +65,7 @@ function ForumIndex() {
   return (
     <PageShell>
       <div className="mx-auto max-w-[820px]">
-        <p className="text-xs font-medium uppercase tracking-wide text-primary">Forum</p>
+        <p className="text-xs font-medium uppercase tracking-wide text-primary-text">Forum</p>
         <h1 className="mt-2 text-3xl font-bold text-foreground">Posez votre question, on avance ensemble</h1>
         <p className="mt-2 text-sm text-muted-foreground">
           Vous bloquez sur un point précis ? Décrivez-le simplement : quelqu'un est probablement
@@ -85,7 +85,7 @@ function ForumIndex() {
                     to="/forum/$topicId"
                     params={{ topicId: topic.id }}
                     title={`Ouvrir la discussion : ${topic.title}`}
-                    className="hover:text-primary"
+                    className="hover:text-primary-text"
                   >
                     {topic.title}
                   </Link>
@@ -125,11 +125,11 @@ function ForumIndex() {
           ) : (
             <p className="mt-3 text-sm text-muted-foreground">
               Pour garder un espace sain, seuls les membres connectés publient.{" "}
-              <Link to="/login" title="Se connecter pour participer au forum" className="text-primary hover:underline">
+              <Link to="/login" title="Se connecter pour participer au forum" className="text-primary-text hover:underline">
                 Se connecter
               </Link>{" "}
               ou{" "}
-              <Link to="/signup" title="Créer un compte pour participer au forum" className="text-primary hover:underline">
+              <Link to="/signup" title="Créer un compte pour participer au forum" className="text-primary-text hover:underline">
                 créer un compte
               </Link>
               .

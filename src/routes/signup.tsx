@@ -66,7 +66,7 @@ function SignupPage() {
       footer={
         <>
           Déjà inscrit ?{" "}
-          <Link to="/login" title="Se connecter à son espace personnel" className="font-medium text-primary hover:underline">
+          <Link to="/login" title="Se connecter à son espace personnel" className="font-medium text-primary-text hover:underline">
             Se connecter
           </Link>
         </>
@@ -132,8 +132,8 @@ function SignupPage() {
             />
             <Label htmlFor="cgu" className="text-xs font-normal leading-relaxed text-muted-foreground">
               J'accepte les{" "}
-              <Link to="/legal/cgu" title="Lire les conditions générales d'utilisation" className="text-primary hover:underline">conditions générales</Link> et la{" "}
-              <Link to="/legal/confidentialite" title="Lire la politique de confidentialité" className="text-primary hover:underline">politique de confidentialité</Link>.
+              <Link to="/legal/cgu" title="Lire les conditions générales d'utilisation" className="text-primary-text hover:underline">conditions générales</Link> et la{" "}
+              <Link to="/legal/confidentialite" title="Lire la politique de confidentialité" className="text-primary-text hover:underline">politique de confidentialité</Link>.
             </Label>
           </div>
           <Button type="submit" className="w-full" disabled={busy}>

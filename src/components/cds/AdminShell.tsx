@@ -63,7 +63,7 @@ export function AdminShell({
   return (
     <PageShell>
       <div className="mx-auto max-w-[900px]">
-        <p className="text-xs font-medium uppercase tracking-wide text-primary">Administration</p>
+        <p className="text-xs font-medium uppercase tracking-wide text-primary-text">Administration</p>
         <h1 className="mt-2 text-3xl font-bold text-foreground">{title}</h1>
         <p className="mt-2 text-sm text-muted-foreground">{intro}</p>
 

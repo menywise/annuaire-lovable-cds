@@ -42,7 +42,7 @@ export const Route = createFileRoute("/legal/cookies")({
       <Section title="Contact">
         <p>
           Pour toute question relative aux traceurs, utilisez le{" "}
-          <Link to="/contact" title="Nous écrire via le formulaire de contact protégé" className="font-medium text-primary hover:underline">
+          <Link to="/contact" title="Nous écrire via le formulaire de contact protégé" className="font-medium text-primary-text hover:underline">
             formulaire de contact
           </Link>
           .

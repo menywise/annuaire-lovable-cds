@@ -6,6 +6,8 @@ import { listPosts, listTopics } from "@/lib/content.functions";
 /** Pages publiques indexables, avec leur priorité de référencement. */
 const pages: Array<{ path: string; priority: string; changefreq: string }> = [
   { path: "/", priority: "1.0", changefreq: "weekly" },
+  { path: "/a-propos", priority: "0.8", changefreq: "monthly" },
+  { path: "/demarrer", priority: "0.9", changefreq: "monthly" },
   { path: "/composants", priority: "0.9", changefreq: "weekly" },
   { path: "/tarifs", priority: "0.9", changefreq: "monthly" },
   { path: "/blog", priority: "0.9", changefreq: "weekly" },
@@ -13,15 +15,19 @@ const pages: Array<{ path: string; priority: string; changefreq: string }> = [
   { path: "/forum", priority: "0.8", changefreq: "daily" },
   { path: "/avis", priority: "0.8", changefreq: "weekly" },
   { path: "/guide", priority: "0.9", changefreq: "monthly" },
+  { path: "/plan-du-site", priority: "0.6", changefreq: "monthly" },
   { path: "/contact", priority: "0.7", changefreq: "yearly" },
   { path: "/login", priority: "0.5", changefreq: "yearly" },
   { path: "/signup", priority: "0.5", changefreq: "yearly" },
+  { path: "/verification-email", priority: "0.3", changefreq: "yearly" },
   { path: "/forgot-password", priority: "0.3", changefreq: "yearly" },
   { path: "/legal/mentions-legales", priority: "0.4", changefreq: "yearly" },
   { path: "/legal/confidentialite", priority: "0.4", changefreq: "yearly" },
   { path: "/legal/cgu", priority: "0.4", changefreq: "yearly" },
+  { path: "/legal/cgv", priority: "0.4", changefreq: "yearly" },
   { path: "/legal/cookies", priority: "0.4", changefreq: "yearly" },
 ];
+
 
 
 export const Route = createFileRoute("/sitemap.xml")({

@@ -10,7 +10,7 @@ export const Route = createFileRoute("/blog/")({
     seo({
       title: "Blog",
       description:
-        "Méthodes concrètes pour lancer un site qui tient debout : socle réutilisable, conformité, référencement, conversion. Des retours d'expérience, pas des généralités.",
+        "Méthodes concrètes pour les indépendants, artisans et solopreneurs qui lancent un site qui tient debout : socle réutilisable, conformité, référencement, conversion. Des retours d'expérience, pas des généralités.",
       path: "/blog",
       type: "website",
     }),
@@ -33,7 +33,7 @@ function BlogIndex() {
   return (
     <PageShell>
       <div className="mx-auto max-w-[820px]">
-        <p className="text-xs font-medium uppercase tracking-wide text-primary">Blog</p>
+        <p className="text-xs font-medium uppercase tracking-wide text-primary-text">Blog</p>
         <h1 className="mt-2 text-3xl font-bold text-foreground">
           Ce qui fait vraiment avancer un projet web
         </h1>
@@ -55,7 +55,7 @@ function BlogIndex() {
                     to="/blog/$slug"
                     params={{ slug: post.slug }}
                     title={`Lire l'article : ${post.title}`}
-                    className="hover:text-primary"
+                    className="hover:text-primary-text"
                   >
                     {post.title}
                   </Link>
@@ -74,7 +74,7 @@ function BlogIndex() {
                   to="/blog/$slug"
                   params={{ slug: post.slug }}
                   title={`Lire l'article : ${post.title}`}
-                  className="mt-3 inline-block text-sm font-medium text-primary hover:underline"
+                  className="mt-3 inline-block text-sm font-medium text-primary-text hover:underline"
                 >
                   Lire la suite
                 </Link>

@@ -44,7 +44,7 @@ export function CookieBanner() {
           <Link
             to="/legal/cookies"
             title="Lire la politique de gestion des cookies"
-            className="font-medium text-primary underline underline-offset-2"
+            className="font-medium text-primary-text underline underline-offset-2"
           >
             En savoir plus
           </Link>

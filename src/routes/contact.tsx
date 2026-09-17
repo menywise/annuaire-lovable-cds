@@ -15,7 +15,7 @@ export const Route = createFileRoute("/contact")({
     seo({
       title: "Contact",
       description:
-        "Formulaire de contact PMM RDS protégé anti-spam par piège à robots : aucune adresse e-mail n'est affichée en clair.",
+        "Écrivez-nous en deux minutes : formulaire protégé anti-spam, réponse personnelle aux indépendants, artisans et solopreneurs. Aucune adresse e-mail n'est affichée en clair.",
       path: "/contact",
       type: "website",
     }),
@@ -128,7 +128,7 @@ function ContactPage() {
             </Button>
             <p className="text-xs text-muted-foreground">
               Les informations transmises servent uniquement à traiter votre demande. Voir la{" "}
-              <Link to="/legal/confidentialite" title="Lire la politique de confidentialité" className="text-primary hover:underline">
+              <Link to="/legal/confidentialite" title="Lire la politique de confidentialité" className="text-primary-text hover:underline">
                 politique de confidentialité
               </Link>
               .
