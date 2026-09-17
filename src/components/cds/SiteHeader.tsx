@@ -99,10 +99,12 @@ export function SiteHeader() {
 }
 
 export function SiteFooter() {
+  const { settings } = useBrandSettings();
+
   return (
     <footer className="border-t border-border bg-card">
       <div className="mx-auto flex max-w-[1200px] flex-wrap items-center justify-between gap-3 px-6 py-6 text-xs text-muted-foreground">
-        <span>{brand.tagline}</span>
+        <span>{settings.tagline}</span>
         <nav aria-label="Liens légaux" className="flex flex-wrap gap-4">
           {legalNav.map((item) => (
             <Link
