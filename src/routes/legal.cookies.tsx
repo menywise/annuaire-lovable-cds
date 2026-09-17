@@ -1,13 +1,17 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { LegalPage, Section } from "@/components/cds/LegalPage";
 
 export const Route = createFileRoute("/legal/cookies")({
   head: () => ({
     meta: [
-      { title: "Politique cookies — CDS" },
-      { name: "description", content: "Gabarit CDS de politique cookies : catégories de traceurs, durées, consentement." },
-      { property: "og:title", content: "Politique cookies — CDS" },
-      { property: "og:description", content: "Gabarit CDS de politique cookies." },
+      { title: "Politique cookies — PMM RDS" },
+      {
+        name: "description",
+        content:
+          "Politique cookies PMM RDS : catégories de traceurs, durées de conservation et gestion du consentement.",
+      },
+      { property: "og:title", content: "Politique cookies — PMM RDS" },
+      { property: "og:description", content: "Traceurs utilisés et gestion du consentement." },
       { property: "og:type", content: "article" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -23,7 +27,7 @@ export const Route = createFileRoute("/legal/cookies")({
       <Section title="Cookies utilisés">
         <ul>
           <li>Essentiels : session, sécurité, préférences — exemptés de consentement.</li>
-          <li>Mesure d'audience : statistiques anonymisées — durée [13 mois].</li>
+          <li>Mesure d'audience : statistiques anonymisées — durée 13 mois.</li>
           <li>Marketing : personnalisation et publicité — soumis à consentement.</li>
         </ul>
       </Section>
@@ -37,6 +41,15 @@ export const Route = createFileRoute("/legal/cookies")({
         <p>
           Le refus des cookies non essentiels n'empêche pas l'accès au service, mais peut réduire
           certaines fonctionnalités de confort.
+        </p>
+      </Section>
+      <Section title="Contact">
+        <p>
+          Pour toute question relative aux traceurs, utilisez le{" "}
+          <Link to="/contact" className="font-medium text-primary hover:underline">
+            formulaire de contact
+          </Link>
+          .
         </p>
       </Section>
     </LegalPage>
