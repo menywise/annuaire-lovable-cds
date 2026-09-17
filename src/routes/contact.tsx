@@ -71,10 +71,9 @@ function ContactPage() {
 
         {sent ? (
           <Alert className="mt-8">
-            <AlertTitle>Message prêt à être envoyé</AlertTitle>
+            <AlertTitle>Message envoyé</AlertTitle>
             <AlertDescription>
-              Merci, votre message a bien été pris en compte. Nous vous répondons sous 48 heures
-              ouvrées.
+              Merci, votre message a bien été transmis. Nous vous répondons sous 48 heures ouvrées.
             </AlertDescription>
           </Alert>
         ) : (
@@ -87,6 +86,16 @@ function ContactPage() {
                 </AlertDescription>
               </Alert>
             )}
+
+            {failed && (
+              <Alert variant="destructive">
+                <AlertTitle>Envoi impossible</AlertTitle>
+                <AlertDescription>
+                  Votre message n'a pas pu être transmis. Merci de réessayer dans un instant.
+                </AlertDescription>
+              </Alert>
+            )}
+
 
             <div className="space-y-1.5">
               <Label htmlFor="name">Nom</Label>
