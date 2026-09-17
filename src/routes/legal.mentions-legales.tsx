@@ -12,15 +12,21 @@ export const Route = createFileRoute("/legal/mentions-legales")({
       path: "/legal/mentions-legales",
       type: "article",
     }),
-  component: () => (
+  component: MentionsLegalesPage,
+});
+
+function MentionsLegalesPage() {
+  const { settings } = useBrandSettings();
+  const { legal, host } = settings;
+
+  return (
     <LegalPage title="Mentions légales" updatedAt="17 septembre 2026">
       <Section title="Éditeur du site">
         <p>
-          PMM RDS, société par actions simplifiée (SAS) au capital de 1 000 €, immatriculée au
-          Registre du commerce et des sociétés de Limoges, siège social : Rue du Champfour, 87000
-          Limoges, France.
+          {legal.company}, {legal.form} au capital de {legal.capital}, immatriculée au{" "}
+          {legal.rcs}, siège social : {legal.address}, {legal.country}.
         </p>
-        <p>Directeur de la publication : Manuel ROHAUT.</p>
+        <p>Directeur de la publication : {legal.publisher}.</p>
         <p>
           Contact :{" "}
           <Link to="/contact" title="Nous écrire via le formulaire de contact protégé" className="font-medium text-primary hover:underline">
@@ -32,9 +38,8 @@ export const Route = createFileRoute("/legal/mentions-legales")({
 
       <Section title="Hébergement">
         <p>
-          Le site est hébergé par OVH SAS, société par actions simplifiée au capital de 50 000 000 €,
-          immatriculée au RCS de Lille Métropole sous le numéro 424 761 419, siège social : 2 rue
-          Kellermann, 59100 Roubaix, France — téléphone : 1007.
+          Le site est hébergé par {host.name}, immatriculée sous le numéro {host.detail}, siège
+          social : {host.address} — téléphone : {host.phone}.
         </p>
       </Section>
 
