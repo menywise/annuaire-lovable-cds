@@ -20,6 +20,7 @@ import { Route as MaintenanceRouteImport } from './routes/maintenance'
 import { Route as MerciRouteImport } from './routes/merci'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SignupRouteImport } from './routes/signup'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as AuthenticatedCompteRouteImport } from './routes/_authenticated/compte'
 import { Route as AuthenticatedProfilRouteImport } from './routes/_authenticated/profil'
 import { Route as LegalCguRouteImport } from './routes/legal.cgu'
@@ -81,6 +82,11 @@ const SignupRoute = SignupRouteImport.update({
   path: '/signup',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedCompteRoute = AuthenticatedCompteRouteImport.update({
   id: '/compte',
   path: '/compte',
@@ -123,6 +129,7 @@ export interface FileRoutesByFullPath {
   '/merci': typeof MerciRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/compte': typeof AuthenticatedCompteRoute
   '/profil': typeof AuthenticatedProfilRoute
   '/legal/cgu': typeof LegalCguRoute
@@ -141,6 +148,7 @@ export interface FileRoutesByTo {
   '/merci': typeof MerciRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/compte': typeof AuthenticatedCompteRoute
   '/profil': typeof AuthenticatedProfilRoute
   '/legal/cgu': typeof LegalCguRoute
@@ -161,6 +169,7 @@ export interface FileRoutesById {
   '/merci': typeof MerciRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/compte': typeof AuthenticatedCompteRoute
   '/_authenticated/profil': typeof AuthenticatedProfilRoute
   '/legal/cgu': typeof LegalCguRoute
@@ -181,6 +190,7 @@ export interface FileRouteTypes {
     | '/merci'
     | '/reset-password'
     | '/signup'
+    | '/sitemap.xml'
     | '/compte'
     | '/profil'
     | '/legal/cgu'
@@ -199,6 +209,7 @@ export interface FileRouteTypes {
     | '/merci'
     | '/reset-password'
     | '/signup'
+    | '/sitemap.xml'
     | '/compte'
     | '/profil'
     | '/legal/cgu'
@@ -218,6 +229,7 @@ export interface FileRouteTypes {
     | '/merci'
     | '/reset-password'
     | '/signup'
+    | '/sitemap.xml'
     | '/_authenticated/compte'
     | '/_authenticated/profil'
     | '/legal/cgu'
@@ -238,6 +250,7 @@ export interface RootRouteChildren {
   MerciRoute: typeof MerciRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SignupRoute: typeof SignupRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   LegalCguRoute: typeof LegalCguRoute
   LegalConfidentialiteRoute: typeof LegalConfidentialiteRoute
   LegalCookiesRoute: typeof LegalCookiesRoute
@@ -323,6 +336,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SignupRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/compte': {
       id: '/_authenticated/compte'
       path: '/compte'
@@ -393,6 +413,7 @@ const rootRouteChildren: RootRouteChildren = {
   MerciRoute: MerciRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SignupRoute: SignupRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   LegalCguRoute: LegalCguRoute,
   LegalConfidentialiteRoute: LegalConfidentialiteRoute,
   LegalCookiesRoute: LegalCookiesRoute,
