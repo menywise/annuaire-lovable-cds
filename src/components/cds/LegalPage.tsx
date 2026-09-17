@@ -1,4 +1,5 @@
 import { PageShell } from "./SiteHeader";
+import { useBrandSettings } from "@/hooks/useSiteSettings";
 
 export function LegalPage({
   title,
@@ -9,6 +10,8 @@ export function LegalPage({
   updatedAt: string;
   children: React.ReactNode;
 }) {
+  const { settings } = useBrandSettings();
+
   return (
     <PageShell>
       <article className="mx-auto max-w-[760px]">
@@ -21,8 +24,8 @@ export function LegalPage({
           {children}
         </div>
         <p className="mt-10 rounded-lg border border-border bg-muted p-4 text-xs text-muted-foreground">
-          PMM RDS — SAS au capital de 1 000 €, Rue du Champfour, 87000 Limoges. Site hébergé par
-          OVH.
+          {settings.legal.company} — {settings.legal.form} au capital de {settings.legal.capital},{" "}
+          {settings.legal.address}. Site hébergé par {settings.host.name}.
         </p>
       </article>
     </PageShell>

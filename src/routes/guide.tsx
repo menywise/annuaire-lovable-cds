@@ -20,8 +20,8 @@ const steps = [
     body: "Reprendre src/styles.css (tokens de couleur, typographie, rayons), src/lib/cds-tokens.ts, src/lib/seo.ts et le dossier src/components/cds.",
   },
   {
-    title: "2. Modifier un seul fichier",
-    body: "src/config/brand.ts contient le nom du site, l'URL publique, les coordonnées légales, l'hébergeur et les adresses administratrices. C'est le seul fichier à adapter pour un nouveau projet.",
+    title: "2. Régler la marque depuis l'administration",
+    body: "Aucun fichier à modifier : l'espace Administration (réservé aux comptes administrateurs) permet de changer le nom du site, l'adresse publique, les coordonnées légales et l'hébergeur. Les modifications s'appliquent immédiatement sur l'en-tête, le pied de page et les pages légales.",
   },
   {
     title: "3. Reprendre les pages fournies",
@@ -39,6 +39,7 @@ const steps = [
 
 const shipped = [
   { to: "/", label: "Tokens et fondations", title: "Couleurs, typographie, rayons et ombres" },
+  { to: "/admin", label: "Espace d'administration", title: "Régler le nom du site, les coordonnées légales et l'hébergeur" },
   { to: "/composants", label: "Bibliothèque de composants", title: "Boutons, champs, tableaux, fenêtres, pagination" },
   { to: "/login", label: "Écrans de connexion", title: "Connexion à un compte existant" },
   { to: "/contact", label: "Formulaire de contact", title: "Formulaire protégé anti-spam" },
