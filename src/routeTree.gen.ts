@@ -28,6 +28,7 @@ import { Route as VerificationEmailRouteImport } from './routes/verification-ema
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedCompteRouteImport } from './routes/_authenticated/compte'
 import { Route as AuthenticatedProfilRouteImport } from './routes/_authenticated/profil'
+import { Route as AuthenticatedTableauDeBordRouteImport } from './routes/_authenticated/tableau-de-bord'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as ForumIndexRouteImport } from './routes/forum.index'
@@ -131,6 +132,12 @@ const AuthenticatedProfilRoute = AuthenticatedProfilRouteImport.update({
   path: '/profil',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedTableauDeBordRoute =
+  AuthenticatedTableauDeBordRouteImport.update({
+    id: '/tableau-de-bord',
+    path: '/tableau-de-bord',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const BlogIndexRoute = BlogIndexRouteImport.update({
   id: '/blog/',
   path: '/blog/',
@@ -191,6 +198,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AuthenticatedAdminRoute
   '/compte': typeof AuthenticatedCompteRoute
   '/profil': typeof AuthenticatedProfilRoute
+  '/tableau-de-bord': typeof AuthenticatedTableauDeBordRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/forum/$topicId': typeof ForumTopicIdRoute
   '/legal/cgu': typeof LegalCguRoute
@@ -219,6 +227,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AuthenticatedAdminRoute
   '/compte': typeof AuthenticatedCompteRoute
   '/profil': typeof AuthenticatedProfilRoute
+  '/tableau-de-bord': typeof AuthenticatedTableauDeBordRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/forum/$topicId': typeof ForumTopicIdRoute
   '/legal/cgu': typeof LegalCguRoute
@@ -249,6 +258,7 @@ export interface FileRoutesById {
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/compte': typeof AuthenticatedCompteRoute
   '/_authenticated/profil': typeof AuthenticatedProfilRoute
+  '/_authenticated/tableau-de-bord': typeof AuthenticatedTableauDeBordRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/forum/$topicId': typeof ForumTopicIdRoute
   '/legal/cgu': typeof LegalCguRoute
@@ -279,6 +289,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/compte'
     | '/profil'
+    | '/tableau-de-bord'
     | '/blog/$slug'
     | '/forum/$topicId'
     | '/legal/cgu'
@@ -307,6 +318,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/compte'
     | '/profil'
+    | '/tableau-de-bord'
     | '/blog/$slug'
     | '/forum/$topicId'
     | '/legal/cgu'
@@ -336,6 +348,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin'
     | '/_authenticated/compte'
     | '/_authenticated/profil'
+    | '/_authenticated/tableau-de-bord'
     | '/blog/$slug'
     | '/forum/$topicId'
     | '/legal/cgu'
@@ -508,6 +521,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProfilRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/tableau-de-bord': {
+      id: '/_authenticated/tableau-de-bord'
+      path: '/tableau-de-bord'
+      fullPath: '/tableau-de-bord'
+      preLoaderRoute: typeof AuthenticatedTableauDeBordRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/blog/': {
       id: '/blog/'
       path: '/blog'
@@ -571,12 +591,14 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedCompteRoute: typeof AuthenticatedCompteRoute
   AuthenticatedProfilRoute: typeof AuthenticatedProfilRoute
+  AuthenticatedTableauDeBordRoute: typeof AuthenticatedTableauDeBordRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedCompteRoute: AuthenticatedCompteRoute,
   AuthenticatedProfilRoute: AuthenticatedProfilRoute,
+  AuthenticatedTableauDeBordRoute: AuthenticatedTableauDeBordRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
