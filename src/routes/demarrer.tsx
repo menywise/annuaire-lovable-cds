@@ -60,7 +60,7 @@ function DemarrerPage() {
   return (
     <PageShell>
       <div className="mx-auto max-w-[880px]">
-        <p className="text-xs font-medium uppercase tracking-wide text-primary">Démarrer</p>
+        <p className="text-xs font-medium uppercase tracking-wide text-primary-text">Démarrer</p>
         <h1 className="mt-2 text-3xl font-bold text-foreground">
           Trois étapes, et votre site travaille pour vous
         </h1>
@@ -77,7 +77,7 @@ function DemarrerPage() {
                 index === step ? "border-primary bg-card" : "border-border bg-card"
               }`}
             >
-              <p className="text-xs font-medium text-primary">Étape {index + 1}</p>
+              <p className="text-xs font-medium text-primary-text">Étape {index + 1}</p>
               <p className="mt-1 text-sm font-semibold text-foreground">{etape.label}</p>
               <p className="mt-1 text-xs text-muted-foreground">{etape.desc}</p>
             </li>
@@ -131,7 +131,7 @@ function DemarrerPage() {
                     <ul className="mt-3 space-y-1.5 text-xs text-muted-foreground">
                       {features.slice(0, 4).map((feature) => (
                         <li key={feature} className="flex gap-1.5">
-                          <Check className="mt-0.5 size-3.5 shrink-0 text-success" aria-hidden="true" />
+                          <Check className="mt-0.5 size-3.5 shrink-0 text-success-text" aria-hidden="true" />
                           {feature}
                         </li>
                       ))}

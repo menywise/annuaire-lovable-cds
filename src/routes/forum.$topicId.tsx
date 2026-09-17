@@ -45,7 +45,7 @@ export const Route = createFileRoute("/forum/$topicId")({
     <PageShell>
       <h1 className="text-2xl font-bold text-foreground">Discussion introuvable</h1>
       <p className="mt-2 text-sm text-muted-foreground">
-        <Link to="/forum" title="Revenir à la liste des discussions" className="text-primary hover:underline">
+        <Link to="/forum" title="Revenir à la liste des discussions" className="text-primary-text hover:underline">
           Revenir au forum
         </Link>
       </p>
@@ -85,7 +85,7 @@ function TopicPage() {
   return (
     <PageShell>
       <article className="mx-auto max-w-[760px]">
-        <Link to="/forum" title="Revenir à la liste des discussions" className="text-xs font-medium text-primary hover:underline">
+        <Link to="/forum" title="Revenir à la liste des discussions" className="text-xs font-medium text-primary-text hover:underline">
           ← Forum
         </Link>
         <h1 className="mt-3 text-2xl font-bold text-foreground">{topic.title}</h1>
@@ -135,7 +135,7 @@ function TopicPage() {
           </form>
         ) : (
           <p className="mt-6 rounded-lg border border-dashed border-border p-5 text-sm text-muted-foreground">
-            <Link to="/login" title="Se connecter pour répondre" className="text-primary hover:underline">
+            <Link to="/login" title="Se connecter pour répondre" className="text-primary-text hover:underline">
               Connectez-vous
             </Link>{" "}
             pour participer à cette discussion.

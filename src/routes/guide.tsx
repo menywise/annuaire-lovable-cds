@@ -63,7 +63,7 @@ function GuidePage() {
   return (
     <PageShell>
       <article className="mx-auto max-w-[760px]">
-        <p className="text-xs font-medium uppercase tracking-wide text-primary">Documentation</p>
+        <p className="text-xs font-medium uppercase tracking-wide text-primary-text">Documentation</p>
         <h1 className="mt-2 text-3xl font-bold text-foreground">Réutiliser CDS sur un nouveau projet</h1>
         <p className="mt-2 text-sm text-muted-foreground">
           CDS est un modèle complet : fondations visuelles, composants, pages de compte et pages

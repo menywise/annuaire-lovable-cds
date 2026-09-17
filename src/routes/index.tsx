@@ -72,7 +72,7 @@ const templates = [
 function Index() {
   return (
     <PageShell>
-      <p className="text-xs font-medium uppercase tracking-wide text-primary">Design System</p>
+      <p className="text-xs font-medium uppercase tracking-wide text-primary-text">Design System</p>
       <h1 className="mt-2 text-3xl font-bold text-foreground">Consensus Design System</h1>
       <p className="mt-2 max-w-[680px] text-sm text-muted-foreground">
         Vous voulez lancer un site sérieux sans repartir de zéro à chaque fois. CDS vous donne le

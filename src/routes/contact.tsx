@@ -128,7 +128,7 @@ function ContactPage() {
             </Button>
             <p className="text-xs text-muted-foreground">
               Les informations transmises servent uniquement à traiter votre demande. Voir la{" "}
-              <Link to="/legal/confidentialite" title="Lire la politique de confidentialité" className="text-primary hover:underline">
+              <Link to="/legal/confidentialite" title="Lire la politique de confidentialité" className="text-primary-text hover:underline">
                 politique de confidentialité
               </Link>
               .

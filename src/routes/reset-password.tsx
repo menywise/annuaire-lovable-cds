@@ -53,7 +53,7 @@ function ResetPasswordPage() {
       title="Nouveau mot de passe"
       subtitle="Choisissez un mot de passe d'au moins 8 caractères."
       footer={
-        <Link to="/login" title="Se connecter à son espace personnel" className="font-medium text-primary hover:underline">
+        <Link to="/login" title="Se connecter à son espace personnel" className="font-medium text-primary-text hover:underline">
           Retour à la connexion
         </Link>
       }

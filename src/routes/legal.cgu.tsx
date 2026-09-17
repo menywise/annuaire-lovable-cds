@@ -50,7 +50,7 @@ export const Route = createFileRoute("/legal/cgu")({
       <Section title="Contact et droit applicable">
         <p>
           Toute question peut être adressée via le{" "}
-          <Link to="/contact" title="Nous écrire via le formulaire de contact protégé" className="font-medium text-primary hover:underline">
+          <Link to="/contact" title="Nous écrire via le formulaire de contact protégé" className="font-medium text-primary-text hover:underline">
             formulaire de contact
           </Link>
           . Les présentes conditions sont soumises au droit français ; à défaut d'accord amiable,
