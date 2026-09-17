@@ -46,6 +46,7 @@ export function SiteFooter() {
           <Link to="/legal/confidentialite" className="hover:text-foreground">Confidentialité</Link>
           <Link to="/legal/cgu" className="hover:text-foreground">CGU</Link>
           <Link to="/legal/cookies" className="hover:text-foreground">Cookies</Link>
+          <Link to="/contact" className="hover:text-foreground">Contact</Link>
         </nav>
       </div>
     </footer>
