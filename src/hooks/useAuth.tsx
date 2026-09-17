@@ -28,7 +28,7 @@ export function useAuth() {
 /** Crée le profil si besoin et renvoie le rôle ("admin" ou "user"). */
 export async function bootstrapCurrentUser(fullName?: string) {
   const { data, error } = await supabase.rpc("bootstrap_current_user", {
-    _full_name: fullName ?? null,
+    _full_name: fullName,
   });
   if (error) throw error;
   return data as "admin" | "user";
