@@ -46,7 +46,9 @@ import { Route as MembresMemberIdRouteImport } from './routes/membres.$memberId'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedAdminAbonnesRouteImport } from './routes/_authenticated/admin.abonnes'
 import { Route as AuthenticatedAdminContenusRouteImport } from './routes/_authenticated/admin.contenus'
+import { Route as AuthenticatedAdminForumRouteImport } from './routes/_authenticated/admin.forum'
 import { Route as AuthenticatedAdminModerationRouteImport } from './routes/_authenticated/admin.moderation'
+import { Route as AuthenticatedAdminTemoignagesRouteImport } from './routes/_authenticated/admin.temoignages'
 import { Route as AuthenticatedMessagerieIndexRouteImport } from './routes/_authenticated/messagerie.index'
 import { Route as AuthenticatedMessagerieConversationIdRouteImport } from './routes/_authenticated/messagerie.$conversationId'
 import { Route as ForumCategorieSlugRouteImport } from './routes/forum.categorie.$slug'
@@ -238,10 +240,21 @@ const AuthenticatedAdminContenusRoute =
     path: '/admin/contenus',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAdminForumRoute = AuthenticatedAdminForumRouteImport.update({
+  id: '/admin/forum',
+  path: '/admin/forum',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedAdminModerationRoute =
   AuthenticatedAdminModerationRouteImport.update({
     id: '/admin/moderation',
     path: '/admin/moderation',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminTemoignagesRoute =
+  AuthenticatedAdminTemoignagesRouteImport.update({
+    id: '/admin/temoignages',
+    path: '/admin/temoignages',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedMessagerieIndexRoute =
@@ -298,7 +311,9 @@ export interface FileRoutesByFullPath {
   '/membres/': typeof MembresIndexRoute
   '/admin/abonnes': typeof AuthenticatedAdminAbonnesRoute
   '/admin/contenus': typeof AuthenticatedAdminContenusRoute
+  '/admin/forum': typeof AuthenticatedAdminForumRoute
   '/admin/moderation': typeof AuthenticatedAdminModerationRoute
+  '/admin/temoignages': typeof AuthenticatedAdminTemoignagesRoute
   '/messagerie/$conversationId': typeof AuthenticatedMessagerieConversationIdRoute
   '/forum/categorie/$slug': typeof ForumCategorieSlugRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
@@ -340,7 +355,9 @@ export interface FileRoutesByTo {
   '/membres': typeof MembresIndexRoute
   '/admin/abonnes': typeof AuthenticatedAdminAbonnesRoute
   '/admin/contenus': typeof AuthenticatedAdminContenusRoute
+  '/admin/forum': typeof AuthenticatedAdminForumRoute
   '/admin/moderation': typeof AuthenticatedAdminModerationRoute
+  '/admin/temoignages': typeof AuthenticatedAdminTemoignagesRoute
   '/messagerie/$conversationId': typeof AuthenticatedMessagerieConversationIdRoute
   '/forum/categorie/$slug': typeof ForumCategorieSlugRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
@@ -384,7 +401,9 @@ export interface FileRoutesById {
   '/membres/': typeof MembresIndexRoute
   '/_authenticated/admin/abonnes': typeof AuthenticatedAdminAbonnesRoute
   '/_authenticated/admin/contenus': typeof AuthenticatedAdminContenusRoute
+  '/_authenticated/admin/forum': typeof AuthenticatedAdminForumRoute
   '/_authenticated/admin/moderation': typeof AuthenticatedAdminModerationRoute
+  '/_authenticated/admin/temoignages': typeof AuthenticatedAdminTemoignagesRoute
   '/_authenticated/messagerie/$conversationId': typeof AuthenticatedMessagerieConversationIdRoute
   '/forum/categorie/$slug': typeof ForumCategorieSlugRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
@@ -428,7 +447,9 @@ export interface FileRouteTypes {
     | '/membres/'
     | '/admin/abonnes'
     | '/admin/contenus'
+    | '/admin/forum'
     | '/admin/moderation'
+    | '/admin/temoignages'
     | '/messagerie/$conversationId'
     | '/forum/categorie/$slug'
     | '/admin/'
@@ -470,7 +491,9 @@ export interface FileRouteTypes {
     | '/membres'
     | '/admin/abonnes'
     | '/admin/contenus'
+    | '/admin/forum'
     | '/admin/moderation'
+    | '/admin/temoignages'
     | '/messagerie/$conversationId'
     | '/forum/categorie/$slug'
     | '/admin'
@@ -513,7 +536,9 @@ export interface FileRouteTypes {
     | '/membres/'
     | '/_authenticated/admin/abonnes'
     | '/_authenticated/admin/contenus'
+    | '/_authenticated/admin/forum'
     | '/_authenticated/admin/moderation'
+    | '/_authenticated/admin/temoignages'
     | '/_authenticated/messagerie/$conversationId'
     | '/forum/categorie/$slug'
     | '/_authenticated/admin/'
@@ -816,11 +841,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminContenusRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/forum': {
+      id: '/_authenticated/admin/forum'
+      path: '/admin/forum'
+      fullPath: '/admin/forum'
+      preLoaderRoute: typeof AuthenticatedAdminForumRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/moderation': {
       id: '/_authenticated/admin/moderation'
       path: '/admin/moderation'
       fullPath: '/admin/moderation'
       preLoaderRoute: typeof AuthenticatedAdminModerationRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/temoignages': {
+      id: '/_authenticated/admin/temoignages'
+      path: '/admin/temoignages'
+      fullPath: '/admin/temoignages'
+      preLoaderRoute: typeof AuthenticatedAdminTemoignagesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/messagerie/': {
@@ -853,7 +892,9 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedTableauDeBordRoute: typeof AuthenticatedTableauDeBordRoute
   AuthenticatedAdminAbonnesRoute: typeof AuthenticatedAdminAbonnesRoute
   AuthenticatedAdminContenusRoute: typeof AuthenticatedAdminContenusRoute
+  AuthenticatedAdminForumRoute: typeof AuthenticatedAdminForumRoute
   AuthenticatedAdminModerationRoute: typeof AuthenticatedAdminModerationRoute
+  AuthenticatedAdminTemoignagesRoute: typeof AuthenticatedAdminTemoignagesRoute
   AuthenticatedMessagerieConversationIdRoute: typeof AuthenticatedMessagerieConversationIdRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
   AuthenticatedMessagerieIndexRoute: typeof AuthenticatedMessagerieIndexRoute
@@ -865,7 +906,9 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedTableauDeBordRoute: AuthenticatedTableauDeBordRoute,
   AuthenticatedAdminAbonnesRoute: AuthenticatedAdminAbonnesRoute,
   AuthenticatedAdminContenusRoute: AuthenticatedAdminContenusRoute,
+  AuthenticatedAdminForumRoute: AuthenticatedAdminForumRoute,
   AuthenticatedAdminModerationRoute: AuthenticatedAdminModerationRoute,
+  AuthenticatedAdminTemoignagesRoute: AuthenticatedAdminTemoignagesRoute,
   AuthenticatedMessagerieConversationIdRoute:
     AuthenticatedMessagerieConversationIdRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
