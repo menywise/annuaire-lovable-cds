@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { supabase } from "@/integrations/supabase/client";
 import { bootstrapCurrentUser } from "@/hooks/useAuth";
+import { GoogleSignInButton } from "@/components/cds/GoogleSignInButton";
 
 import { seo } from "@/lib/seo";
 
@@ -102,6 +103,7 @@ function LoginPage() {
         <Button type="submit" className="w-full" disabled={busy}>
           {busy ? "Connexion…" : "Se connecter"}
         </Button>
+        <GoogleSignInButton />
       </form>
     </AuthLayout>
   );

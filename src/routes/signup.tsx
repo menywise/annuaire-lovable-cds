@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { supabase } from "@/integrations/supabase/client";
+import { GoogleSignInButton } from "@/components/cds/GoogleSignInButton";
 
 import { seo } from "@/lib/seo";
 
@@ -139,6 +140,7 @@ function SignupPage() {
           <Button type="submit" className="w-full" disabled={busy}>
             {busy ? "Création…" : "Créer mon compte"}
           </Button>
+          <GoogleSignInButton label="S'inscrire avec Google" />
         </form>
       )}
     </AuthLayout>
