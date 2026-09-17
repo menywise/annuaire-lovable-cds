@@ -16,7 +16,7 @@ import {
 } from "@/hooks/useSiteSettings";
 import { seo } from "@/lib/seo";
 
-export const Route = createFileRoute("/_authenticated/admin")({
+export const Route = createFileRoute("/_authenticated/admin/")({
   head: () =>
     seo({
       title: "Administration",
