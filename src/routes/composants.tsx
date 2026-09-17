@@ -9,6 +9,35 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import { toast } from "sonner";
 
 import { seo } from "@/lib/seo";
 
@@ -32,6 +61,12 @@ function Block({ title, children }: { title: string; children: React.ReactNode }
     </section>
   );
 }
+
+const rows = [
+  { name: "Facture 2026-014", status: "Payée", amount: "1 240,00 €", variant: "default" as const },
+  { name: "Facture 2026-015", status: "En attente", amount: "860,00 €", variant: "secondary" as const },
+  { name: "Facture 2026-016", status: "Impayée", amount: "320,00 €", variant: "destructive" as const },
+];
 
 function ComposantsPage() {
   return (
@@ -120,6 +155,138 @@ function ComposantsPage() {
             <AlertTitle>Erreur</AlertTitle>
             <AlertDescription>Identifiants incorrects, veuillez réessayer.</AlertDescription>
           </Alert>
+        </div>
+      </Block>
+
+      <Block title="Fil d'Ariane">
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/" title="Revenir à la page d'accueil">Accueil</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>Composants</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+      </Block>
+
+      <Block title="Onglets">
+        <Tabs defaultValue="apercu">
+          <TabsList>
+            <TabsTrigger value="apercu">Aperçu</TabsTrigger>
+            <TabsTrigger value="details">Détails</TabsTrigger>
+            <TabsTrigger value="historique">Historique</TabsTrigger>
+          </TabsList>
+          <TabsContent value="apercu" className="pt-4 text-sm text-muted-foreground">
+            Contenu de l'onglet Aperçu.
+          </TabsContent>
+          <TabsContent value="details" className="pt-4 text-sm text-muted-foreground">
+            Contenu de l'onglet Détails.
+          </TabsContent>
+          <TabsContent value="historique" className="pt-4 text-sm text-muted-foreground">
+            Contenu de l'onglet Historique.
+          </TabsContent>
+        </Tabs>
+      </Block>
+
+      <Block title="Tableau">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Nom</TableHead>
+              <TableHead>Statut</TableHead>
+              <TableHead className="text-right">Montant</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {rows.map((row) => (
+              <TableRow key={row.name}>
+                <TableCell className="font-medium">{row.name}</TableCell>
+                <TableCell>
+                  <Badge variant={row.variant}>{row.status}</Badge>
+                </TableCell>
+                <TableCell className="text-right">{row.amount}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </Block>
+
+      <Block title="Pagination">
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious href="#" title="Page précédente" />
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationLink href="#" isActive title="Page 1">1</PaginationLink>
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationLink href="#" title="Page 2">2</PaginationLink>
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationLink href="#" title="Page 3">3</PaginationLink>
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationNext href="#" title="Page suivante" />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      </Block>
+
+      <Block title="Liste vide">
+        <div className="rounded-lg border border-dashed border-border p-10 text-center">
+          <p className="text-sm font-medium text-foreground">Aucun élément pour le moment</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Les éléments que vous créerez apparaîtront ici.
+          </p>
+          <Button className="mt-4" size="sm">Créer un élément</Button>
+        </div>
+      </Block>
+
+      <Block title="Chargement">
+        <div className="space-y-3">
+          <Skeleton className="h-5 w-1/3" />
+          <Skeleton className="h-5 w-2/3" />
+          <Skeleton className="h-24 w-full" />
+        </div>
+      </Block>
+
+      <Block title="Fenêtre modale">
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant="outline" title="Ouvrir la fenêtre de confirmation">
+              Ouvrir la fenêtre
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Confirmer la suppression</DialogTitle>
+              <DialogDescription>
+                Cette action est définitive et ne peut pas être annulée.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button variant="outline">Annuler</Button>
+              <Button variant="destructive">Supprimer</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </Block>
+
+      <Block title="Notifications">
+        <div className="flex flex-wrap gap-3">
+          <Button variant="outline" onClick={() => toast.success("Modification enregistrée.")}>
+            Succès
+          </Button>
+          <Button variant="outline" onClick={() => toast.error("Une erreur est survenue.")}>
+            Erreur
+          </Button>
+          <Button variant="outline" onClick={() => toast("Information enregistrée.")}>
+            Information
+          </Button>
         </div>
       </Block>
     </PageShell>
