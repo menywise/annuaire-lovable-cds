@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { LegalPage, Section } from "@/components/cds/LegalPage";
+import { useBrandSettings } from "@/hooks/useSiteSettings";
 
 import { seo } from "@/lib/seo";
 
@@ -46,31 +47,31 @@ function MentionsLegalesPage() {
       <Section title="Propriété intellectuelle">
         <p>
           L'ensemble des contenus du site (textes, images, marques, logos, code source) est la
-          propriété de PMM RDS ou de ses partenaires. Toute reproduction ou représentation, totale
-          ou partielle, sans autorisation écrite préalable est interdite.
+          propriété de {legal.company} ou de ses partenaires. Toute reproduction ou représentation,
+          totale ou partielle, sans autorisation écrite préalable est interdite.
         </p>
       </Section>
 
       <Section title="Responsabilité">
         <p>
-          PMM RDS s'efforce d'assurer l'exactitude des informations publiées mais ne saurait être
-          tenue responsable des erreurs, omissions ou indisponibilités temporaires du service.
+          {legal.company} s'efforce d'assurer l'exactitude des informations publiées mais ne saurait
+          être tenue responsable des erreurs, omissions ou indisponibilités temporaires du service.
         </p>
       </Section>
 
       <Section title="Liens externes">
         <p>
-          Les liens vers des sites tiers sont fournis à titre informatif ; PMM RDS n'exerce aucun
-          contrôle sur leur contenu et décline toute responsabilité à leur égard.
+          Les liens vers des sites tiers sont fournis à titre informatif ; {legal.company} n'exerce
+          aucun contrôle sur leur contenu et décline toute responsabilité à leur égard.
         </p>
       </Section>
 
       <Section title="Litiges">
         <p>
           Les présentes mentions sont soumises au droit français. À défaut d'accord amiable, les
-          tribunaux compétents sont ceux de Limoges.
+          tribunaux compétents sont ceux du ressort du siège social de l'éditeur.
         </p>
       </Section>
     </LegalPage>
-  ),
-});
+  );
+}
