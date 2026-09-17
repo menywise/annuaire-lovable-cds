@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -28,9 +29,11 @@ export const Route = createFileRoute("/contact")({
 function ContactPage() {
   const [sent, setSent] = useState(false);
   const [blocked, setBlocked] = useState(false);
+  const [failed, setFailed] = useState(false);
+  const [busy, setBusy] = useState(false);
   const openedAt = useRef(Date.now());
 
-  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = new FormData(e.currentTarget);
     // Piège à robots : champ invisible qui doit rester vide + délai minimal de saisie.
@@ -41,6 +44,19 @@ function ContactPage() {
       return;
     }
     setBlocked(false);
+    setFailed(false);
+    setBusy(true);
+    const { error } = await supabase.from("contact_messages").insert({
+      name: String(form.get("name") ?? "").trim(),
+      email: String(form.get("email") ?? "").trim(),
+      subject: String(form.get("subject") ?? "").trim(),
+      message: String(form.get("message") ?? "").trim(),
+    });
+    setBusy(false);
+    if (error) {
+      setFailed(true);
+      return;
+    }
     setSent(true);
   }
 
