@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AvisRouteImport } from './routes/avis'
 import { Route as ComposantsRouteImport } from './routes/composants'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as DemarrerRouteImport } from './routes/demarrer'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as GuideRouteImport } from './routes/guide'
@@ -37,6 +38,9 @@ import { Route as LegalConfidentialiteRouteImport } from './routes/legal.confide
 import { Route as LegalCookiesRouteImport } from './routes/legal.cookies'
 import { Route as LegalMentionsLegalesRouteImport } from './routes/legal.mentions-legales'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
+import { Route as AuthenticatedAdminAbonnesRouteImport } from './routes/_authenticated/admin.abonnes'
+import { Route as AuthenticatedAdminContenusRouteImport } from './routes/_authenticated/admin.contenus'
+import { Route as AuthenticatedAdminModerationRouteImport } from './routes/_authenticated/admin.moderation'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -60,6 +64,11 @@ const ComposantsRoute = ComposantsRouteImport.update({
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DemarrerRoute = DemarrerRouteImport.update({
+  id: '/demarrer',
+  path: '/demarrer',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FaqRoute = FaqRouteImport.update({
@@ -178,12 +187,31 @@ const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   path: '/admin/',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAdminAbonnesRoute =
+  AuthenticatedAdminAbonnesRouteImport.update({
+    id: '/admin/abonnes',
+    path: '/admin/abonnes',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminContenusRoute =
+  AuthenticatedAdminContenusRouteImport.update({
+    id: '/admin/contenus',
+    path: '/admin/contenus',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminModerationRoute =
+  AuthenticatedAdminModerationRouteImport.update({
+    id: '/admin/moderation',
+    path: '/admin/moderation',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/avis': typeof AvisRoute
   '/composants': typeof ComposantsRoute
   '/contact': typeof ContactRoute
+  '/demarrer': typeof DemarrerRoute
   '/faq': typeof FaqRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/guide': typeof GuideRoute
@@ -206,6 +234,9 @@ export interface FileRoutesByFullPath {
   '/legal/mentions-legales': typeof LegalMentionsLegalesRoute
   '/blog/': typeof BlogIndexRoute
   '/forum/': typeof ForumIndexRoute
+  '/admin/abonnes': typeof AuthenticatedAdminAbonnesRoute
+  '/admin/contenus': typeof AuthenticatedAdminContenusRoute
+  '/admin/moderation': typeof AuthenticatedAdminModerationRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRoutesByTo {
@@ -213,6 +244,7 @@ export interface FileRoutesByTo {
   '/avis': typeof AvisRoute
   '/composants': typeof ComposantsRoute
   '/contact': typeof ContactRoute
+  '/demarrer': typeof DemarrerRoute
   '/faq': typeof FaqRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/guide': typeof GuideRoute
@@ -235,6 +267,9 @@ export interface FileRoutesByTo {
   '/legal/mentions-legales': typeof LegalMentionsLegalesRoute
   '/blog': typeof BlogIndexRoute
   '/forum': typeof ForumIndexRoute
+  '/admin/abonnes': typeof AuthenticatedAdminAbonnesRoute
+  '/admin/contenus': typeof AuthenticatedAdminContenusRoute
+  '/admin/moderation': typeof AuthenticatedAdminModerationRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRoutesById {
@@ -244,6 +279,7 @@ export interface FileRoutesById {
   '/avis': typeof AvisRoute
   '/composants': typeof ComposantsRoute
   '/contact': typeof ContactRoute
+  '/demarrer': typeof DemarrerRoute
   '/faq': typeof FaqRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/guide': typeof GuideRoute
@@ -266,6 +302,9 @@ export interface FileRoutesById {
   '/legal/mentions-legales': typeof LegalMentionsLegalesRoute
   '/blog/': typeof BlogIndexRoute
   '/forum/': typeof ForumIndexRoute
+  '/_authenticated/admin/abonnes': typeof AuthenticatedAdminAbonnesRoute
+  '/_authenticated/admin/contenus': typeof AuthenticatedAdminContenusRoute
+  '/_authenticated/admin/moderation': typeof AuthenticatedAdminModerationRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRouteTypes {
@@ -275,6 +314,7 @@ export interface FileRouteTypes {
     | '/avis'
     | '/composants'
     | '/contact'
+    | '/demarrer'
     | '/faq'
     | '/forgot-password'
     | '/guide'
@@ -297,6 +337,9 @@ export interface FileRouteTypes {
     | '/legal/mentions-legales'
     | '/blog/'
     | '/forum/'
+    | '/admin/abonnes'
+    | '/admin/contenus'
+    | '/admin/moderation'
     | '/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -304,6 +347,7 @@ export interface FileRouteTypes {
     | '/avis'
     | '/composants'
     | '/contact'
+    | '/demarrer'
     | '/faq'
     | '/forgot-password'
     | '/guide'
@@ -326,6 +370,9 @@ export interface FileRouteTypes {
     | '/legal/mentions-legales'
     | '/blog'
     | '/forum'
+    | '/admin/abonnes'
+    | '/admin/contenus'
+    | '/admin/moderation'
     | '/admin'
   id:
     | '__root__'
@@ -334,6 +381,7 @@ export interface FileRouteTypes {
     | '/avis'
     | '/composants'
     | '/contact'
+    | '/demarrer'
     | '/faq'
     | '/forgot-password'
     | '/guide'
@@ -356,6 +404,9 @@ export interface FileRouteTypes {
     | '/legal/mentions-legales'
     | '/blog/'
     | '/forum/'
+    | '/_authenticated/admin/abonnes'
+    | '/_authenticated/admin/contenus'
+    | '/_authenticated/admin/moderation'
     | '/_authenticated/admin/'
   fileRoutesById: FileRoutesById
 }
@@ -365,6 +416,7 @@ export interface RootRouteChildren {
   AvisRoute: typeof AvisRoute
   ComposantsRoute: typeof ComposantsRoute
   ContactRoute: typeof ContactRoute
+  DemarrerRoute: typeof DemarrerRoute
   FaqRoute: typeof FaqRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   GuideRoute: typeof GuideRoute
@@ -421,6 +473,13 @@ declare module '@tanstack/react-router' {
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/demarrer': {
+      id: '/demarrer'
+      path: '/demarrer'
+      fullPath: '/demarrer'
+      preLoaderRoute: typeof DemarrerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/faq': {
@@ -584,6 +643,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/abonnes': {
+      id: '/_authenticated/admin/abonnes'
+      path: '/admin/abonnes'
+      fullPath: '/admin/abonnes'
+      preLoaderRoute: typeof AuthenticatedAdminAbonnesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/contenus': {
+      id: '/_authenticated/admin/contenus'
+      path: '/admin/contenus'
+      fullPath: '/admin/contenus'
+      preLoaderRoute: typeof AuthenticatedAdminContenusRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/moderation': {
+      id: '/_authenticated/admin/moderation'
+      path: '/admin/moderation'
+      fullPath: '/admin/moderation'
+      preLoaderRoute: typeof AuthenticatedAdminModerationRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
@@ -591,6 +671,9 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedCompteRoute: typeof AuthenticatedCompteRoute
   AuthenticatedProfilRoute: typeof AuthenticatedProfilRoute
   AuthenticatedTableauDeBordRoute: typeof AuthenticatedTableauDeBordRoute
+  AuthenticatedAdminAbonnesRoute: typeof AuthenticatedAdminAbonnesRoute
+  AuthenticatedAdminContenusRoute: typeof AuthenticatedAdminContenusRoute
+  AuthenticatedAdminModerationRoute: typeof AuthenticatedAdminModerationRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
 }
 
@@ -598,6 +681,9 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCompteRoute: AuthenticatedCompteRoute,
   AuthenticatedProfilRoute: AuthenticatedProfilRoute,
   AuthenticatedTableauDeBordRoute: AuthenticatedTableauDeBordRoute,
+  AuthenticatedAdminAbonnesRoute: AuthenticatedAdminAbonnesRoute,
+  AuthenticatedAdminContenusRoute: AuthenticatedAdminContenusRoute,
+  AuthenticatedAdminModerationRoute: AuthenticatedAdminModerationRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
 }
 
@@ -610,6 +696,7 @@ const rootRouteChildren: RootRouteChildren = {
   AvisRoute: AvisRoute,
   ComposantsRoute: ComposantsRoute,
   ContactRoute: ContactRoute,
+  DemarrerRoute: DemarrerRoute,
   FaqRoute: FaqRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
   GuideRoute: GuideRoute,

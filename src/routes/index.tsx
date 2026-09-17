@@ -45,10 +45,19 @@ function Block({
 }
 
 const templates = [
+  { to: "/demarrer", label: "Tunnel de vente", desc: "Trois étapes, du besoin au compte créé" },
+  { to: "/tarifs", label: "Tarifs", desc: "Offres, mise en avant, appels à l'action" },
+  { to: "/faq", label: "FAQ", desc: "Questions structurées et balisage FAQPage" },
+  { to: "/blog", label: "Blog", desc: "Articles, commentaires modérés, partage" },
+  { to: "/forum", label: "Forum", desc: "Sujets, réponses, modération" },
+  { to: "/avis", label: "Avis et notations", desc: "Étoiles, moyenne, validation avant publication" },
   { to: "/login", label: "Connexion", desc: "E-mail + mot de passe, lien d'inscription" },
   { to: "/signup", label: "Créer un compte", desc: "Inscription avec acceptation des CGU" },
+  { to: "/verification-email", label: "Vérification e-mail", desc: "Renvoi du lien de confirmation" },
   { to: "/forgot-password", label: "Mot de passe oublié", desc: "Demande de lien de réinitialisation" },
   { to: "/reset-password", label: "Nouveau mot de passe", desc: "Définition du nouveau mot de passe" },
+  { to: "/tableau-de-bord", label: "Tableau de bord", desc: "Chiffres clés et raccourcis" },
+  { to: "/admin", label: "Administration", desc: "Paramètres, contenus, modération, abonnés" },
   { to: "/legal/mentions-legales", label: "Mentions légales", desc: "Éditeur, hébergeur, propriété" },
   { to: "/legal/confidentialite", label: "Confidentialité", desc: "RGPD, données, droits" },
   { to: "/legal/cgu", label: "CGU", desc: "Conditions générales d'utilisation" },
@@ -65,11 +74,12 @@ function Index() {
     <PageShell>
       <p className="text-xs font-medium uppercase tracking-wide text-primary">Design System</p>
       <h1 className="mt-2 text-3xl font-bold text-foreground">Consensus Design System</h1>
-      <p className="mt-2 max-w-[640px] text-sm text-muted-foreground">
-        Base réutilisable pour tous les projets du workspace : tokens de couleur, typographie,
-        rayons, ombres — et des gabarits prêts à copier pour la connexion, la récupération de mot
-        de passe et les pages légales.
+      <p className="mt-2 max-w-[680px] text-sm text-muted-foreground">
+        Vous voulez lancer un site sérieux sans repartir de zéro à chaque fois. CDS vous donne le
+        socle complet : fondations visuelles, comptes, pages légales, blog, forum, avis, FAQ,
+        tarifs et espace d'administration — déjà reliés et prêts à servir.
       </p>
+
 
       <Block title="Gabarits de pages" description="Cliquez pour voir chaque écran en taille réelle.">
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
