@@ -1,17 +1,20 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
 import { AuthLayout } from "@/components/cds/AuthLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/signup")({
   head: () => ({
     meta: [
-      { title: "Créer un compte — CDS" },
-      { name: "description", content: "Gabarit CDS de page d'inscription avec acceptation des conditions." },
-      { property: "og:title", content: "Créer un compte — CDS" },
-      { property: "og:description", content: "Gabarit CDS de page d'inscription." },
+      { title: "Créer un compte — PMM RDS" },
+      { name: "description", content: "Créez votre compte en quelques secondes : nom, adresse e-mail et mot de passe." },
+      { property: "og:title", content: "Créer un compte — PMM RDS" },
+      { property: "og:description", content: "Création de compte." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -20,6 +23,42 @@ export const Route = createFileRoute("/signup")({
 });
 
 function SignupPage() {
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [accepted, setAccepted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [done, setDone] = useState(false);
+  const [busy, setBusy] = useState(false);
+
+  async function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!accepted) {
+      setError("Vous devez accepter les conditions générales.");
+      return;
+    }
+    setBusy(true);
+    setError(null);
+    const { error: signUpError } = await supabase.auth.signUp({
+      email: email.trim(),
+      password,
+      options: {
+        emailRedirectTo: `${window.location.origin}/login`,
+        data: { full_name: fullName },
+      },
+    });
+    setBusy(false);
+    if (signUpError) {
+      setError(
+        signUpError.message.includes("already")
+          ? "Un compte existe déjà avec cette adresse."
+          : "La création du compte a échoué. Vérifiez les informations saisies.",
+      );
+      return;
+    }
+    setDone(true);
+  }
+
   return (
     <AuthLayout
       title="Créer un compte"
@@ -33,31 +72,75 @@ function SignupPage() {
         </>
       }
     >
-      <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
-        <div className="space-y-1.5">
-          <Label htmlFor="name">Nom complet</Label>
-          <Input id="name" autoComplete="name" placeholder="Prénom Nom" />
-        </div>
-        <div className="space-y-1.5">
-          <Label htmlFor="email">Adresse e-mail</Label>
-          <Input id="email" type="email" autoComplete="email" placeholder="nom@exemple.fr" />
-        </div>
-        <div className="space-y-1.5">
-          <Label htmlFor="password">Mot de passe</Label>
-          <Input id="password" type="password" autoComplete="new-password" placeholder="8 caractères minimum" />
-        </div>
-        <div className="flex items-start gap-2">
-          <Checkbox id="cgu" className="mt-0.5" />
-          <Label htmlFor="cgu" className="text-xs font-normal leading-relaxed text-muted-foreground">
-            J'accepte les{" "}
-            <Link to="/legal/cgu" className="text-primary hover:underline">conditions générales</Link> et la{" "}
-            <Link to="/legal/confidentialite" className="text-primary hover:underline">politique de confidentialité</Link>.
-          </Label>
-        </div>
-        <Button type="submit" className="w-full">
-          Créer mon compte
-        </Button>
-      </form>
+      {done ? (
+        <Alert>
+          <AlertTitle>Vérifiez votre boîte mail</AlertTitle>
+          <AlertDescription>
+            Un e-mail de confirmation vient de vous être envoyé. Cliquez sur le lien qu'il contient
+            pour activer votre compte, puis connectez-vous.
+          </AlertDescription>
+        </Alert>
+      ) : (
+        <form className="space-y-4" onSubmit={onSubmit}>
+          {error && (
+            <Alert variant="destructive">
+              <AlertTitle>Inscription impossible</AlertTitle>
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+          <div className="space-y-1.5">
+            <Label htmlFor="name">Nom complet</Label>
+            <Input
+              id="name"
+              autoComplete="name"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              placeholder="Prénom Nom"
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="email">Adresse e-mail</Label>
+            <Input
+              id="email"
+              type="email"
+              autoComplete="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="nom@exemple.fr"
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="password">Mot de passe</Label>
+            <Input
+              id="password"
+              type="password"
+              autoComplete="new-password"
+              required
+              minLength={8}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="8 caractères minimum"
+            />
+          </div>
+          <div className="flex items-start gap-2">
+            <Checkbox
+              id="cgu"
+              className="mt-0.5"
+              checked={accepted}
+              onCheckedChange={(v) => setAccepted(v === true)}
+            />
+            <Label htmlFor="cgu" className="text-xs font-normal leading-relaxed text-muted-foreground">
+              J'accepte les{" "}
+              <Link to="/legal/cgu" className="text-primary hover:underline">conditions générales</Link> et la{" "}
+              <Link to="/legal/confidentialite" className="text-primary hover:underline">politique de confidentialité</Link>.
+            </Label>
+          </div>
+          <Button type="submit" className="w-full" disabled={busy}>
+            {busy ? "Création…" : "Créer mon compte"}
+          </Button>
+        </form>
+      )}
     </AuthLayout>
   );
 }
