@@ -40,10 +40,13 @@ import { Route as LegalCgvRouteImport } from './routes/legal.cgv'
 import { Route as LegalConfidentialiteRouteImport } from './routes/legal.confidentialite'
 import { Route as LegalCookiesRouteImport } from './routes/legal.cookies'
 import { Route as LegalMentionsLegalesRouteImport } from './routes/legal.mentions-legales'
+import { Route as MembresIndexRouteImport } from './routes/membres.index'
+import { Route as MembresMemberIdRouteImport } from './routes/membres.$memberId'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedAdminAbonnesRouteImport } from './routes/_authenticated/admin.abonnes'
 import { Route as AuthenticatedAdminContenusRouteImport } from './routes/_authenticated/admin.contenus'
 import { Route as AuthenticatedAdminModerationRouteImport } from './routes/_authenticated/admin.moderation'
+import { Route as ForumCategorieSlugRouteImport } from './routes/forum.categorie.$slug'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -200,6 +203,16 @@ const LegalMentionsLegalesRoute = LegalMentionsLegalesRouteImport.update({
   path: '/legal/mentions-legales',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MembresIndexRoute = MembresIndexRouteImport.update({
+  id: '/membres/',
+  path: '/membres/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MembresMemberIdRoute = MembresMemberIdRouteImport.update({
+  id: '/membres/$memberId',
+  path: '/membres/$memberId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   id: '/admin/',
   path: '/admin/',
@@ -223,6 +236,11 @@ const AuthenticatedAdminModerationRoute =
     path: '/admin/moderation',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const ForumCategorieSlugRoute = ForumCategorieSlugRouteImport.update({
+  id: '/forum/categorie/$slug',
+  path: '/forum/categorie/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -253,11 +271,14 @@ export interface FileRoutesByFullPath {
   '/legal/confidentialite': typeof LegalConfidentialiteRoute
   '/legal/cookies': typeof LegalCookiesRoute
   '/legal/mentions-legales': typeof LegalMentionsLegalesRoute
+  '/membres/$memberId': typeof MembresMemberIdRoute
   '/blog/': typeof BlogIndexRoute
   '/forum/': typeof ForumIndexRoute
+  '/membres/': typeof MembresIndexRoute
   '/admin/abonnes': typeof AuthenticatedAdminAbonnesRoute
   '/admin/contenus': typeof AuthenticatedAdminContenusRoute
   '/admin/moderation': typeof AuthenticatedAdminModerationRoute
+  '/forum/categorie/$slug': typeof ForumCategorieSlugRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRoutesByTo {
@@ -289,11 +310,14 @@ export interface FileRoutesByTo {
   '/legal/confidentialite': typeof LegalConfidentialiteRoute
   '/legal/cookies': typeof LegalCookiesRoute
   '/legal/mentions-legales': typeof LegalMentionsLegalesRoute
+  '/membres/$memberId': typeof MembresMemberIdRoute
   '/blog': typeof BlogIndexRoute
   '/forum': typeof ForumIndexRoute
+  '/membres': typeof MembresIndexRoute
   '/admin/abonnes': typeof AuthenticatedAdminAbonnesRoute
   '/admin/contenus': typeof AuthenticatedAdminContenusRoute
   '/admin/moderation': typeof AuthenticatedAdminModerationRoute
+  '/forum/categorie/$slug': typeof ForumCategorieSlugRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRoutesById {
@@ -327,11 +351,14 @@ export interface FileRoutesById {
   '/legal/confidentialite': typeof LegalConfidentialiteRoute
   '/legal/cookies': typeof LegalCookiesRoute
   '/legal/mentions-legales': typeof LegalMentionsLegalesRoute
+  '/membres/$memberId': typeof MembresMemberIdRoute
   '/blog/': typeof BlogIndexRoute
   '/forum/': typeof ForumIndexRoute
+  '/membres/': typeof MembresIndexRoute
   '/_authenticated/admin/abonnes': typeof AuthenticatedAdminAbonnesRoute
   '/_authenticated/admin/contenus': typeof AuthenticatedAdminContenusRoute
   '/_authenticated/admin/moderation': typeof AuthenticatedAdminModerationRoute
+  '/forum/categorie/$slug': typeof ForumCategorieSlugRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRouteTypes {
@@ -365,11 +392,14 @@ export interface FileRouteTypes {
     | '/legal/confidentialite'
     | '/legal/cookies'
     | '/legal/mentions-legales'
+    | '/membres/$memberId'
     | '/blog/'
     | '/forum/'
+    | '/membres/'
     | '/admin/abonnes'
     | '/admin/contenus'
     | '/admin/moderation'
+    | '/forum/categorie/$slug'
     | '/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -401,11 +431,14 @@ export interface FileRouteTypes {
     | '/legal/confidentialite'
     | '/legal/cookies'
     | '/legal/mentions-legales'
+    | '/membres/$memberId'
     | '/blog'
     | '/forum'
+    | '/membres'
     | '/admin/abonnes'
     | '/admin/contenus'
     | '/admin/moderation'
+    | '/forum/categorie/$slug'
     | '/admin'
   id:
     | '__root__'
@@ -438,11 +471,14 @@ export interface FileRouteTypes {
     | '/legal/confidentialite'
     | '/legal/cookies'
     | '/legal/mentions-legales'
+    | '/membres/$memberId'
     | '/blog/'
     | '/forum/'
+    | '/membres/'
     | '/_authenticated/admin/abonnes'
     | '/_authenticated/admin/contenus'
     | '/_authenticated/admin/moderation'
+    | '/forum/categorie/$slug'
     | '/_authenticated/admin/'
   fileRoutesById: FileRoutesById
 }
@@ -473,8 +509,11 @@ export interface RootRouteChildren {
   LegalConfidentialiteRoute: typeof LegalConfidentialiteRoute
   LegalCookiesRoute: typeof LegalCookiesRoute
   LegalMentionsLegalesRoute: typeof LegalMentionsLegalesRoute
+  MembresMemberIdRoute: typeof MembresMemberIdRoute
   BlogIndexRoute: typeof BlogIndexRoute
   ForumIndexRoute: typeof ForumIndexRoute
+  MembresIndexRoute: typeof MembresIndexRoute
+  ForumCategorieSlugRoute: typeof ForumCategorieSlugRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -696,6 +735,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LegalMentionsLegalesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/membres/': {
+      id: '/membres/'
+      path: '/membres'
+      fullPath: '/membres/'
+      preLoaderRoute: typeof MembresIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/membres/$memberId': {
+      id: '/membres/$memberId'
+      path: '/membres/$memberId'
+      fullPath: '/membres/$memberId'
+      preLoaderRoute: typeof MembresMemberIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/admin/': {
       id: '/_authenticated/admin/'
       path: '/admin'
@@ -723,6 +776,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/moderation'
       preLoaderRoute: typeof AuthenticatedAdminModerationRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/forum/categorie/$slug': {
+      id: '/forum/categorie/$slug'
+      path: '/forum/categorie/$slug'
+      fullPath: '/forum/categorie/$slug'
+      preLoaderRoute: typeof ForumCategorieSlugRouteImport
+      parentRoute: typeof rootRouteImport
     }
   }
 }
@@ -777,8 +837,11 @@ const rootRouteChildren: RootRouteChildren = {
   LegalConfidentialiteRoute: LegalConfidentialiteRoute,
   LegalCookiesRoute: LegalCookiesRoute,
   LegalMentionsLegalesRoute: LegalMentionsLegalesRoute,
+  MembresMemberIdRoute: MembresMemberIdRoute,
   BlogIndexRoute: BlogIndexRoute,
   ForumIndexRoute: ForumIndexRoute,
+  MembresIndexRoute: MembresIndexRoute,
+  ForumCategorieSlugRoute: ForumCategorieSlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
