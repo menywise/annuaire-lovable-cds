@@ -46,7 +46,10 @@ function Block({
 
 const templates = [
   { to: "/demarrer", label: "Tunnel de vente", desc: "Trois étapes, du besoin au compte créé" },
+  { to: "/a-propos", label: "À propos", desc: "Qui édite le site et ses engagements" },
+  { to: "/plan-du-site", label: "Plan du site", desc: "Toutes les pages sur une seule page" },
   { to: "/tarifs", label: "Tarifs", desc: "Offres, mise en avant, appels à l'action" },
+
   { to: "/faq", label: "FAQ", desc: "Questions structurées et balisage FAQPage" },
   { to: "/blog", label: "Blog", desc: "Articles, commentaires modérés, partage" },
   { to: "/forum", label: "Forum", desc: "Sujets, réponses, modération" },
