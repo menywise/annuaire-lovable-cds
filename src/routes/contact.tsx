@@ -127,8 +127,8 @@ function ContactPage() {
               <input id="company" name="company" type="text" tabIndex={-1} autoComplete="off" />
             </div>
 
-            <Button type="submit" className="w-full sm:w-auto">
-              Envoyer le message
+            <Button type="submit" className="w-full sm:w-auto" disabled={busy}>
+              {busy ? "Envoi…" : "Envoyer le message"}
             </Button>
             <p className="text-xs text-muted-foreground">
               Les informations transmises servent uniquement à traiter votre demande. Voir la{" "}
