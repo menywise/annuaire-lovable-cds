@@ -148,10 +148,9 @@ function ListingPage() {
   async function claim() {
     if (!user) return;
     setBusy(true);
-    const { error } = await supabase
-      .from("directory_listings")
-      .update({ claim_requested_by: user.id, claim_requested_at: new Date().toISOString() })
-      .eq("id", listing.id);
+    const { error } = await supabase.rpc("request_directory_claim", {
+      _listing_id: listing.id,
+    });
     setBusy(false);
     if (error) {
       toast.error("Demande non enregistrée.", { description: "Réessayez dans un instant." });
