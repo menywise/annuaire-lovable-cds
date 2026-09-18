@@ -123,7 +123,7 @@ export const getTopMembers = createServerFn({ method: "GET" }).handler(async () 
   const month = new Date(now - 30 * 864e5).toISOString();
 
   const [all, last30, last7] = await Promise.all([
-    client.rpc("forum_top_members", { _since: null }),
+    client.rpc("forum_top_members", { _since: undefined }),
     client.rpc("forum_top_members", { _since: month }),
     client.rpc("forum_top_members", { _since: week }),
   ]);
@@ -185,7 +185,7 @@ export const listMembers = createServerFn({ method: "GET" }).handler(async () =>
       .select("user_id, display_name, avatar_url, bio, job_title, website, accepts_messages, created_at")
       .eq("listed", true)
       .order("created_at", { ascending: true }),
-    client.rpc("forum_top_members", { _since: null }),
+    client.rpc("forum_top_members", { _since: undefined }),
   ]);
 
   const scores = new Map<string, number>();
