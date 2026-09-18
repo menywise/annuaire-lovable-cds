@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { publicClient } from "@/lib/supabase-public";
 
 const LISTING_FIELDS =
-  "id, name, slug, excerpt, description, city, postal_code, address, departement, phone, email, website, logo_url, cover_url, photos, hours, plan, featured, verified, tags, category_id, latitude, longitude, created_at";
+  "id, name, slug, excerpt, description, city, postal_code, address, departement, phone, email, website, logo_url, cover_url, photos, hours, plan, featured, verified, tags, category_id, claimed_by, latitude, longitude, created_at";
 
 export type DirectoryCategory = {
   id: string;
