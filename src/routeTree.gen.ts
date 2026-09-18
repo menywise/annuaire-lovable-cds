@@ -47,6 +47,7 @@ import { Route as LegalCookiesRouteImport } from './routes/legal.cookies'
 import { Route as LegalMentionsLegalesRouteImport } from './routes/legal.mentions-legales'
 import { Route as MembresIndexRouteImport } from './routes/membres.index'
 import { Route as MembresMemberIdRouteImport } from './routes/membres.$memberId'
+import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedAdminAbonnesRouteImport } from './routes/_authenticated/admin.abonnes'
 import { Route as AuthenticatedAdminConformiteRouteImport } from './routes/_authenticated/admin.conformite'
@@ -250,6 +251,11 @@ const MembresMemberIdRoute = MembresMemberIdRouteImport.update({
   path: '/membres/$memberId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
+  id: '/.lovable/oauth/consent',
+  path: '/.lovable/oauth/consent',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   id: '/admin/',
   path: '/admin/',
@@ -352,6 +358,7 @@ export interface FileRoutesByFullPath {
   '/blog/': typeof BlogIndexRoute
   '/forum/': typeof ForumIndexRoute
   '/membres/': typeof MembresIndexRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/admin/abonnes': typeof AuthenticatedAdminAbonnesRoute
   '/admin/conformite': typeof AuthenticatedAdminConformiteRoute
   '/admin/contenus': typeof AuthenticatedAdminContenusRoute
@@ -402,6 +409,7 @@ export interface FileRoutesByTo {
   '/blog': typeof BlogIndexRoute
   '/forum': typeof ForumIndexRoute
   '/membres': typeof MembresIndexRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/admin/abonnes': typeof AuthenticatedAdminAbonnesRoute
   '/admin/conformite': typeof AuthenticatedAdminConformiteRoute
   '/admin/contenus': typeof AuthenticatedAdminContenusRoute
@@ -454,6 +462,7 @@ export interface FileRoutesById {
   '/blog/': typeof BlogIndexRoute
   '/forum/': typeof ForumIndexRoute
   '/membres/': typeof MembresIndexRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/_authenticated/admin/abonnes': typeof AuthenticatedAdminAbonnesRoute
   '/_authenticated/admin/conformite': typeof AuthenticatedAdminConformiteRoute
   '/_authenticated/admin/contenus': typeof AuthenticatedAdminContenusRoute
@@ -506,6 +515,7 @@ export interface FileRouteTypes {
     | '/blog/'
     | '/forum/'
     | '/membres/'
+    | '/.lovable/oauth/consent'
     | '/admin/abonnes'
     | '/admin/conformite'
     | '/admin/contenus'
@@ -556,6 +566,7 @@ export interface FileRouteTypes {
     | '/blog'
     | '/forum'
     | '/membres'
+    | '/.lovable/oauth/consent'
     | '/admin/abonnes'
     | '/admin/conformite'
     | '/admin/contenus'
@@ -607,6 +618,7 @@ export interface FileRouteTypes {
     | '/blog/'
     | '/forum/'
     | '/membres/'
+    | '/.lovable/oauth/consent'
     | '/_authenticated/admin/abonnes'
     | '/_authenticated/admin/conformite'
     | '/_authenticated/admin/contenus'
@@ -655,6 +667,7 @@ export interface RootRouteChildren {
   BlogIndexRoute: typeof BlogIndexRoute
   ForumIndexRoute: typeof ForumIndexRoute
   MembresIndexRoute: typeof MembresIndexRoute
+  DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   ForumCategorieSlugRoute: typeof ForumCategorieSlugRoute
 }
 
@@ -926,6 +939,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MembresMemberIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/.lovable/oauth/consent': {
+      id: '/.lovable/oauth/consent'
+      path: '/.lovable/oauth/consent'
+      fullPath: '/.lovable/oauth/consent'
+      preLoaderRoute: typeof DotlovableOauthConsentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/admin/': {
       id: '/_authenticated/admin/'
       path: '/admin'
@@ -1080,6 +1100,7 @@ const rootRouteChildren: RootRouteChildren = {
   BlogIndexRoute: BlogIndexRoute,
   ForumIndexRoute: ForumIndexRoute,
   MembresIndexRoute: MembresIndexRoute,
+  DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   ForumCategorieSlugRoute: ForumCategorieSlugRoute,
 }
 export const routeTree = rootRouteImport
