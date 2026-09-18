@@ -51,6 +51,8 @@ import { Route as LegalCgvRouteImport } from './routes/legal.cgv'
 import { Route as LegalConfidentialiteRouteImport } from './routes/legal.confidentialite'
 import { Route as LegalCookiesRouteImport } from './routes/legal.cookies'
 import { Route as LegalMentionsLegalesRouteImport } from './routes/legal.mentions-legales'
+import { Route as MarketplaceIndexRouteImport } from './routes/marketplace.index'
+import { Route as MarketplaceSlugRouteImport } from './routes/marketplace.$slug'
 import { Route as MembresIndexRouteImport } from './routes/membres.index'
 import { Route as MembresMemberIdRouteImport } from './routes/membres.$memberId'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
@@ -282,6 +284,16 @@ const LegalMentionsLegalesRoute = LegalMentionsLegalesRouteImport.update({
   path: '/legal/mentions-legales',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MarketplaceIndexRoute = MarketplaceIndexRouteImport.update({
+  id: '/marketplace/',
+  path: '/marketplace/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MarketplaceSlugRoute = MarketplaceSlugRouteImport.update({
+  id: '/marketplace/$slug',
+  path: '/marketplace/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MembresIndexRoute = MembresIndexRouteImport.update({
   id: '/membres/',
   path: '/membres/',
@@ -420,11 +432,13 @@ export interface FileRoutesByFullPath {
   '/legal/confidentialite': typeof LegalConfidentialiteRoute
   '/legal/cookies': typeof LegalCookiesRoute
   '/legal/mentions-legales': typeof LegalMentionsLegalesRoute
+  '/marketplace/$slug': typeof MarketplaceSlugRoute
   '/membres/$memberId': typeof MembresMemberIdRoute
   '/annuaire/': typeof AnnuaireIndexRoute
   '/blog/': typeof BlogIndexRoute
   '/formations/': typeof FormationsIndexRoute
   '/forum/': typeof ForumIndexRoute
+  '/marketplace/': typeof MarketplaceIndexRoute
   '/membres/': typeof MembresIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/admin/abonnes': typeof AuthenticatedAdminAbonnesRoute
@@ -481,11 +495,13 @@ export interface FileRoutesByTo {
   '/legal/confidentialite': typeof LegalConfidentialiteRoute
   '/legal/cookies': typeof LegalCookiesRoute
   '/legal/mentions-legales': typeof LegalMentionsLegalesRoute
+  '/marketplace/$slug': typeof MarketplaceSlugRoute
   '/membres/$memberId': typeof MembresMemberIdRoute
   '/annuaire': typeof AnnuaireIndexRoute
   '/blog': typeof BlogIndexRoute
   '/formations': typeof FormationsIndexRoute
   '/forum': typeof ForumIndexRoute
+  '/marketplace': typeof MarketplaceIndexRoute
   '/membres': typeof MembresIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/admin/abonnes': typeof AuthenticatedAdminAbonnesRoute
@@ -544,11 +560,13 @@ export interface FileRoutesById {
   '/legal/confidentialite': typeof LegalConfidentialiteRoute
   '/legal/cookies': typeof LegalCookiesRoute
   '/legal/mentions-legales': typeof LegalMentionsLegalesRoute
+  '/marketplace/$slug': typeof MarketplaceSlugRoute
   '/membres/$memberId': typeof MembresMemberIdRoute
   '/annuaire/': typeof AnnuaireIndexRoute
   '/blog/': typeof BlogIndexRoute
   '/formations/': typeof FormationsIndexRoute
   '/forum/': typeof ForumIndexRoute
+  '/marketplace/': typeof MarketplaceIndexRoute
   '/membres/': typeof MembresIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/_authenticated/admin/abonnes': typeof AuthenticatedAdminAbonnesRoute
@@ -607,11 +625,13 @@ export interface FileRouteTypes {
     | '/legal/confidentialite'
     | '/legal/cookies'
     | '/legal/mentions-legales'
+    | '/marketplace/$slug'
     | '/membres/$memberId'
     | '/annuaire/'
     | '/blog/'
     | '/formations/'
     | '/forum/'
+    | '/marketplace/'
     | '/membres/'
     | '/.lovable/oauth/consent'
     | '/admin/abonnes'
@@ -668,11 +688,13 @@ export interface FileRouteTypes {
     | '/legal/confidentialite'
     | '/legal/cookies'
     | '/legal/mentions-legales'
+    | '/marketplace/$slug'
     | '/membres/$memberId'
     | '/annuaire'
     | '/blog'
     | '/formations'
     | '/forum'
+    | '/marketplace'
     | '/membres'
     | '/.lovable/oauth/consent'
     | '/admin/abonnes'
@@ -730,11 +752,13 @@ export interface FileRouteTypes {
     | '/legal/confidentialite'
     | '/legal/cookies'
     | '/legal/mentions-legales'
+    | '/marketplace/$slug'
     | '/membres/$memberId'
     | '/annuaire/'
     | '/blog/'
     | '/formations/'
     | '/forum/'
+    | '/marketplace/'
     | '/membres/'
     | '/.lovable/oauth/consent'
     | '/_authenticated/admin/abonnes'
@@ -788,11 +812,13 @@ export interface RootRouteChildren {
   LegalConfidentialiteRoute: typeof LegalConfidentialiteRoute
   LegalCookiesRoute: typeof LegalCookiesRoute
   LegalMentionsLegalesRoute: typeof LegalMentionsLegalesRoute
+  MarketplaceSlugRoute: typeof MarketplaceSlugRoute
   MembresMemberIdRoute: typeof MembresMemberIdRoute
   AnnuaireIndexRoute: typeof AnnuaireIndexRoute
   BlogIndexRoute: typeof BlogIndexRoute
   FormationsIndexRoute: typeof FormationsIndexRoute
   ForumIndexRoute: typeof ForumIndexRoute
+  MarketplaceIndexRoute: typeof MarketplaceIndexRoute
   MembresIndexRoute: typeof MembresIndexRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   AnnuaireCategorieSlugRoute: typeof AnnuaireCategorieSlugRoute
@@ -1098,6 +1124,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LegalMentionsLegalesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/marketplace/': {
+      id: '/marketplace/'
+      path: '/marketplace'
+      fullPath: '/marketplace/'
+      preLoaderRoute: typeof MarketplaceIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/marketplace/$slug': {
+      id: '/marketplace/$slug'
+      path: '/marketplace/$slug'
+      fullPath: '/marketplace/$slug'
+      preLoaderRoute: typeof MarketplaceSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/membres/': {
       id: '/membres/'
       path: '/membres'
@@ -1302,11 +1342,13 @@ const rootRouteChildren: RootRouteChildren = {
   LegalConfidentialiteRoute: LegalConfidentialiteRoute,
   LegalCookiesRoute: LegalCookiesRoute,
   LegalMentionsLegalesRoute: LegalMentionsLegalesRoute,
+  MarketplaceSlugRoute: MarketplaceSlugRoute,
   MembresMemberIdRoute: MembresMemberIdRoute,
   AnnuaireIndexRoute: AnnuaireIndexRoute,
   BlogIndexRoute: BlogIndexRoute,
   FormationsIndexRoute: FormationsIndexRoute,
   ForumIndexRoute: ForumIndexRoute,
+  MarketplaceIndexRoute: MarketplaceIndexRoute,
   MembresIndexRoute: MembresIndexRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   AnnuaireCategorieSlugRoute: AnnuaireCategorieSlugRoute,
