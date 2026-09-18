@@ -13,6 +13,7 @@ const adminNav = [
   { to: "/admin/forum", label: "Forum", title: "Gérer les thématiques du forum" },
   { to: "/admin/temoignages", label: "Témoignages", title: "Valider et mettre en avant les témoignages" },
   { to: "/admin/pilotage", label: "Pilotage", title: "Feuille de route, plan directeur et audits" },
+  { to: "/admin/conformite", label: "Conformité", title: "Grille de recettage du modèle et score de complétude" },
   { to: "/admin/abonnes", label: "Abonnés", title: "Consulter et exporter la liste d'abonnés" },
   { to: "/compte", label: "Messages", title: "Consulter les messages du formulaire de contact" },
 ] as const;

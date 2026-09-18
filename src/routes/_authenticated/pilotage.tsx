@@ -1,6 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { PageShell } from "@/components/cds/SiteHeader";
+import {
+  CheckStatusBadge,
+  ConformitySummary,
+  groupByArea,
+  type TemplateCheck,
+} from "@/components/cds/ConformityBoard";
 import { supabase } from "@/integrations/supabase/client";
 import { seo } from "@/lib/seo";
 
@@ -29,12 +35,13 @@ function PilotagePage() {
   const [items, setItems] = useState<Item[]>([]);
   const [sections, setSections] = useState<Section[]>([]);
   const [audits, setAudits] = useState<Audit[]>([]);
+  const [checks, setChecks] = useState<TemplateCheck[]>([]);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
     let active = true;
     (async () => {
-      const [roadmap, masterplan, auditList] = await Promise.all([
+      const [roadmap, masterplan, auditList, checkList] = await Promise.all([
         supabase
           .from("roadmap_items")
           .select("id, title, description, lot, status")
@@ -46,11 +53,16 @@ function PilotagePage() {
           .select("id, label, score, max_score, summary, performed_at")
           .order("performed_at", { ascending: false })
           .limit(5),
+        supabase
+          .from("template_checks")
+          .select("id, code, area, label, requirement, status, severity, evidence, position")
+          .order("position", { ascending: true }),
       ]);
       if (!active) return;
       setItems(roadmap.data ?? []);
       setSections(masterplan.data ?? []);
       setAudits(auditList.data ?? []);
+      setChecks(checkList.data ?? []);
       setReady(true);
     })();
     return () => {
@@ -76,6 +88,33 @@ function PilotagePage() {
           Le cap, les étapes en cours, et la mémoire des audits : de quoi savoir à tout moment ce qui
           avance et ce qui reste à faire.
         </p>
+
+        <section className="mt-10">
+          <h2 className="text-lg font-semibold text-foreground">Complétude du modèle</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            La grille de recettage dit, point par point, ce qui est prêt à être réutilisé.
+          </p>
+          <div className="mt-4">
+            <ConformitySummary checks={checks} />
+          </div>
+          <div className="mt-4 grid gap-4 sm:grid-cols-2">
+            {groupByArea(checks).map((group) => (
+              <div key={group.area} className="rounded-xl border border-border bg-card p-5">
+                <h3 className="text-sm font-semibold text-foreground">{group.area}</h3>
+                <ul className="mt-3 space-y-2">
+                  {group.items.map((check) => (
+                    <li key={check.id} className="flex flex-wrap items-center gap-2">
+                      <span className="text-sm text-muted-foreground">{check.label}</span>
+                      <span className="ml-auto">
+                        <CheckStatusBadge status={check.status} />
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </section>
 
         <section className="mt-10">
           <h2 className="text-lg font-semibold text-foreground">Plan directeur</h2>

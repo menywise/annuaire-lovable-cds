@@ -1,6 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useMemo, useState } from "react";
+import { Search } from "lucide-react";
 import { PageShell } from "@/components/cds/SiteHeader";
 import { NewsletterForm } from "@/components/cds/NewsletterForm";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Accordion,
   AccordionContent,
@@ -8,7 +12,16 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { listFaq } from "@/lib/content.functions";
-import { seo } from "@/lib/seo";
+import { breadcrumbJsonLd, seo } from "@/lib/seo";
+
+function anchorOf(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
 
 export const Route = createFileRoute("/faq")({
   loader: () => listFaq(),
@@ -24,6 +37,10 @@ export const Route = createFileRoute("/faq")({
     return {
       ...base,
       scripts: [
+        breadcrumbJsonLd([
+          { name: "Accueil", path: "/" },
+          { name: "Questions fréquentes", path: "/faq" },
+        ]),
         {
           type: "application/ld+json",
           children: JSON.stringify({
@@ -56,7 +73,17 @@ export const Route = createFileRoute("/faq")({
 
 function FaqPage() {
   const items = Route.useLoaderData();
-  const categories = [...new Set(items.map((i) => i.category))];
+  const [query, setQuery] = useState("");
+
+  const visible = useMemo(() => {
+    const needle = query.trim().toLowerCase();
+    if (!needle) return items;
+    return items.filter((item) =>
+      `${item.question} ${item.answer} ${item.category}`.toLowerCase().includes(needle),
+    );
+  }, [items, query]);
+
+  const categories = useMemo(() => [...new Set(visible.map((i) => i.category))], [visible]);
 
   return (
     <PageShell>
@@ -70,30 +97,70 @@ function FaqPage() {
           réponses aux questions qui reviennent le plus, pour que rien ne vous retienne.
         </p>
 
-        {categories.map((category) => (
-          <section key={category} className="mt-8">
-            <h2 className="text-base font-semibold text-foreground">{category}</h2>
-            <Accordion type="single" collapsible className="mt-2">
-              {items
-                .filter((i) => i.category === category)
-                .map((item) => (
-                  <AccordionItem key={item.id} value={item.id}>
-                    <AccordionTrigger className="text-left">{item.question}</AccordionTrigger>
-                    <AccordionContent className="text-muted-foreground">
-                      {item.answer}
-                    </AccordionContent>
-                  </AccordionItem>
-                ))}
-            </Accordion>
-          </section>
-        ))}
+        <div className="mt-6 space-y-1.5">
+          <Label htmlFor="faq-search">Rechercher une réponse</Label>
+          <div className="relative">
+            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              id="faq-search"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Délais, données, référencement, tarifs…"
+              className="pl-9"
+            />
+          </div>
+        </div>
+
+        {categories.length > 1 ? (
+          <nav aria-label="Sommaire des questions" className="mt-4 flex flex-wrap gap-2">
+            {categories.map((category) => (
+              <a
+                key={category}
+                href={`#${anchorOf(category)}`}
+                title={`Aller à la section : ${category}`}
+                className="inline-flex min-h-11 items-center rounded-md border border-border bg-card px-3 text-xs font-medium text-muted-foreground hover:text-foreground"
+              >
+                {category}
+              </a>
+            ))}
+          </nav>
+        ) : null}
+
+        {visible.length === 0 ? (
+          <p className="mt-8 rounded-lg border border-dashed border-border p-10 text-center text-sm text-muted-foreground">
+            Aucune réponse ne correspond. Posez votre question directement, elle nourrira cette page.
+          </p>
+        ) : (
+          categories.map((category) => (
+            <section key={category} id={anchorOf(category)} className="mt-8 scroll-mt-20">
+              <h2 className="text-base font-semibold text-foreground">{category}</h2>
+              <Accordion type="single" collapsible className="mt-2">
+                {visible
+                  .filter((i) => i.category === category)
+                  .map((item) => (
+                    <AccordionItem key={item.id} value={item.id} id={anchorOf(item.question)}>
+                      <AccordionTrigger className="text-left">{item.question}</AccordionTrigger>
+                      <AccordionContent className="text-muted-foreground">
+                        {item.answer}
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+              </Accordion>
+            </section>
+          ))
+        )}
 
         <p className="mt-8 text-sm text-muted-foreground">
           Votre question n'y figure pas ?{" "}
           <Link to="/contact" title="Poser votre question via le formulaire de contact" className="text-primary-text hover:underline">
             Posez-la ici
           </Link>
-          , vous aurez une réponse sous 48 heures ouvrées.
+          , vous aurez une réponse sous 48 heures ouvrées. Vous pouvez aussi la soumettre à la
+          communauté sur le{" "}
+          <Link to="/forum" title="Poser votre question au forum" className="text-primary-text hover:underline">
+            forum
+          </Link>
+          .
         </p>
 
         <div className="mt-10">

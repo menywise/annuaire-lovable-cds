@@ -9,6 +9,8 @@ import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { getPost } from "@/lib/content.functions";
+import { RichText } from "@/lib/richtext";
+import { readingMinutes } from "@/lib/reading";
 import { absoluteUrl } from "@/config/brand";
 import { breadcrumbJsonLd, seo } from "@/lib/seo";
 
@@ -68,7 +70,7 @@ export const Route = createFileRoute("/blog/$slug")({
 });
 
 function BlogPostPage() {
-  const { post, comments } = Route.useLoaderData();
+  const { post, comments, related } = Route.useLoaderData();
   const { user } = useAuth();
   const [busy, setBusy] = useState(false);
   const [sent, setSent] = useState(false);
@@ -114,19 +116,50 @@ function BlogPostPage() {
             })}
           </p>
         ) : null}
+        <p className="mt-1 text-xs text-muted-foreground">
+          {readingMinutes(post.content)} min de lecture
+        </p>
         <p className="mt-4 text-sm font-medium text-foreground">{post.excerpt}</p>
 
-        <div className="mt-6 space-y-4 text-sm leading-relaxed text-muted-foreground">
-          {post.content.split("\n\n").map((paragraph, index) => (
-            <p key={index} className="whitespace-pre-line">
-              {paragraph}
-            </p>
-          ))}
-        </div>
+        {(post.tags ?? []).length > 0 ? (
+          <ul className="mt-3 flex flex-wrap gap-2">
+            {(post.tags ?? []).map((item) => (
+              <li
+                key={item}
+                className="rounded border border-border bg-muted px-2 py-0.5 text-[11px] text-muted-foreground"
+              >
+                {item}
+              </li>
+            ))}
+          </ul>
+        ) : null}
+
+        <RichText value={post.content} className="mt-6" />
 
         <div className="mt-8 border-t border-border pt-6">
           <ShareButtons path={`/blog/${post.slug}`} title={post.title} />
         </div>
+
+        {related.length > 0 ? (
+          <section className="mt-10">
+            <h2 className="text-lg font-semibold text-foreground">À lire ensuite</h2>
+            <ul className="mt-4 grid gap-3 sm:grid-cols-3">
+              {related.map((item) => (
+                <li key={item.id} className="rounded-xl border border-border bg-card p-4">
+                  <Link
+                    to="/blog/$slug"
+                    params={{ slug: item.slug }}
+                    title={`Lire l'article : ${item.title}`}
+                    className="text-sm font-semibold text-foreground hover:text-primary-text"
+                  >
+                    {item.title}
+                  </Link>
+                  <p className="mt-1.5 line-clamp-3 text-xs text-muted-foreground">{item.excerpt}</p>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
 
         <section className="mt-10">
           <h2 className="text-lg font-semibold text-foreground">
