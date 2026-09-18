@@ -155,7 +155,7 @@ export function SiteHeader() {
               title={item.title}
               className={linkClass}
               activeProps={{ className: "bg-accent text-foreground" }}
-              activeOptions={{ exact: item.to === "/" }}
+
             >
               {item.label}
             </Link>
@@ -194,7 +194,7 @@ export function SiteHeader() {
                   onClick={() => setOpen(false)}
                   className={`flex w-full ${linkClass}`}
                   activeProps={{ className: "bg-accent text-foreground" }}
-                  activeOptions={{ exact: item.to === "/" }}
+
                 >
                   {item.label}
                 </Link>

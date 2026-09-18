@@ -1,16 +1,20 @@
 # CDS — Feuille de route
 
+> La feuille de route se pilote désormais depuis `/admin/pilotage` (visible par les membres sur `/pilotage`).
+
 ## Fait
 - Tokens CDS (thème clair uniquement), typographie Inter, rayons et ombres
 - Bibliothèque de composants (`/composants`)
-- Comptes réels : inscription, connexion, vérification e-mail, mot de passe oublié, nouveau mot de passe
-- Espace connecté : tableau de bord, mon compte, mon profil
-- Back-office `/admin` : paramètres du site, contenus (FAQ, offres, articles), modération (avis, commentaires, forum), abonnés + export CSV
-- Modules publics : FAQ, blog + commentaires modérés, forum, avis et notations, lettre d'information, tarifs, tunnel de vente `/demarrer`
-- Notifications colorées par type, menu mobile, bandeau cookies, liens avec attribut `title`
-- Pages légales dynamiques (pilotées par l'administration), page de maintenance, page de remerciement, 404 et erreur en français
-- Audit corrigé : source de vérité `CDS_TOKENS.md`, suppression de `src/index.css`, `tailwind.config.ts` et `ui/chart.tsx`, zéro trace de mode sombre, contrastes AA (couleurs de texte dédiées), base 16 px, pages À propos / Plan du site / CGV
-- SEO : `seo()` sur chaque page, canonical, Open Graph/Twitter, JSON-LD Organization / FAQPage / BlogPosting / fil d'Ariane, sitemap dynamique (articles + discussions), robots.txt
+- Comptes réels : inscription, connexion Google ou e-mail, vérification, mot de passe oublié
+- Espace connecté : tableau de bord, mon compte, mon profil (dont profil public), pilotage, messagerie
+- Back-office `/admin` : paramètres, contenus, modération, forum, témoignages, pilotage, abonnés + export CSV
+- Modules publics : FAQ, blog + commentaires, avis, lettre d'information, tarifs, tunnel `/demarrer`
+- Forum communautaire : texte enrichi, thématiques, vues, j'aime, suivi, réponse retenue, discussions récentes, membres les plus actifs
+- Annuaire des membres, profils publics et messagerie privée
+- Témoignages : page publique, dépôt par les membres, validation et mise en avant en administration
+- Navigation : en-tête collant, menu visiteur ≠ menu connecté, hamburger 44 px, pied de page en 4 colonnes + lettre d'information
+- Installation sur mobile (manifeste + icônes), sans service worker
+- SEO : `seo()` sur chaque page, canonical, Open Graph/Twitter, JSON-LD, sitemap dynamique, robots.txt
 
 ## À venir
 - Paiements réels (Stripe ou Paddle) branchés sur les offres tarifaires — choix du prestataire à valider
