@@ -66,6 +66,7 @@ import { Route as AuthenticatedAdminForumRouteImport } from './routes/_authentic
 import { Route as AuthenticatedAdminModerationRouteImport } from './routes/_authenticated/admin.moderation'
 import { Route as AuthenticatedAdminPilotageRouteImport } from './routes/_authenticated/admin.pilotage'
 import { Route as AuthenticatedAdminTemoignagesRouteImport } from './routes/_authenticated/admin.temoignages'
+import { Route as AuthenticatedCrmIndexRouteImport } from './routes/_authenticated/crm.index'
 import { Route as AuthenticatedMessagerieIndexRouteImport } from './routes/_authenticated/messagerie.index'
 import { Route as AuthenticatedMessagerieConversationIdRouteImport } from './routes/_authenticated/messagerie.$conversationId'
 import { Route as AnnuaireCategorieSlugRouteImport } from './routes/annuaire.categorie.$slug'
@@ -368,6 +369,11 @@ const AuthenticatedAdminTemoignagesRoute =
     path: '/admin/temoignages',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedCrmIndexRoute = AuthenticatedCrmIndexRouteImport.update({
+  id: '/crm/',
+  path: '/crm/',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedMessagerieIndexRoute =
   AuthenticatedMessagerieIndexRouteImport.update({
     id: '/messagerie/',
@@ -468,6 +474,7 @@ export interface FileRoutesByFullPath {
   '/annuaire/departement/$slug': typeof AnnuaireDepartementSlugRoute
   '/forum/categorie/$slug': typeof ForumCategorieSlugRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
+  '/crm/': typeof AuthenticatedCrmIndexRoute
   '/messagerie/': typeof AuthenticatedMessagerieIndexRoute
   '/formation/$slug/': typeof FormationSlugIndexRoute
   '/formation/$slug/lecon/$lessonId': typeof FormationSlugLeconLessonIdRoute
@@ -533,6 +540,7 @@ export interface FileRoutesByTo {
   '/annuaire/departement/$slug': typeof AnnuaireDepartementSlugRoute
   '/forum/categorie/$slug': typeof ForumCategorieSlugRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
+  '/crm': typeof AuthenticatedCrmIndexRoute
   '/messagerie': typeof AuthenticatedMessagerieIndexRoute
   '/formation/$slug': typeof FormationSlugIndexRoute
   '/formation/$slug/lecon/$lessonId': typeof FormationSlugLeconLessonIdRoute
@@ -600,6 +608,7 @@ export interface FileRoutesById {
   '/annuaire/departement/$slug': typeof AnnuaireDepartementSlugRoute
   '/forum/categorie/$slug': typeof ForumCategorieSlugRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+  '/_authenticated/crm/': typeof AuthenticatedCrmIndexRoute
   '/_authenticated/messagerie/': typeof AuthenticatedMessagerieIndexRoute
   '/formation/$slug/': typeof FormationSlugIndexRoute
   '/formation/$slug/lecon/$lessonId': typeof FormationSlugLeconLessonIdRoute
@@ -667,6 +676,7 @@ export interface FileRouteTypes {
     | '/annuaire/departement/$slug'
     | '/forum/categorie/$slug'
     | '/admin/'
+    | '/crm/'
     | '/messagerie/'
     | '/formation/$slug/'
     | '/formation/$slug/lecon/$lessonId'
@@ -732,6 +742,7 @@ export interface FileRouteTypes {
     | '/annuaire/departement/$slug'
     | '/forum/categorie/$slug'
     | '/admin'
+    | '/crm'
     | '/messagerie'
     | '/formation/$slug'
     | '/formation/$slug/lecon/$lessonId'
@@ -798,6 +809,7 @@ export interface FileRouteTypes {
     | '/annuaire/departement/$slug'
     | '/forum/categorie/$slug'
     | '/_authenticated/admin/'
+    | '/_authenticated/crm/'
     | '/_authenticated/messagerie/'
     | '/formation/$slug/'
     | '/formation/$slug/lecon/$lessonId'
@@ -1255,6 +1267,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminTemoignagesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/crm/': {
+      id: '/_authenticated/crm/'
+      path: '/crm'
+      fullPath: '/crm/'
+      preLoaderRoute: typeof AuthenticatedCrmIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/messagerie/': {
       id: '/_authenticated/messagerie/'
       path: '/messagerie'
@@ -1323,6 +1342,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminTemoignagesRoute: typeof AuthenticatedAdminTemoignagesRoute
   AuthenticatedMessagerieConversationIdRoute: typeof AuthenticatedMessagerieConversationIdRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+  AuthenticatedCrmIndexRoute: typeof AuthenticatedCrmIndexRoute
   AuthenticatedMessagerieIndexRoute: typeof AuthenticatedMessagerieIndexRoute
 }
 
@@ -1343,6 +1363,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedMessagerieConversationIdRoute:
     AuthenticatedMessagerieConversationIdRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+  AuthenticatedCrmIndexRoute: AuthenticatedCrmIndexRoute,
   AuthenticatedMessagerieIndexRoute: AuthenticatedMessagerieIndexRoute,
 }
 
