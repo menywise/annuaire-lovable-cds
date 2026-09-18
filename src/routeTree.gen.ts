@@ -36,8 +36,13 @@ import { Route as AuthenticatedCompteRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedDecouvrirRouteImport } from './routes/_authenticated/decouvrir'
 import { Route as AuthenticatedProfilRouteImport } from './routes/_authenticated/profil'
 import { Route as AuthenticatedTableauDeBordRouteImport } from './routes/_authenticated/tableau-de-bord'
+import { Route as AnnuaireIndexRouteImport } from './routes/annuaire.index'
+import { Route as AnnuaireSlugRouteImport } from './routes/annuaire.$slug'
+import { Route as AnnuaireDepartementsRouteImport } from './routes/annuaire.departements'
+import { Route as AnnuaireSoumettreRouteImport } from './routes/annuaire.soumettre'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
+import { Route as FormationsIndexRouteImport } from './routes/formations.index'
 import { Route as ForumIndexRouteImport } from './routes/forum.index'
 import { Route as ForumTopicIdRouteImport } from './routes/forum.$topicId'
 import { Route as LegalCguRouteImport } from './routes/legal.cgu'
@@ -58,6 +63,9 @@ import { Route as AuthenticatedAdminPilotageRouteImport } from './routes/_authen
 import { Route as AuthenticatedAdminTemoignagesRouteImport } from './routes/_authenticated/admin.temoignages'
 import { Route as AuthenticatedMessagerieIndexRouteImport } from './routes/_authenticated/messagerie.index'
 import { Route as AuthenticatedMessagerieConversationIdRouteImport } from './routes/_authenticated/messagerie.$conversationId'
+import { Route as AnnuaireCategorieSlugRouteImport } from './routes/annuaire.categorie.$slug'
+import { Route as AnnuaireDepartementSlugRouteImport } from './routes/annuaire.departement.$slug'
+import { Route as FormationSlugIndexRouteImport } from './routes/formation.$slug.index'
 import { Route as ForumCategorieSlugRouteImport } from './routes/forum.categorie.$slug'
 
 const IndexRoute = IndexRouteImport.update({
@@ -196,6 +204,26 @@ const AuthenticatedTableauDeBordRoute =
     path: '/tableau-de-bord',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AnnuaireIndexRoute = AnnuaireIndexRouteImport.update({
+  id: '/annuaire/',
+  path: '/annuaire/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AnnuaireSlugRoute = AnnuaireSlugRouteImport.update({
+  id: '/annuaire/$slug',
+  path: '/annuaire/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AnnuaireDepartementsRoute = AnnuaireDepartementsRouteImport.update({
+  id: '/annuaire/departements',
+  path: '/annuaire/departements',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AnnuaireSoumettreRoute = AnnuaireSoumettreRouteImport.update({
+  id: '/annuaire/soumettre',
+  path: '/annuaire/soumettre',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BlogIndexRoute = BlogIndexRouteImport.update({
   id: '/blog/',
   path: '/blog/',
@@ -204,6 +232,11 @@ const BlogIndexRoute = BlogIndexRouteImport.update({
 const BlogSlugRoute = BlogSlugRouteImport.update({
   id: '/blog/$slug',
   path: '/blog/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FormationsIndexRoute = FormationsIndexRouteImport.update({
+  id: '/formations/',
+  path: '/formations/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ForumIndexRoute = ForumIndexRouteImport.update({
@@ -314,6 +347,21 @@ const AuthenticatedMessagerieConversationIdRoute =
     path: '/messagerie/$conversationId',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AnnuaireCategorieSlugRoute = AnnuaireCategorieSlugRouteImport.update({
+  id: '/annuaire/categorie/$slug',
+  path: '/annuaire/categorie/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AnnuaireDepartementSlugRoute = AnnuaireDepartementSlugRouteImport.update({
+  id: '/annuaire/departement/$slug',
+  path: '/annuaire/departement/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FormationSlugIndexRoute = FormationSlugIndexRouteImport.update({
+  id: '/formation/$slug/',
+  path: '/formation/$slug/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ForumCategorieSlugRoute = ForumCategorieSlugRouteImport.update({
   id: '/forum/categorie/$slug',
   path: '/forum/categorie/$slug',
@@ -347,6 +395,9 @@ export interface FileRoutesByFullPath {
   '/decouvrir': typeof AuthenticatedDecouvrirRoute
   '/profil': typeof AuthenticatedProfilRoute
   '/tableau-de-bord': typeof AuthenticatedTableauDeBordRoute
+  '/annuaire/$slug': typeof AnnuaireSlugRoute
+  '/annuaire/departements': typeof AnnuaireDepartementsRoute
+  '/annuaire/soumettre': typeof AnnuaireSoumettreRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/forum/$topicId': typeof ForumTopicIdRoute
   '/legal/cgu': typeof LegalCguRoute
@@ -355,7 +406,9 @@ export interface FileRoutesByFullPath {
   '/legal/cookies': typeof LegalCookiesRoute
   '/legal/mentions-legales': typeof LegalMentionsLegalesRoute
   '/membres/$memberId': typeof MembresMemberIdRoute
+  '/annuaire/': typeof AnnuaireIndexRoute
   '/blog/': typeof BlogIndexRoute
+  '/formations/': typeof FormationsIndexRoute
   '/forum/': typeof ForumIndexRoute
   '/membres/': typeof MembresIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -367,9 +420,12 @@ export interface FileRoutesByFullPath {
   '/admin/pilotage': typeof AuthenticatedAdminPilotageRoute
   '/admin/temoignages': typeof AuthenticatedAdminTemoignagesRoute
   '/messagerie/$conversationId': typeof AuthenticatedMessagerieConversationIdRoute
+  '/annuaire/categorie/$slug': typeof AnnuaireCategorieSlugRoute
+  '/annuaire/departement/$slug': typeof AnnuaireDepartementSlugRoute
   '/forum/categorie/$slug': typeof ForumCategorieSlugRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/messagerie/': typeof AuthenticatedMessagerieIndexRoute
+  '/formation/$slug/': typeof FormationSlugIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -398,6 +454,9 @@ export interface FileRoutesByTo {
   '/decouvrir': typeof AuthenticatedDecouvrirRoute
   '/profil': typeof AuthenticatedProfilRoute
   '/tableau-de-bord': typeof AuthenticatedTableauDeBordRoute
+  '/annuaire/$slug': typeof AnnuaireSlugRoute
+  '/annuaire/departements': typeof AnnuaireDepartementsRoute
+  '/annuaire/soumettre': typeof AnnuaireSoumettreRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/forum/$topicId': typeof ForumTopicIdRoute
   '/legal/cgu': typeof LegalCguRoute
@@ -406,7 +465,9 @@ export interface FileRoutesByTo {
   '/legal/cookies': typeof LegalCookiesRoute
   '/legal/mentions-legales': typeof LegalMentionsLegalesRoute
   '/membres/$memberId': typeof MembresMemberIdRoute
+  '/annuaire': typeof AnnuaireIndexRoute
   '/blog': typeof BlogIndexRoute
+  '/formations': typeof FormationsIndexRoute
   '/forum': typeof ForumIndexRoute
   '/membres': typeof MembresIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -418,9 +479,12 @@ export interface FileRoutesByTo {
   '/admin/pilotage': typeof AuthenticatedAdminPilotageRoute
   '/admin/temoignages': typeof AuthenticatedAdminTemoignagesRoute
   '/messagerie/$conversationId': typeof AuthenticatedMessagerieConversationIdRoute
+  '/annuaire/categorie/$slug': typeof AnnuaireCategorieSlugRoute
+  '/annuaire/departement/$slug': typeof AnnuaireDepartementSlugRoute
   '/forum/categorie/$slug': typeof ForumCategorieSlugRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/messagerie': typeof AuthenticatedMessagerieIndexRoute
+  '/formation/$slug': typeof FormationSlugIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -451,6 +515,9 @@ export interface FileRoutesById {
   '/_authenticated/decouvrir': typeof AuthenticatedDecouvrirRoute
   '/_authenticated/profil': typeof AuthenticatedProfilRoute
   '/_authenticated/tableau-de-bord': typeof AuthenticatedTableauDeBordRoute
+  '/annuaire/$slug': typeof AnnuaireSlugRoute
+  '/annuaire/departements': typeof AnnuaireDepartementsRoute
+  '/annuaire/soumettre': typeof AnnuaireSoumettreRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/forum/$topicId': typeof ForumTopicIdRoute
   '/legal/cgu': typeof LegalCguRoute
@@ -459,7 +526,9 @@ export interface FileRoutesById {
   '/legal/cookies': typeof LegalCookiesRoute
   '/legal/mentions-legales': typeof LegalMentionsLegalesRoute
   '/membres/$memberId': typeof MembresMemberIdRoute
+  '/annuaire/': typeof AnnuaireIndexRoute
   '/blog/': typeof BlogIndexRoute
+  '/formations/': typeof FormationsIndexRoute
   '/forum/': typeof ForumIndexRoute
   '/membres/': typeof MembresIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -471,9 +540,12 @@ export interface FileRoutesById {
   '/_authenticated/admin/pilotage': typeof AuthenticatedAdminPilotageRoute
   '/_authenticated/admin/temoignages': typeof AuthenticatedAdminTemoignagesRoute
   '/_authenticated/messagerie/$conversationId': typeof AuthenticatedMessagerieConversationIdRoute
+  '/annuaire/categorie/$slug': typeof AnnuaireCategorieSlugRoute
+  '/annuaire/departement/$slug': typeof AnnuaireDepartementSlugRoute
   '/forum/categorie/$slug': typeof ForumCategorieSlugRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/messagerie/': typeof AuthenticatedMessagerieIndexRoute
+  '/formation/$slug/': typeof FormationSlugIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -504,6 +576,9 @@ export interface FileRouteTypes {
     | '/decouvrir'
     | '/profil'
     | '/tableau-de-bord'
+    | '/annuaire/$slug'
+    | '/annuaire/departements'
+    | '/annuaire/soumettre'
     | '/blog/$slug'
     | '/forum/$topicId'
     | '/legal/cgu'
@@ -512,7 +587,9 @@ export interface FileRouteTypes {
     | '/legal/cookies'
     | '/legal/mentions-legales'
     | '/membres/$memberId'
+    | '/annuaire/'
     | '/blog/'
+    | '/formations/'
     | '/forum/'
     | '/membres/'
     | '/.lovable/oauth/consent'
@@ -524,9 +601,12 @@ export interface FileRouteTypes {
     | '/admin/pilotage'
     | '/admin/temoignages'
     | '/messagerie/$conversationId'
+    | '/annuaire/categorie/$slug'
+    | '/annuaire/departement/$slug'
     | '/forum/categorie/$slug'
     | '/admin/'
     | '/messagerie/'
+    | '/formation/$slug/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -555,6 +635,9 @@ export interface FileRouteTypes {
     | '/decouvrir'
     | '/profil'
     | '/tableau-de-bord'
+    | '/annuaire/$slug'
+    | '/annuaire/departements'
+    | '/annuaire/soumettre'
     | '/blog/$slug'
     | '/forum/$topicId'
     | '/legal/cgu'
@@ -563,7 +646,9 @@ export interface FileRouteTypes {
     | '/legal/cookies'
     | '/legal/mentions-legales'
     | '/membres/$memberId'
+    | '/annuaire'
     | '/blog'
+    | '/formations'
     | '/forum'
     | '/membres'
     | '/.lovable/oauth/consent'
@@ -575,9 +660,12 @@ export interface FileRouteTypes {
     | '/admin/pilotage'
     | '/admin/temoignages'
     | '/messagerie/$conversationId'
+    | '/annuaire/categorie/$slug'
+    | '/annuaire/departement/$slug'
     | '/forum/categorie/$slug'
     | '/admin'
     | '/messagerie'
+    | '/formation/$slug'
   id:
     | '__root__'
     | '/'
@@ -607,6 +695,9 @@ export interface FileRouteTypes {
     | '/_authenticated/decouvrir'
     | '/_authenticated/profil'
     | '/_authenticated/tableau-de-bord'
+    | '/annuaire/$slug'
+    | '/annuaire/departements'
+    | '/annuaire/soumettre'
     | '/blog/$slug'
     | '/forum/$topicId'
     | '/legal/cgu'
@@ -615,7 +706,9 @@ export interface FileRouteTypes {
     | '/legal/cookies'
     | '/legal/mentions-legales'
     | '/membres/$memberId'
+    | '/annuaire/'
     | '/blog/'
+    | '/formations/'
     | '/forum/'
     | '/membres/'
     | '/.lovable/oauth/consent'
@@ -627,9 +720,12 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/pilotage'
     | '/_authenticated/admin/temoignages'
     | '/_authenticated/messagerie/$conversationId'
+    | '/annuaire/categorie/$slug'
+    | '/annuaire/departement/$slug'
     | '/forum/categorie/$slug'
     | '/_authenticated/admin/'
     | '/_authenticated/messagerie/'
+    | '/formation/$slug/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -656,6 +752,9 @@ export interface RootRouteChildren {
   TemoignagesRoute: typeof TemoignagesRoute
   VerificationEmailRoute: typeof VerificationEmailRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  AnnuaireSlugRoute: typeof AnnuaireSlugRoute
+  AnnuaireDepartementsRoute: typeof AnnuaireDepartementsRoute
+  AnnuaireSoumettreRoute: typeof AnnuaireSoumettreRoute
   BlogSlugRoute: typeof BlogSlugRoute
   ForumTopicIdRoute: typeof ForumTopicIdRoute
   LegalCguRoute: typeof LegalCguRoute
@@ -664,11 +763,16 @@ export interface RootRouteChildren {
   LegalCookiesRoute: typeof LegalCookiesRoute
   LegalMentionsLegalesRoute: typeof LegalMentionsLegalesRoute
   MembresMemberIdRoute: typeof MembresMemberIdRoute
+  AnnuaireIndexRoute: typeof AnnuaireIndexRoute
   BlogIndexRoute: typeof BlogIndexRoute
+  FormationsIndexRoute: typeof FormationsIndexRoute
   ForumIndexRoute: typeof ForumIndexRoute
   MembresIndexRoute: typeof MembresIndexRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
+  AnnuaireCategorieSlugRoute: typeof AnnuaireCategorieSlugRoute
+  AnnuaireDepartementSlugRoute: typeof AnnuaireDepartementSlugRoute
   ForumCategorieSlugRoute: typeof ForumCategorieSlugRoute
+  FormationSlugIndexRoute: typeof FormationSlugIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -862,6 +966,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedTableauDeBordRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/annuaire/': {
+      id: '/annuaire/'
+      path: '/annuaire'
+      fullPath: '/annuaire/'
+      preLoaderRoute: typeof AnnuaireIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/annuaire/$slug': {
+      id: '/annuaire/$slug'
+      path: '/annuaire/$slug'
+      fullPath: '/annuaire/$slug'
+      preLoaderRoute: typeof AnnuaireSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/annuaire/departements': {
+      id: '/annuaire/departements'
+      path: '/annuaire/departements'
+      fullPath: '/annuaire/departements'
+      preLoaderRoute: typeof AnnuaireDepartementsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/annuaire/soumettre': {
+      id: '/annuaire/soumettre'
+      path: '/annuaire/soumettre'
+      fullPath: '/annuaire/soumettre'
+      preLoaderRoute: typeof AnnuaireSoumettreRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/blog/': {
       id: '/blog/'
       path: '/blog'
@@ -874,6 +1006,13 @@ declare module '@tanstack/react-router' {
       path: '/blog/$slug'
       fullPath: '/blog/$slug'
       preLoaderRoute: typeof BlogSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/formations/': {
+      id: '/formations/'
+      path: '/formations'
+      fullPath: '/formations/'
+      preLoaderRoute: typeof FormationsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/forum/': {
@@ -1016,6 +1155,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMessagerieConversationIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/annuaire/categorie/$slug': {
+      id: '/annuaire/categorie/$slug'
+      path: '/annuaire/categorie/$slug'
+      fullPath: '/annuaire/categorie/$slug'
+      preLoaderRoute: typeof AnnuaireCategorieSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/annuaire/departement/$slug': {
+      id: '/annuaire/departement/$slug'
+      path: '/annuaire/departement/$slug'
+      fullPath: '/annuaire/departement/$slug'
+      preLoaderRoute: typeof AnnuaireDepartementSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/formation/$slug/': {
+      id: '/formation/$slug/'
+      path: '/formation/$slug'
+      fullPath: '/formation/$slug/'
+      preLoaderRoute: typeof FormationSlugIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/forum/categorie/$slug': {
       id: '/forum/categorie/$slug'
       path: '/forum/categorie/$slug'
@@ -1089,6 +1249,9 @@ const rootRouteChildren: RootRouteChildren = {
   VerificationEmailRoute: VerificationEmailRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
+  AnnuaireSlugRoute: AnnuaireSlugRoute,
+  AnnuaireDepartementsRoute: AnnuaireDepartementsRoute,
+  AnnuaireSoumettreRoute: AnnuaireSoumettreRoute,
   BlogSlugRoute: BlogSlugRoute,
   ForumTopicIdRoute: ForumTopicIdRoute,
   LegalCguRoute: LegalCguRoute,
@@ -1097,11 +1260,16 @@ const rootRouteChildren: RootRouteChildren = {
   LegalCookiesRoute: LegalCookiesRoute,
   LegalMentionsLegalesRoute: LegalMentionsLegalesRoute,
   MembresMemberIdRoute: MembresMemberIdRoute,
+  AnnuaireIndexRoute: AnnuaireIndexRoute,
   BlogIndexRoute: BlogIndexRoute,
+  FormationsIndexRoute: FormationsIndexRoute,
   ForumIndexRoute: ForumIndexRoute,
   MembresIndexRoute: MembresIndexRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
+  AnnuaireCategorieSlugRoute: AnnuaireCategorieSlugRoute,
+  AnnuaireDepartementSlugRoute: AnnuaireDepartementSlugRoute,
   ForumCategorieSlugRoute: ForumCategorieSlugRoute,
+  FormationSlugIndexRoute: FormationSlugIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

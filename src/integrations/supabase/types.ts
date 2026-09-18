@@ -14,6 +14,142 @@ export type Database = {
   }
   public: {
     Tables: {
+      ad_campaigns: {
+        Row: {
+          active: boolean
+          advertiser: string
+          affiliate_code: string
+          alt_text: string
+          commission_pct: number
+          contact_email: string
+          created_at: string
+          ends_at: string | null
+          id: string
+          image_url: string | null
+          link_url: string
+          placement_id: string
+          starts_at: string | null
+          title: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          advertiser: string
+          affiliate_code?: string
+          alt_text?: string
+          commission_pct?: number
+          contact_email?: string
+          created_at?: string
+          ends_at?: string | null
+          id?: string
+          image_url?: string | null
+          link_url: string
+          placement_id: string
+          starts_at?: string | null
+          title: string
+          type?: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          advertiser?: string
+          affiliate_code?: string
+          alt_text?: string
+          commission_pct?: number
+          contact_email?: string
+          created_at?: string
+          ends_at?: string | null
+          id?: string
+          image_url?: string | null
+          link_url?: string
+          placement_id?: string
+          starts_at?: string | null
+          title?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ad_campaigns_placement_id_fkey"
+            columns: ["placement_id"]
+            isOneToOne: false
+            referencedRelation: "ad_placements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ad_events: {
+        Row: {
+          campaign_id: string
+          created_at: string
+          event_type: string
+          id: string
+          page_path: string
+          user_agent: string
+        }
+        Insert: {
+          campaign_id: string
+          created_at?: string
+          event_type: string
+          id?: string
+          page_path?: string
+          user_agent?: string
+        }
+        Update: {
+          campaign_id?: string
+          created_at?: string
+          event_type?: string
+          id?: string
+          page_path?: string
+          user_agent?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ad_events_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "ad_campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ad_placements: {
+        Row: {
+          active: boolean
+          created_at: string
+          format: string
+          height: number | null
+          id: string
+          location: string
+          name: string
+          slug: string
+          width: number | null
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          format?: string
+          height?: number | null
+          id?: string
+          location?: string
+          name: string
+          slug: string
+          width?: number | null
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          format?: string
+          height?: number | null
+          id?: string
+          location?: string
+          name?: string
+          slug?: string
+          width?: number | null
+        }
+        Relationships: []
+      }
       audit_findings: {
         Row: {
           audit_id: string
@@ -218,6 +354,324 @@ export type Database = {
           user_b?: string
         }
         Relationships: []
+      }
+      crm_actions: {
+        Row: {
+          created_at: string
+          done: boolean
+          done_at: string | null
+          due_date: string | null
+          id: string
+          owner_id: string
+          prospect_id: string | null
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          done?: boolean
+          done_at?: string | null
+          due_date?: string | null
+          id?: string
+          owner_id: string
+          prospect_id?: string | null
+          title: string
+        }
+        Update: {
+          created_at?: string
+          done?: boolean
+          done_at?: string | null
+          due_date?: string | null
+          id?: string
+          owner_id?: string
+          prospect_id?: string | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "crm_actions_prospect_id_fkey"
+            columns: ["prospect_id"]
+            isOneToOne: false
+            referencedRelation: "crm_prospects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      crm_interactions: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          owner_id: string
+          prospect_id: string
+          type: string
+        }
+        Insert: {
+          content?: string
+          created_at?: string
+          id?: string
+          owner_id: string
+          prospect_id: string
+          type?: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          owner_id?: string
+          prospect_id?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "crm_interactions_prospect_id_fkey"
+            columns: ["prospect_id"]
+            isOneToOne: false
+            referencedRelation: "crm_prospects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      crm_prospects: {
+        Row: {
+          active: boolean
+          company: string
+          created_at: string
+          email: string
+          id: string
+          name: string
+          notes: string
+          owner_id: string
+          phone: string
+          sector: string
+          source: string
+          stage: string
+          tags: string[]
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          company?: string
+          created_at?: string
+          email?: string
+          id?: string
+          name: string
+          notes?: string
+          owner_id: string
+          phone?: string
+          sector?: string
+          source?: string
+          stage?: string
+          tags?: string[]
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          company?: string
+          created_at?: string
+          email?: string
+          id?: string
+          name?: string
+          notes?: string
+          owner_id?: string
+          phone?: string
+          sector?: string
+          source?: string
+          stage?: string
+          tags?: string[]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      directory_categories: {
+        Row: {
+          created_at: string
+          description: string
+          icon: string
+          id: string
+          name: string
+          position: number
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          icon?: string
+          id?: string
+          name: string
+          position?: number
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          icon?: string
+          id?: string
+          name?: string
+          position?: number
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      directory_listings: {
+        Row: {
+          address: string
+          category_id: string | null
+          city: string
+          claim_requested_at: string | null
+          claim_requested_by: string | null
+          claimed_at: string | null
+          claimed_by: string | null
+          cover_url: string | null
+          created_at: string
+          created_by: string | null
+          departement: string | null
+          description: string
+          email: string
+          excerpt: string
+          featured: boolean
+          hours: Json
+          id: string
+          latitude: number | null
+          logo_url: string | null
+          longitude: number | null
+          name: string
+          phone: string
+          photos: string[]
+          plan: string
+          postal_code: string
+          slug: string
+          status: string
+          tags: string[]
+          updated_at: string
+          verified: boolean
+          website: string
+        }
+        Insert: {
+          address?: string
+          category_id?: string | null
+          city?: string
+          claim_requested_at?: string | null
+          claim_requested_by?: string | null
+          claimed_at?: string | null
+          claimed_by?: string | null
+          cover_url?: string | null
+          created_at?: string
+          created_by?: string | null
+          departement?: string | null
+          description?: string
+          email?: string
+          excerpt?: string
+          featured?: boolean
+          hours?: Json
+          id?: string
+          latitude?: number | null
+          logo_url?: string | null
+          longitude?: number | null
+          name: string
+          phone?: string
+          photos?: string[]
+          plan?: string
+          postal_code?: string
+          slug: string
+          status?: string
+          tags?: string[]
+          updated_at?: string
+          verified?: boolean
+          website?: string
+        }
+        Update: {
+          address?: string
+          category_id?: string | null
+          city?: string
+          claim_requested_at?: string | null
+          claim_requested_by?: string | null
+          claimed_at?: string | null
+          claimed_by?: string | null
+          cover_url?: string | null
+          created_at?: string
+          created_by?: string | null
+          departement?: string | null
+          description?: string
+          email?: string
+          excerpt?: string
+          featured?: boolean
+          hours?: Json
+          id?: string
+          latitude?: number | null
+          logo_url?: string | null
+          longitude?: number | null
+          name?: string
+          phone?: string
+          photos?: string[]
+          plan?: string
+          postal_code?: string
+          slug?: string
+          status?: string
+          tags?: string[]
+          updated_at?: string
+          verified?: boolean
+          website?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "directory_listings_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "directory_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "directory_listings_departement_fkey"
+            columns: ["departement"]
+            isOneToOne: false
+            referencedRelation: "geo_departements"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
+      directory_reviews: {
+        Row: {
+          approved: boolean
+          author_id: string
+          author_name: string
+          content: string
+          created_at: string
+          id: string
+          listing_id: string
+          rating: number
+        }
+        Insert: {
+          approved?: boolean
+          author_id: string
+          author_name?: string
+          content?: string
+          created_at?: string
+          id?: string
+          listing_id: string
+          rating: number
+        }
+        Update: {
+          approved?: boolean
+          author_id?: string
+          author_name?: string
+          content?: string
+          created_at?: string
+          id?: string
+          listing_id?: string
+          rating?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "directory_reviews_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "directory_listings"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       faq_items: {
         Row: {
@@ -438,6 +892,379 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "forum_categories"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      geo_communes: {
+        Row: {
+          code_insee: string
+          code_postal: string
+          created_at: string
+          departement: string
+          latitude: number | null
+          longitude: number | null
+          nom: string
+          population: number
+          slug: string
+        }
+        Insert: {
+          code_insee: string
+          code_postal?: string
+          created_at?: string
+          departement: string
+          latitude?: number | null
+          longitude?: number | null
+          nom: string
+          population?: number
+          slug: string
+        }
+        Update: {
+          code_insee?: string
+          code_postal?: string
+          created_at?: string
+          departement?: string
+          latitude?: number | null
+          longitude?: number | null
+          nom?: string
+          population?: number
+          slug?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "geo_communes_departement_fkey"
+            columns: ["departement"]
+            isOneToOne: false
+            referencedRelation: "geo_departements"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
+      geo_departements: {
+        Row: {
+          code: string
+          created_at: string
+          nom: string
+          population: number
+          region: string
+          slug: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          nom: string
+          population?: number
+          region?: string
+          slug: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          nom?: string
+          population?: number
+          region?: string
+          slug?: string
+        }
+        Relationships: []
+      }
+      lms_courses: {
+        Row: {
+          cover_url: string | null
+          created_at: string
+          currency: string
+          description: string
+          duration_minutes: number
+          excerpt: string
+          id: string
+          level: string
+          position: number
+          price_cents: number
+          published: boolean
+          slug: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          cover_url?: string | null
+          created_at?: string
+          currency?: string
+          description?: string
+          duration_minutes?: number
+          excerpt?: string
+          id?: string
+          level?: string
+          position?: number
+          price_cents?: number
+          published?: boolean
+          slug: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          cover_url?: string | null
+          created_at?: string
+          currency?: string
+          description?: string
+          duration_minutes?: number
+          excerpt?: string
+          id?: string
+          level?: string
+          position?: number
+          price_cents?: number
+          published?: boolean
+          slug?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      lms_enrollments: {
+        Row: {
+          course_id: string
+          enrolled_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          course_id: string
+          enrolled_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          course_id?: string
+          enrolled_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lms_enrollments_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "lms_courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lms_lessons: {
+        Row: {
+          content: string
+          content_type: string
+          created_at: string
+          duration_minutes: number
+          free_preview: boolean
+          id: string
+          module_id: string
+          position: number
+          title: string
+          video_url: string | null
+        }
+        Insert: {
+          content?: string
+          content_type?: string
+          created_at?: string
+          duration_minutes?: number
+          free_preview?: boolean
+          id?: string
+          module_id: string
+          position?: number
+          title: string
+          video_url?: string | null
+        }
+        Update: {
+          content?: string
+          content_type?: string
+          created_at?: string
+          duration_minutes?: number
+          free_preview?: boolean
+          id?: string
+          module_id?: string
+          position?: number
+          title?: string
+          video_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lms_lessons_module_id_fkey"
+            columns: ["module_id"]
+            isOneToOne: false
+            referencedRelation: "lms_modules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lms_modules: {
+        Row: {
+          course_id: string
+          created_at: string
+          id: string
+          position: number
+          title: string
+        }
+        Insert: {
+          course_id: string
+          created_at?: string
+          id?: string
+          position?: number
+          title: string
+        }
+        Update: {
+          course_id?: string
+          created_at?: string
+          id?: string
+          position?: number
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lms_modules_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "lms_courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lms_progress: {
+        Row: {
+          completed: boolean
+          completed_at: string | null
+          created_at: string
+          id: string
+          lesson_id: string
+          user_id: string
+        }
+        Insert: {
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          lesson_id: string
+          user_id: string
+        }
+        Update: {
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          lesson_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lms_progress_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lms_lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      marketplace_categories: {
+        Row: {
+          created_at: string
+          icon: string
+          id: string
+          name: string
+          position: number
+          slug: string
+        }
+        Insert: {
+          created_at?: string
+          icon?: string
+          id?: string
+          name: string
+          position?: number
+          slug: string
+        }
+        Update: {
+          created_at?: string
+          icon?: string
+          id?: string
+          name?: string
+          position?: number
+          slug?: string
+        }
+        Relationships: []
+      }
+      marketplace_listings: {
+        Row: {
+          approved: boolean
+          category_id: string | null
+          city: string
+          created_at: string
+          currency: string
+          departement: string | null
+          description: string
+          id: string
+          negotiable: boolean
+          photos: string[]
+          price_cents: number
+          seller_id: string
+          seller_name: string
+          slug: string
+          status: string
+          tags: string[]
+          title: string
+          updated_at: string
+          views: number
+        }
+        Insert: {
+          approved?: boolean
+          category_id?: string | null
+          city?: string
+          created_at?: string
+          currency?: string
+          departement?: string | null
+          description?: string
+          id?: string
+          negotiable?: boolean
+          photos?: string[]
+          price_cents?: number
+          seller_id: string
+          seller_name?: string
+          slug: string
+          status?: string
+          tags?: string[]
+          title: string
+          updated_at?: string
+          views?: number
+        }
+        Update: {
+          approved?: boolean
+          category_id?: string | null
+          city?: string
+          created_at?: string
+          currency?: string
+          departement?: string | null
+          description?: string
+          id?: string
+          negotiable?: boolean
+          photos?: string[]
+          price_cents?: number
+          seller_id?: string
+          seller_name?: string
+          slug?: string
+          status?: string
+          tags?: string[]
+          title?: string
+          updated_at?: string
+          views?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_listings_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "marketplace_listings_departement_fkey"
+            columns: ["departement"]
+            isOneToOne: false
+            referencedRelation: "geo_departements"
+            referencedColumns: ["code"]
           },
         ]
       }
@@ -875,6 +1702,10 @@ export type Database = {
       increment_topic_views: { Args: { _topic_id: string }; Returns: undefined }
       is_conversation_participant: {
         Args: { _conversation_id: string; _user_id: string }
+        Returns: boolean
+      }
+      request_directory_claim: {
+        Args: { _listing_id: string }
         Returns: boolean
       }
     }
