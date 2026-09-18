@@ -24,6 +24,7 @@ import { Route as MaintenanceRouteImport } from './routes/maintenance'
 import { Route as McpRouteImport } from './routes/mcp'
 import { Route as MerciRouteImport } from './routes/merci'
 import { Route as PlanDuSiteRouteImport } from './routes/plan-du-site'
+import { Route as PubliciteRouteImport } from './routes/publicite'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as RssDotxmlRouteImport } from './routes/rss[.]xml'
 import { Route as SignupRouteImport } from './routes/signup'
@@ -34,6 +35,8 @@ import { Route as VerificationEmailRouteImport } from './routes/verification-ema
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as AuthenticatedCompteRouteImport } from './routes/_authenticated/compte'
 import { Route as AuthenticatedDecouvrirRouteImport } from './routes/_authenticated/decouvrir'
+import { Route as AuthenticatedMesAnnoncesRouteImport } from './routes/_authenticated/mes-annonces'
+import { Route as AuthenticatedMesFormationsRouteImport } from './routes/_authenticated/mes-formations'
 import { Route as AuthenticatedProfilRouteImport } from './routes/_authenticated/profil'
 import { Route as AuthenticatedTableauDeBordRouteImport } from './routes/_authenticated/tableau-de-bord'
 import { Route as AnnuaireIndexRouteImport } from './routes/annuaire.index'
@@ -50,6 +53,9 @@ import { Route as LegalCgvRouteImport } from './routes/legal.cgv'
 import { Route as LegalConfidentialiteRouteImport } from './routes/legal.confidentialite'
 import { Route as LegalCookiesRouteImport } from './routes/legal.cookies'
 import { Route as LegalMentionsLegalesRouteImport } from './routes/legal.mentions-legales'
+import { Route as MarketplaceIndexRouteImport } from './routes/marketplace.index'
+import { Route as MarketplaceSlugRouteImport } from './routes/marketplace.$slug'
+import { Route as MarketplacePublierRouteImport } from './routes/marketplace.publier'
 import { Route as MembresIndexRouteImport } from './routes/membres.index'
 import { Route as MembresMemberIdRouteImport } from './routes/membres.$memberId'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
@@ -61,12 +67,17 @@ import { Route as AuthenticatedAdminForumRouteImport } from './routes/_authentic
 import { Route as AuthenticatedAdminModerationRouteImport } from './routes/_authenticated/admin.moderation'
 import { Route as AuthenticatedAdminPilotageRouteImport } from './routes/_authenticated/admin.pilotage'
 import { Route as AuthenticatedAdminTemoignagesRouteImport } from './routes/_authenticated/admin.temoignages'
+import { Route as AuthenticatedCrmIndexRouteImport } from './routes/_authenticated/crm.index'
+import { Route as AuthenticatedCrmActionsRouteImport } from './routes/_authenticated/crm.actions'
+import { Route as AuthenticatedCrmProspectsRouteImport } from './routes/_authenticated/crm.prospects'
 import { Route as AuthenticatedMessagerieIndexRouteImport } from './routes/_authenticated/messagerie.index'
 import { Route as AuthenticatedMessagerieConversationIdRouteImport } from './routes/_authenticated/messagerie.$conversationId'
 import { Route as AnnuaireCategorieSlugRouteImport } from './routes/annuaire.categorie.$slug'
 import { Route as AnnuaireDepartementSlugRouteImport } from './routes/annuaire.departement.$slug'
 import { Route as FormationSlugIndexRouteImport } from './routes/formation.$slug.index'
 import { Route as ForumCategorieSlugRouteImport } from './routes/forum.categorie.$slug'
+import { Route as AuthenticatedCrmProspectProspectIdRouteImport } from './routes/_authenticated/crm.prospect.$prospectId'
+import { Route as FormationSlugLeconLessonIdRouteImport } from './routes/formation.$slug.lecon.$lessonId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -142,6 +153,11 @@ const PlanDuSiteRoute = PlanDuSiteRouteImport.update({
   path: '/plan-du-site',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PubliciteRoute = PubliciteRouteImport.update({
+  id: '/publicite',
+  path: '/publicite',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
@@ -193,6 +209,18 @@ const AuthenticatedDecouvrirRoute = AuthenticatedDecouvrirRouteImport.update({
   path: '/decouvrir',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedMesAnnoncesRoute =
+  AuthenticatedMesAnnoncesRouteImport.update({
+    id: '/mes-annonces',
+    path: '/mes-annonces',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedMesFormationsRoute =
+  AuthenticatedMesFormationsRouteImport.update({
+    id: '/mes-formations',
+    path: '/mes-formations',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedProfilRoute = AuthenticatedProfilRouteImport.update({
   id: '/profil',
   path: '/profil',
@@ -274,6 +302,21 @@ const LegalMentionsLegalesRoute = LegalMentionsLegalesRouteImport.update({
   path: '/legal/mentions-legales',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MarketplaceIndexRoute = MarketplaceIndexRouteImport.update({
+  id: '/marketplace/',
+  path: '/marketplace/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MarketplaceSlugRoute = MarketplaceSlugRouteImport.update({
+  id: '/marketplace/$slug',
+  path: '/marketplace/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MarketplacePublierRoute = MarketplacePublierRouteImport.update({
+  id: '/marketplace/publier',
+  path: '/marketplace/publier',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MembresIndexRoute = MembresIndexRouteImport.update({
   id: '/membres/',
   path: '/membres/',
@@ -335,6 +378,22 @@ const AuthenticatedAdminTemoignagesRoute =
     path: '/admin/temoignages',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedCrmIndexRoute = AuthenticatedCrmIndexRouteImport.update({
+  id: '/crm/',
+  path: '/crm/',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedCrmActionsRoute = AuthenticatedCrmActionsRouteImport.update({
+  id: '/crm/actions',
+  path: '/crm/actions',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedCrmProspectsRoute =
+  AuthenticatedCrmProspectsRouteImport.update({
+    id: '/crm/prospects',
+    path: '/crm/prospects',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedMessagerieIndexRoute =
   AuthenticatedMessagerieIndexRouteImport.update({
     id: '/messagerie/',
@@ -367,6 +426,18 @@ const ForumCategorieSlugRoute = ForumCategorieSlugRouteImport.update({
   path: '/forum/categorie/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedCrmProspectProspectIdRoute =
+  AuthenticatedCrmProspectProspectIdRouteImport.update({
+    id: '/crm/prospect/$prospectId',
+    path: '/crm/prospect/$prospectId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const FormationSlugLeconLessonIdRoute =
+  FormationSlugLeconLessonIdRouteImport.update({
+    id: '/formation/$slug/lecon/$lessonId',
+    path: '/formation/$slug/lecon/$lessonId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -383,6 +454,7 @@ export interface FileRoutesByFullPath {
   '/mcp': typeof McpRoute
   '/merci': typeof MerciRoute
   '/plan-du-site': typeof PlanDuSiteRoute
+  '/publicite': typeof PubliciteRoute
   '/reset-password': typeof ResetPasswordRoute
   '/rss.xml': typeof RssDotxmlRoute
   '/signup': typeof SignupRoute
@@ -393,6 +465,8 @@ export interface FileRoutesByFullPath {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/compte': typeof AuthenticatedCompteRoute
   '/decouvrir': typeof AuthenticatedDecouvrirRoute
+  '/mes-annonces': typeof AuthenticatedMesAnnoncesRoute
+  '/mes-formations': typeof AuthenticatedMesFormationsRoute
   '/profil': typeof AuthenticatedProfilRoute
   '/tableau-de-bord': typeof AuthenticatedTableauDeBordRoute
   '/annuaire/$slug': typeof AnnuaireSlugRoute
@@ -405,11 +479,14 @@ export interface FileRoutesByFullPath {
   '/legal/confidentialite': typeof LegalConfidentialiteRoute
   '/legal/cookies': typeof LegalCookiesRoute
   '/legal/mentions-legales': typeof LegalMentionsLegalesRoute
+  '/marketplace/$slug': typeof MarketplaceSlugRoute
+  '/marketplace/publier': typeof MarketplacePublierRoute
   '/membres/$memberId': typeof MembresMemberIdRoute
   '/annuaire/': typeof AnnuaireIndexRoute
   '/blog/': typeof BlogIndexRoute
   '/formations/': typeof FormationsIndexRoute
   '/forum/': typeof ForumIndexRoute
+  '/marketplace/': typeof MarketplaceIndexRoute
   '/membres/': typeof MembresIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/admin/abonnes': typeof AuthenticatedAdminAbonnesRoute
@@ -419,13 +496,18 @@ export interface FileRoutesByFullPath {
   '/admin/moderation': typeof AuthenticatedAdminModerationRoute
   '/admin/pilotage': typeof AuthenticatedAdminPilotageRoute
   '/admin/temoignages': typeof AuthenticatedAdminTemoignagesRoute
+  '/crm/actions': typeof AuthenticatedCrmActionsRoute
+  '/crm/prospects': typeof AuthenticatedCrmProspectsRoute
   '/messagerie/$conversationId': typeof AuthenticatedMessagerieConversationIdRoute
   '/annuaire/categorie/$slug': typeof AnnuaireCategorieSlugRoute
   '/annuaire/departement/$slug': typeof AnnuaireDepartementSlugRoute
   '/forum/categorie/$slug': typeof ForumCategorieSlugRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
+  '/crm/': typeof AuthenticatedCrmIndexRoute
   '/messagerie/': typeof AuthenticatedMessagerieIndexRoute
   '/formation/$slug/': typeof FormationSlugIndexRoute
+  '/crm/prospect/$prospectId': typeof AuthenticatedCrmProspectProspectIdRoute
+  '/formation/$slug/lecon/$lessonId': typeof FormationSlugLeconLessonIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -442,6 +524,7 @@ export interface FileRoutesByTo {
   '/mcp': typeof McpRoute
   '/merci': typeof MerciRoute
   '/plan-du-site': typeof PlanDuSiteRoute
+  '/publicite': typeof PubliciteRoute
   '/reset-password': typeof ResetPasswordRoute
   '/rss.xml': typeof RssDotxmlRoute
   '/signup': typeof SignupRoute
@@ -452,6 +535,8 @@ export interface FileRoutesByTo {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/compte': typeof AuthenticatedCompteRoute
   '/decouvrir': typeof AuthenticatedDecouvrirRoute
+  '/mes-annonces': typeof AuthenticatedMesAnnoncesRoute
+  '/mes-formations': typeof AuthenticatedMesFormationsRoute
   '/profil': typeof AuthenticatedProfilRoute
   '/tableau-de-bord': typeof AuthenticatedTableauDeBordRoute
   '/annuaire/$slug': typeof AnnuaireSlugRoute
@@ -464,11 +549,14 @@ export interface FileRoutesByTo {
   '/legal/confidentialite': typeof LegalConfidentialiteRoute
   '/legal/cookies': typeof LegalCookiesRoute
   '/legal/mentions-legales': typeof LegalMentionsLegalesRoute
+  '/marketplace/$slug': typeof MarketplaceSlugRoute
+  '/marketplace/publier': typeof MarketplacePublierRoute
   '/membres/$memberId': typeof MembresMemberIdRoute
   '/annuaire': typeof AnnuaireIndexRoute
   '/blog': typeof BlogIndexRoute
   '/formations': typeof FormationsIndexRoute
   '/forum': typeof ForumIndexRoute
+  '/marketplace': typeof MarketplaceIndexRoute
   '/membres': typeof MembresIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/admin/abonnes': typeof AuthenticatedAdminAbonnesRoute
@@ -478,13 +566,18 @@ export interface FileRoutesByTo {
   '/admin/moderation': typeof AuthenticatedAdminModerationRoute
   '/admin/pilotage': typeof AuthenticatedAdminPilotageRoute
   '/admin/temoignages': typeof AuthenticatedAdminTemoignagesRoute
+  '/crm/actions': typeof AuthenticatedCrmActionsRoute
+  '/crm/prospects': typeof AuthenticatedCrmProspectsRoute
   '/messagerie/$conversationId': typeof AuthenticatedMessagerieConversationIdRoute
   '/annuaire/categorie/$slug': typeof AnnuaireCategorieSlugRoute
   '/annuaire/departement/$slug': typeof AnnuaireDepartementSlugRoute
   '/forum/categorie/$slug': typeof ForumCategorieSlugRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
+  '/crm': typeof AuthenticatedCrmIndexRoute
   '/messagerie': typeof AuthenticatedMessagerieIndexRoute
   '/formation/$slug': typeof FormationSlugIndexRoute
+  '/crm/prospect/$prospectId': typeof AuthenticatedCrmProspectProspectIdRoute
+  '/formation/$slug/lecon/$lessonId': typeof FormationSlugLeconLessonIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -503,6 +596,7 @@ export interface FileRoutesById {
   '/mcp': typeof McpRoute
   '/merci': typeof MerciRoute
   '/plan-du-site': typeof PlanDuSiteRoute
+  '/publicite': typeof PubliciteRoute
   '/reset-password': typeof ResetPasswordRoute
   '/rss.xml': typeof RssDotxmlRoute
   '/signup': typeof SignupRoute
@@ -513,6 +607,8 @@ export interface FileRoutesById {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/_authenticated/compte': typeof AuthenticatedCompteRoute
   '/_authenticated/decouvrir': typeof AuthenticatedDecouvrirRoute
+  '/_authenticated/mes-annonces': typeof AuthenticatedMesAnnoncesRoute
+  '/_authenticated/mes-formations': typeof AuthenticatedMesFormationsRoute
   '/_authenticated/profil': typeof AuthenticatedProfilRoute
   '/_authenticated/tableau-de-bord': typeof AuthenticatedTableauDeBordRoute
   '/annuaire/$slug': typeof AnnuaireSlugRoute
@@ -525,11 +621,14 @@ export interface FileRoutesById {
   '/legal/confidentialite': typeof LegalConfidentialiteRoute
   '/legal/cookies': typeof LegalCookiesRoute
   '/legal/mentions-legales': typeof LegalMentionsLegalesRoute
+  '/marketplace/$slug': typeof MarketplaceSlugRoute
+  '/marketplace/publier': typeof MarketplacePublierRoute
   '/membres/$memberId': typeof MembresMemberIdRoute
   '/annuaire/': typeof AnnuaireIndexRoute
   '/blog/': typeof BlogIndexRoute
   '/formations/': typeof FormationsIndexRoute
   '/forum/': typeof ForumIndexRoute
+  '/marketplace/': typeof MarketplaceIndexRoute
   '/membres/': typeof MembresIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/_authenticated/admin/abonnes': typeof AuthenticatedAdminAbonnesRoute
@@ -539,13 +638,18 @@ export interface FileRoutesById {
   '/_authenticated/admin/moderation': typeof AuthenticatedAdminModerationRoute
   '/_authenticated/admin/pilotage': typeof AuthenticatedAdminPilotageRoute
   '/_authenticated/admin/temoignages': typeof AuthenticatedAdminTemoignagesRoute
+  '/_authenticated/crm/actions': typeof AuthenticatedCrmActionsRoute
+  '/_authenticated/crm/prospects': typeof AuthenticatedCrmProspectsRoute
   '/_authenticated/messagerie/$conversationId': typeof AuthenticatedMessagerieConversationIdRoute
   '/annuaire/categorie/$slug': typeof AnnuaireCategorieSlugRoute
   '/annuaire/departement/$slug': typeof AnnuaireDepartementSlugRoute
   '/forum/categorie/$slug': typeof ForumCategorieSlugRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+  '/_authenticated/crm/': typeof AuthenticatedCrmIndexRoute
   '/_authenticated/messagerie/': typeof AuthenticatedMessagerieIndexRoute
   '/formation/$slug/': typeof FormationSlugIndexRoute
+  '/_authenticated/crm/prospect/$prospectId': typeof AuthenticatedCrmProspectProspectIdRoute
+  '/formation/$slug/lecon/$lessonId': typeof FormationSlugLeconLessonIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -564,6 +668,7 @@ export interface FileRouteTypes {
     | '/mcp'
     | '/merci'
     | '/plan-du-site'
+    | '/publicite'
     | '/reset-password'
     | '/rss.xml'
     | '/signup'
@@ -574,6 +679,8 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/compte'
     | '/decouvrir'
+    | '/mes-annonces'
+    | '/mes-formations'
     | '/profil'
     | '/tableau-de-bord'
     | '/annuaire/$slug'
@@ -586,11 +693,14 @@ export interface FileRouteTypes {
     | '/legal/confidentialite'
     | '/legal/cookies'
     | '/legal/mentions-legales'
+    | '/marketplace/$slug'
+    | '/marketplace/publier'
     | '/membres/$memberId'
     | '/annuaire/'
     | '/blog/'
     | '/formations/'
     | '/forum/'
+    | '/marketplace/'
     | '/membres/'
     | '/.lovable/oauth/consent'
     | '/admin/abonnes'
@@ -600,13 +710,18 @@ export interface FileRouteTypes {
     | '/admin/moderation'
     | '/admin/pilotage'
     | '/admin/temoignages'
+    | '/crm/actions'
+    | '/crm/prospects'
     | '/messagerie/$conversationId'
     | '/annuaire/categorie/$slug'
     | '/annuaire/departement/$slug'
     | '/forum/categorie/$slug'
     | '/admin/'
+    | '/crm/'
     | '/messagerie/'
     | '/formation/$slug/'
+    | '/crm/prospect/$prospectId'
+    | '/formation/$slug/lecon/$lessonId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -623,6 +738,7 @@ export interface FileRouteTypes {
     | '/mcp'
     | '/merci'
     | '/plan-du-site'
+    | '/publicite'
     | '/reset-password'
     | '/rss.xml'
     | '/signup'
@@ -633,6 +749,8 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/compte'
     | '/decouvrir'
+    | '/mes-annonces'
+    | '/mes-formations'
     | '/profil'
     | '/tableau-de-bord'
     | '/annuaire/$slug'
@@ -645,11 +763,14 @@ export interface FileRouteTypes {
     | '/legal/confidentialite'
     | '/legal/cookies'
     | '/legal/mentions-legales'
+    | '/marketplace/$slug'
+    | '/marketplace/publier'
     | '/membres/$memberId'
     | '/annuaire'
     | '/blog'
     | '/formations'
     | '/forum'
+    | '/marketplace'
     | '/membres'
     | '/.lovable/oauth/consent'
     | '/admin/abonnes'
@@ -659,13 +780,18 @@ export interface FileRouteTypes {
     | '/admin/moderation'
     | '/admin/pilotage'
     | '/admin/temoignages'
+    | '/crm/actions'
+    | '/crm/prospects'
     | '/messagerie/$conversationId'
     | '/annuaire/categorie/$slug'
     | '/annuaire/departement/$slug'
     | '/forum/categorie/$slug'
     | '/admin'
+    | '/crm'
     | '/messagerie'
     | '/formation/$slug'
+    | '/crm/prospect/$prospectId'
+    | '/formation/$slug/lecon/$lessonId'
   id:
     | '__root__'
     | '/'
@@ -683,6 +809,7 @@ export interface FileRouteTypes {
     | '/mcp'
     | '/merci'
     | '/plan-du-site'
+    | '/publicite'
     | '/reset-password'
     | '/rss.xml'
     | '/signup'
@@ -693,6 +820,8 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/_authenticated/compte'
     | '/_authenticated/decouvrir'
+    | '/_authenticated/mes-annonces'
+    | '/_authenticated/mes-formations'
     | '/_authenticated/profil'
     | '/_authenticated/tableau-de-bord'
     | '/annuaire/$slug'
@@ -705,11 +834,14 @@ export interface FileRouteTypes {
     | '/legal/confidentialite'
     | '/legal/cookies'
     | '/legal/mentions-legales'
+    | '/marketplace/$slug'
+    | '/marketplace/publier'
     | '/membres/$memberId'
     | '/annuaire/'
     | '/blog/'
     | '/formations/'
     | '/forum/'
+    | '/marketplace/'
     | '/membres/'
     | '/.lovable/oauth/consent'
     | '/_authenticated/admin/abonnes'
@@ -719,13 +851,18 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/moderation'
     | '/_authenticated/admin/pilotage'
     | '/_authenticated/admin/temoignages'
+    | '/_authenticated/crm/actions'
+    | '/_authenticated/crm/prospects'
     | '/_authenticated/messagerie/$conversationId'
     | '/annuaire/categorie/$slug'
     | '/annuaire/departement/$slug'
     | '/forum/categorie/$slug'
     | '/_authenticated/admin/'
+    | '/_authenticated/crm/'
     | '/_authenticated/messagerie/'
     | '/formation/$slug/'
+    | '/_authenticated/crm/prospect/$prospectId'
+    | '/formation/$slug/lecon/$lessonId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -744,6 +881,7 @@ export interface RootRouteChildren {
   McpRoute: typeof McpRoute
   MerciRoute: typeof MerciRoute
   PlanDuSiteRoute: typeof PlanDuSiteRoute
+  PubliciteRoute: typeof PubliciteRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   RssDotxmlRoute: typeof RssDotxmlRoute
   SignupRoute: typeof SignupRoute
@@ -762,17 +900,21 @@ export interface RootRouteChildren {
   LegalConfidentialiteRoute: typeof LegalConfidentialiteRoute
   LegalCookiesRoute: typeof LegalCookiesRoute
   LegalMentionsLegalesRoute: typeof LegalMentionsLegalesRoute
+  MarketplaceSlugRoute: typeof MarketplaceSlugRoute
+  MarketplacePublierRoute: typeof MarketplacePublierRoute
   MembresMemberIdRoute: typeof MembresMemberIdRoute
   AnnuaireIndexRoute: typeof AnnuaireIndexRoute
   BlogIndexRoute: typeof BlogIndexRoute
   FormationsIndexRoute: typeof FormationsIndexRoute
   ForumIndexRoute: typeof ForumIndexRoute
+  MarketplaceIndexRoute: typeof MarketplaceIndexRoute
   MembresIndexRoute: typeof MembresIndexRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   AnnuaireCategorieSlugRoute: typeof AnnuaireCategorieSlugRoute
   AnnuaireDepartementSlugRoute: typeof AnnuaireDepartementSlugRoute
   ForumCategorieSlugRoute: typeof ForumCategorieSlugRoute
   FormationSlugIndexRoute: typeof FormationSlugIndexRoute
+  FormationSlugLeconLessonIdRoute: typeof FormationSlugLeconLessonIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -882,6 +1024,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PlanDuSiteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/publicite': {
+      id: '/publicite'
+      path: '/publicite'
+      fullPath: '/publicite'
+      preLoaderRoute: typeof PubliciteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/reset-password': {
       id: '/reset-password'
       path: '/reset-password'
@@ -950,6 +1099,20 @@ declare module '@tanstack/react-router' {
       path: '/decouvrir'
       fullPath: '/decouvrir'
       preLoaderRoute: typeof AuthenticatedDecouvrirRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/mes-annonces': {
+      id: '/_authenticated/mes-annonces'
+      path: '/mes-annonces'
+      fullPath: '/mes-annonces'
+      preLoaderRoute: typeof AuthenticatedMesAnnoncesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/mes-formations': {
+      id: '/_authenticated/mes-formations'
+      path: '/mes-formations'
+      fullPath: '/mes-formations'
+      preLoaderRoute: typeof AuthenticatedMesFormationsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/profil': {
@@ -1064,6 +1227,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LegalMentionsLegalesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/marketplace/': {
+      id: '/marketplace/'
+      path: '/marketplace'
+      fullPath: '/marketplace/'
+      preLoaderRoute: typeof MarketplaceIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/marketplace/$slug': {
+      id: '/marketplace/$slug'
+      path: '/marketplace/$slug'
+      fullPath: '/marketplace/$slug'
+      preLoaderRoute: typeof MarketplaceSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/marketplace/publier': {
+      id: '/marketplace/publier'
+      path: '/marketplace/publier'
+      fullPath: '/marketplace/publier'
+      preLoaderRoute: typeof MarketplacePublierRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/membres/': {
       id: '/membres/'
       path: '/membres'
@@ -1141,6 +1325,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminTemoignagesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/crm/': {
+      id: '/_authenticated/crm/'
+      path: '/crm'
+      fullPath: '/crm/'
+      preLoaderRoute: typeof AuthenticatedCrmIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/crm/actions': {
+      id: '/_authenticated/crm/actions'
+      path: '/crm/actions'
+      fullPath: '/crm/actions'
+      preLoaderRoute: typeof AuthenticatedCrmActionsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/crm/prospects': {
+      id: '/_authenticated/crm/prospects'
+      path: '/crm/prospects'
+      fullPath: '/crm/prospects'
+      preLoaderRoute: typeof AuthenticatedCrmProspectsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/messagerie/': {
       id: '/_authenticated/messagerie/'
       path: '/messagerie'
@@ -1183,12 +1388,28 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ForumCategorieSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/crm/prospect/$prospectId': {
+      id: '/_authenticated/crm/prospect/$prospectId'
+      path: '/crm/prospect/$prospectId'
+      fullPath: '/crm/prospect/$prospectId'
+      preLoaderRoute: typeof AuthenticatedCrmProspectProspectIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/formation/$slug/lecon/$lessonId': {
+      id: '/formation/$slug/lecon/$lessonId'
+      path: '/formation/$slug/lecon/$lessonId'
+      fullPath: '/formation/$slug/lecon/$lessonId'
+      preLoaderRoute: typeof FormationSlugLeconLessonIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedCompteRoute: typeof AuthenticatedCompteRoute
   AuthenticatedDecouvrirRoute: typeof AuthenticatedDecouvrirRoute
+  AuthenticatedMesAnnoncesRoute: typeof AuthenticatedMesAnnoncesRoute
+  AuthenticatedMesFormationsRoute: typeof AuthenticatedMesFormationsRoute
   AuthenticatedProfilRoute: typeof AuthenticatedProfilRoute
   AuthenticatedTableauDeBordRoute: typeof AuthenticatedTableauDeBordRoute
   AuthenticatedAdminAbonnesRoute: typeof AuthenticatedAdminAbonnesRoute
@@ -1198,14 +1419,20 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminModerationRoute: typeof AuthenticatedAdminModerationRoute
   AuthenticatedAdminPilotageRoute: typeof AuthenticatedAdminPilotageRoute
   AuthenticatedAdminTemoignagesRoute: typeof AuthenticatedAdminTemoignagesRoute
+  AuthenticatedCrmActionsRoute: typeof AuthenticatedCrmActionsRoute
+  AuthenticatedCrmProspectsRoute: typeof AuthenticatedCrmProspectsRoute
   AuthenticatedMessagerieConversationIdRoute: typeof AuthenticatedMessagerieConversationIdRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+  AuthenticatedCrmIndexRoute: typeof AuthenticatedCrmIndexRoute
   AuthenticatedMessagerieIndexRoute: typeof AuthenticatedMessagerieIndexRoute
+  AuthenticatedCrmProspectProspectIdRoute: typeof AuthenticatedCrmProspectProspectIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCompteRoute: AuthenticatedCompteRoute,
   AuthenticatedDecouvrirRoute: AuthenticatedDecouvrirRoute,
+  AuthenticatedMesAnnoncesRoute: AuthenticatedMesAnnoncesRoute,
+  AuthenticatedMesFormationsRoute: AuthenticatedMesFormationsRoute,
   AuthenticatedProfilRoute: AuthenticatedProfilRoute,
   AuthenticatedTableauDeBordRoute: AuthenticatedTableauDeBordRoute,
   AuthenticatedAdminAbonnesRoute: AuthenticatedAdminAbonnesRoute,
@@ -1215,10 +1442,15 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminModerationRoute: AuthenticatedAdminModerationRoute,
   AuthenticatedAdminPilotageRoute: AuthenticatedAdminPilotageRoute,
   AuthenticatedAdminTemoignagesRoute: AuthenticatedAdminTemoignagesRoute,
+  AuthenticatedCrmActionsRoute: AuthenticatedCrmActionsRoute,
+  AuthenticatedCrmProspectsRoute: AuthenticatedCrmProspectsRoute,
   AuthenticatedMessagerieConversationIdRoute:
     AuthenticatedMessagerieConversationIdRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+  AuthenticatedCrmIndexRoute: AuthenticatedCrmIndexRoute,
   AuthenticatedMessagerieIndexRoute: AuthenticatedMessagerieIndexRoute,
+  AuthenticatedCrmProspectProspectIdRoute:
+    AuthenticatedCrmProspectProspectIdRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -1240,6 +1472,7 @@ const rootRouteChildren: RootRouteChildren = {
   McpRoute: McpRoute,
   MerciRoute: MerciRoute,
   PlanDuSiteRoute: PlanDuSiteRoute,
+  PubliciteRoute: PubliciteRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   RssDotxmlRoute: RssDotxmlRoute,
   SignupRoute: SignupRoute,
@@ -1259,17 +1492,21 @@ const rootRouteChildren: RootRouteChildren = {
   LegalConfidentialiteRoute: LegalConfidentialiteRoute,
   LegalCookiesRoute: LegalCookiesRoute,
   LegalMentionsLegalesRoute: LegalMentionsLegalesRoute,
+  MarketplaceSlugRoute: MarketplaceSlugRoute,
+  MarketplacePublierRoute: MarketplacePublierRoute,
   MembresMemberIdRoute: MembresMemberIdRoute,
   AnnuaireIndexRoute: AnnuaireIndexRoute,
   BlogIndexRoute: BlogIndexRoute,
   FormationsIndexRoute: FormationsIndexRoute,
   ForumIndexRoute: ForumIndexRoute,
+  MarketplaceIndexRoute: MarketplaceIndexRoute,
   MembresIndexRoute: MembresIndexRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   AnnuaireCategorieSlugRoute: AnnuaireCategorieSlugRoute,
   AnnuaireDepartementSlugRoute: AnnuaireDepartementSlugRoute,
   ForumCategorieSlugRoute: ForumCategorieSlugRoute,
   FormationSlugIndexRoute: FormationSlugIndexRoute,
+  FormationSlugLeconLessonIdRoute: FormationSlugLeconLessonIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
