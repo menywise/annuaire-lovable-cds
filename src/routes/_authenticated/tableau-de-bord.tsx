@@ -31,7 +31,10 @@ type Stats = {
 const raccourcis = [
   { to: "/admin", label: "Paramètres du site", desc: "Nom, coordonnées légales, hébergeur", title: "Régler les paramètres du site" },
   { to: "/compte", label: "Messages reçus", desc: "Demandes envoyées par le formulaire", title: "Consulter les messages reçus" },
-  { to: "/profil", label: "Mon profil", desc: "Nom affiché et mot de passe", title: "Modifier mon profil" },
+  { to: "/profil", label: "Mon profil", desc: "Nom affiché, profil public et mot de passe", title: "Modifier mon profil" },
+  { to: "/pilotage", label: "Pilotage", desc: "Feuille de route, plan directeur et audits", title: "Voir où en est le projet" },
+  { to: "/messagerie", label: "Messagerie", desc: "Vos échanges privés", title: "Ouvrir ma messagerie" },
+  { to: "/membres", label: "Annuaire", desc: "Les membres de la communauté", title: "Parcourir l'annuaire" },
   { to: "/forum", label: "Forum", desc: "Discussions en cours", title: "Ouvrir le forum" },
 ] as const;
 
