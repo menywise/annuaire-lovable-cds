@@ -42,7 +42,7 @@ export const listPlans = createServerFn({ method: "GET" }).handler(async () => {
 export const listPosts = createServerFn({ method: "GET" }).handler(async () => {
   const { data } = await publicClient()
     .from("blog_posts")
-    .select("id, slug, title, excerpt, cover_url, published_at")
+    .select("id, slug, title, excerpt, content, cover_url, published_at, tags")
     .eq("published", true)
     .order("published_at", { ascending: false });
   return data ?? [];
@@ -54,9 +54,9 @@ export const getPost = createServerFn({ method: "GET" })
     const client = publicClient();
     const { data: post } = await client
       .from("blog_posts")
-      .select("id, slug, title, excerpt, content, cover_url, published_at")
-      .eq("slug", input.slug)
+      .select("id, slug, title, excerpt, content, cover_url, published_at, tags")
       .eq("published", true)
+      .eq("slug", input.slug)
       .maybeSingle();
     if (!post) return null;
     const { data: comments } = await client
@@ -65,8 +65,33 @@ export const getPost = createServerFn({ method: "GET" })
       .eq("post_id", post.id)
       .eq("approved", true)
       .order("created_at", { ascending: true });
-    return { post, comments: comments ?? [] };
+    const { data: others } = await client
+      .from("blog_posts")
+      .select("id, slug, title, excerpt, published_at, tags")
+      .eq("published", true)
+      .neq("id", post.id)
+      .order("published_at", { ascending: false })
+      .limit(12);
+    const tags = post.tags ?? [];
+    const related = (others ?? [])
+      .map((item) => ({
+        item,
+        shared: (item.tags ?? []).filter((tag) => tags.includes(tag)).length,
+      }))
+      .sort((a, b) => b.shared - a.shared)
+      .slice(0, 3)
+      .map((entry) => entry.item);
+    return { post, comments: comments ?? [], related };
   });
+
+/** Grille de conformité du modèle : sert au pilotage et aux audits. */
+export const listTemplateChecks = createServerFn({ method: "GET" }).handler(async () => {
+  const { data } = await publicClient()
+    .from("template_checks")
+    .select("id, code, area, label, requirement, status, severity, evidence, position, updated_at")
+    .order("position", { ascending: true });
+  return data ?? [];
+});
 
 export const listReviews = createServerFn({ method: "GET" }).handler(async () => {
   const { data } = await publicClient()

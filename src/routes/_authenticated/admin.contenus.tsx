@@ -139,6 +139,10 @@ function AdminContenusPage() {
       slug: slugify(title),
       excerpt: String(data.get("excerpt") ?? "").trim(),
       content: String(data.get("content") ?? "").trim(),
+      tags: String(data.get("tags") ?? "")
+        .split(",")
+        .map((tag) => tag.trim())
+        .filter(Boolean),
       published: false,
     });
     if (notifyResult(error, "Article créé en brouillon.")) form.reset();
@@ -293,6 +297,16 @@ function AdminContenusPage() {
             <div className="space-y-1.5">
               <Label htmlFor="post-content">Contenu</Label>
               <Textarea id="post-content" name="content" rows={8} required />
+              <p className="text-xs text-muted-foreground">
+                Mise en forme : **gras**, *italique*, &gt; citation, - liste, [texte](adresse).
+              </p>
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="post-tags">Étiquettes</Label>
+              <Input id="post-tags" name="tags" placeholder="référencement, conformité, tarifs" />
+              <p className="text-xs text-muted-foreground">
+                Séparées par des virgules : elles servent au filtre et aux articles liés.
+              </p>
             </div>
             <Button type="submit" title="Créer cet article en brouillon">Créer le brouillon</Button>
           </form>

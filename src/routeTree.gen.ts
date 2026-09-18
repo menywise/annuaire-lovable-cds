@@ -24,6 +24,7 @@ import { Route as MaintenanceRouteImport } from './routes/maintenance'
 import { Route as MerciRouteImport } from './routes/merci'
 import { Route as PlanDuSiteRouteImport } from './routes/plan-du-site'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as RssDotxmlRouteImport } from './routes/rss[.]xml'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TarifsRouteImport } from './routes/tarifs'
@@ -46,6 +47,7 @@ import { Route as MembresIndexRouteImport } from './routes/membres.index'
 import { Route as MembresMemberIdRouteImport } from './routes/membres.$memberId'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedAdminAbonnesRouteImport } from './routes/_authenticated/admin.abonnes'
+import { Route as AuthenticatedAdminConformiteRouteImport } from './routes/_authenticated/admin.conformite'
 import { Route as AuthenticatedAdminContenusRouteImport } from './routes/_authenticated/admin.contenus'
 import { Route as AuthenticatedAdminForumRouteImport } from './routes/_authenticated/admin.forum'
 import { Route as AuthenticatedAdminModerationRouteImport } from './routes/_authenticated/admin.moderation'
@@ -127,6 +129,11 @@ const PlanDuSiteRoute = PlanDuSiteRouteImport.update({
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RssDotxmlRoute = RssDotxmlRouteImport.update({
+  id: '/rss.xml',
+  path: '/rss.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SignupRoute = SignupRouteImport.update({
@@ -241,6 +248,12 @@ const AuthenticatedAdminAbonnesRoute =
     path: '/admin/abonnes',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAdminConformiteRoute =
+  AuthenticatedAdminConformiteRouteImport.update({
+    id: '/admin/conformite',
+    path: '/admin/conformite',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminContenusRoute =
   AuthenticatedAdminContenusRouteImport.update({
     id: '/admin/contenus',
@@ -303,6 +316,7 @@ export interface FileRoutesByFullPath {
   '/merci': typeof MerciRoute
   '/plan-du-site': typeof PlanDuSiteRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/rss.xml': typeof RssDotxmlRoute
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tarifs': typeof TarifsRoute
@@ -324,6 +338,7 @@ export interface FileRoutesByFullPath {
   '/forum/': typeof ForumIndexRoute
   '/membres/': typeof MembresIndexRoute
   '/admin/abonnes': typeof AuthenticatedAdminAbonnesRoute
+  '/admin/conformite': typeof AuthenticatedAdminConformiteRoute
   '/admin/contenus': typeof AuthenticatedAdminContenusRoute
   '/admin/forum': typeof AuthenticatedAdminForumRoute
   '/admin/moderation': typeof AuthenticatedAdminModerationRoute
@@ -349,6 +364,7 @@ export interface FileRoutesByTo {
   '/merci': typeof MerciRoute
   '/plan-du-site': typeof PlanDuSiteRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/rss.xml': typeof RssDotxmlRoute
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tarifs': typeof TarifsRoute
@@ -370,6 +386,7 @@ export interface FileRoutesByTo {
   '/forum': typeof ForumIndexRoute
   '/membres': typeof MembresIndexRoute
   '/admin/abonnes': typeof AuthenticatedAdminAbonnesRoute
+  '/admin/conformite': typeof AuthenticatedAdminConformiteRoute
   '/admin/contenus': typeof AuthenticatedAdminContenusRoute
   '/admin/forum': typeof AuthenticatedAdminForumRoute
   '/admin/moderation': typeof AuthenticatedAdminModerationRoute
@@ -397,6 +414,7 @@ export interface FileRoutesById {
   '/merci': typeof MerciRoute
   '/plan-du-site': typeof PlanDuSiteRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/rss.xml': typeof RssDotxmlRoute
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tarifs': typeof TarifsRoute
@@ -418,6 +436,7 @@ export interface FileRoutesById {
   '/forum/': typeof ForumIndexRoute
   '/membres/': typeof MembresIndexRoute
   '/_authenticated/admin/abonnes': typeof AuthenticatedAdminAbonnesRoute
+  '/_authenticated/admin/conformite': typeof AuthenticatedAdminConformiteRoute
   '/_authenticated/admin/contenus': typeof AuthenticatedAdminContenusRoute
   '/_authenticated/admin/forum': typeof AuthenticatedAdminForumRoute
   '/_authenticated/admin/moderation': typeof AuthenticatedAdminModerationRoute
@@ -445,6 +464,7 @@ export interface FileRouteTypes {
     | '/merci'
     | '/plan-du-site'
     | '/reset-password'
+    | '/rss.xml'
     | '/signup'
     | '/sitemap.xml'
     | '/tarifs'
@@ -466,6 +486,7 @@ export interface FileRouteTypes {
     | '/forum/'
     | '/membres/'
     | '/admin/abonnes'
+    | '/admin/conformite'
     | '/admin/contenus'
     | '/admin/forum'
     | '/admin/moderation'
@@ -491,6 +512,7 @@ export interface FileRouteTypes {
     | '/merci'
     | '/plan-du-site'
     | '/reset-password'
+    | '/rss.xml'
     | '/signup'
     | '/sitemap.xml'
     | '/tarifs'
@@ -512,6 +534,7 @@ export interface FileRouteTypes {
     | '/forum'
     | '/membres'
     | '/admin/abonnes'
+    | '/admin/conformite'
     | '/admin/contenus'
     | '/admin/forum'
     | '/admin/moderation'
@@ -538,6 +561,7 @@ export interface FileRouteTypes {
     | '/merci'
     | '/plan-du-site'
     | '/reset-password'
+    | '/rss.xml'
     | '/signup'
     | '/sitemap.xml'
     | '/tarifs'
@@ -559,6 +583,7 @@ export interface FileRouteTypes {
     | '/forum/'
     | '/membres/'
     | '/_authenticated/admin/abonnes'
+    | '/_authenticated/admin/conformite'
     | '/_authenticated/admin/contenus'
     | '/_authenticated/admin/forum'
     | '/_authenticated/admin/moderation'
@@ -586,6 +611,7 @@ export interface RootRouteChildren {
   MerciRoute: typeof MerciRoute
   PlanDuSiteRoute: typeof PlanDuSiteRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  RssDotxmlRoute: typeof RssDotxmlRoute
   SignupRoute: typeof SignupRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TarifsRoute: typeof TarifsRoute
@@ -710,6 +736,13 @@ declare module '@tanstack/react-router' {
       path: '/reset-password'
       fullPath: '/reset-password'
       preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/rss.xml': {
+      id: '/rss.xml'
+      path: '/rss.xml'
+      fullPath: '/rss.xml'
+      preLoaderRoute: typeof RssDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/signup': {
@@ -866,6 +899,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminAbonnesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/conformite': {
+      id: '/_authenticated/admin/conformite'
+      path: '/admin/conformite'
+      fullPath: '/admin/conformite'
+      preLoaderRoute: typeof AuthenticatedAdminConformiteRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/contenus': {
       id: '/_authenticated/admin/contenus'
       path: '/admin/contenus'
@@ -931,6 +971,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedProfilRoute: typeof AuthenticatedProfilRoute
   AuthenticatedTableauDeBordRoute: typeof AuthenticatedTableauDeBordRoute
   AuthenticatedAdminAbonnesRoute: typeof AuthenticatedAdminAbonnesRoute
+  AuthenticatedAdminConformiteRoute: typeof AuthenticatedAdminConformiteRoute
   AuthenticatedAdminContenusRoute: typeof AuthenticatedAdminContenusRoute
   AuthenticatedAdminForumRoute: typeof AuthenticatedAdminForumRoute
   AuthenticatedAdminModerationRoute: typeof AuthenticatedAdminModerationRoute
@@ -947,6 +988,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedProfilRoute: AuthenticatedProfilRoute,
   AuthenticatedTableauDeBordRoute: AuthenticatedTableauDeBordRoute,
   AuthenticatedAdminAbonnesRoute: AuthenticatedAdminAbonnesRoute,
+  AuthenticatedAdminConformiteRoute: AuthenticatedAdminConformiteRoute,
   AuthenticatedAdminContenusRoute: AuthenticatedAdminContenusRoute,
   AuthenticatedAdminForumRoute: AuthenticatedAdminForumRoute,
   AuthenticatedAdminModerationRoute: AuthenticatedAdminModerationRoute,
@@ -977,6 +1019,7 @@ const rootRouteChildren: RootRouteChildren = {
   MerciRoute: MerciRoute,
   PlanDuSiteRoute: PlanDuSiteRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  RssDotxmlRoute: RssDotxmlRoute,
   SignupRoute: SignupRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TarifsRoute: TarifsRoute,

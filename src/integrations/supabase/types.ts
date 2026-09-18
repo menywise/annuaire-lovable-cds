@@ -134,6 +134,7 @@ export type Database = {
           published: boolean
           published_at: string | null
           slug: string
+          tags: string[]
           title: string
           updated_at: string
         }
@@ -147,6 +148,7 @@ export type Database = {
           published?: boolean
           published_at?: string | null
           slug: string
+          tags?: string[]
           title: string
           updated_at?: string
         }
@@ -160,6 +162,7 @@ export type Database = {
           published?: boolean
           published_at?: string | null
           slug?: string
+          tags?: string[]
           title?: string
           updated_at?: string
         }
@@ -728,6 +731,48 @@ export type Database = {
           updated_at?: string
           updated_by?: string | null
           value?: Json
+        }
+        Relationships: []
+      }
+      template_checks: {
+        Row: {
+          area: string
+          code: string
+          created_at: string
+          evidence: string
+          id: string
+          label: string
+          position: number
+          requirement: string
+          severity: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          area: string
+          code: string
+          created_at?: string
+          evidence?: string
+          id?: string
+          label: string
+          position?: number
+          requirement?: string
+          severity?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          area?: string
+          code?: string
+          created_at?: string
+          evidence?: string
+          id?: string
+          label?: string
+          position?: number
+          requirement?: string
+          severity?: string
+          status?: string
+          updated_at?: string
         }
         Relationships: []
       }
