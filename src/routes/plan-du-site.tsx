@@ -46,7 +46,7 @@ const groupes = [
       { to: "/verification-email", label: "Vérification de l'adresse e-mail", title: "Renvoyer le lien de confirmation" },
       { to: "/forgot-password", label: "Mot de passe oublié", title: "Recevoir un lien de réinitialisation" },
       { to: "/tableau-de-bord", label: "Tableau de bord", title: "Chiffres clés et raccourcis" },
-      { to: "/pilotage", label: "Pilotage", title: "Feuille de route, plan directeur et audits" },
+      { to: "/decouvrir", label: "Découvrir", title: "Faire le tour des fonctionnalités actives de votre espace" },
       { to: "/messagerie", label: "Messagerie", title: "Vos échanges privés entre membres" },
       { to: "/profil", label: "Mon profil", title: "Nom affiché, profil public et mot de passe" },
       { to: "/compte", label: "Mon compte", title: "Rôle, session et messages reçus" },

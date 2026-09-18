@@ -31,7 +31,7 @@ import { Route as TarifsRouteImport } from './routes/tarifs'
 import { Route as TemoignagesRouteImport } from './routes/temoignages'
 import { Route as VerificationEmailRouteImport } from './routes/verification-email'
 import { Route as AuthenticatedCompteRouteImport } from './routes/_authenticated/compte'
-import { Route as AuthenticatedPilotageRouteImport } from './routes/_authenticated/pilotage'
+import { Route as AuthenticatedDecouvrirRouteImport } from './routes/_authenticated/decouvrir'
 import { Route as AuthenticatedProfilRouteImport } from './routes/_authenticated/profil'
 import { Route as AuthenticatedTableauDeBordRouteImport } from './routes/_authenticated/tableau-de-bord'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
@@ -166,9 +166,9 @@ const AuthenticatedCompteRoute = AuthenticatedCompteRouteImport.update({
   path: '/compte',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedPilotageRoute = AuthenticatedPilotageRouteImport.update({
-  id: '/pilotage',
-  path: '/pilotage',
+const AuthenticatedDecouvrirRoute = AuthenticatedDecouvrirRouteImport.update({
+  id: '/decouvrir',
+  path: '/decouvrir',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedProfilRoute = AuthenticatedProfilRouteImport.update({
@@ -323,7 +323,7 @@ export interface FileRoutesByFullPath {
   '/temoignages': typeof TemoignagesRoute
   '/verification-email': typeof VerificationEmailRoute
   '/compte': typeof AuthenticatedCompteRoute
-  '/pilotage': typeof AuthenticatedPilotageRoute
+  '/decouvrir': typeof AuthenticatedDecouvrirRoute
   '/profil': typeof AuthenticatedProfilRoute
   '/tableau-de-bord': typeof AuthenticatedTableauDeBordRoute
   '/blog/$slug': typeof BlogSlugRoute
@@ -371,7 +371,7 @@ export interface FileRoutesByTo {
   '/temoignages': typeof TemoignagesRoute
   '/verification-email': typeof VerificationEmailRoute
   '/compte': typeof AuthenticatedCompteRoute
-  '/pilotage': typeof AuthenticatedPilotageRoute
+  '/decouvrir': typeof AuthenticatedDecouvrirRoute
   '/profil': typeof AuthenticatedProfilRoute
   '/tableau-de-bord': typeof AuthenticatedTableauDeBordRoute
   '/blog/$slug': typeof BlogSlugRoute
@@ -421,7 +421,7 @@ export interface FileRoutesById {
   '/temoignages': typeof TemoignagesRoute
   '/verification-email': typeof VerificationEmailRoute
   '/_authenticated/compte': typeof AuthenticatedCompteRoute
-  '/_authenticated/pilotage': typeof AuthenticatedPilotageRoute
+  '/_authenticated/decouvrir': typeof AuthenticatedDecouvrirRoute
   '/_authenticated/profil': typeof AuthenticatedProfilRoute
   '/_authenticated/tableau-de-bord': typeof AuthenticatedTableauDeBordRoute
   '/blog/$slug': typeof BlogSlugRoute
@@ -471,7 +471,7 @@ export interface FileRouteTypes {
     | '/temoignages'
     | '/verification-email'
     | '/compte'
-    | '/pilotage'
+    | '/decouvrir'
     | '/profil'
     | '/tableau-de-bord'
     | '/blog/$slug'
@@ -519,7 +519,7 @@ export interface FileRouteTypes {
     | '/temoignages'
     | '/verification-email'
     | '/compte'
-    | '/pilotage'
+    | '/decouvrir'
     | '/profil'
     | '/tableau-de-bord'
     | '/blog/$slug'
@@ -568,7 +568,7 @@ export interface FileRouteTypes {
     | '/temoignages'
     | '/verification-email'
     | '/_authenticated/compte'
-    | '/_authenticated/pilotage'
+    | '/_authenticated/decouvrir'
     | '/_authenticated/profil'
     | '/_authenticated/tableau-de-bord'
     | '/blog/$slug'
@@ -787,11 +787,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCompteRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/pilotage': {
-      id: '/_authenticated/pilotage'
-      path: '/pilotage'
-      fullPath: '/pilotage'
-      preLoaderRoute: typeof AuthenticatedPilotageRouteImport
+    '/_authenticated/decouvrir': {
+      id: '/_authenticated/decouvrir'
+      path: '/decouvrir'
+      fullPath: '/decouvrir'
+      preLoaderRoute: typeof AuthenticatedDecouvrirRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/profil': {
@@ -967,7 +967,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedCompteRoute: typeof AuthenticatedCompteRoute
-  AuthenticatedPilotageRoute: typeof AuthenticatedPilotageRoute
+  AuthenticatedDecouvrirRoute: typeof AuthenticatedDecouvrirRoute
   AuthenticatedProfilRoute: typeof AuthenticatedProfilRoute
   AuthenticatedTableauDeBordRoute: typeof AuthenticatedTableauDeBordRoute
   AuthenticatedAdminAbonnesRoute: typeof AuthenticatedAdminAbonnesRoute
@@ -984,7 +984,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCompteRoute: AuthenticatedCompteRoute,
-  AuthenticatedPilotageRoute: AuthenticatedPilotageRoute,
+  AuthenticatedDecouvrirRoute: AuthenticatedDecouvrirRoute,
   AuthenticatedProfilRoute: AuthenticatedProfilRoute,
   AuthenticatedTableauDeBordRoute: AuthenticatedTableauDeBordRoute,
   AuthenticatedAdminAbonnesRoute: AuthenticatedAdminAbonnesRoute,
