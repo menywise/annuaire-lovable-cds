@@ -34,6 +34,7 @@ import { Route as VerificationEmailRouteImport } from './routes/verification-ema
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as AuthenticatedCompteRouteImport } from './routes/_authenticated/compte'
 import { Route as AuthenticatedDecouvrirRouteImport } from './routes/_authenticated/decouvrir'
+import { Route as AuthenticatedMesFormationsRouteImport } from './routes/_authenticated/mes-formations'
 import { Route as AuthenticatedProfilRouteImport } from './routes/_authenticated/profil'
 import { Route as AuthenticatedTableauDeBordRouteImport } from './routes/_authenticated/tableau-de-bord'
 import { Route as AnnuaireIndexRouteImport } from './routes/annuaire.index'
@@ -194,6 +195,12 @@ const AuthenticatedDecouvrirRoute = AuthenticatedDecouvrirRouteImport.update({
   path: '/decouvrir',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedMesFormationsRoute =
+  AuthenticatedMesFormationsRouteImport.update({
+    id: '/mes-formations',
+    path: '/mes-formations',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedProfilRoute = AuthenticatedProfilRouteImport.update({
   id: '/profil',
   path: '/profil',
@@ -400,6 +407,7 @@ export interface FileRoutesByFullPath {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/compte': typeof AuthenticatedCompteRoute
   '/decouvrir': typeof AuthenticatedDecouvrirRoute
+  '/mes-formations': typeof AuthenticatedMesFormationsRoute
   '/profil': typeof AuthenticatedProfilRoute
   '/tableau-de-bord': typeof AuthenticatedTableauDeBordRoute
   '/annuaire/$slug': typeof AnnuaireSlugRoute
@@ -460,6 +468,7 @@ export interface FileRoutesByTo {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/compte': typeof AuthenticatedCompteRoute
   '/decouvrir': typeof AuthenticatedDecouvrirRoute
+  '/mes-formations': typeof AuthenticatedMesFormationsRoute
   '/profil': typeof AuthenticatedProfilRoute
   '/tableau-de-bord': typeof AuthenticatedTableauDeBordRoute
   '/annuaire/$slug': typeof AnnuaireSlugRoute
@@ -522,6 +531,7 @@ export interface FileRoutesById {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/_authenticated/compte': typeof AuthenticatedCompteRoute
   '/_authenticated/decouvrir': typeof AuthenticatedDecouvrirRoute
+  '/_authenticated/mes-formations': typeof AuthenticatedMesFormationsRoute
   '/_authenticated/profil': typeof AuthenticatedProfilRoute
   '/_authenticated/tableau-de-bord': typeof AuthenticatedTableauDeBordRoute
   '/annuaire/$slug': typeof AnnuaireSlugRoute
@@ -584,6 +594,7 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/compte'
     | '/decouvrir'
+    | '/mes-formations'
     | '/profil'
     | '/tableau-de-bord'
     | '/annuaire/$slug'
@@ -644,6 +655,7 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/compte'
     | '/decouvrir'
+    | '/mes-formations'
     | '/profil'
     | '/tableau-de-bord'
     | '/annuaire/$slug'
@@ -705,6 +717,7 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/_authenticated/compte'
     | '/_authenticated/decouvrir'
+    | '/_authenticated/mes-formations'
     | '/_authenticated/profil'
     | '/_authenticated/tableau-de-bord'
     | '/annuaire/$slug'
@@ -966,6 +979,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDecouvrirRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/mes-formations': {
+      id: '/_authenticated/mes-formations'
+      path: '/mes-formations'
+      fullPath: '/mes-formations'
+      preLoaderRoute: typeof AuthenticatedMesFormationsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/profil': {
       id: '/_authenticated/profil'
       path: '/profil'
@@ -1210,6 +1230,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedCompteRoute: typeof AuthenticatedCompteRoute
   AuthenticatedDecouvrirRoute: typeof AuthenticatedDecouvrirRoute
+  AuthenticatedMesFormationsRoute: typeof AuthenticatedMesFormationsRoute
   AuthenticatedProfilRoute: typeof AuthenticatedProfilRoute
   AuthenticatedTableauDeBordRoute: typeof AuthenticatedTableauDeBordRoute
   AuthenticatedAdminAbonnesRoute: typeof AuthenticatedAdminAbonnesRoute
@@ -1227,6 +1248,7 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCompteRoute: AuthenticatedCompteRoute,
   AuthenticatedDecouvrirRoute: AuthenticatedDecouvrirRoute,
+  AuthenticatedMesFormationsRoute: AuthenticatedMesFormationsRoute,
   AuthenticatedProfilRoute: AuthenticatedProfilRoute,
   AuthenticatedTableauDeBordRoute: AuthenticatedTableauDeBordRoute,
   AuthenticatedAdminAbonnesRoute: AuthenticatedAdminAbonnesRoute,
