@@ -32,9 +32,9 @@ export default defineTool({
         .from("audits")
         .insert({
           label,
-          score: score ?? null,
           max_score: 100,
-          summary: summary ?? null,
+          ...(score === undefined ? {} : { score }),
+          ...(summary === undefined ? {} : { summary }),
         })
         .select("id, label, score, max_score, summary, performed_at")
         .single();

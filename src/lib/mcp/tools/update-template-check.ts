@@ -21,10 +21,10 @@ export default defineTool({
   handler: async ({ code, status, severity, evidence }, ctx) => {
     try {
       const supabase = await requireAdmin(ctx);
-      const patch: Record<string, unknown> = {};
-      if (status) patch['status'] = status;
-      if (severity) patch['severity'] = severity;
-      if (evidence !== undefined) patch['evidence'] = evidence;
+      const patch: { status?: string; severity?: string; evidence?: string } = {};
+      if (status) patch.status = status;
+      if (severity) patch.severity = severity;
+      if (evidence !== undefined) patch.evidence = evidence;
       if (Object.keys(patch).length === 0) return errorResult("Rien à mettre à jour.");
       const { data, error } = await supabase
         .from("template_checks")

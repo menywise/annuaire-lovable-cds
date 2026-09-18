@@ -22,7 +22,14 @@ export default defineTool({
     try {
       const supabase = await requireAdmin(ctx);
       const { id, ...rest } = input;
-      const patch = Object.fromEntries(Object.entries(rest).filter(([, v]) => v !== undefined));
+      const patch = Object.fromEntries(Object.entries(rest).filter(([, v]) => v !== undefined)) as {
+        title?: string;
+        description?: string;
+        lot?: string;
+        status?: string;
+        priority?: string;
+        public_visible?: boolean;
+      };
       const columns = "id, title, description, lot, status, priority, position, public_visible";
       if (id) {
         if (Object.keys(patch).length === 0) return errorResult("Rien à mettre à jour.");
