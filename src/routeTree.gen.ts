@@ -37,7 +37,9 @@ import { Route as AuthenticatedDecouvrirRouteImport } from './routes/_authentica
 import { Route as AuthenticatedProfilRouteImport } from './routes/_authenticated/profil'
 import { Route as AuthenticatedTableauDeBordRouteImport } from './routes/_authenticated/tableau-de-bord'
 import { Route as AnnuaireIndexRouteImport } from './routes/annuaire.index'
+import { Route as AnnuaireSlugRouteImport } from './routes/annuaire.$slug'
 import { Route as AnnuaireDepartementsRouteImport } from './routes/annuaire.departements'
+import { Route as AnnuaireSoumettreRouteImport } from './routes/annuaire.soumettre'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as ForumIndexRouteImport } from './routes/forum.index'
@@ -205,9 +207,19 @@ const AnnuaireIndexRoute = AnnuaireIndexRouteImport.update({
   path: '/annuaire/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AnnuaireSlugRoute = AnnuaireSlugRouteImport.update({
+  id: '/annuaire/$slug',
+  path: '/annuaire/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AnnuaireDepartementsRoute = AnnuaireDepartementsRouteImport.update({
   id: '/annuaire/departements',
   path: '/annuaire/departements',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AnnuaireSoumettreRoute = AnnuaireSoumettreRouteImport.update({
+  id: '/annuaire/soumettre',
+  path: '/annuaire/soumettre',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BlogIndexRoute = BlogIndexRouteImport.update({
@@ -371,7 +383,9 @@ export interface FileRoutesByFullPath {
   '/decouvrir': typeof AuthenticatedDecouvrirRoute
   '/profil': typeof AuthenticatedProfilRoute
   '/tableau-de-bord': typeof AuthenticatedTableauDeBordRoute
+  '/annuaire/$slug': typeof AnnuaireSlugRoute
   '/annuaire/departements': typeof AnnuaireDepartementsRoute
+  '/annuaire/soumettre': typeof AnnuaireSoumettreRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/forum/$topicId': typeof ForumTopicIdRoute
   '/legal/cgu': typeof LegalCguRoute
@@ -426,7 +440,9 @@ export interface FileRoutesByTo {
   '/decouvrir': typeof AuthenticatedDecouvrirRoute
   '/profil': typeof AuthenticatedProfilRoute
   '/tableau-de-bord': typeof AuthenticatedTableauDeBordRoute
+  '/annuaire/$slug': typeof AnnuaireSlugRoute
   '/annuaire/departements': typeof AnnuaireDepartementsRoute
+  '/annuaire/soumettre': typeof AnnuaireSoumettreRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/forum/$topicId': typeof ForumTopicIdRoute
   '/legal/cgu': typeof LegalCguRoute
@@ -483,7 +499,9 @@ export interface FileRoutesById {
   '/_authenticated/decouvrir': typeof AuthenticatedDecouvrirRoute
   '/_authenticated/profil': typeof AuthenticatedProfilRoute
   '/_authenticated/tableau-de-bord': typeof AuthenticatedTableauDeBordRoute
+  '/annuaire/$slug': typeof AnnuaireSlugRoute
   '/annuaire/departements': typeof AnnuaireDepartementsRoute
+  '/annuaire/soumettre': typeof AnnuaireSoumettreRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/forum/$topicId': typeof ForumTopicIdRoute
   '/legal/cgu': typeof LegalCguRoute
@@ -540,7 +558,9 @@ export interface FileRouteTypes {
     | '/decouvrir'
     | '/profil'
     | '/tableau-de-bord'
+    | '/annuaire/$slug'
     | '/annuaire/departements'
+    | '/annuaire/soumettre'
     | '/blog/$slug'
     | '/forum/$topicId'
     | '/legal/cgu'
@@ -595,7 +615,9 @@ export interface FileRouteTypes {
     | '/decouvrir'
     | '/profil'
     | '/tableau-de-bord'
+    | '/annuaire/$slug'
     | '/annuaire/departements'
+    | '/annuaire/soumettre'
     | '/blog/$slug'
     | '/forum/$topicId'
     | '/legal/cgu'
@@ -651,7 +673,9 @@ export interface FileRouteTypes {
     | '/_authenticated/decouvrir'
     | '/_authenticated/profil'
     | '/_authenticated/tableau-de-bord'
+    | '/annuaire/$slug'
     | '/annuaire/departements'
+    | '/annuaire/soumettre'
     | '/blog/$slug'
     | '/forum/$topicId'
     | '/legal/cgu'
@@ -704,7 +728,9 @@ export interface RootRouteChildren {
   TemoignagesRoute: typeof TemoignagesRoute
   VerificationEmailRoute: typeof VerificationEmailRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  AnnuaireSlugRoute: typeof AnnuaireSlugRoute
   AnnuaireDepartementsRoute: typeof AnnuaireDepartementsRoute
+  AnnuaireSoumettreRoute: typeof AnnuaireSoumettreRoute
   BlogSlugRoute: typeof BlogSlugRoute
   ForumTopicIdRoute: typeof ForumTopicIdRoute
   LegalCguRoute: typeof LegalCguRoute
@@ -921,11 +947,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AnnuaireIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/annuaire/$slug': {
+      id: '/annuaire/$slug'
+      path: '/annuaire/$slug'
+      fullPath: '/annuaire/$slug'
+      preLoaderRoute: typeof AnnuaireSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/annuaire/departements': {
       id: '/annuaire/departements'
       path: '/annuaire/departements'
       fullPath: '/annuaire/departements'
       preLoaderRoute: typeof AnnuaireDepartementsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/annuaire/soumettre': {
+      id: '/annuaire/soumettre'
+      path: '/annuaire/soumettre'
+      fullPath: '/annuaire/soumettre'
+      preLoaderRoute: typeof AnnuaireSoumettreRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/blog/': {
@@ -1169,7 +1209,9 @@ const rootRouteChildren: RootRouteChildren = {
   VerificationEmailRoute: VerificationEmailRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
+  AnnuaireSlugRoute: AnnuaireSlugRoute,
   AnnuaireDepartementsRoute: AnnuaireDepartementsRoute,
+  AnnuaireSoumettreRoute: AnnuaireSoumettreRoute,
   BlogSlugRoute: BlogSlugRoute,
   ForumTopicIdRoute: ForumTopicIdRoute,
   LegalCguRoute: LegalCguRoute,

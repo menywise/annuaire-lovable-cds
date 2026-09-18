@@ -1704,6 +1704,10 @@ export type Database = {
         Args: { _conversation_id: string; _user_id: string }
         Returns: boolean
       }
+      request_directory_claim: {
+        Args: { _listing_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       app_role: "admin" | "user"
