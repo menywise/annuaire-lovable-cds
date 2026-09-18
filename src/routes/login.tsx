@@ -11,7 +11,15 @@ import { GoogleSignInButton } from "@/components/cds/GoogleSignInButton";
 
 import { seo } from "@/lib/seo";
 
+function safeNext(value: unknown): string | undefined {
+  return typeof value === "string" && value.startsWith("/") && !value.startsWith("//") ? value : undefined;
+}
+
 export const Route = createFileRoute("/login")({
+  validateSearch: (s: Record<string, unknown>): { next?: string } => {
+    const next = safeNext(s['next']);
+    return next ? { next } : {};
+  },
   head: () =>
     seo({
       title: "Connexion",
@@ -25,6 +33,7 @@ export const Route = createFileRoute("/login")({
 
 function LoginPage() {
   const navigate = useNavigate();
+  const { next } = Route.useSearch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -47,6 +56,10 @@ function LoginPage() {
       await bootstrapCurrentUser();
     } catch {
       /* le profil sera recréé à la prochaine connexion */
+    }
+    if (next) {
+      window.location.href = next;
+      return;
     }
     navigate({ to: "/compte" });
   }
@@ -103,7 +116,7 @@ function LoginPage() {
         <Button type="submit" className="w-full" disabled={busy}>
           {busy ? "Connexion…" : "Se connecter"}
         </Button>
-        <GoogleSignInButton />
+        <GoogleSignInButton {...(next ? { redirectTo: next } : {})} />
       </form>
     </AuthLayout>
   );

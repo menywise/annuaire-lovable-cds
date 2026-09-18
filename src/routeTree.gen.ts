@@ -21,6 +21,7 @@ import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as GuideRouteImport } from './routes/guide'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as MaintenanceRouteImport } from './routes/maintenance'
+import { Route as McpRouteImport } from './routes/mcp'
 import { Route as MerciRouteImport } from './routes/merci'
 import { Route as PlanDuSiteRouteImport } from './routes/plan-du-site'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
@@ -30,6 +31,7 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TarifsRouteImport } from './routes/tarifs'
 import { Route as TemoignagesRouteImport } from './routes/temoignages'
 import { Route as VerificationEmailRouteImport } from './routes/verification-email'
+import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as AuthenticatedCompteRouteImport } from './routes/_authenticated/compte'
 import { Route as AuthenticatedDecouvrirRouteImport } from './routes/_authenticated/decouvrir'
 import { Route as AuthenticatedProfilRouteImport } from './routes/_authenticated/profil'
@@ -45,6 +47,7 @@ import { Route as LegalCookiesRouteImport } from './routes/legal.cookies'
 import { Route as LegalMentionsLegalesRouteImport } from './routes/legal.mentions-legales'
 import { Route as MembresIndexRouteImport } from './routes/membres.index'
 import { Route as MembresMemberIdRouteImport } from './routes/membres.$memberId'
+import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedAdminAbonnesRouteImport } from './routes/_authenticated/admin.abonnes'
 import { Route as AuthenticatedAdminConformiteRouteImport } from './routes/_authenticated/admin.conformite'
@@ -116,6 +119,11 @@ const MaintenanceRoute = MaintenanceRouteImport.update({
   path: '/maintenance',
   getParentRoute: () => rootRouteImport,
 } as any)
+const McpRoute = McpRouteImport.update({
+  id: '/mcp',
+  path: '/mcp',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MerciRoute = MerciRouteImport.update({
   id: '/merci',
   path: '/merci',
@@ -161,6 +169,12 @@ const VerificationEmailRoute = VerificationEmailRouteImport.update({
   path: '/verification-email',
   getParentRoute: () => rootRouteImport,
 } as any)
+const Char91DotwellKnownChar93OauthProtectedResourceRoute =
+  Char91DotwellKnownChar93OauthProtectedResourceRouteImport.update({
+    id: '/.well-known/oauth-protected-resource',
+    path: '/.well-known/oauth-protected-resource',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AuthenticatedCompteRoute = AuthenticatedCompteRouteImport.update({
   id: '/compte',
   path: '/compte',
@@ -235,6 +249,11 @@ const MembresIndexRoute = MembresIndexRouteImport.update({
 const MembresMemberIdRoute = MembresMemberIdRouteImport.update({
   id: '/membres/$memberId',
   path: '/membres/$memberId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
+  id: '/.lovable/oauth/consent',
+  path: '/.lovable/oauth/consent',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
@@ -313,6 +332,7 @@ export interface FileRoutesByFullPath {
   '/guide': typeof GuideRoute
   '/login': typeof LoginRoute
   '/maintenance': typeof MaintenanceRoute
+  '/mcp': typeof McpRoute
   '/merci': typeof MerciRoute
   '/plan-du-site': typeof PlanDuSiteRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -322,6 +342,7 @@ export interface FileRoutesByFullPath {
   '/tarifs': typeof TarifsRoute
   '/temoignages': typeof TemoignagesRoute
   '/verification-email': typeof VerificationEmailRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/compte': typeof AuthenticatedCompteRoute
   '/decouvrir': typeof AuthenticatedDecouvrirRoute
   '/profil': typeof AuthenticatedProfilRoute
@@ -337,6 +358,7 @@ export interface FileRoutesByFullPath {
   '/blog/': typeof BlogIndexRoute
   '/forum/': typeof ForumIndexRoute
   '/membres/': typeof MembresIndexRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/admin/abonnes': typeof AuthenticatedAdminAbonnesRoute
   '/admin/conformite': typeof AuthenticatedAdminConformiteRoute
   '/admin/contenus': typeof AuthenticatedAdminContenusRoute
@@ -361,6 +383,7 @@ export interface FileRoutesByTo {
   '/guide': typeof GuideRoute
   '/login': typeof LoginRoute
   '/maintenance': typeof MaintenanceRoute
+  '/mcp': typeof McpRoute
   '/merci': typeof MerciRoute
   '/plan-du-site': typeof PlanDuSiteRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -370,6 +393,7 @@ export interface FileRoutesByTo {
   '/tarifs': typeof TarifsRoute
   '/temoignages': typeof TemoignagesRoute
   '/verification-email': typeof VerificationEmailRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/compte': typeof AuthenticatedCompteRoute
   '/decouvrir': typeof AuthenticatedDecouvrirRoute
   '/profil': typeof AuthenticatedProfilRoute
@@ -385,6 +409,7 @@ export interface FileRoutesByTo {
   '/blog': typeof BlogIndexRoute
   '/forum': typeof ForumIndexRoute
   '/membres': typeof MembresIndexRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/admin/abonnes': typeof AuthenticatedAdminAbonnesRoute
   '/admin/conformite': typeof AuthenticatedAdminConformiteRoute
   '/admin/contenus': typeof AuthenticatedAdminContenusRoute
@@ -411,6 +436,7 @@ export interface FileRoutesById {
   '/guide': typeof GuideRoute
   '/login': typeof LoginRoute
   '/maintenance': typeof MaintenanceRoute
+  '/mcp': typeof McpRoute
   '/merci': typeof MerciRoute
   '/plan-du-site': typeof PlanDuSiteRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -420,6 +446,7 @@ export interface FileRoutesById {
   '/tarifs': typeof TarifsRoute
   '/temoignages': typeof TemoignagesRoute
   '/verification-email': typeof VerificationEmailRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/_authenticated/compte': typeof AuthenticatedCompteRoute
   '/_authenticated/decouvrir': typeof AuthenticatedDecouvrirRoute
   '/_authenticated/profil': typeof AuthenticatedProfilRoute
@@ -435,6 +462,7 @@ export interface FileRoutesById {
   '/blog/': typeof BlogIndexRoute
   '/forum/': typeof ForumIndexRoute
   '/membres/': typeof MembresIndexRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/_authenticated/admin/abonnes': typeof AuthenticatedAdminAbonnesRoute
   '/_authenticated/admin/conformite': typeof AuthenticatedAdminConformiteRoute
   '/_authenticated/admin/contenus': typeof AuthenticatedAdminContenusRoute
@@ -461,6 +489,7 @@ export interface FileRouteTypes {
     | '/guide'
     | '/login'
     | '/maintenance'
+    | '/mcp'
     | '/merci'
     | '/plan-du-site'
     | '/reset-password'
@@ -470,6 +499,7 @@ export interface FileRouteTypes {
     | '/tarifs'
     | '/temoignages'
     | '/verification-email'
+    | '/.well-known/oauth-protected-resource'
     | '/compte'
     | '/decouvrir'
     | '/profil'
@@ -485,6 +515,7 @@ export interface FileRouteTypes {
     | '/blog/'
     | '/forum/'
     | '/membres/'
+    | '/.lovable/oauth/consent'
     | '/admin/abonnes'
     | '/admin/conformite'
     | '/admin/contenus'
@@ -509,6 +540,7 @@ export interface FileRouteTypes {
     | '/guide'
     | '/login'
     | '/maintenance'
+    | '/mcp'
     | '/merci'
     | '/plan-du-site'
     | '/reset-password'
@@ -518,6 +550,7 @@ export interface FileRouteTypes {
     | '/tarifs'
     | '/temoignages'
     | '/verification-email'
+    | '/.well-known/oauth-protected-resource'
     | '/compte'
     | '/decouvrir'
     | '/profil'
@@ -533,6 +566,7 @@ export interface FileRouteTypes {
     | '/blog'
     | '/forum'
     | '/membres'
+    | '/.lovable/oauth/consent'
     | '/admin/abonnes'
     | '/admin/conformite'
     | '/admin/contenus'
@@ -558,6 +592,7 @@ export interface FileRouteTypes {
     | '/guide'
     | '/login'
     | '/maintenance'
+    | '/mcp'
     | '/merci'
     | '/plan-du-site'
     | '/reset-password'
@@ -567,6 +602,7 @@ export interface FileRouteTypes {
     | '/tarifs'
     | '/temoignages'
     | '/verification-email'
+    | '/.well-known/oauth-protected-resource'
     | '/_authenticated/compte'
     | '/_authenticated/decouvrir'
     | '/_authenticated/profil'
@@ -582,6 +618,7 @@ export interface FileRouteTypes {
     | '/blog/'
     | '/forum/'
     | '/membres/'
+    | '/.lovable/oauth/consent'
     | '/_authenticated/admin/abonnes'
     | '/_authenticated/admin/conformite'
     | '/_authenticated/admin/contenus'
@@ -608,6 +645,7 @@ export interface RootRouteChildren {
   GuideRoute: typeof GuideRoute
   LoginRoute: typeof LoginRoute
   MaintenanceRoute: typeof MaintenanceRoute
+  McpRoute: typeof McpRoute
   MerciRoute: typeof MerciRoute
   PlanDuSiteRoute: typeof PlanDuSiteRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
@@ -617,6 +655,7 @@ export interface RootRouteChildren {
   TarifsRoute: typeof TarifsRoute
   TemoignagesRoute: typeof TemoignagesRoute
   VerificationEmailRoute: typeof VerificationEmailRoute
+  Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   BlogSlugRoute: typeof BlogSlugRoute
   ForumTopicIdRoute: typeof ForumTopicIdRoute
   LegalCguRoute: typeof LegalCguRoute
@@ -628,6 +667,7 @@ export interface RootRouteChildren {
   BlogIndexRoute: typeof BlogIndexRoute
   ForumIndexRoute: typeof ForumIndexRoute
   MembresIndexRoute: typeof MembresIndexRoute
+  DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   ForumCategorieSlugRoute: typeof ForumCategorieSlugRoute
 }
 
@@ -717,6 +757,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MaintenanceRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/mcp': {
+      id: '/mcp'
+      path: '/mcp'
+      fullPath: '/mcp'
+      preLoaderRoute: typeof McpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/merci': {
       id: '/merci'
       path: '/merci'
@@ -778,6 +825,13 @@ declare module '@tanstack/react-router' {
       path: '/verification-email'
       fullPath: '/verification-email'
       preLoaderRoute: typeof VerificationEmailRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.well-known/oauth-protected-resource': {
+      id: '/.well-known/oauth-protected-resource'
+      path: '/.well-known/oauth-protected-resource'
+      fullPath: '/.well-known/oauth-protected-resource'
+      preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/compte': {
@@ -883,6 +937,13 @@ declare module '@tanstack/react-router' {
       path: '/membres/$memberId'
       fullPath: '/membres/$memberId'
       preLoaderRoute: typeof MembresMemberIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.lovable/oauth/consent': {
+      id: '/.lovable/oauth/consent'
+      path: '/.lovable/oauth/consent'
+      fullPath: '/.lovable/oauth/consent'
+      preLoaderRoute: typeof DotlovableOauthConsentRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/admin/': {
@@ -1016,6 +1077,7 @@ const rootRouteChildren: RootRouteChildren = {
   GuideRoute: GuideRoute,
   LoginRoute: LoginRoute,
   MaintenanceRoute: MaintenanceRoute,
+  McpRoute: McpRoute,
   MerciRoute: MerciRoute,
   PlanDuSiteRoute: PlanDuSiteRoute,
   ResetPasswordRoute: ResetPasswordRoute,
@@ -1025,6 +1087,8 @@ const rootRouteChildren: RootRouteChildren = {
   TarifsRoute: TarifsRoute,
   TemoignagesRoute: TemoignagesRoute,
   VerificationEmailRoute: VerificationEmailRoute,
+  Char91DotwellKnownChar93OauthProtectedResourceRoute:
+    Char91DotwellKnownChar93OauthProtectedResourceRoute,
   BlogSlugRoute: BlogSlugRoute,
   ForumTopicIdRoute: ForumTopicIdRoute,
   LegalCguRoute: LegalCguRoute,
@@ -1036,6 +1100,7 @@ const rootRouteChildren: RootRouteChildren = {
   BlogIndexRoute: BlogIndexRoute,
   ForumIndexRoute: ForumIndexRoute,
   MembresIndexRoute: MembresIndexRoute,
+  DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   ForumCategorieSlugRoute: ForumCategorieSlugRoute,
 }
 export const routeTree = rootRouteImport

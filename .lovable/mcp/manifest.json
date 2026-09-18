@@ -1,0 +1,345 @@
+{
+  "version": 1,
+  "sdk_version": "2.2.0",
+  "path": "/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://ujrsdpxrokypaazxpbax.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "cds-framework",
+      "version": "1.0.0",
+      "title": "CDS Framework"
+    },
+    "tools": [
+      {
+        "name": "list_template_checks",
+        "title": "Grille de conformité",
+        "description": "Liste les points de contrôle du modèle CDS (domaine, exigence, état, gravité, constat) et calcule le score de conformité.",
+        "annotations": {
+          "readOnlyHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {
+            "area": {
+              "description": "Filtrer sur un domaine (NAV, CNT, SEO, DES...).",
+              "type": "string"
+            },
+            "status": {
+              "description": "Filtrer sur un état.",
+              "type": "string",
+              "enum": [
+                "conforme",
+                "a_corriger",
+                "a_verifier",
+                "non_applicable"
+              ]
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "update_template_check",
+        "title": "Mettre à jour un point de contrôle",
+        "description": "Met à jour l'état et le constat d'un point de contrôle de la grille de conformité, à partir de son code (ex. SEO-2).",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Code du point de contrôle, par exemple NAV-1."
+            },
+            "status": {
+              "description": "Nouvel état.",
+              "type": "string",
+              "enum": [
+                "conforme",
+                "a_corriger",
+                "a_verifier",
+                "non_applicable"
+              ]
+            },
+            "severity": {
+              "description": "Gravité constatée.",
+              "type": "string",
+              "enum": [
+                "bloquant",
+                "majeur",
+                "mineur"
+              ]
+            },
+            "evidence": {
+              "description": "Constat : fichier + ligne, ou page + élément visible.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "code"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "site_overview",
+        "title": "État des fonctionnalités",
+        "description": "Donne le volume de contenus et d'activité par module (blog, FAQ, offres, avis, témoignages, forum, membres, messages, pilotage) pour repérer les briques vides ou inactives.",
+        "annotations": {
+          "readOnlyHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_public_pages",
+        "title": "Pages publiques",
+        "description": "Lit le plan du site (sitemap.xml) et retourne toutes les adresses publiques du site, prêtes à être auditées une par une.",
+        "annotations": {
+          "readOnlyHint": true,
+          "openWorldHint": true
+        },
+        "inputSchema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {
+            "base_url": {
+              "description": "Adresse du site à auditer, si différente de la production.",
+              "type": "string",
+              "format": "uri"
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "audit_page",
+        "title": "Auditer une page",
+        "description": "Charge une page publique et retourne ses éléments auditables : statut HTTP, langue, titre, description, balises Open Graph, canonique, nombre de H1/H2, images sans texte alternatif, liens sans attribut title, traces de thème sombre et mots anglais résiduels.",
+        "annotations": {
+          "readOnlyHint": true,
+          "openWorldHint": true
+        },
+        "inputSchema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Chemin de la page, par exemple /tarifs."
+            },
+            "base_url": {
+              "description": "Adresse du site, si différente de la production.",
+              "type": "string",
+              "format": "uri"
+            }
+          },
+          "required": [
+            "path"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_roadmap",
+        "title": "Feuille de route et plan directeur",
+        "description": "Retourne la feuille de route (lots, statuts, priorités) et les sections du plan directeur du modèle CDS.",
+        "annotations": {
+          "readOnlyHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {
+            "status": {
+              "description": "Filtrer sur un statut.",
+              "type": "string",
+              "enum": [
+                "a_faire",
+                "en_cours",
+                "fait"
+              ]
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "upsert_roadmap_item",
+        "title": "Créer ou modifier un élément de feuille de route",
+        "description": "Crée un nouvel élément de feuille de route, ou met à jour un élément existant à partir de son identifiant.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {
+            "id": {
+              "description": "Identifiant d'un élément existant à modifier.",
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            },
+            "title": {
+              "description": "Intitulé de l'élément.",
+              "type": "string",
+              "minLength": 1
+            },
+            "description": {
+              "type": "string"
+            },
+            "lot": {
+              "description": "Lot ou chantier de rattachement.",
+              "type": "string"
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "a_faire",
+                "en_cours",
+                "fait"
+              ]
+            },
+            "priority": {
+              "type": "string",
+              "enum": [
+                "normale",
+                "haute",
+                "bloque"
+              ]
+            },
+            "public_visible": {
+              "type": "boolean"
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "record_audit",
+        "title": "Enregistrer un audit daté",
+        "description": "Enregistre un audit daté du site (libellé, score, résumé) et ses anomalies, afin de garder une mémoire entre deux audits.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {
+            "label": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Libellé de l'audit, par exemple « Audit Claude du 18/09 »."
+            },
+            "score": {
+              "description": "Score obtenu sur 100.",
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "summary": {
+              "description": "Résumé en français, sans jargon.",
+              "type": "string"
+            },
+            "findings": {
+              "default": [],
+              "description": "Anomalies relevées.",
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Code du point concerné, par exemple SEO-2."
+                  },
+                  "severity": {
+                    "type": "string",
+                    "enum": [
+                      "bloquant",
+                      "majeur",
+                      "mineur"
+                    ]
+                  },
+                  "location": {
+                    "type": "string",
+                    "description": "Fichier + ligne, ou page + élément visible."
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "Anomalie constatée."
+                  }
+                },
+                "required": [
+                  "code",
+                  "severity",
+                  "location",
+                  "description"
+                ]
+              }
+            }
+          },
+          "required": [
+            "label"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_audits",
+        "title": "Historique des audits",
+        "description": "Liste les audits déjà enregistrés (date, score, résumé) et, au besoin, le détail des anomalies d'un audit précis.",
+        "annotations": {
+          "readOnlyHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {
+            "limit": {
+              "default": 10,
+              "description": "Nombre d'audits à retourner.",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            },
+            "audit_id": {
+              "description": "Identifiant d'un audit dont on veut le détail.",
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            }
+          }
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
