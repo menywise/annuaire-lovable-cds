@@ -24,6 +24,7 @@ import { Route as MaintenanceRouteImport } from './routes/maintenance'
 import { Route as McpRouteImport } from './routes/mcp'
 import { Route as MerciRouteImport } from './routes/merci'
 import { Route as PlanDuSiteRouteImport } from './routes/plan-du-site'
+import { Route as PubliciteRouteImport } from './routes/publicite'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as RssDotxmlRouteImport } from './routes/rss[.]xml'
 import { Route as SignupRouteImport } from './routes/signup'
@@ -150,6 +151,11 @@ const MerciRoute = MerciRouteImport.update({
 const PlanDuSiteRoute = PlanDuSiteRouteImport.update({
   id: '/plan-du-site',
   path: '/plan-du-site',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PubliciteRoute = PubliciteRouteImport.update({
+  id: '/publicite',
+  path: '/publicite',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
@@ -448,6 +454,7 @@ export interface FileRoutesByFullPath {
   '/mcp': typeof McpRoute
   '/merci': typeof MerciRoute
   '/plan-du-site': typeof PlanDuSiteRoute
+  '/publicite': typeof PubliciteRoute
   '/reset-password': typeof ResetPasswordRoute
   '/rss.xml': typeof RssDotxmlRoute
   '/signup': typeof SignupRoute
@@ -517,6 +524,7 @@ export interface FileRoutesByTo {
   '/mcp': typeof McpRoute
   '/merci': typeof MerciRoute
   '/plan-du-site': typeof PlanDuSiteRoute
+  '/publicite': typeof PubliciteRoute
   '/reset-password': typeof ResetPasswordRoute
   '/rss.xml': typeof RssDotxmlRoute
   '/signup': typeof SignupRoute
@@ -588,6 +596,7 @@ export interface FileRoutesById {
   '/mcp': typeof McpRoute
   '/merci': typeof MerciRoute
   '/plan-du-site': typeof PlanDuSiteRoute
+  '/publicite': typeof PubliciteRoute
   '/reset-password': typeof ResetPasswordRoute
   '/rss.xml': typeof RssDotxmlRoute
   '/signup': typeof SignupRoute
@@ -659,6 +668,7 @@ export interface FileRouteTypes {
     | '/mcp'
     | '/merci'
     | '/plan-du-site'
+    | '/publicite'
     | '/reset-password'
     | '/rss.xml'
     | '/signup'
@@ -728,6 +738,7 @@ export interface FileRouteTypes {
     | '/mcp'
     | '/merci'
     | '/plan-du-site'
+    | '/publicite'
     | '/reset-password'
     | '/rss.xml'
     | '/signup'
@@ -798,6 +809,7 @@ export interface FileRouteTypes {
     | '/mcp'
     | '/merci'
     | '/plan-du-site'
+    | '/publicite'
     | '/reset-password'
     | '/rss.xml'
     | '/signup'
@@ -869,6 +881,7 @@ export interface RootRouteChildren {
   McpRoute: typeof McpRoute
   MerciRoute: typeof MerciRoute
   PlanDuSiteRoute: typeof PlanDuSiteRoute
+  PubliciteRoute: typeof PubliciteRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   RssDotxmlRoute: typeof RssDotxmlRoute
   SignupRoute: typeof SignupRoute
@@ -1009,6 +1022,13 @@ declare module '@tanstack/react-router' {
       path: '/plan-du-site'
       fullPath: '/plan-du-site'
       preLoaderRoute: typeof PlanDuSiteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/publicite': {
+      id: '/publicite'
+      path: '/publicite'
+      fullPath: '/publicite'
+      preLoaderRoute: typeof PubliciteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/reset-password': {
@@ -1452,6 +1472,7 @@ const rootRouteChildren: RootRouteChildren = {
   McpRoute: McpRoute,
   MerciRoute: MerciRoute,
   PlanDuSiteRoute: PlanDuSiteRoute,
+  PubliciteRoute: PubliciteRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   RssDotxmlRoute: RssDotxmlRoute,
   SignupRoute: SignupRoute,
