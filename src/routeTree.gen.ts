@@ -67,6 +67,7 @@ import { Route as AnnuaireCategorieSlugRouteImport } from './routes/annuaire.cat
 import { Route as AnnuaireDepartementSlugRouteImport } from './routes/annuaire.departement.$slug'
 import { Route as FormationSlugIndexRouteImport } from './routes/formation.$slug.index'
 import { Route as ForumCategorieSlugRouteImport } from './routes/forum.categorie.$slug'
+import { Route as FormationSlugLeconLessonIdRouteImport } from './routes/formation.$slug.lecon.$lessonId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -367,6 +368,12 @@ const ForumCategorieSlugRoute = ForumCategorieSlugRouteImport.update({
   path: '/forum/categorie/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FormationSlugLeconLessonIdRoute =
+  FormationSlugLeconLessonIdRouteImport.update({
+    id: '/formation/$slug/lecon/$lessonId',
+    path: '/formation/$slug/lecon/$lessonId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -426,6 +433,7 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/messagerie/': typeof AuthenticatedMessagerieIndexRoute
   '/formation/$slug/': typeof FormationSlugIndexRoute
+  '/formation/$slug/lecon/$lessonId': typeof FormationSlugLeconLessonIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -485,6 +493,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/messagerie': typeof AuthenticatedMessagerieIndexRoute
   '/formation/$slug': typeof FormationSlugIndexRoute
+  '/formation/$slug/lecon/$lessonId': typeof FormationSlugLeconLessonIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -546,6 +555,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/messagerie/': typeof AuthenticatedMessagerieIndexRoute
   '/formation/$slug/': typeof FormationSlugIndexRoute
+  '/formation/$slug/lecon/$lessonId': typeof FormationSlugLeconLessonIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -607,6 +617,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/messagerie/'
     | '/formation/$slug/'
+    | '/formation/$slug/lecon/$lessonId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -666,6 +677,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/messagerie'
     | '/formation/$slug'
+    | '/formation/$slug/lecon/$lessonId'
   id:
     | '__root__'
     | '/'
@@ -726,6 +738,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/'
     | '/_authenticated/messagerie/'
     | '/formation/$slug/'
+    | '/formation/$slug/lecon/$lessonId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -773,6 +786,7 @@ export interface RootRouteChildren {
   AnnuaireDepartementSlugRoute: typeof AnnuaireDepartementSlugRoute
   ForumCategorieSlugRoute: typeof ForumCategorieSlugRoute
   FormationSlugIndexRoute: typeof FormationSlugIndexRoute
+  FormationSlugLeconLessonIdRoute: typeof FormationSlugLeconLessonIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -1183,6 +1197,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ForumCategorieSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/formation/$slug/lecon/$lessonId': {
+      id: '/formation/$slug/lecon/$lessonId'
+      path: '/formation/$slug/lecon/$lessonId'
+      fullPath: '/formation/$slug/lecon/$lessonId'
+      preLoaderRoute: typeof FormationSlugLeconLessonIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -1270,6 +1291,7 @@ const rootRouteChildren: RootRouteChildren = {
   AnnuaireDepartementSlugRoute: AnnuaireDepartementSlugRoute,
   ForumCategorieSlugRoute: ForumCategorieSlugRoute,
   FormationSlugIndexRoute: FormationSlugIndexRoute,
+  FormationSlugLeconLessonIdRoute: FormationSlugLeconLessonIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

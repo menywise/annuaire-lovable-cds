@@ -50,3 +50,42 @@ export const getCourse = createServerFn({ method: "GET" })
       : { data: [] };
     return { course, modules: modules ?? [], lessons: lessons ?? [] };
   });
+
+/** Une leçon et la liste ordonnée des leçons de la même formation. */
+export const getLesson = createServerFn({ method: "GET" })
+  .inputValidator((input: { slug: string; lessonId: string }) => input)
+  .handler(async ({ data: input }) => {
+    const client = publicClient();
+    const { data: course } = await client
+      .from("lms_courses")
+      .select("id, title, slug")
+      .eq("published", true)
+      .eq("slug", input.slug)
+      .maybeSingle();
+    if (!course) return null;
+
+    const { data: modules } = await client
+      .from("lms_modules")
+      .select("id, position")
+      .eq("course_id", course.id)
+      .order("position", { ascending: true });
+    const moduleIds = (modules ?? []).map((m) => m.id);
+    if (moduleIds.length === 0) return null;
+
+    const { data: lessons } = await client
+      .from("lms_lessons")
+      .select(
+        "id, module_id, title, content, content_type, video_url, duration_minutes, position, free_preview",
+      )
+      .in("module_id", moduleIds)
+      .order("position", { ascending: true });
+
+    const ordered = [...(lessons ?? [])].sort((a, b) => {
+      const ma = moduleIds.indexOf(a.module_id);
+      const mb = moduleIds.indexOf(b.module_id);
+      return ma === mb ? a.position - b.position : ma - mb;
+    });
+    const lesson = ordered.find((item) => item.id === input.lessonId);
+    if (!lesson) return null;
+    return { course, lesson, lessons: ordered };
+  });
