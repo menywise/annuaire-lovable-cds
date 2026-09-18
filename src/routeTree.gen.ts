@@ -36,6 +36,8 @@ import { Route as AuthenticatedCompteRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedDecouvrirRouteImport } from './routes/_authenticated/decouvrir'
 import { Route as AuthenticatedProfilRouteImport } from './routes/_authenticated/profil'
 import { Route as AuthenticatedTableauDeBordRouteImport } from './routes/_authenticated/tableau-de-bord'
+import { Route as AnnuaireIndexRouteImport } from './routes/annuaire.index'
+import { Route as AnnuaireDepartementsRouteImport } from './routes/annuaire.departements'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as ForumIndexRouteImport } from './routes/forum.index'
@@ -58,6 +60,8 @@ import { Route as AuthenticatedAdminPilotageRouteImport } from './routes/_authen
 import { Route as AuthenticatedAdminTemoignagesRouteImport } from './routes/_authenticated/admin.temoignages'
 import { Route as AuthenticatedMessagerieIndexRouteImport } from './routes/_authenticated/messagerie.index'
 import { Route as AuthenticatedMessagerieConversationIdRouteImport } from './routes/_authenticated/messagerie.$conversationId'
+import { Route as AnnuaireCategorieSlugRouteImport } from './routes/annuaire.categorie.$slug'
+import { Route as AnnuaireDepartementSlugRouteImport } from './routes/annuaire.departement.$slug'
 import { Route as ForumCategorieSlugRouteImport } from './routes/forum.categorie.$slug'
 
 const IndexRoute = IndexRouteImport.update({
@@ -196,6 +200,16 @@ const AuthenticatedTableauDeBordRoute =
     path: '/tableau-de-bord',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AnnuaireIndexRoute = AnnuaireIndexRouteImport.update({
+  id: '/annuaire/',
+  path: '/annuaire/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AnnuaireDepartementsRoute = AnnuaireDepartementsRouteImport.update({
+  id: '/annuaire/departements',
+  path: '/annuaire/departements',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BlogIndexRoute = BlogIndexRouteImport.update({
   id: '/blog/',
   path: '/blog/',
@@ -314,6 +328,16 @@ const AuthenticatedMessagerieConversationIdRoute =
     path: '/messagerie/$conversationId',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AnnuaireCategorieSlugRoute = AnnuaireCategorieSlugRouteImport.update({
+  id: '/annuaire/categorie/$slug',
+  path: '/annuaire/categorie/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AnnuaireDepartementSlugRoute = AnnuaireDepartementSlugRouteImport.update({
+  id: '/annuaire/departement/$slug',
+  path: '/annuaire/departement/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ForumCategorieSlugRoute = ForumCategorieSlugRouteImport.update({
   id: '/forum/categorie/$slug',
   path: '/forum/categorie/$slug',
@@ -347,6 +371,7 @@ export interface FileRoutesByFullPath {
   '/decouvrir': typeof AuthenticatedDecouvrirRoute
   '/profil': typeof AuthenticatedProfilRoute
   '/tableau-de-bord': typeof AuthenticatedTableauDeBordRoute
+  '/annuaire/departements': typeof AnnuaireDepartementsRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/forum/$topicId': typeof ForumTopicIdRoute
   '/legal/cgu': typeof LegalCguRoute
@@ -355,6 +380,7 @@ export interface FileRoutesByFullPath {
   '/legal/cookies': typeof LegalCookiesRoute
   '/legal/mentions-legales': typeof LegalMentionsLegalesRoute
   '/membres/$memberId': typeof MembresMemberIdRoute
+  '/annuaire/': typeof AnnuaireIndexRoute
   '/blog/': typeof BlogIndexRoute
   '/forum/': typeof ForumIndexRoute
   '/membres/': typeof MembresIndexRoute
@@ -367,6 +393,8 @@ export interface FileRoutesByFullPath {
   '/admin/pilotage': typeof AuthenticatedAdminPilotageRoute
   '/admin/temoignages': typeof AuthenticatedAdminTemoignagesRoute
   '/messagerie/$conversationId': typeof AuthenticatedMessagerieConversationIdRoute
+  '/annuaire/categorie/$slug': typeof AnnuaireCategorieSlugRoute
+  '/annuaire/departement/$slug': typeof AnnuaireDepartementSlugRoute
   '/forum/categorie/$slug': typeof ForumCategorieSlugRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/messagerie/': typeof AuthenticatedMessagerieIndexRoute
@@ -398,6 +426,7 @@ export interface FileRoutesByTo {
   '/decouvrir': typeof AuthenticatedDecouvrirRoute
   '/profil': typeof AuthenticatedProfilRoute
   '/tableau-de-bord': typeof AuthenticatedTableauDeBordRoute
+  '/annuaire/departements': typeof AnnuaireDepartementsRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/forum/$topicId': typeof ForumTopicIdRoute
   '/legal/cgu': typeof LegalCguRoute
@@ -406,6 +435,7 @@ export interface FileRoutesByTo {
   '/legal/cookies': typeof LegalCookiesRoute
   '/legal/mentions-legales': typeof LegalMentionsLegalesRoute
   '/membres/$memberId': typeof MembresMemberIdRoute
+  '/annuaire': typeof AnnuaireIndexRoute
   '/blog': typeof BlogIndexRoute
   '/forum': typeof ForumIndexRoute
   '/membres': typeof MembresIndexRoute
@@ -418,6 +448,8 @@ export interface FileRoutesByTo {
   '/admin/pilotage': typeof AuthenticatedAdminPilotageRoute
   '/admin/temoignages': typeof AuthenticatedAdminTemoignagesRoute
   '/messagerie/$conversationId': typeof AuthenticatedMessagerieConversationIdRoute
+  '/annuaire/categorie/$slug': typeof AnnuaireCategorieSlugRoute
+  '/annuaire/departement/$slug': typeof AnnuaireDepartementSlugRoute
   '/forum/categorie/$slug': typeof ForumCategorieSlugRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/messagerie': typeof AuthenticatedMessagerieIndexRoute
@@ -451,6 +483,7 @@ export interface FileRoutesById {
   '/_authenticated/decouvrir': typeof AuthenticatedDecouvrirRoute
   '/_authenticated/profil': typeof AuthenticatedProfilRoute
   '/_authenticated/tableau-de-bord': typeof AuthenticatedTableauDeBordRoute
+  '/annuaire/departements': typeof AnnuaireDepartementsRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/forum/$topicId': typeof ForumTopicIdRoute
   '/legal/cgu': typeof LegalCguRoute
@@ -459,6 +492,7 @@ export interface FileRoutesById {
   '/legal/cookies': typeof LegalCookiesRoute
   '/legal/mentions-legales': typeof LegalMentionsLegalesRoute
   '/membres/$memberId': typeof MembresMemberIdRoute
+  '/annuaire/': typeof AnnuaireIndexRoute
   '/blog/': typeof BlogIndexRoute
   '/forum/': typeof ForumIndexRoute
   '/membres/': typeof MembresIndexRoute
@@ -471,6 +505,8 @@ export interface FileRoutesById {
   '/_authenticated/admin/pilotage': typeof AuthenticatedAdminPilotageRoute
   '/_authenticated/admin/temoignages': typeof AuthenticatedAdminTemoignagesRoute
   '/_authenticated/messagerie/$conversationId': typeof AuthenticatedMessagerieConversationIdRoute
+  '/annuaire/categorie/$slug': typeof AnnuaireCategorieSlugRoute
+  '/annuaire/departement/$slug': typeof AnnuaireDepartementSlugRoute
   '/forum/categorie/$slug': typeof ForumCategorieSlugRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/messagerie/': typeof AuthenticatedMessagerieIndexRoute
@@ -504,6 +540,7 @@ export interface FileRouteTypes {
     | '/decouvrir'
     | '/profil'
     | '/tableau-de-bord'
+    | '/annuaire/departements'
     | '/blog/$slug'
     | '/forum/$topicId'
     | '/legal/cgu'
@@ -512,6 +549,7 @@ export interface FileRouteTypes {
     | '/legal/cookies'
     | '/legal/mentions-legales'
     | '/membres/$memberId'
+    | '/annuaire/'
     | '/blog/'
     | '/forum/'
     | '/membres/'
@@ -524,6 +562,8 @@ export interface FileRouteTypes {
     | '/admin/pilotage'
     | '/admin/temoignages'
     | '/messagerie/$conversationId'
+    | '/annuaire/categorie/$slug'
+    | '/annuaire/departement/$slug'
     | '/forum/categorie/$slug'
     | '/admin/'
     | '/messagerie/'
@@ -555,6 +595,7 @@ export interface FileRouteTypes {
     | '/decouvrir'
     | '/profil'
     | '/tableau-de-bord'
+    | '/annuaire/departements'
     | '/blog/$slug'
     | '/forum/$topicId'
     | '/legal/cgu'
@@ -563,6 +604,7 @@ export interface FileRouteTypes {
     | '/legal/cookies'
     | '/legal/mentions-legales'
     | '/membres/$memberId'
+    | '/annuaire'
     | '/blog'
     | '/forum'
     | '/membres'
@@ -575,6 +617,8 @@ export interface FileRouteTypes {
     | '/admin/pilotage'
     | '/admin/temoignages'
     | '/messagerie/$conversationId'
+    | '/annuaire/categorie/$slug'
+    | '/annuaire/departement/$slug'
     | '/forum/categorie/$slug'
     | '/admin'
     | '/messagerie'
@@ -607,6 +651,7 @@ export interface FileRouteTypes {
     | '/_authenticated/decouvrir'
     | '/_authenticated/profil'
     | '/_authenticated/tableau-de-bord'
+    | '/annuaire/departements'
     | '/blog/$slug'
     | '/forum/$topicId'
     | '/legal/cgu'
@@ -615,6 +660,7 @@ export interface FileRouteTypes {
     | '/legal/cookies'
     | '/legal/mentions-legales'
     | '/membres/$memberId'
+    | '/annuaire/'
     | '/blog/'
     | '/forum/'
     | '/membres/'
@@ -627,6 +673,8 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/pilotage'
     | '/_authenticated/admin/temoignages'
     | '/_authenticated/messagerie/$conversationId'
+    | '/annuaire/categorie/$slug'
+    | '/annuaire/departement/$slug'
     | '/forum/categorie/$slug'
     | '/_authenticated/admin/'
     | '/_authenticated/messagerie/'
@@ -656,6 +704,7 @@ export interface RootRouteChildren {
   TemoignagesRoute: typeof TemoignagesRoute
   VerificationEmailRoute: typeof VerificationEmailRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  AnnuaireDepartementsRoute: typeof AnnuaireDepartementsRoute
   BlogSlugRoute: typeof BlogSlugRoute
   ForumTopicIdRoute: typeof ForumTopicIdRoute
   LegalCguRoute: typeof LegalCguRoute
@@ -664,10 +713,13 @@ export interface RootRouteChildren {
   LegalCookiesRoute: typeof LegalCookiesRoute
   LegalMentionsLegalesRoute: typeof LegalMentionsLegalesRoute
   MembresMemberIdRoute: typeof MembresMemberIdRoute
+  AnnuaireIndexRoute: typeof AnnuaireIndexRoute
   BlogIndexRoute: typeof BlogIndexRoute
   ForumIndexRoute: typeof ForumIndexRoute
   MembresIndexRoute: typeof MembresIndexRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
+  AnnuaireCategorieSlugRoute: typeof AnnuaireCategorieSlugRoute
+  AnnuaireDepartementSlugRoute: typeof AnnuaireDepartementSlugRoute
   ForumCategorieSlugRoute: typeof ForumCategorieSlugRoute
 }
 
@@ -862,6 +914,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedTableauDeBordRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/annuaire/': {
+      id: '/annuaire/'
+      path: '/annuaire'
+      fullPath: '/annuaire/'
+      preLoaderRoute: typeof AnnuaireIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/annuaire/departements': {
+      id: '/annuaire/departements'
+      path: '/annuaire/departements'
+      fullPath: '/annuaire/departements'
+      preLoaderRoute: typeof AnnuaireDepartementsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/blog/': {
       id: '/blog/'
       path: '/blog'
@@ -1016,6 +1082,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMessagerieConversationIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/annuaire/categorie/$slug': {
+      id: '/annuaire/categorie/$slug'
+      path: '/annuaire/categorie/$slug'
+      fullPath: '/annuaire/categorie/$slug'
+      preLoaderRoute: typeof AnnuaireCategorieSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/annuaire/departement/$slug': {
+      id: '/annuaire/departement/$slug'
+      path: '/annuaire/departement/$slug'
+      fullPath: '/annuaire/departement/$slug'
+      preLoaderRoute: typeof AnnuaireDepartementSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/forum/categorie/$slug': {
       id: '/forum/categorie/$slug'
       path: '/forum/categorie/$slug'
@@ -1089,6 +1169,7 @@ const rootRouteChildren: RootRouteChildren = {
   VerificationEmailRoute: VerificationEmailRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
+  AnnuaireDepartementsRoute: AnnuaireDepartementsRoute,
   BlogSlugRoute: BlogSlugRoute,
   ForumTopicIdRoute: ForumTopicIdRoute,
   LegalCguRoute: LegalCguRoute,
@@ -1097,10 +1178,13 @@ const rootRouteChildren: RootRouteChildren = {
   LegalCookiesRoute: LegalCookiesRoute,
   LegalMentionsLegalesRoute: LegalMentionsLegalesRoute,
   MembresMemberIdRoute: MembresMemberIdRoute,
+  AnnuaireIndexRoute: AnnuaireIndexRoute,
   BlogIndexRoute: BlogIndexRoute,
   ForumIndexRoute: ForumIndexRoute,
   MembresIndexRoute: MembresIndexRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
+  AnnuaireCategorieSlugRoute: AnnuaireCategorieSlugRoute,
+  AnnuaireDepartementSlugRoute: AnnuaireDepartementSlugRoute,
   ForumCategorieSlugRoute: ForumCategorieSlugRoute,
 }
 export const routeTree = rootRouteImport
