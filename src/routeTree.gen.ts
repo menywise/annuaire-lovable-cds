@@ -67,6 +67,8 @@ import { Route as AuthenticatedAdminModerationRouteImport } from './routes/_auth
 import { Route as AuthenticatedAdminPilotageRouteImport } from './routes/_authenticated/admin.pilotage'
 import { Route as AuthenticatedAdminTemoignagesRouteImport } from './routes/_authenticated/admin.temoignages'
 import { Route as AuthenticatedCrmIndexRouteImport } from './routes/_authenticated/crm.index'
+import { Route as AuthenticatedCrmActionsRouteImport } from './routes/_authenticated/crm.actions'
+import { Route as AuthenticatedCrmProspectsRouteImport } from './routes/_authenticated/crm.prospects'
 import { Route as AuthenticatedMessagerieIndexRouteImport } from './routes/_authenticated/messagerie.index'
 import { Route as AuthenticatedMessagerieConversationIdRouteImport } from './routes/_authenticated/messagerie.$conversationId'
 import { Route as AnnuaireCategorieSlugRouteImport } from './routes/annuaire.categorie.$slug'
@@ -374,6 +376,17 @@ const AuthenticatedCrmIndexRoute = AuthenticatedCrmIndexRouteImport.update({
   path: '/crm/',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedCrmActionsRoute = AuthenticatedCrmActionsRouteImport.update({
+  id: '/crm/actions',
+  path: '/crm/actions',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedCrmProspectsRoute =
+  AuthenticatedCrmProspectsRouteImport.update({
+    id: '/crm/prospects',
+    path: '/crm/prospects',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedMessagerieIndexRoute =
   AuthenticatedMessagerieIndexRouteImport.update({
     id: '/messagerie/',
@@ -469,6 +482,8 @@ export interface FileRoutesByFullPath {
   '/admin/moderation': typeof AuthenticatedAdminModerationRoute
   '/admin/pilotage': typeof AuthenticatedAdminPilotageRoute
   '/admin/temoignages': typeof AuthenticatedAdminTemoignagesRoute
+  '/crm/actions': typeof AuthenticatedCrmActionsRoute
+  '/crm/prospects': typeof AuthenticatedCrmProspectsRoute
   '/messagerie/$conversationId': typeof AuthenticatedMessagerieConversationIdRoute
   '/annuaire/categorie/$slug': typeof AnnuaireCategorieSlugRoute
   '/annuaire/departement/$slug': typeof AnnuaireDepartementSlugRoute
@@ -535,6 +550,8 @@ export interface FileRoutesByTo {
   '/admin/moderation': typeof AuthenticatedAdminModerationRoute
   '/admin/pilotage': typeof AuthenticatedAdminPilotageRoute
   '/admin/temoignages': typeof AuthenticatedAdminTemoignagesRoute
+  '/crm/actions': typeof AuthenticatedCrmActionsRoute
+  '/crm/prospects': typeof AuthenticatedCrmProspectsRoute
   '/messagerie/$conversationId': typeof AuthenticatedMessagerieConversationIdRoute
   '/annuaire/categorie/$slug': typeof AnnuaireCategorieSlugRoute
   '/annuaire/departement/$slug': typeof AnnuaireDepartementSlugRoute
@@ -603,6 +620,8 @@ export interface FileRoutesById {
   '/_authenticated/admin/moderation': typeof AuthenticatedAdminModerationRoute
   '/_authenticated/admin/pilotage': typeof AuthenticatedAdminPilotageRoute
   '/_authenticated/admin/temoignages': typeof AuthenticatedAdminTemoignagesRoute
+  '/_authenticated/crm/actions': typeof AuthenticatedCrmActionsRoute
+  '/_authenticated/crm/prospects': typeof AuthenticatedCrmProspectsRoute
   '/_authenticated/messagerie/$conversationId': typeof AuthenticatedMessagerieConversationIdRoute
   '/annuaire/categorie/$slug': typeof AnnuaireCategorieSlugRoute
   '/annuaire/departement/$slug': typeof AnnuaireDepartementSlugRoute
@@ -671,6 +690,8 @@ export interface FileRouteTypes {
     | '/admin/moderation'
     | '/admin/pilotage'
     | '/admin/temoignages'
+    | '/crm/actions'
+    | '/crm/prospects'
     | '/messagerie/$conversationId'
     | '/annuaire/categorie/$slug'
     | '/annuaire/departement/$slug'
@@ -737,6 +758,8 @@ export interface FileRouteTypes {
     | '/admin/moderation'
     | '/admin/pilotage'
     | '/admin/temoignages'
+    | '/crm/actions'
+    | '/crm/prospects'
     | '/messagerie/$conversationId'
     | '/annuaire/categorie/$slug'
     | '/annuaire/departement/$slug'
@@ -804,6 +827,8 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/moderation'
     | '/_authenticated/admin/pilotage'
     | '/_authenticated/admin/temoignages'
+    | '/_authenticated/crm/actions'
+    | '/_authenticated/crm/prospects'
     | '/_authenticated/messagerie/$conversationId'
     | '/annuaire/categorie/$slug'
     | '/annuaire/departement/$slug'
@@ -1274,6 +1299,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCrmIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/crm/actions': {
+      id: '/_authenticated/crm/actions'
+      path: '/crm/actions'
+      fullPath: '/crm/actions'
+      preLoaderRoute: typeof AuthenticatedCrmActionsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/crm/prospects': {
+      id: '/_authenticated/crm/prospects'
+      path: '/crm/prospects'
+      fullPath: '/crm/prospects'
+      preLoaderRoute: typeof AuthenticatedCrmProspectsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/messagerie/': {
       id: '/_authenticated/messagerie/'
       path: '/messagerie'
@@ -1340,6 +1379,8 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminModerationRoute: typeof AuthenticatedAdminModerationRoute
   AuthenticatedAdminPilotageRoute: typeof AuthenticatedAdminPilotageRoute
   AuthenticatedAdminTemoignagesRoute: typeof AuthenticatedAdminTemoignagesRoute
+  AuthenticatedCrmActionsRoute: typeof AuthenticatedCrmActionsRoute
+  AuthenticatedCrmProspectsRoute: typeof AuthenticatedCrmProspectsRoute
   AuthenticatedMessagerieConversationIdRoute: typeof AuthenticatedMessagerieConversationIdRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
   AuthenticatedCrmIndexRoute: typeof AuthenticatedCrmIndexRoute
@@ -1360,6 +1401,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminModerationRoute: AuthenticatedAdminModerationRoute,
   AuthenticatedAdminPilotageRoute: AuthenticatedAdminPilotageRoute,
   AuthenticatedAdminTemoignagesRoute: AuthenticatedAdminTemoignagesRoute,
+  AuthenticatedCrmActionsRoute: AuthenticatedCrmActionsRoute,
+  AuthenticatedCrmProspectsRoute: AuthenticatedCrmProspectsRoute,
   AuthenticatedMessagerieConversationIdRoute:
     AuthenticatedMessagerieConversationIdRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
