@@ -21,6 +21,7 @@ import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as GuideRouteImport } from './routes/guide'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as MaintenanceRouteImport } from './routes/maintenance'
+import { Route as McpRouteImport } from './routes/mcp'
 import { Route as MerciRouteImport } from './routes/merci'
 import { Route as PlanDuSiteRouteImport } from './routes/plan-du-site'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
@@ -30,6 +31,7 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TarifsRouteImport } from './routes/tarifs'
 import { Route as TemoignagesRouteImport } from './routes/temoignages'
 import { Route as VerificationEmailRouteImport } from './routes/verification-email'
+import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as AuthenticatedCompteRouteImport } from './routes/_authenticated/compte'
 import { Route as AuthenticatedDecouvrirRouteImport } from './routes/_authenticated/decouvrir'
 import { Route as AuthenticatedProfilRouteImport } from './routes/_authenticated/profil'
@@ -116,6 +118,11 @@ const MaintenanceRoute = MaintenanceRouteImport.update({
   path: '/maintenance',
   getParentRoute: () => rootRouteImport,
 } as any)
+const McpRoute = McpRouteImport.update({
+  id: '/mcp',
+  path: '/mcp',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MerciRoute = MerciRouteImport.update({
   id: '/merci',
   path: '/merci',
@@ -161,6 +168,12 @@ const VerificationEmailRoute = VerificationEmailRouteImport.update({
   path: '/verification-email',
   getParentRoute: () => rootRouteImport,
 } as any)
+const Char91DotwellKnownChar93OauthProtectedResourceRoute =
+  Char91DotwellKnownChar93OauthProtectedResourceRouteImport.update({
+    id: '/.well-known/oauth-protected-resource',
+    path: '/.well-known/oauth-protected-resource',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AuthenticatedCompteRoute = AuthenticatedCompteRouteImport.update({
   id: '/compte',
   path: '/compte',
@@ -313,6 +326,7 @@ export interface FileRoutesByFullPath {
   '/guide': typeof GuideRoute
   '/login': typeof LoginRoute
   '/maintenance': typeof MaintenanceRoute
+  '/mcp': typeof McpRoute
   '/merci': typeof MerciRoute
   '/plan-du-site': typeof PlanDuSiteRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -322,6 +336,7 @@ export interface FileRoutesByFullPath {
   '/tarifs': typeof TarifsRoute
   '/temoignages': typeof TemoignagesRoute
   '/verification-email': typeof VerificationEmailRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/compte': typeof AuthenticatedCompteRoute
   '/decouvrir': typeof AuthenticatedDecouvrirRoute
   '/profil': typeof AuthenticatedProfilRoute
@@ -361,6 +376,7 @@ export interface FileRoutesByTo {
   '/guide': typeof GuideRoute
   '/login': typeof LoginRoute
   '/maintenance': typeof MaintenanceRoute
+  '/mcp': typeof McpRoute
   '/merci': typeof MerciRoute
   '/plan-du-site': typeof PlanDuSiteRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -370,6 +386,7 @@ export interface FileRoutesByTo {
   '/tarifs': typeof TarifsRoute
   '/temoignages': typeof TemoignagesRoute
   '/verification-email': typeof VerificationEmailRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/compte': typeof AuthenticatedCompteRoute
   '/decouvrir': typeof AuthenticatedDecouvrirRoute
   '/profil': typeof AuthenticatedProfilRoute
@@ -411,6 +428,7 @@ export interface FileRoutesById {
   '/guide': typeof GuideRoute
   '/login': typeof LoginRoute
   '/maintenance': typeof MaintenanceRoute
+  '/mcp': typeof McpRoute
   '/merci': typeof MerciRoute
   '/plan-du-site': typeof PlanDuSiteRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -420,6 +438,7 @@ export interface FileRoutesById {
   '/tarifs': typeof TarifsRoute
   '/temoignages': typeof TemoignagesRoute
   '/verification-email': typeof VerificationEmailRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/_authenticated/compte': typeof AuthenticatedCompteRoute
   '/_authenticated/decouvrir': typeof AuthenticatedDecouvrirRoute
   '/_authenticated/profil': typeof AuthenticatedProfilRoute
@@ -461,6 +480,7 @@ export interface FileRouteTypes {
     | '/guide'
     | '/login'
     | '/maintenance'
+    | '/mcp'
     | '/merci'
     | '/plan-du-site'
     | '/reset-password'
@@ -470,6 +490,7 @@ export interface FileRouteTypes {
     | '/tarifs'
     | '/temoignages'
     | '/verification-email'
+    | '/.well-known/oauth-protected-resource'
     | '/compte'
     | '/decouvrir'
     | '/profil'
@@ -509,6 +530,7 @@ export interface FileRouteTypes {
     | '/guide'
     | '/login'
     | '/maintenance'
+    | '/mcp'
     | '/merci'
     | '/plan-du-site'
     | '/reset-password'
@@ -518,6 +540,7 @@ export interface FileRouteTypes {
     | '/tarifs'
     | '/temoignages'
     | '/verification-email'
+    | '/.well-known/oauth-protected-resource'
     | '/compte'
     | '/decouvrir'
     | '/profil'
@@ -558,6 +581,7 @@ export interface FileRouteTypes {
     | '/guide'
     | '/login'
     | '/maintenance'
+    | '/mcp'
     | '/merci'
     | '/plan-du-site'
     | '/reset-password'
@@ -567,6 +591,7 @@ export interface FileRouteTypes {
     | '/tarifs'
     | '/temoignages'
     | '/verification-email'
+    | '/.well-known/oauth-protected-resource'
     | '/_authenticated/compte'
     | '/_authenticated/decouvrir'
     | '/_authenticated/profil'
@@ -608,6 +633,7 @@ export interface RootRouteChildren {
   GuideRoute: typeof GuideRoute
   LoginRoute: typeof LoginRoute
   MaintenanceRoute: typeof MaintenanceRoute
+  McpRoute: typeof McpRoute
   MerciRoute: typeof MerciRoute
   PlanDuSiteRoute: typeof PlanDuSiteRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
@@ -617,6 +643,7 @@ export interface RootRouteChildren {
   TarifsRoute: typeof TarifsRoute
   TemoignagesRoute: typeof TemoignagesRoute
   VerificationEmailRoute: typeof VerificationEmailRoute
+  Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   BlogSlugRoute: typeof BlogSlugRoute
   ForumTopicIdRoute: typeof ForumTopicIdRoute
   LegalCguRoute: typeof LegalCguRoute
@@ -717,6 +744,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MaintenanceRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/mcp': {
+      id: '/mcp'
+      path: '/mcp'
+      fullPath: '/mcp'
+      preLoaderRoute: typeof McpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/merci': {
       id: '/merci'
       path: '/merci'
@@ -778,6 +812,13 @@ declare module '@tanstack/react-router' {
       path: '/verification-email'
       fullPath: '/verification-email'
       preLoaderRoute: typeof VerificationEmailRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.well-known/oauth-protected-resource': {
+      id: '/.well-known/oauth-protected-resource'
+      path: '/.well-known/oauth-protected-resource'
+      fullPath: '/.well-known/oauth-protected-resource'
+      preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/compte': {
@@ -1016,6 +1057,7 @@ const rootRouteChildren: RootRouteChildren = {
   GuideRoute: GuideRoute,
   LoginRoute: LoginRoute,
   MaintenanceRoute: MaintenanceRoute,
+  McpRoute: McpRoute,
   MerciRoute: MerciRoute,
   PlanDuSiteRoute: PlanDuSiteRoute,
   ResetPasswordRoute: ResetPasswordRoute,
@@ -1025,6 +1067,8 @@ const rootRouteChildren: RootRouteChildren = {
   TarifsRoute: TarifsRoute,
   TemoignagesRoute: TemoignagesRoute,
   VerificationEmailRoute: VerificationEmailRoute,
+  Char91DotwellKnownChar93OauthProtectedResourceRoute:
+    Char91DotwellKnownChar93OauthProtectedResourceRoute,
   BlogSlugRoute: BlogSlugRoute,
   ForumTopicIdRoute: ForumTopicIdRoute,
   LegalCguRoute: LegalCguRoute,
