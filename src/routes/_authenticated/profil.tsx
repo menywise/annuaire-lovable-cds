@@ -117,6 +117,8 @@ function ProfilPage() {
           </CardContent>
         </Card>
 
+        <PublicProfileCard />
+
         <Card className="mt-6">
           <CardHeader>
             <CardTitle className="text-base">Mot de passe</CardTitle>
