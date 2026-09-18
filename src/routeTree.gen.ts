@@ -75,6 +75,7 @@ import { Route as AnnuaireCategorieSlugRouteImport } from './routes/annuaire.cat
 import { Route as AnnuaireDepartementSlugRouteImport } from './routes/annuaire.departement.$slug'
 import { Route as FormationSlugIndexRouteImport } from './routes/formation.$slug.index'
 import { Route as ForumCategorieSlugRouteImport } from './routes/forum.categorie.$slug'
+import { Route as AuthenticatedCrmProspectProspectIdRouteImport } from './routes/_authenticated/crm.prospect.$prospectId'
 import { Route as FormationSlugLeconLessonIdRouteImport } from './routes/formation.$slug.lecon.$lessonId'
 
 const IndexRoute = IndexRouteImport.update({
@@ -419,6 +420,12 @@ const ForumCategorieSlugRoute = ForumCategorieSlugRouteImport.update({
   path: '/forum/categorie/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedCrmProspectProspectIdRoute =
+  AuthenticatedCrmProspectProspectIdRouteImport.update({
+    id: '/crm/prospect/$prospectId',
+    path: '/crm/prospect/$prospectId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const FormationSlugLeconLessonIdRoute =
   FormationSlugLeconLessonIdRouteImport.update({
     id: '/formation/$slug/lecon/$lessonId',
@@ -492,6 +499,7 @@ export interface FileRoutesByFullPath {
   '/crm/': typeof AuthenticatedCrmIndexRoute
   '/messagerie/': typeof AuthenticatedMessagerieIndexRoute
   '/formation/$slug/': typeof FormationSlugIndexRoute
+  '/crm/prospect/$prospectId': typeof AuthenticatedCrmProspectProspectIdRoute
   '/formation/$slug/lecon/$lessonId': typeof FormationSlugLeconLessonIdRoute
 }
 export interface FileRoutesByTo {
@@ -560,6 +568,7 @@ export interface FileRoutesByTo {
   '/crm': typeof AuthenticatedCrmIndexRoute
   '/messagerie': typeof AuthenticatedMessagerieIndexRoute
   '/formation/$slug': typeof FormationSlugIndexRoute
+  '/crm/prospect/$prospectId': typeof AuthenticatedCrmProspectProspectIdRoute
   '/formation/$slug/lecon/$lessonId': typeof FormationSlugLeconLessonIdRoute
 }
 export interface FileRoutesById {
@@ -630,6 +639,7 @@ export interface FileRoutesById {
   '/_authenticated/crm/': typeof AuthenticatedCrmIndexRoute
   '/_authenticated/messagerie/': typeof AuthenticatedMessagerieIndexRoute
   '/formation/$slug/': typeof FormationSlugIndexRoute
+  '/_authenticated/crm/prospect/$prospectId': typeof AuthenticatedCrmProspectProspectIdRoute
   '/formation/$slug/lecon/$lessonId': typeof FormationSlugLeconLessonIdRoute
 }
 export interface FileRouteTypes {
@@ -700,6 +710,7 @@ export interface FileRouteTypes {
     | '/crm/'
     | '/messagerie/'
     | '/formation/$slug/'
+    | '/crm/prospect/$prospectId'
     | '/formation/$slug/lecon/$lessonId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -768,6 +779,7 @@ export interface FileRouteTypes {
     | '/crm'
     | '/messagerie'
     | '/formation/$slug'
+    | '/crm/prospect/$prospectId'
     | '/formation/$slug/lecon/$lessonId'
   id:
     | '__root__'
@@ -837,6 +849,7 @@ export interface FileRouteTypes {
     | '/_authenticated/crm/'
     | '/_authenticated/messagerie/'
     | '/formation/$slug/'
+    | '/_authenticated/crm/prospect/$prospectId'
     | '/formation/$slug/lecon/$lessonId'
   fileRoutesById: FileRoutesById
 }
@@ -1355,6 +1368,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ForumCategorieSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/crm/prospect/$prospectId': {
+      id: '/_authenticated/crm/prospect/$prospectId'
+      path: '/crm/prospect/$prospectId'
+      fullPath: '/crm/prospect/$prospectId'
+      preLoaderRoute: typeof AuthenticatedCrmProspectProspectIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/formation/$slug/lecon/$lessonId': {
       id: '/formation/$slug/lecon/$lessonId'
       path: '/formation/$slug/lecon/$lessonId'
@@ -1385,6 +1405,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
   AuthenticatedCrmIndexRoute: typeof AuthenticatedCrmIndexRoute
   AuthenticatedMessagerieIndexRoute: typeof AuthenticatedMessagerieIndexRoute
+  AuthenticatedCrmProspectProspectIdRoute: typeof AuthenticatedCrmProspectProspectIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -1408,6 +1429,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
   AuthenticatedCrmIndexRoute: AuthenticatedCrmIndexRoute,
   AuthenticatedMessagerieIndexRoute: AuthenticatedMessagerieIndexRoute,
+  AuthenticatedCrmProspectProspectIdRoute:
+    AuthenticatedCrmProspectProspectIdRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
