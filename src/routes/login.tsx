@@ -53,6 +53,10 @@ function LoginPage() {
     } catch {
       /* le profil sera recréé à la prochaine connexion */
     }
+    if (next) {
+      window.location.href = next;
+      return;
+    }
     navigate({ to: "/compte" });
   }
 
