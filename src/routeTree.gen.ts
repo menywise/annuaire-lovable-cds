@@ -34,6 +34,7 @@ import { Route as VerificationEmailRouteImport } from './routes/verification-ema
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as AuthenticatedCompteRouteImport } from './routes/_authenticated/compte'
 import { Route as AuthenticatedDecouvrirRouteImport } from './routes/_authenticated/decouvrir'
+import { Route as AuthenticatedMesAnnoncesRouteImport } from './routes/_authenticated/mes-annonces'
 import { Route as AuthenticatedMesFormationsRouteImport } from './routes/_authenticated/mes-formations'
 import { Route as AuthenticatedProfilRouteImport } from './routes/_authenticated/profil'
 import { Route as AuthenticatedTableauDeBordRouteImport } from './routes/_authenticated/tableau-de-bord'
@@ -53,6 +54,7 @@ import { Route as LegalCookiesRouteImport } from './routes/legal.cookies'
 import { Route as LegalMentionsLegalesRouteImport } from './routes/legal.mentions-legales'
 import { Route as MarketplaceIndexRouteImport } from './routes/marketplace.index'
 import { Route as MarketplaceSlugRouteImport } from './routes/marketplace.$slug'
+import { Route as MarketplacePublierRouteImport } from './routes/marketplace.publier'
 import { Route as MembresIndexRouteImport } from './routes/membres.index'
 import { Route as MembresMemberIdRouteImport } from './routes/membres.$memberId'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
@@ -197,6 +199,12 @@ const AuthenticatedDecouvrirRoute = AuthenticatedDecouvrirRouteImport.update({
   path: '/decouvrir',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedMesAnnoncesRoute =
+  AuthenticatedMesAnnoncesRouteImport.update({
+    id: '/mes-annonces',
+    path: '/mes-annonces',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedMesFormationsRoute =
   AuthenticatedMesFormationsRouteImport.update({
     id: '/mes-formations',
@@ -292,6 +300,11 @@ const MarketplaceIndexRoute = MarketplaceIndexRouteImport.update({
 const MarketplaceSlugRoute = MarketplaceSlugRouteImport.update({
   id: '/marketplace/$slug',
   path: '/marketplace/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MarketplacePublierRoute = MarketplacePublierRouteImport.update({
+  id: '/marketplace/publier',
+  path: '/marketplace/publier',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MembresIndexRoute = MembresIndexRouteImport.update({
@@ -419,6 +432,7 @@ export interface FileRoutesByFullPath {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/compte': typeof AuthenticatedCompteRoute
   '/decouvrir': typeof AuthenticatedDecouvrirRoute
+  '/mes-annonces': typeof AuthenticatedMesAnnoncesRoute
   '/mes-formations': typeof AuthenticatedMesFormationsRoute
   '/profil': typeof AuthenticatedProfilRoute
   '/tableau-de-bord': typeof AuthenticatedTableauDeBordRoute
@@ -433,6 +447,7 @@ export interface FileRoutesByFullPath {
   '/legal/cookies': typeof LegalCookiesRoute
   '/legal/mentions-legales': typeof LegalMentionsLegalesRoute
   '/marketplace/$slug': typeof MarketplaceSlugRoute
+  '/marketplace/publier': typeof MarketplacePublierRoute
   '/membres/$memberId': typeof MembresMemberIdRoute
   '/annuaire/': typeof AnnuaireIndexRoute
   '/blog/': typeof BlogIndexRoute
@@ -482,6 +497,7 @@ export interface FileRoutesByTo {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/compte': typeof AuthenticatedCompteRoute
   '/decouvrir': typeof AuthenticatedDecouvrirRoute
+  '/mes-annonces': typeof AuthenticatedMesAnnoncesRoute
   '/mes-formations': typeof AuthenticatedMesFormationsRoute
   '/profil': typeof AuthenticatedProfilRoute
   '/tableau-de-bord': typeof AuthenticatedTableauDeBordRoute
@@ -496,6 +512,7 @@ export interface FileRoutesByTo {
   '/legal/cookies': typeof LegalCookiesRoute
   '/legal/mentions-legales': typeof LegalMentionsLegalesRoute
   '/marketplace/$slug': typeof MarketplaceSlugRoute
+  '/marketplace/publier': typeof MarketplacePublierRoute
   '/membres/$memberId': typeof MembresMemberIdRoute
   '/annuaire': typeof AnnuaireIndexRoute
   '/blog': typeof BlogIndexRoute
@@ -547,6 +564,7 @@ export interface FileRoutesById {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/_authenticated/compte': typeof AuthenticatedCompteRoute
   '/_authenticated/decouvrir': typeof AuthenticatedDecouvrirRoute
+  '/_authenticated/mes-annonces': typeof AuthenticatedMesAnnoncesRoute
   '/_authenticated/mes-formations': typeof AuthenticatedMesFormationsRoute
   '/_authenticated/profil': typeof AuthenticatedProfilRoute
   '/_authenticated/tableau-de-bord': typeof AuthenticatedTableauDeBordRoute
@@ -561,6 +579,7 @@ export interface FileRoutesById {
   '/legal/cookies': typeof LegalCookiesRoute
   '/legal/mentions-legales': typeof LegalMentionsLegalesRoute
   '/marketplace/$slug': typeof MarketplaceSlugRoute
+  '/marketplace/publier': typeof MarketplacePublierRoute
   '/membres/$memberId': typeof MembresMemberIdRoute
   '/annuaire/': typeof AnnuaireIndexRoute
   '/blog/': typeof BlogIndexRoute
@@ -612,6 +631,7 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/compte'
     | '/decouvrir'
+    | '/mes-annonces'
     | '/mes-formations'
     | '/profil'
     | '/tableau-de-bord'
@@ -626,6 +646,7 @@ export interface FileRouteTypes {
     | '/legal/cookies'
     | '/legal/mentions-legales'
     | '/marketplace/$slug'
+    | '/marketplace/publier'
     | '/membres/$memberId'
     | '/annuaire/'
     | '/blog/'
@@ -675,6 +696,7 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/compte'
     | '/decouvrir'
+    | '/mes-annonces'
     | '/mes-formations'
     | '/profil'
     | '/tableau-de-bord'
@@ -689,6 +711,7 @@ export interface FileRouteTypes {
     | '/legal/cookies'
     | '/legal/mentions-legales'
     | '/marketplace/$slug'
+    | '/marketplace/publier'
     | '/membres/$memberId'
     | '/annuaire'
     | '/blog'
@@ -739,6 +762,7 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/_authenticated/compte'
     | '/_authenticated/decouvrir'
+    | '/_authenticated/mes-annonces'
     | '/_authenticated/mes-formations'
     | '/_authenticated/profil'
     | '/_authenticated/tableau-de-bord'
@@ -753,6 +777,7 @@ export interface FileRouteTypes {
     | '/legal/cookies'
     | '/legal/mentions-legales'
     | '/marketplace/$slug'
+    | '/marketplace/publier'
     | '/membres/$memberId'
     | '/annuaire/'
     | '/blog/'
@@ -813,6 +838,7 @@ export interface RootRouteChildren {
   LegalCookiesRoute: typeof LegalCookiesRoute
   LegalMentionsLegalesRoute: typeof LegalMentionsLegalesRoute
   MarketplaceSlugRoute: typeof MarketplaceSlugRoute
+  MarketplacePublierRoute: typeof MarketplacePublierRoute
   MembresMemberIdRoute: typeof MembresMemberIdRoute
   AnnuaireIndexRoute: typeof AnnuaireIndexRoute
   BlogIndexRoute: typeof BlogIndexRoute
@@ -1005,6 +1031,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDecouvrirRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/mes-annonces': {
+      id: '/_authenticated/mes-annonces'
+      path: '/mes-annonces'
+      fullPath: '/mes-annonces'
+      preLoaderRoute: typeof AuthenticatedMesAnnoncesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/mes-formations': {
       id: '/_authenticated/mes-formations'
       path: '/mes-formations'
@@ -1136,6 +1169,13 @@ declare module '@tanstack/react-router' {
       path: '/marketplace/$slug'
       fullPath: '/marketplace/$slug'
       preLoaderRoute: typeof MarketplaceSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/marketplace/publier': {
+      id: '/marketplace/publier'
+      path: '/marketplace/publier'
+      fullPath: '/marketplace/publier'
+      preLoaderRoute: typeof MarketplacePublierRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/membres/': {
@@ -1270,6 +1310,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedCompteRoute: typeof AuthenticatedCompteRoute
   AuthenticatedDecouvrirRoute: typeof AuthenticatedDecouvrirRoute
+  AuthenticatedMesAnnoncesRoute: typeof AuthenticatedMesAnnoncesRoute
   AuthenticatedMesFormationsRoute: typeof AuthenticatedMesFormationsRoute
   AuthenticatedProfilRoute: typeof AuthenticatedProfilRoute
   AuthenticatedTableauDeBordRoute: typeof AuthenticatedTableauDeBordRoute
@@ -1288,6 +1329,7 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCompteRoute: AuthenticatedCompteRoute,
   AuthenticatedDecouvrirRoute: AuthenticatedDecouvrirRoute,
+  AuthenticatedMesAnnoncesRoute: AuthenticatedMesAnnoncesRoute,
   AuthenticatedMesFormationsRoute: AuthenticatedMesFormationsRoute,
   AuthenticatedProfilRoute: AuthenticatedProfilRoute,
   AuthenticatedTableauDeBordRoute: AuthenticatedTableauDeBordRoute,
@@ -1343,6 +1385,7 @@ const rootRouteChildren: RootRouteChildren = {
   LegalCookiesRoute: LegalCookiesRoute,
   LegalMentionsLegalesRoute: LegalMentionsLegalesRoute,
   MarketplaceSlugRoute: MarketplaceSlugRoute,
+  MarketplacePublierRoute: MarketplacePublierRoute,
   MembresMemberIdRoute: MembresMemberIdRoute,
   AnnuaireIndexRoute: AnnuaireIndexRoute,
   BlogIndexRoute: BlogIndexRoute,
