@@ -113,7 +113,7 @@ function LoginPage() {
         <Button type="submit" className="w-full" disabled={busy}>
           {busy ? "Connexion…" : "Se connecter"}
         </Button>
-        <GoogleSignInButton />
+        <GoogleSignInButton redirectTo={next} />
       </form>
     </AuthLayout>
   );
