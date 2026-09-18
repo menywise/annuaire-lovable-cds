@@ -2,15 +2,22 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { lovable } from "@/integrations/lovable/index";
 
-export function GoogleSignInButton({ label = "Continuer avec Google" }: { label?: string }) {
+export function GoogleSignInButton({
+  label = "Continuer avec Google",
+  redirectTo,
+}: {
+  label?: string;
+  redirectTo?: string;
+}) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function onClick() {
     setBusy(true);
     setError(null);
+    const safe = redirectTo && redirectTo.startsWith("/") && !redirectTo.startsWith("//") ? redirectTo : null;
     const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
+      redirect_uri: safe ? `${window.location.origin}${safe}` : window.location.origin,
     });
     if (result.error) {
       setError("La connexion avec Google n'a pas abouti. Réessayez dans un instant.");
@@ -18,7 +25,7 @@ export function GoogleSignInButton({ label = "Continuer avec Google" }: { label?
       return;
     }
     if (result.redirected) return;
-    window.location.href = "/compte";
+    window.location.href = safe ?? "/compte";
   }
 
   return (
