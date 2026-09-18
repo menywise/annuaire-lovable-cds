@@ -42,6 +42,7 @@ import { Route as AnnuaireDepartementsRouteImport } from './routes/annuaire.depa
 import { Route as AnnuaireSoumettreRouteImport } from './routes/annuaire.soumettre'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
+import { Route as FormationsIndexRouteImport } from './routes/formations.index'
 import { Route as ForumIndexRouteImport } from './routes/forum.index'
 import { Route as ForumTopicIdRouteImport } from './routes/forum.$topicId'
 import { Route as LegalCguRouteImport } from './routes/legal.cgu'
@@ -64,6 +65,7 @@ import { Route as AuthenticatedMessagerieIndexRouteImport } from './routes/_auth
 import { Route as AuthenticatedMessagerieConversationIdRouteImport } from './routes/_authenticated/messagerie.$conversationId'
 import { Route as AnnuaireCategorieSlugRouteImport } from './routes/annuaire.categorie.$slug'
 import { Route as AnnuaireDepartementSlugRouteImport } from './routes/annuaire.departement.$slug'
+import { Route as FormationSlugIndexRouteImport } from './routes/formation.$slug.index'
 import { Route as ForumCategorieSlugRouteImport } from './routes/forum.categorie.$slug'
 
 const IndexRoute = IndexRouteImport.update({
@@ -232,6 +234,11 @@ const BlogSlugRoute = BlogSlugRouteImport.update({
   path: '/blog/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FormationsIndexRoute = FormationsIndexRouteImport.update({
+  id: '/formations/',
+  path: '/formations/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ForumIndexRoute = ForumIndexRouteImport.update({
   id: '/forum/',
   path: '/forum/',
@@ -350,6 +357,11 @@ const AnnuaireDepartementSlugRoute = AnnuaireDepartementSlugRouteImport.update({
   path: '/annuaire/departement/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FormationSlugIndexRoute = FormationSlugIndexRouteImport.update({
+  id: '/formation/$slug/',
+  path: '/formation/$slug/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ForumCategorieSlugRoute = ForumCategorieSlugRouteImport.update({
   id: '/forum/categorie/$slug',
   path: '/forum/categorie/$slug',
@@ -396,6 +408,7 @@ export interface FileRoutesByFullPath {
   '/membres/$memberId': typeof MembresMemberIdRoute
   '/annuaire/': typeof AnnuaireIndexRoute
   '/blog/': typeof BlogIndexRoute
+  '/formations/': typeof FormationsIndexRoute
   '/forum/': typeof ForumIndexRoute
   '/membres/': typeof MembresIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -412,6 +425,7 @@ export interface FileRoutesByFullPath {
   '/forum/categorie/$slug': typeof ForumCategorieSlugRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/messagerie/': typeof AuthenticatedMessagerieIndexRoute
+  '/formation/$slug/': typeof FormationSlugIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -453,6 +467,7 @@ export interface FileRoutesByTo {
   '/membres/$memberId': typeof MembresMemberIdRoute
   '/annuaire': typeof AnnuaireIndexRoute
   '/blog': typeof BlogIndexRoute
+  '/formations': typeof FormationsIndexRoute
   '/forum': typeof ForumIndexRoute
   '/membres': typeof MembresIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -469,6 +484,7 @@ export interface FileRoutesByTo {
   '/forum/categorie/$slug': typeof ForumCategorieSlugRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/messagerie': typeof AuthenticatedMessagerieIndexRoute
+  '/formation/$slug': typeof FormationSlugIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -512,6 +528,7 @@ export interface FileRoutesById {
   '/membres/$memberId': typeof MembresMemberIdRoute
   '/annuaire/': typeof AnnuaireIndexRoute
   '/blog/': typeof BlogIndexRoute
+  '/formations/': typeof FormationsIndexRoute
   '/forum/': typeof ForumIndexRoute
   '/membres/': typeof MembresIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -528,6 +545,7 @@ export interface FileRoutesById {
   '/forum/categorie/$slug': typeof ForumCategorieSlugRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/messagerie/': typeof AuthenticatedMessagerieIndexRoute
+  '/formation/$slug/': typeof FormationSlugIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -571,6 +589,7 @@ export interface FileRouteTypes {
     | '/membres/$memberId'
     | '/annuaire/'
     | '/blog/'
+    | '/formations/'
     | '/forum/'
     | '/membres/'
     | '/.lovable/oauth/consent'
@@ -587,6 +606,7 @@ export interface FileRouteTypes {
     | '/forum/categorie/$slug'
     | '/admin/'
     | '/messagerie/'
+    | '/formation/$slug/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -628,6 +648,7 @@ export interface FileRouteTypes {
     | '/membres/$memberId'
     | '/annuaire'
     | '/blog'
+    | '/formations'
     | '/forum'
     | '/membres'
     | '/.lovable/oauth/consent'
@@ -644,6 +665,7 @@ export interface FileRouteTypes {
     | '/forum/categorie/$slug'
     | '/admin'
     | '/messagerie'
+    | '/formation/$slug'
   id:
     | '__root__'
     | '/'
@@ -686,6 +708,7 @@ export interface FileRouteTypes {
     | '/membres/$memberId'
     | '/annuaire/'
     | '/blog/'
+    | '/formations/'
     | '/forum/'
     | '/membres/'
     | '/.lovable/oauth/consent'
@@ -702,6 +725,7 @@ export interface FileRouteTypes {
     | '/forum/categorie/$slug'
     | '/_authenticated/admin/'
     | '/_authenticated/messagerie/'
+    | '/formation/$slug/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -741,12 +765,14 @@ export interface RootRouteChildren {
   MembresMemberIdRoute: typeof MembresMemberIdRoute
   AnnuaireIndexRoute: typeof AnnuaireIndexRoute
   BlogIndexRoute: typeof BlogIndexRoute
+  FormationsIndexRoute: typeof FormationsIndexRoute
   ForumIndexRoute: typeof ForumIndexRoute
   MembresIndexRoute: typeof MembresIndexRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   AnnuaireCategorieSlugRoute: typeof AnnuaireCategorieSlugRoute
   AnnuaireDepartementSlugRoute: typeof AnnuaireDepartementSlugRoute
   ForumCategorieSlugRoute: typeof ForumCategorieSlugRoute
+  FormationSlugIndexRoute: typeof FormationSlugIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -982,6 +1008,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlogSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/formations/': {
+      id: '/formations/'
+      path: '/formations'
+      fullPath: '/formations/'
+      preLoaderRoute: typeof FormationsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/forum/': {
       id: '/forum/'
       path: '/forum'
@@ -1136,6 +1169,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AnnuaireDepartementSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/formation/$slug/': {
+      id: '/formation/$slug/'
+      path: '/formation/$slug'
+      fullPath: '/formation/$slug/'
+      preLoaderRoute: typeof FormationSlugIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/forum/categorie/$slug': {
       id: '/forum/categorie/$slug'
       path: '/forum/categorie/$slug'
@@ -1222,12 +1262,14 @@ const rootRouteChildren: RootRouteChildren = {
   MembresMemberIdRoute: MembresMemberIdRoute,
   AnnuaireIndexRoute: AnnuaireIndexRoute,
   BlogIndexRoute: BlogIndexRoute,
+  FormationsIndexRoute: FormationsIndexRoute,
   ForumIndexRoute: ForumIndexRoute,
   MembresIndexRoute: MembresIndexRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   AnnuaireCategorieSlugRoute: AnnuaireCategorieSlugRoute,
   AnnuaireDepartementSlugRoute: AnnuaireDepartementSlugRoute,
   ForumCategorieSlugRoute: ForumCategorieSlugRoute,
+  FormationSlugIndexRoute: FormationSlugIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
