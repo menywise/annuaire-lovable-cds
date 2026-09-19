@@ -52,48 +52,65 @@ function buildMemberNav(): NavItem[] {
   ];
 }
 
-const footerColumns = [
-  {
-    title: "Découvrir",
-    links: [
-      { to: "/", label: "Accueil", title: "Revenir à la page d'accueil" },
-      { to: "/demarrer", label: "Démarrer", title: "Le parcours en trois étapes" },
-      { to: "/tarifs", label: "Tarifs", title: "Comparer les offres" },
-      { to: "/composants", label: "Composants", title: "Bibliothèque de composants d'interface" },
-      { to: "/guide", label: "Guide", title: "Comment réutiliser CDS sur un nouveau projet" },
-    ],
-  },
-  {
-    title: "Communauté",
-    links: [
-      { to: "/forum", label: "Forum", title: "Poser une question à la communauté" },
-      { to: "/membres", label: "Annuaire", title: "Découvrir les membres" },
-      { to: "/temoignages", label: "Témoignages", title: "Lire les retours d'expérience" },
-      { to: "/avis", label: "Avis", title: "Consulter les notes et avis" },
-      { to: "/blog", label: "Blog", title: "Articles et méthodes" },
-    ],
-  },
-  {
-    title: "Aide",
-    links: [
-      { to: "/faq", label: "FAQ", title: "Réponses aux questions fréquentes" },
-      { to: "/contact", label: "Contact", title: "Formulaire de contact protégé" },
-      { to: "/a-propos", label: "À propos", title: "Qui édite le site et selon quels engagements" },
-      { to: "/plan-du-site", label: "Plan du site", title: "Toutes les pages réunies sur une page" },
-      { to: "/login", label: "Connexion", title: "Accéder à son espace personnel" },
-    ],
-  },
-  {
-    title: "Informations légales",
-    links: [
-      { to: "/legal/mentions-legales", label: "Mentions légales", title: "Éditeur, hébergeur et propriété intellectuelle" },
-      { to: "/legal/confidentialite", label: "Confidentialité", title: "Données personnelles et droits RGPD" },
-      { to: "/legal/cgu", label: "CGU", title: "Conditions générales d'utilisation" },
-      { to: "/legal/cgv", label: "CGV", title: "Conditions générales de vente" },
-      { to: "/legal/cookies", label: "Cookies", title: "Politique de gestion des cookies" },
-    ],
-  },
-] as const;
+function buildFooterColumns(): Array<{ title: string; links: NavItem[] }> {
+  return [
+    {
+      title: "Découvrir",
+      links: [
+        { to: "/", label: "Accueil", title: "Revenir à la page d'accueil" },
+        { to: "/demarrer", label: "Démarrer", title: "Le parcours en trois étapes" },
+        { to: "/tarifs", label: "Tarifs", title: "Comparer les offres" },
+        ...(isFeatureOn("lms")
+          ? ([{ to: "/formations", label: "Formations", title: "Le catalogue des formations" }] as NavItem[])
+          : []),
+        { to: "/composants", label: "Composants", title: "Bibliothèque de composants d'interface" },
+        { to: "/guide", label: "Guide", title: "Comment réutiliser CDS sur un nouveau projet" },
+      ],
+    },
+    {
+      title: "Communauté",
+      links: [
+        { to: "/forum", label: "Forum", title: "Poser une question à la communauté" },
+        { to: "/membres", label: "Annuaire des membres", title: "Découvrir les membres" },
+        ...(isFeatureOn("directory")
+          ? ([{ to: "/annuaire", label: "Annuaire métier", title: "Trouver un professionnel" }] as NavItem[])
+          : []),
+        ...(isFeatureOn("marketplace")
+          ? ([{ to: "/marketplace", label: "Annonces", title: "Les annonces des membres" }] as NavItem[])
+          : []),
+        { to: "/temoignages", label: "Témoignages", title: "Lire les retours d'expérience" },
+        { to: "/avis", label: "Avis", title: "Consulter les notes et avis" },
+        { to: "/blog", label: "Blog", title: "Articles et méthodes" },
+      ],
+    },
+    {
+      title: "Aide",
+      links: [
+        { to: "/faq", label: "FAQ", title: "Réponses aux questions fréquentes" },
+        { to: "/contact", label: "Contact", title: "Formulaire de contact protégé" },
+        { to: "/a-propos", label: "À propos", title: "Qui édite le site et selon quels engagements" },
+        ...(isFeatureOn("adNetwork")
+          ? ([{ to: "/publicite", label: "Annoncer", title: "Réserver un emplacement publicitaire" }] as NavItem[])
+          : []),
+        { to: "/plan-du-site", label: "Plan du site", title: "Toutes les pages réunies sur une page" },
+        { to: "/login", label: "Connexion", title: "Accéder à son espace personnel" },
+      ],
+    },
+    {
+      title: "Informations légales",
+      links: [
+        { to: "/legal/mentions-legales", label: "Mentions légales", title: "Éditeur, hébergeur et propriété intellectuelle" },
+        { to: "/legal/confidentialite", label: "Confidentialité", title: "Données personnelles et droits RGPD" },
+        { to: "/legal/cgu", label: "CGU", title: "Conditions générales d'utilisation" },
+        { to: "/legal/cgv", label: "CGV", title: "Conditions générales de vente" },
+        { to: "/legal/cookies", label: "Cookies", title: "Politique de gestion des cookies" },
+      ],
+    },
+  ];
+}
+
+const linkClass =
+  "inline-flex min-h-11 items-center rounded px-3 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 lg:min-h-9";
 
 const linkClass =
   "inline-flex min-h-11 items-center rounded px-3 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 lg:min-h-9";
