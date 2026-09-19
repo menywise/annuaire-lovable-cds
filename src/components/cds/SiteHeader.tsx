@@ -112,8 +112,6 @@ function buildFooterColumns(): Array<{ title: string; links: NavItem[] }> {
 const linkClass =
   "inline-flex min-h-11 items-center rounded px-3 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 lg:min-h-9";
 
-const linkClass =
-  "inline-flex min-h-11 items-center rounded px-3 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 lg:min-h-9";
 
 function AccountLinks({ onNavigate }: { onNavigate?: () => void }) {
   const { user, loading } = useAuth();
