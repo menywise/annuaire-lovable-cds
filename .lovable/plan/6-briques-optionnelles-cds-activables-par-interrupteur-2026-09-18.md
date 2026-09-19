@@ -7,6 +7,7 @@ Objectif : livrer dans le modèle CDS six modules complets mais **éteints par d
 Un fichier unique de configuration contient six interrupteurs (Géographie, Annuaire métier, Suivi de prospects, Formations, Petites annonces, Régie publicitaire). Tous sur « éteint » pour CDS.
 
 Quand un module est éteint :
+
 - ses pages renvoient vers l'accueil (jamais d'erreur),
 - ses liens disparaissent du menu, du pied de page, du plan du site et de l'administration,
 - ses tableaux de données existent en base mais restent vides.

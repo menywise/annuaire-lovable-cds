@@ -22,9 +22,15 @@ export const Route = createFileRoute("/legal/cgv")({
       </Section>
       <Section title="Offres et prix">
         <ul>
-          <li>Les offres et leurs tarifs sont présentés sur la page Tarifs, en euros, toutes taxes comprises.</li>
+          <li>
+            Les offres et leurs tarifs sont présentés sur la page Tarifs, en euros, toutes taxes
+            comprises.
+          </li>
           <li>Le prix applicable est celui affiché au moment de la souscription.</li>
-          <li>Toute évolution tarifaire est annoncée avant sa prise d'effet et ne s'applique jamais rétroactivement.</li>
+          <li>
+            Toute évolution tarifaire est annoncée avant sa prise d'effet et ne s'applique jamais
+            rétroactivement.
+          </li>
         </ul>
       </Section>
       <Section title="Souscription et paiement">
@@ -36,8 +42,14 @@ export const Route = createFileRoute("/legal/cgv")({
       </Section>
       <Section title="Durée, renouvellement et résiliation">
         <ul>
-          <li>Les abonnements sont conclus pour la période indiquée sur l'offre, renouvelable par tacite reconduction.</li>
-          <li>La résiliation est possible à tout moment depuis l'espace personnel et prend effet à la fin de la période en cours.</li>
+          <li>
+            Les abonnements sont conclus pour la période indiquée sur l'offre, renouvelable par
+            tacite reconduction.
+          </li>
+          <li>
+            La résiliation est possible à tout moment depuis l'espace personnel et prend effet à la
+            fin de la période en cours.
+          </li>
           <li>Aucun prélèvement n'intervient après la date de résiliation.</li>
         </ul>
       </Section>
@@ -58,7 +70,11 @@ export const Route = createFileRoute("/legal/cgv")({
       <Section title="Réclamations et médiation">
         <p>
           Toute réclamation est adressée via le{" "}
-          <Link to="/contact" title="Adresser une réclamation via le formulaire de contact" className="font-medium text-primary-text hover:underline">
+          <Link
+            to="/contact"
+            title="Adresser une réclamation via le formulaire de contact"
+            className="font-medium text-primary-text hover:underline"
+          >
             formulaire de contact
           </Link>
           . À défaut de solution amiable, le consommateur peut recourir gratuitement à un médiateur

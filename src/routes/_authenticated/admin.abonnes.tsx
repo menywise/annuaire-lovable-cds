@@ -2,7 +2,14 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { AdminShell, useIsAdmin } from "@/components/cds/AdminShell";
 import { Button } from "@/components/ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { supabase } from "@/integrations/supabase/client";
 import { seo } from "@/lib/seo";
 
@@ -61,7 +68,8 @@ function AdminAbonnesPage() {
     >
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm text-muted-foreground">
-          {rows.length} inscription{rows.length > 1 ? "s" : ""} enregistrée{rows.length > 1 ? "s" : ""}.
+          {rows.length} inscription{rows.length > 1 ? "s" : ""} enregistrée
+          {rows.length > 1 ? "s" : ""}.
         </p>
         <Button
           variant="outline"

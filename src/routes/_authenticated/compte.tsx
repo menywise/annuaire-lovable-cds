@@ -12,7 +12,8 @@ export const Route = createFileRoute("/_authenticated/compte")({
   head: () =>
     seo({
       title: "Mon compte",
-      description: "Espace personnel : informations du compte et messages reçus pour les administrateurs.",
+      description:
+        "Espace personnel : informations du compte et messages reçus pour les administrateurs.",
       path: "/compte",
       noindex: true,
     }),
@@ -107,8 +108,7 @@ function ComptePage() {
                 <CardHeader>
                   <CardTitle className="text-base">{m.subject}</CardTitle>
                   <CardDescription>
-                    {m.name} — {m.email} —{" "}
-                    {new Date(m.created_at).toLocaleString("fr-FR")}
+                    {m.name} — {m.email} — {new Date(m.created_at).toLocaleString("fr-FR")}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="whitespace-pre-line text-sm text-muted-foreground">

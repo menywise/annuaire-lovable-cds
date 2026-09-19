@@ -56,11 +56,17 @@ function CategoryPage() {
   return (
     <PageShell>
       <div className="mx-auto max-w-[900px]">
-        <Link to="/forum" title="Revenir à toutes les discussions" className="text-xs font-medium text-primary-text hover:underline">
+        <Link
+          to="/forum"
+          title="Revenir à toutes les discussions"
+          className="text-xs font-medium text-primary-text hover:underline"
+        >
           ← Forum
         </Link>
         <h1 className="mt-3 text-3xl font-bold text-foreground">{activeCategory?.name}</h1>
-        <p className="mt-2 max-w-[70ch] text-sm text-muted-foreground">{activeCategory?.description}</p>
+        <p className="mt-2 max-w-[70ch] text-sm text-muted-foreground">
+          {activeCategory?.description}
+        </p>
 
         <nav aria-label="Autres thématiques" className="mt-5 flex flex-wrap gap-2">
           {categories.map((category) => (

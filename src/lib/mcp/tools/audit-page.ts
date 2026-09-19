@@ -19,7 +19,11 @@ export default defineTool({
     "Charge une page publique et retourne ses éléments auditables : statut HTTP, langue, titre, description, balises Open Graph, canonique, nombre de H1/H2, images sans texte alternatif, liens sans attribut title, traces de thème sombre et mots anglais résiduels.",
   inputSchema: {
     path: z.string().min(1).describe("Chemin de la page, par exemple /tarifs."),
-    base_url: z.string().url().optional().describe("Adresse du site, si différente de la production."),
+    base_url: z
+      .string()
+      .url()
+      .optional()
+      .describe("Adresse du site, si différente de la production."),
   },
   annotations: { readOnlyHint: true, openWorldHint: true },
   handler: async ({ path, base_url }, ctx) => {
@@ -40,14 +44,16 @@ export default defineTool({
         og_image: meta(html, "property", "og:image"),
         twitter_card: meta(html, "name", "twitter:card"),
         robots: meta(html, "name", "robots"),
-        canonique: html.match(/<link[^>]+rel=["']canonical["'][^>]*href=["']([^"']+)["']/i)?.[1] ?? null,
+        canonique:
+          html.match(/<link[^>]+rel=["']canonical["'][^>]*href=["']([^"']+)["']/i)?.[1] ?? null,
         h1: all(html, /<h1\b/gi).length,
         h2: all(html, /<h2\b/gi).length,
         liens: links.length,
         liens_sans_title: links.filter((l) => !/\btitle=/i.test(l[0])).length,
         images: images.length,
         images_sans_alt: images.filter((i) => !/\balt=/i.test(i[0])).length,
-        traces_theme_sombre: all(html, /(class=["'][^"']*\bdark\b|prefers-color-scheme:\s*dark)/gi).length,
+        traces_theme_sombre: all(html, /(class=["'][^"']*\bdark\b|prefers-color-scheme:\s*dark)/gi)
+          .length,
         mentions_lovable: all(html, /lovable/gi).length,
         poids_html_octets: html.length,
       });

@@ -116,7 +116,11 @@ function LessonPage() {
     <PageShell>
       <div className="mx-auto max-w-[820px]">
         <nav aria-label="Fil d'Ariane" className="text-xs text-muted-foreground">
-          <Link to="/formations" title="Revenir au catalogue des formations" className="hover:underline">
+          <Link
+            to="/formations"
+            title="Revenir au catalogue des formations"
+            className="hover:underline"
+          >
             Formations
           </Link>
           {" / "}
@@ -188,7 +192,11 @@ function LessonPage() {
               </Button>
             ) : (
               <p className="mt-6 text-sm text-muted-foreground">
-                <Link to="/login" title="Se connecter pour suivre sa progression" className="text-primary-text hover:underline">
+                <Link
+                  to="/login"
+                  title="Se connecter pour suivre sa progression"
+                  className="text-primary-text hover:underline"
+                >
                   Connectez-vous
                 </Link>{" "}
                 pour garder votre progression.

@@ -6,18 +6,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  type BrandSettings,
-  saveBrandSettings,
-  useBrandSettings,
-} from "@/hooks/useSiteSettings";
+import { type BrandSettings, saveBrandSettings, useBrandSettings } from "@/hooks/useSiteSettings";
 import { seo } from "@/lib/seo";
 
 export const Route = createFileRoute("/_authenticated/admin/")({
   head: () =>
     seo({
       title: "Administration",
-      description: "Espace d'administration : paramètres du site, identité, coordonnées légales et hébergeur.",
+      description:
+        "Espace d'administration : paramètres du site, identité, coordonnées légales et hébergeur.",
       path: "/admin",
       noindex: true,
     }),

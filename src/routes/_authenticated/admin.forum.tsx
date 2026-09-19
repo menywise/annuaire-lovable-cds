@@ -62,7 +62,9 @@ function AdminForumPage() {
     });
     setBusy(false);
     if (error) {
-      toast.error("Thématique non créée.", { description: "Vérifiez que l'identifiant est unique." });
+      toast.error("Thématique non créée.", {
+        description: "Vérifiez que l'identifiant est unique.",
+      });
       return;
     }
     form.reset();
@@ -81,7 +83,10 @@ function AdminForumPage() {
 
   async function remove(category: Category) {
     const { error } = await supabase.from("forum_categories").delete().eq("id", category.id);
-    if (error) toast.error("Suppression impossible.", { description: "Des discussions y sont peut-être rattachées." });
+    if (error)
+      toast.error("Suppression impossible.", {
+        description: "Des discussions y sont peut-être rattachées.",
+      });
     else {
       toast.success("Thématique supprimée.");
       void load();
@@ -110,7 +115,13 @@ function AdminForumPage() {
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="c-color">Couleur</Label>
-            <Input id="c-color" name="color" type="color" defaultValue="#0d6efd" className="h-11 w-24 p-1" />
+            <Input
+              id="c-color"
+              name="color"
+              type="color"
+              defaultValue="#0d6efd"
+              className="h-11 w-24 p-1"
+            />
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="c-position">Ordre d'affichage</Label>
@@ -162,7 +173,9 @@ function AdminForumPage() {
                     Supprimer
                   </Button>
                 </div>
-                <p className="mt-2 text-xs text-muted-foreground">Adresse : /forum/categorie/{category.slug}</p>
+                <p className="mt-2 text-xs text-muted-foreground">
+                  Adresse : /forum/categorie/{category.slug}
+                </p>
               </li>
             ))}
           </ul>

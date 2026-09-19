@@ -5,10 +5,22 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { supabase } from "@/integrations/supabase/client";
 
+type AuthorizationData = {
+  client?: { name?: string };
+  redirect_url?: string;
+  redirect_to?: string;
+};
+
 type OauthApi = {
-  getAuthorizationDetails: (id: string) => Promise<{ data: any; error: any }>;
-  approveAuthorization: (id: string) => Promise<{ data: any; error: any }>;
-  denyAuthorization: (id: string) => Promise<{ data: any; error: any }>;
+  getAuthorizationDetails: (
+    id: string,
+  ) => Promise<{ data: AuthorizationData | null; error: { message: string } | null }>;
+  approveAuthorization: (
+    id: string,
+  ) => Promise<{ data: AuthorizationData | null; error: { message: string } | null }>;
+  denyAuthorization: (
+    id: string,
+  ) => Promise<{ data: AuthorizationData | null; error: { message: string } | null }>;
 };
 
 function oauthApi(): OauthApi {
@@ -18,7 +30,7 @@ function oauthApi(): OauthApi {
 export const Route = createFileRoute("/.lovable/oauth/consent")({
   ssr: false,
   validateSearch: (s: Record<string, unknown>) => ({
-    authorization_id: typeof s['authorization_id'] === "string" ? s['authorization_id'] : "",
+    authorization_id: typeof s["authorization_id"] === "string" ? s["authorization_id"] : "",
   }),
   beforeLoad: async ({ search, location }) => {
     if (!search.authorization_id) throw new Error("Demande d'autorisation incomplète.");
@@ -45,7 +57,7 @@ export const Route = createFileRoute("/.lovable/oauth/consent")({
 });
 
 function ConsentPage() {
-  const details = Route.useLoaderData() as any;
+  const details = Route.useLoaderData() as AuthorizationData;
   const { authorization_id } = Route.useSearch();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -85,10 +97,16 @@ function ConsentPage() {
           </Alert>
         )}
         <p className="text-sm text-light">
-          En autorisant, {clientName} pourra lire et écrire les données auxquelles votre compte a déjà accès.
+          En autorisant, {clientName} pourra lire et écrire les données auxquelles votre compte a
+          déjà accès.
         </p>
         <div className="flex flex-col gap-2 sm:flex-row">
-          <Button className="flex-1" disabled={busy} onClick={() => decide(true)} title="Autoriser l'accès">
+          <Button
+            className="flex-1"
+            disabled={busy}
+            onClick={() => decide(true)}
+            title="Autoriser l'accès"
+          >
             {busy ? "Un instant…" : "Autoriser"}
           </Button>
           <Button

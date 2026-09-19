@@ -10,7 +10,11 @@ export default defineTool({
     "Liste les audits déjà enregistrés (date, score, résumé) et, au besoin, le détail des anomalies d'un audit précis.",
   inputSchema: {
     limit: z.number().int().min(1).max(50).default(10).describe("Nombre d'audits à retourner."),
-    audit_id: z.string().uuid().optional().describe("Identifiant d'un audit dont on veut le détail."),
+    audit_id: z
+      .string()
+      .uuid()
+      .optional()
+      .describe("Identifiant d'un audit dont on veut le détail."),
   },
   annotations: { readOnlyHint: true, openWorldHint: false },
   handler: async ({ limit, audit_id }, ctx) => {

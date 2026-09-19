@@ -33,7 +33,9 @@ export const listFaq = createServerFn({ method: "GET" }).handler(async () => {
 export const listPlans = createServerFn({ method: "GET" }).handler(async () => {
   const { data } = await publicClient()
     .from("pricing_plans")
-    .select("id, name, tagline, price_cents, currency, period, features, cta_label, highlighted, position")
+    .select(
+      "id, name, tagline, price_cents, currency, period, features, cta_label, highlighted, position",
+    )
     .eq("active", true)
     .order("position", { ascending: true });
   return data ?? [];

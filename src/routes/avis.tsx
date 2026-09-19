@@ -68,7 +68,8 @@ function AvisPage() {
     setBusy(true);
     const { error } = await supabase.from("reviews").insert({
       author_id: user.id,
-      author_name: (user.user_metadata?.["full_name"] as string) || user.email?.split("@")[0] || "Membre",
+      author_name:
+        (user.user_metadata?.["full_name"] as string) || user.email?.split("@")[0] || "Membre",
       rating,
       title: String(form.get("title") ?? "").trim(),
       content: String(form.get("content") ?? "").trim(),
@@ -180,7 +181,11 @@ function AvisPage() {
           ) : (
             <p className="mt-3 text-sm text-muted-foreground">
               Pour garantir des avis authentiques, seuls les membres connectés peuvent en déposer.{" "}
-              <Link to="/login" title="Se connecter pour déposer un avis" className="text-primary-text hover:underline">
+              <Link
+                to="/login"
+                title="Se connecter pour déposer un avis"
+                className="text-primary-text hover:underline"
+              >
                 Se connecter
               </Link>
               .

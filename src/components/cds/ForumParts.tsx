@@ -124,9 +124,12 @@ export function FollowButton({ topicId }: { topicId: string }) {
       setFollowing(false);
       toast.success("Vous ne suivez plus cette discussion.");
     } else {
-      const { error } = await supabase.from("forum_follows").insert({ user_id: user.id, topic_id: topicId });
+      const { error } = await supabase
+        .from("forum_follows")
+        .insert({ user_id: user.id, topic_id: topicId });
       setFollowing(true);
-      if (!error) toast.success("Discussion suivie.", { description: "Retrouvez-la dans votre espace." });
+      if (!error)
+        toast.success("Discussion suivie.", { description: "Retrouvez-la dans votre espace." });
     }
     setBusy(false);
   }
@@ -144,13 +147,23 @@ export function FollowButton({ topicId }: { topicId: string }) {
           : "border-border text-muted-foreground hover:bg-accent hover:text-foreground"
       }`}
     >
-      {following ? <BellOff className="size-4" aria-hidden="true" /> : <Bell className="size-4" aria-hidden="true" />}
+      {following ? (
+        <BellOff className="size-4" aria-hidden="true" />
+      ) : (
+        <Bell className="size-4" aria-hidden="true" />
+      )}
       {following ? "Suivi" : "Suivre"}
     </button>
   );
 }
 
-type Member = { user_id: string; display_name: string; score: number; topics: number; replies: number };
+type Member = {
+  user_id: string;
+  display_name: string;
+  score: number;
+  topics: number;
+  replies: number;
+};
 
 /** Classement des membres les plus actifs, sur trois périodes. */
 export function TopMembers({
@@ -162,8 +175,16 @@ export function TopMembers({
   const list = data[period];
 
   const tabs = [
-    { key: "week" as const, label: "7 jours", title: "Membres les plus actifs sur les 7 derniers jours" },
-    { key: "month" as const, label: "30 jours", title: "Membres les plus actifs sur les 30 derniers jours" },
+    {
+      key: "week" as const,
+      label: "7 jours",
+      title: "Membres les plus actifs sur les 7 derniers jours",
+    },
+    {
+      key: "month" as const,
+      label: "30 jours",
+      title: "Membres les plus actifs sur les 30 derniers jours",
+    },
     { key: "always" as const, label: "Toujours", title: "Membres les plus actifs depuis le début" },
   ];
 
@@ -188,7 +209,9 @@ export function TopMembers({
         ))}
       </div>
       {list.length === 0 ? (
-        <p className="mt-4 text-sm text-muted-foreground">Pas encore d'activité sur cette période.</p>
+        <p className="mt-4 text-sm text-muted-foreground">
+          Pas encore d'activité sur cette période.
+        </p>
       ) : (
         <ol className="mt-4 space-y-2">
           {list.slice(0, 8).map((member, index) => (
@@ -204,7 +227,9 @@ export function TopMembers({
               >
                 {member.display_name}
               </Link>
-              <span className="ml-auto shrink-0 text-xs text-muted-foreground">{member.score} pts</span>
+              <span className="ml-auto shrink-0 text-xs text-muted-foreground">
+                {member.score} pts
+              </span>
             </li>
           ))}
         </ol>

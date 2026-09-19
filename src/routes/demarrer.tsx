@@ -103,7 +103,9 @@ function DemarrerPage() {
 
         {step === 1 && (
           <section className="mt-8 space-y-4">
-            <h2 className="text-lg font-semibold text-foreground">L'offre qui correspond à votre étape</h2>
+            <h2 className="text-lg font-semibold text-foreground">
+              L'offre qui correspond à votre étape
+            </h2>
             <div className="grid gap-4 md:grid-cols-3">
               {plans.map((plan) => {
                 const features = Array.isArray(plan.features) ? (plan.features as string[]) : [];
@@ -115,7 +117,9 @@ function DemarrerPage() {
                     onClick={() => setSelected(plan.id)}
                     title={`Choisir l'offre ${plan.name}`}
                     className={`rounded-xl border p-5 text-left transition-colors ${
-                      active ? "border-primary bg-accent" : "border-border bg-card hover:border-primary"
+                      active
+                        ? "border-primary bg-accent"
+                        : "border-border bg-card hover:border-primary"
                     }`}
                   >
                     <div className="flex items-center justify-between gap-2">
@@ -131,7 +135,10 @@ function DemarrerPage() {
                     <ul className="mt-3 space-y-1.5 text-xs text-muted-foreground">
                       {features.slice(0, 4).map((feature) => (
                         <li key={feature} className="flex gap-1.5">
-                          <Check className="mt-0.5 size-3.5 shrink-0 text-success-text" aria-hidden="true" />
+                          <Check
+                            className="mt-0.5 size-3.5 shrink-0 text-success-text"
+                            aria-hidden="true"
+                          />
                           {feature}
                         </li>
                       ))}
@@ -144,7 +151,11 @@ function DemarrerPage() {
               <Button variant="outline" onClick={() => setStep(0)} title="Revenir aux bénéfices">
                 Revenir
               </Button>
-              <Button onClick={() => setStep(2)} disabled={!selected} title="Passer à la création du compte">
+              <Button
+                onClick={() => setStep(2)}
+                disabled={!selected}
+                title="Passer à la création du compte"
+              >
                 Continuer
               </Button>
             </div>
@@ -153,21 +164,29 @@ function DemarrerPage() {
 
         {step === 2 && (
           <section className="mt-8 space-y-4">
-            <h2 className="text-lg font-semibold text-foreground">Il ne reste qu'à créer votre compte</h2>
+            <h2 className="text-lg font-semibold text-foreground">
+              Il ne reste qu'à créer votre compte
+            </h2>
             <p className="max-w-[620px] text-sm text-muted-foreground">
               Votre choix est enregistré pour cette visite. Créez votre compte : vous recevrez un
               e-mail de confirmation, et votre espace sera immédiatement disponible.
             </p>
             <div className="flex flex-wrap gap-3">
               <Button asChild>
-                <Link to="/signup" title="Créer mon compte maintenant">Créer mon compte</Link>
+                <Link to="/signup" title="Créer mon compte maintenant">
+                  Créer mon compte
+                </Link>
               </Button>
               <Button asChild variant="outline">
                 <Link to="/contact" title="Poser une question avant de créer un compte">
                   J'ai encore une question
                 </Link>
               </Button>
-              <Button variant="ghost" onClick={() => setStep(1)} title="Revenir au choix de l'offre">
+              <Button
+                variant="ghost"
+                onClick={() => setStep(1)}
+                title="Revenir au choix de l'offre"
+              >
                 Revenir aux offres
               </Button>
             </div>

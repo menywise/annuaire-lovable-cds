@@ -71,14 +71,23 @@ function VerificationEmailPage() {
             placeholder="nom@exemple.fr"
           />
         </div>
-        <Button type="submit" className="w-full" disabled={busy} title="Recevoir un nouveau lien de confirmation">
+        <Button
+          type="submit"
+          className="w-full"
+          disabled={busy}
+          title="Recevoir un nouveau lien de confirmation"
+        >
           {busy ? "Envoi…" : "Recevoir un nouveau lien"}
         </Button>
       </form>
 
       <p className="mt-6 text-sm text-muted-foreground">
         Adresse déjà confirmée ?{" "}
-        <Link to="/login" title="Se connecter à son espace" className="text-primary-text hover:underline">
+        <Link
+          to="/login"
+          title="Se connecter à son espace"
+          className="text-primary-text hover:underline"
+        >
           Se connecter
         </Link>
       </p>

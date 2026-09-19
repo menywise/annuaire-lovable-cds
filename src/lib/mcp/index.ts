@@ -9,7 +9,7 @@ import auditPage from "./tools/audit-page";
 import listRoadmap from "./tools/list-roadmap";
 import upsertRoadmapItem from "./tools/upsert-roadmap-item";
 
-const projectRef = import.meta.env['VITE_SUPABASE_PROJECT_ID'] ?? "project-ref-unset";
+const projectRef = import.meta.env["VITE_SUPABASE_PROJECT_ID"] ?? "project-ref-unset";
 
 export default defineMcp({
   name: "cds-framework",

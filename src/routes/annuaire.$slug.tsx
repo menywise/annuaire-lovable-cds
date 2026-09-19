@@ -274,7 +274,10 @@ function ListingPage() {
               )}
 
               {user ? (
-                <form onSubmit={submitReview} className="mt-4 space-y-3 rounded-lg border border-border bg-card p-4">
+                <form
+                  onSubmit={submitReview}
+                  className="mt-4 space-y-3 rounded-lg border border-border bg-card p-4"
+                >
                   <div className="space-y-1.5">
                     <Label htmlFor="rev-rating">Votre note</Label>
                     <select
@@ -292,7 +295,12 @@ function ListingPage() {
                   </div>
                   <div className="space-y-1.5">
                     <Label htmlFor="rev-content">Votre expérience</Label>
-                    <Textarea id="rev-content" name="content" rows={3} placeholder="Ce qui s'est bien passé…" />
+                    <Textarea
+                      id="rev-content"
+                      name="content"
+                      rows={3}
+                      placeholder="Ce qui s'est bien passé…"
+                    />
                   </div>
                   <Button type="submit" disabled={busy} title="Envoyer votre avis">
                     {busy ? "Envoi…" : "Publier mon avis"}
@@ -303,7 +311,11 @@ function ListingPage() {
                 </form>
               ) : (
                 <p className="mt-3 text-sm text-muted-foreground">
-                  <Link to="/login" title="Se connecter pour laisser un avis" className="text-primary-text hover:underline">
+                  <Link
+                    to="/login"
+                    title="Se connecter pour laisser un avis"
+                    className="text-primary-text hover:underline"
+                  >
                     Connectez-vous
                   </Link>{" "}
                   pour laisser un avis.
@@ -407,7 +419,11 @@ function ListingPage() {
                 </Button>
               ) : (
                 <p className="mt-3 text-sm">
-                  <Link to="/login" title="Se connecter pour revendiquer la fiche" className="text-primary-text hover:underline">
+                  <Link
+                    to="/login"
+                    title="Se connecter pour revendiquer la fiche"
+                    className="text-primary-text hover:underline"
+                  >
                     Connectez-vous
                   </Link>{" "}
                   pour la revendiquer.

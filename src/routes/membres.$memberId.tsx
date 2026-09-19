@@ -19,8 +19,9 @@ export const Route = createFileRoute("/membres/$memberId")({
     const profile = loaderData?.profile;
     const base = seo({
       title: profile?.display_name ?? "Profil membre",
-      description:
-        (profile?.bio || `${profile?.display_name ?? "Ce membre"} contribue à la communauté CDS.`).slice(0, 155),
+      description: (
+        profile?.bio || `${profile?.display_name ?? "Ce membre"} contribue à la communauté CDS.`
+      ).slice(0, 155),
       path: `/membres/${params.memberId}`,
       type: "article",
     });
@@ -44,7 +45,11 @@ export const Route = createFileRoute("/membres/$memberId")({
     <PageShell>
       <h1 className="text-2xl font-bold text-foreground">Profil introuvable</h1>
       <p className="mt-2 text-sm text-muted-foreground">
-        <Link to="/membres" title="Revenir à l'annuaire des membres" className="text-primary-text hover:underline">
+        <Link
+          to="/membres"
+          title="Revenir à l'annuaire des membres"
+          className="text-primary-text hover:underline"
+        >
           Revenir à l'annuaire
         </Link>
       </p>
@@ -82,7 +87,9 @@ function MemberPage() {
         .single();
       if (error || !created) {
         setBusy(false);
-        toast.error("Conversation impossible.", { description: "Ce membre n'accepte peut-être pas les messages." });
+        toast.error("Conversation impossible.", {
+          description: "Ce membre n'accepte peut-être pas les messages.",
+        });
         return;
       }
       id = created.id;
@@ -94,7 +101,11 @@ function MemberPage() {
   return (
     <PageShell>
       <div className="mx-auto max-w-[820px]">
-        <Link to="/membres" title="Revenir à l'annuaire des membres" className="text-xs font-medium text-primary-text hover:underline">
+        <Link
+          to="/membres"
+          title="Revenir à l'annuaire des membres"
+          className="text-xs font-medium text-primary-text hover:underline"
+        >
           ← Annuaire
         </Link>
 
@@ -104,7 +115,9 @@ function MemberPage() {
           </span>
           <div>
             <h1 className="text-2xl font-bold text-foreground">{profile.display_name}</h1>
-            {profile.job_title ? <p className="text-sm text-muted-foreground">{profile.job_title}</p> : null}
+            {profile.job_title ? (
+              <p className="text-sm text-muted-foreground">{profile.job_title}</p>
+            ) : null}
           </div>
           {profile.accepts_messages && user?.id !== profile.user_id ? (
             <Button

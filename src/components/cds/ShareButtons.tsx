@@ -34,7 +34,9 @@ export function ShareButtons({ path, title }: { path: string; title: string }) {
       await navigator.clipboard.writeText(url);
       toast.success("Lien copié.", { description: "Vous pouvez le coller où vous voulez." });
     } catch {
-      toast.error("Copie impossible.", { description: "Copiez l'adresse depuis la barre du navigateur." });
+      toast.error("Copie impossible.", {
+        description: "Copiez l'adresse depuis la barre du navigateur.",
+      });
     }
   }
 

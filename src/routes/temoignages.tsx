@@ -103,8 +103,8 @@ function TestimonialsPage() {
           Ils sont partis du même point que vous
         </h1>
         <p className="mt-2 max-w-[70ch] text-sm text-muted-foreground">
-          Pas de promesse en l'air : chaque témoignage dit d'où la personne partait, ce qu'elle a mis
-          en place, et ce que ça a changé pour son activité.
+          Pas de promesse en l'air : chaque témoignage dit d'où la personne partait, ce qu'elle a
+          mis en place, et ce que ça a changé pour son activité.
         </p>
 
         {testimonials.length === 0 ? (
@@ -139,8 +139,8 @@ function TestimonialsPage() {
         <section className="mt-12 rounded-xl border border-border bg-card p-6">
           <h2 className="text-base font-semibold text-foreground">Partager votre expérience</h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            Quelques lignes honnêtes valent mieux qu'un long discours : ce que vous cherchiez, ce que
-            vous avez fait, ce que vous avez obtenu.
+            Quelques lignes honnêtes valent mieux qu'un long discours : ce que vous cherchiez, ce
+            que vous avez fait, ce que vous avez obtenu.
           </p>
           {user ? (
             <form onSubmit={submit} className="mt-4 space-y-4">
@@ -160,11 +160,21 @@ function TestimonialsPage() {
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="t-content">Votre témoignage</Label>
-                <Textarea id="t-content" name="content" rows={4} required placeholder="Ce que ça a changé…" />
+                <Textarea
+                  id="t-content"
+                  name="content"
+                  rows={4}
+                  required
+                  placeholder="Ce que ça a changé…"
+                />
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="t-outcome">Le résultat en une phrase</Label>
-                <Input id="t-outcome" name="outcome" placeholder="Par exemple : trois demandes de devis par semaine" />
+                <Input
+                  id="t-outcome"
+                  name="outcome"
+                  placeholder="Par exemple : trois demandes de devis par semaine"
+                />
               </div>
               <Button type="submit" disabled={busy} title="Envoyer votre témoignage">
                 {busy ? "Envoi…" : "Envoyer mon témoignage"}
@@ -175,7 +185,11 @@ function TestimonialsPage() {
             </form>
           ) : (
             <p className="mt-3 text-sm text-muted-foreground">
-              <Link to="/login" title="Se connecter pour témoigner" className="text-primary-text hover:underline">
+              <Link
+                to="/login"
+                title="Se connecter pour témoigner"
+                className="text-primary-text hover:underline"
+              >
                 Connectez-vous
               </Link>{" "}
               pour partager votre expérience.

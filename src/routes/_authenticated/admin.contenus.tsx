@@ -154,7 +154,9 @@ function AdminContenusPage() {
       .from("blog_posts")
       .update({
         published: publishing,
-        published_at: publishing ? (post.published_at ?? new Date().toISOString()) : post.published_at,
+        published_at: publishing
+          ? (post.published_at ?? new Date().toISOString())
+          : post.published_at,
       })
       .eq("id", post.id);
     notifyResult(error, publishing ? "Article publié." : "Article repassé en brouillon.");
@@ -183,7 +185,12 @@ function AdminContenusPage() {
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-1.5">
                 <Label htmlFor="faq-question">Question</Label>
-                <Input id="faq-question" name="question" required placeholder="Combien de temps pour démarrer ?" />
+                <Input
+                  id="faq-question"
+                  name="question"
+                  required
+                  placeholder="Combien de temps pour démarrer ?"
+                />
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="faq-category">Catégorie</Label>
@@ -194,7 +201,9 @@ function AdminContenusPage() {
               <Label htmlFor="faq-answer">Réponse</Label>
               <Textarea id="faq-answer" name="answer" rows={3} required />
             </div>
-            <Button type="submit" title="Ajouter cette question à la FAQ">Ajouter</Button>
+            <Button type="submit" title="Ajouter cette question à la FAQ">
+              Ajouter
+            </Button>
           </form>
 
           {faqs.map((item) => (
@@ -237,7 +246,9 @@ function AdminContenusPage() {
                   <Input
                     id={`plan-name-${plan.id}`}
                     defaultValue={plan.name}
-                    onBlur={(e) => e.target.value !== plan.name && savePlan(plan, { name: e.target.value })}
+                    onBlur={(e) =>
+                      e.target.value !== plan.name && savePlan(plan, { name: e.target.value })
+                    }
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -258,7 +269,9 @@ function AdminContenusPage() {
                 <Input
                   id={`plan-tagline-${plan.id}`}
                   defaultValue={plan.tagline}
-                  onBlur={(e) => e.target.value !== plan.tagline && savePlan(plan, { tagline: e.target.value })}
+                  onBlur={(e) =>
+                    e.target.value !== plan.tagline && savePlan(plan, { tagline: e.target.value })
+                  }
                 />
               </div>
               <div className="flex flex-wrap items-center gap-5 text-xs text-muted-foreground">
@@ -284,7 +297,10 @@ function AdminContenusPage() {
         </TabsContent>
 
         <TabsContent value="articles" className="space-y-4 pt-6">
-          <form onSubmit={addPost} className="space-y-3 rounded-xl border border-border bg-card p-5">
+          <form
+            onSubmit={addPost}
+            className="space-y-3 rounded-xl border border-border bg-card p-5"
+          >
             <h2 className="text-base font-semibold text-foreground">Écrire un article</h2>
             <div className="space-y-1.5">
               <Label htmlFor="post-title">Titre</Label>
@@ -308,7 +324,9 @@ function AdminContenusPage() {
                 Séparées par des virgules : elles servent au filtre et aux articles liés.
               </p>
             </div>
-            <Button type="submit" title="Créer cet article en brouillon">Créer le brouillon</Button>
+            <Button type="submit" title="Créer cet article en brouillon">
+              Créer le brouillon
+            </Button>
           </form>
 
           {posts.map((post) => (
@@ -327,7 +345,12 @@ function AdminContenusPage() {
                     />
                     {post.published ? "Publié" : "Brouillon"}
                   </span>
-                  <Button size="sm" variant="outline" onClick={() => deletePost(post)} title="Supprimer cet article">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => deletePost(post)}
+                    title="Supprimer cet article"
+                  >
                     Supprimer
                   </Button>
                 </div>

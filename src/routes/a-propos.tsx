@@ -78,7 +78,9 @@ function AProposPage() {
 
         <div className="mt-6 flex flex-wrap gap-3">
           <Button asChild>
-            <Link to="/demarrer" title="Découvrir le parcours en trois étapes">Voir comment démarrer</Link>
+            <Link to="/demarrer" title="Découvrir le parcours en trois étapes">
+              Voir comment démarrer
+            </Link>
           </Button>
           <Button asChild variant="outline">
             <Link to="/contact" title="Poser une question via le formulaire de contact">

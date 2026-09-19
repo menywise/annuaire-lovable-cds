@@ -128,7 +128,10 @@ function MarketplacePage() {
         ) : (
           <ul className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {visible.map((item) => (
-              <li key={item.id} className="flex flex-col rounded-xl border border-border bg-card p-5 shadow-sm">
+              <li
+                key={item.id}
+                className="flex flex-col rounded-xl border border-border bg-card p-5 shadow-sm"
+              >
                 {(item.photos ?? [])[0] ? (
                   <img
                     src={(item.photos ?? [])[0]}

@@ -38,7 +38,14 @@ type Listing = {
 };
 
 type Category = { id: string; name: string; slug: string; position: number };
-type Review = { id: string; listing_id: string; author_name: string; rating: number; content: string; approved: boolean };
+type Review = {
+  id: string;
+  listing_id: string;
+  author_name: string;
+  rating: number;
+  content: string;
+  approved: boolean;
+};
 
 const TABS = [
   { key: "fiches", label: "Fiches" },
@@ -57,7 +64,9 @@ function AdminDirectoryPage() {
     const [l, c, r] = await Promise.all([
       supabase
         .from("directory_listings")
-        .select("id, name, slug, city, status, plan, featured, verified, claimed_by, claim_requested_by, created_at")
+        .select(
+          "id, name, slug, city, status, plan, featured, verified, claimed_by, claim_requested_by, created_at",
+        )
         .order("created_at", { ascending: false }),
       supabase.from("directory_categories").select("id, name, slug, position").order("position"),
       supabase
@@ -122,7 +131,9 @@ function AdminDirectoryPage() {
             onClick={() => setTab(item.key)}
             title={`Afficher : ${item.label}`}
             className={`min-h-11 rounded-md border px-3 text-sm ${
-              tab === item.key ? "border-primary bg-accent text-foreground" : "border-border text-muted-foreground"
+              tab === item.key
+                ? "border-primary bg-accent text-foreground"
+                : "border-border text-muted-foreground"
             }`}
           >
             {item.label}
@@ -151,36 +162,58 @@ function AdminDirectoryPage() {
                 <p className="text-sm font-semibold text-foreground">{item.name}</p>
                 <p className="text-xs text-muted-foreground">{item.city}</p>
                 <span className="ml-auto rounded-full bg-muted px-2.5 py-0.5 text-xs text-muted-foreground">
-                  {item.status === "published" ? "En ligne" : item.status === "draft" ? "Brouillon" : "Archivée"}
+                  {item.status === "published"
+                    ? "En ligne"
+                    : item.status === "draft"
+                      ? "Brouillon"
+                      : "Archivée"}
                 </span>
               </div>
               <div className="mt-4 flex flex-wrap gap-2">
                 <Button
                   variant={item.status === "published" ? "outline" : "default"}
-                  title={item.status === "published" ? "Retirer cette fiche du site" : "Publier cette fiche"}
+                  title={
+                    item.status === "published"
+                      ? "Retirer cette fiche du site"
+                      : "Publier cette fiche"
+                  }
                   onClick={() =>
-                    updateListing(item.id, { status: item.status === "published" ? "draft" : "published" })
+                    updateListing(item.id, {
+                      status: item.status === "published" ? "draft" : "published",
+                    })
                   }
                 >
                   {item.status === "published" ? "Dépublier" : "Publier"}
                 </Button>
                 <Button
                   variant="outline"
-                  title={item.plan === "premium" ? "Repasser en fiche gratuite" : "Passer cette fiche en premium"}
-                  onClick={() => updateListing(item.id, { plan: item.plan === "premium" ? "free" : "premium" })}
+                  title={
+                    item.plan === "premium"
+                      ? "Repasser en fiche gratuite"
+                      : "Passer cette fiche en premium"
+                  }
+                  onClick={() =>
+                    updateListing(item.id, { plan: item.plan === "premium" ? "free" : "premium" })
+                  }
                 >
                   {item.plan === "premium" ? "Retirer le premium" : "Passer en premium"}
                 </Button>
                 <Button
                   variant="outline"
-                  title={item.verified ? "Retirer le badge vérifié" : "Marquer cette fiche comme vérifiée"}
+                  title={
+                    item.verified
+                      ? "Retirer le badge vérifié"
+                      : "Marquer cette fiche comme vérifiée"
+                  }
                   onClick={() => updateListing(item.id, { verified: !item.verified })}
                 >
                   {item.verified ? "Retirer « vérifié »" : "Marquer vérifié"}
                 </Button>
                 <Button
                   variant="outline"
-                  title={item.featured ? "Retirer de la mise en avant" : "Mettre en avant cette fiche"}
+                  title={
+                    item.featured ? "Retirer de la mise en avant" : "Mettre en avant cette fiche"
+                  }
                   onClick={() => updateListing(item.id, { featured: !item.featured })}
                 >
                   {item.featured ? "Ne plus mettre en avant" : "Mettre en avant"}
@@ -191,7 +224,10 @@ function AdminDirectoryPage() {
         </ul>
       ) : tab === "categories" ? (
         <div className="mt-6 space-y-4">
-          <form onSubmit={addCategory} className="flex flex-wrap items-end gap-3 rounded-xl border border-border bg-card p-5">
+          <form
+            onSubmit={addCategory}
+            className="flex flex-wrap items-end gap-3 rounded-xl border border-border bg-card p-5"
+          >
             <div className="flex-1">
               <Label htmlFor="cat-name">Nom de la catégorie</Label>
               <Input id="cat-name" name="name" required placeholder="Plombiers" className="mt-1" />
@@ -214,7 +250,9 @@ function AdminDirectoryPage() {
         </div>
       ) : tab === "avis" ? (
         <ul className="mt-6 space-y-3">
-          {reviews.length === 0 ? <p className="text-sm text-muted-foreground">Aucun avis reçu.</p> : null}
+          {reviews.length === 0 ? (
+            <p className="text-sm text-muted-foreground">Aucun avis reçu.</p>
+          ) : null}
           {reviews.map((item) => (
             <li key={item.id} className="rounded-xl border border-border bg-card p-5">
               <p className="text-sm font-semibold text-foreground">
@@ -226,7 +264,10 @@ function AdminDirectoryPage() {
                   variant={item.approved ? "outline" : "default"}
                   title={item.approved ? "Retirer cet avis du site" : "Publier cet avis"}
                   onClick={async () => {
-                    await supabase.from("directory_reviews").update({ approved: !item.approved }).eq("id", item.id);
+                    await supabase
+                      .from("directory_reviews")
+                      .update({ approved: !item.approved })
+                      .eq("id", item.id);
                     void load();
                   }}
                 >
@@ -249,12 +290,16 @@ function AdminDirectoryPage() {
       ) : (
         <ul className="mt-6 space-y-3">
           {pendingClaims.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Aucune demande de revendication en attente.</p>
+            <p className="text-sm text-muted-foreground">
+              Aucune demande de revendication en attente.
+            </p>
           ) : null}
           {pendingClaims.map((item) => (
             <li key={item.id} className="rounded-xl border border-border bg-card p-5">
               <p className="text-sm font-semibold text-foreground">{item.name}</p>
-              <p className="mt-1 text-xs text-muted-foreground">Un membre demande à gérer cette fiche.</p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Un membre demande à gérer cette fiche.
+              </p>
               <div className="mt-3 flex gap-2">
                 <Button title="Confier la fiche à ce membre" onClick={() => approveClaim(item)}>
                   Accepter
@@ -262,7 +307,9 @@ function AdminDirectoryPage() {
                 <Button
                   variant="outline"
                   title="Refuser cette demande"
-                  onClick={() => updateListing(item.id, { claim_requested_by: null } as Partial<Listing>)}
+                  onClick={() =>
+                    updateListing(item.id, { claim_requested_by: null } as Partial<Listing>)
+                  }
                 >
                   Refuser
                 </Button>

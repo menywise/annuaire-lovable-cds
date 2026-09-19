@@ -64,7 +64,8 @@ function CoursesPage() {
     });
     const sorted = [...rows];
     if (sort === "populaire") sorted.sort((a, b) => b.learners - a.learners);
-    if (sort === "duree") sorted.sort((a, b) => (a.duration_minutes ?? 0) - (b.duration_minutes ?? 0));
+    if (sort === "duree")
+      sorted.sort((a, b) => (a.duration_minutes ?? 0) - (b.duration_minutes ?? 0));
     if (sort === "prix") sorted.sort((a, b) => a.price_cents - b.price_cents);
     return sorted;
   }, [courses, query, level, price, sort]);
@@ -170,7 +171,9 @@ function CoursesPage() {
                   </Link>
                 </h2>
                 {course.excerpt ? (
-                  <p className="mt-2 line-clamp-3 text-sm text-muted-foreground">{course.excerpt}</p>
+                  <p className="mt-2 line-clamp-3 text-sm text-muted-foreground">
+                    {course.excerpt}
+                  </p>
                 ) : null}
                 <ul className="mt-3 flex flex-wrap gap-3 text-xs text-muted-foreground">
                   <li className="inline-flex items-center gap-1">

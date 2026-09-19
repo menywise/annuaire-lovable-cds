@@ -42,7 +42,8 @@ function MembersPage() {
 
         {members.length === 0 ? (
           <p className="mt-8 rounded-lg border border-dashed border-border p-10 text-center text-sm text-muted-foreground">
-            Aucun membre ne figure encore dans l'annuaire. Activez votre visibilité depuis votre profil.
+            Aucun membre ne figure encore dans l'annuaire. Activez votre visibilité depuis votre
+            profil.
           </p>
         ) : (
           <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -71,7 +72,9 @@ function MembersPage() {
                 {member.bio ? (
                   <p className="mt-3 line-clamp-3 text-sm text-muted-foreground">{member.bio}</p>
                 ) : null}
-                <p className="mt-3 text-xs text-muted-foreground">{member.score} points de contribution</p>
+                <p className="mt-3 text-xs text-muted-foreground">
+                  {member.score} points de contribution
+                </p>
               </li>
             ))}
           </ul>

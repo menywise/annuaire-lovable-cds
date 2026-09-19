@@ -124,7 +124,11 @@ function CoursePage() {
     <PageShell>
       <div className="mx-auto max-w-[900px]">
         <nav aria-label="Fil d'Ariane" className="text-xs text-muted-foreground">
-          <Link to="/formations" title="Revenir au catalogue des formations" className="hover:underline">
+          <Link
+            to="/formations"
+            title="Revenir au catalogue des formations"
+            className="hover:underline"
+          >
             Formations
           </Link>
           {" / "}
@@ -155,7 +159,11 @@ function CoursePage() {
         <div className="mt-6 rounded-xl border border-border bg-card p-5">
           {!user ? (
             <p className="text-sm text-muted-foreground">
-              <Link to="/login" title="Se connecter pour suivre cette formation" className="text-primary-text hover:underline">
+              <Link
+                to="/login"
+                title="Se connecter pour suivre cette formation"
+                className="text-primary-text hover:underline"
+              >
                 Connectez-vous
               </Link>{" "}
               pour suivre cette formation et garder votre progression.
@@ -184,7 +192,12 @@ function CoursePage() {
                   ? "Le paiement en ligne arrive bientôt : inscrivez-vous pour réserver votre place."
                   : "Cette formation est offerte : inscrivez-vous et commencez tout de suite."}
               </p>
-              <Button className="mt-4" disabled={busy} onClick={enroll} title="S'inscrire à cette formation">
+              <Button
+                className="mt-4"
+                disabled={busy}
+                onClick={enroll}
+                title="S'inscrire à cette formation"
+              >
                 {busy ? "Inscription…" : "M'inscrire"}
               </Button>
             </>
@@ -211,9 +224,15 @@ function CoursePage() {
                         return (
                           <li key={lesson.id} className="flex items-center gap-2">
                             {done ? (
-                              <CheckCircle2 className="size-4 text-success-text" aria-hidden="true" />
+                              <CheckCircle2
+                                className="size-4 text-success-text"
+                                aria-hidden="true"
+                              />
                             ) : (
-                              <PlayCircle className="size-4 text-muted-foreground" aria-hidden="true" />
+                              <PlayCircle
+                                className="size-4 text-muted-foreground"
+                                aria-hidden="true"
+                              />
                             )}
                             {open ? (
                               <Link

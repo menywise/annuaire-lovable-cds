@@ -109,7 +109,10 @@ function ActionsPage() {
       title="Vos actions"
       intro="Une promesse tenue vaut dix relances : notez ce que vous avez dit que vous feriez."
     >
-      <form onSubmit={addAction} className="grid gap-3 rounded-xl border border-border bg-card p-5 sm:grid-cols-3">
+      <form
+        onSubmit={addAction}
+        className="grid gap-3 rounded-xl border border-border bg-card p-5 sm:grid-cols-3"
+      >
         <div className="space-y-1.5">
           <Label htmlFor="a-title">Action</Label>
           <Input id="a-title" name="title" required placeholder="Rappeler Camille" />

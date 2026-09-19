@@ -11,7 +11,14 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import {
   Dialog,
   DialogContent,
@@ -64,8 +71,18 @@ function Block({ title, children }: { title: string; children: React.ReactNode }
 
 const rows = [
   { name: "Facture 2026-014", status: "Payée", amount: "1 240,00 €", variant: "default" as const },
-  { name: "Facture 2026-015", status: "En attente", amount: "860,00 €", variant: "secondary" as const },
-  { name: "Facture 2026-016", status: "Impayée", amount: "320,00 €", variant: "destructive" as const },
+  {
+    name: "Facture 2026-015",
+    status: "En attente",
+    amount: "860,00 €",
+    variant: "secondary" as const,
+  },
+  {
+    name: "Facture 2026-016",
+    status: "Impayée",
+    amount: "320,00 €",
+    variant: "destructive" as const,
+  },
 ];
 
 function ComposantsPage() {
@@ -104,10 +121,16 @@ function ComposantsPage() {
           </div>
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Checkbox id="c-check" /> <Label htmlFor="c-check" className="font-normal">Case à cocher</Label>
+              <Checkbox id="c-check" />{" "}
+              <Label htmlFor="c-check" className="font-normal">
+                Case à cocher
+              </Label>
             </span>
             <span className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Switch id="c-switch" /> <Label htmlFor="c-switch" className="font-normal">Interrupteur</Label>
+              <Switch id="c-switch" />{" "}
+              <Label htmlFor="c-switch" className="font-normal">
+                Interrupteur
+              </Label>
             </span>
           </div>
         </div>
@@ -162,7 +185,9 @@ function ComposantsPage() {
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href="/" title="Revenir à la page d'accueil">Accueil</BreadcrumbLink>
+              <BreadcrumbLink href="/" title="Revenir à la page d'accueil">
+                Accueil
+              </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
@@ -221,13 +246,19 @@ function ComposantsPage() {
               <PaginationPrevious href="#" title="Page précédente" />
             </PaginationItem>
             <PaginationItem>
-              <PaginationLink href="#" isActive title="Page 1">1</PaginationLink>
+              <PaginationLink href="#" isActive title="Page 1">
+                1
+              </PaginationLink>
             </PaginationItem>
             <PaginationItem>
-              <PaginationLink href="#" title="Page 2">2</PaginationLink>
+              <PaginationLink href="#" title="Page 2">
+                2
+              </PaginationLink>
             </PaginationItem>
             <PaginationItem>
-              <PaginationLink href="#" title="Page 3">3</PaginationLink>
+              <PaginationLink href="#" title="Page 3">
+                3
+              </PaginationLink>
             </PaginationItem>
             <PaginationItem>
               <PaginationNext href="#" title="Page suivante" />
@@ -242,7 +273,9 @@ function ComposantsPage() {
           <p className="mt-1 text-sm text-muted-foreground">
             Les éléments que vous créerez apparaîtront ici.
           </p>
-          <Button className="mt-4" size="sm">Créer un élément</Button>
+          <Button className="mt-4" size="sm">
+            Créer un élément
+          </Button>
         </div>
       </Block>
 

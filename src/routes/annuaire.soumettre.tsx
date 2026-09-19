@@ -56,7 +56,9 @@ function SubmitListingPage() {
     const { error } = await supabase.from("directory_listings").insert({
       name,
       slug,
-      excerpt: String(data.get("excerpt") ?? "").trim().slice(0, 155),
+      excerpt: String(data.get("excerpt") ?? "")
+        .trim()
+        .slice(0, 155),
       description: String(data.get("description") ?? "").trim(),
       category_id: categoryId || null,
       departement: departementCode || null,
@@ -91,24 +93,41 @@ function SubmitListingPage() {
 
         {!user ? (
           <p className="mt-6 rounded-lg border border-border bg-card p-6 text-sm text-muted-foreground">
-            <Link to="/login" title="Se connecter pour ajouter une fiche" className="text-primary-text hover:underline">
+            <Link
+              to="/login"
+              title="Se connecter pour ajouter une fiche"
+              className="text-primary-text hover:underline"
+            >
               Connectez-vous
             </Link>{" "}
             pour créer votre fiche et la modifier ensuite quand vous voulez.
           </p>
         ) : (
-          <form onSubmit={submit} className="mt-6 space-y-4 rounded-xl border border-border bg-card p-6">
+          <form
+            onSubmit={submit}
+            className="mt-6 space-y-4 rounded-xl border border-border bg-card p-6"
+          >
             <div className="space-y-1.5">
               <Label htmlFor="f-name">Nom de l'établissement</Label>
               <Input id="f-name" name="name" required placeholder="Atelier Dupont" />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="f-excerpt">Résumé (155 caractères)</Label>
-              <Input id="f-excerpt" name="excerpt" maxLength={155} placeholder="Ce que vous faites, en une phrase" />
+              <Input
+                id="f-excerpt"
+                name="excerpt"
+                maxLength={155}
+                placeholder="Ce que vous faites, en une phrase"
+              />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="f-description">Description</Label>
-              <RichTextEditor id="f-description" name="description" rows={6} placeholder="Vos prestations, votre méthode, vos zones d'intervention…" />
+              <RichTextEditor
+                id="f-description"
+                name="description"
+                rows={6}
+                placeholder="Vos prestations, votre méthode, vos zones d'intervention…"
+              />
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1.5">

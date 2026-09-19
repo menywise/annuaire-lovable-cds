@@ -16,9 +16,13 @@ export const Route = createFileRoute("/legal/confidentialite")({
     <LegalPage title="Politique de confidentialité" updatedAt="17 septembre 2026">
       <Section title="Responsable du traitement">
         <p>
-          PMM RDS (SAS), Rue du Champfour, 87000 Limoges, France. Responsable : Manuel ROHAUT.
-          Pour toute demande, utilisez le{" "}
-          <Link to="/contact" title="Nous écrire via le formulaire de contact protégé" className="font-medium text-primary-text hover:underline">
+          PMM RDS (SAS), Rue du Champfour, 87000 Limoges, France. Responsable : Manuel ROHAUT. Pour
+          toute demande, utilisez le{" "}
+          <Link
+            to="/contact"
+            title="Nous écrire via le formulaire de contact protégé"
+            className="font-medium text-primary-text hover:underline"
+          >
             formulaire de contact
           </Link>
           .
@@ -40,8 +44,8 @@ export const Route = createFileRoute("/legal/confidentialite")({
       </Section>
       <Section title="Durée de conservation">
         <p>
-          Les données de compte sont conservées pendant la durée d'utilisation du service, puis
-          3 ans après la clôture. Les journaux techniques sont conservés 12 mois. Les messages de
+          Les données de compte sont conservées pendant la durée d'utilisation du service, puis 3
+          ans après la clôture. Les journaux techniques sont conservés 12 mois. Les messages de
           contact sont conservés 3 ans à compter du dernier échange.
         </p>
       </Section>
@@ -56,7 +60,11 @@ export const Route = createFileRoute("/legal/confidentialite")({
         <p>
           Vous disposez des droits d'accès, de rectification, d'effacement, de limitation,
           d'opposition et de portabilité. Exercez-les via le{" "}
-          <Link to="/contact" title="Nous écrire via le formulaire de contact protégé" className="font-medium text-primary-text hover:underline">
+          <Link
+            to="/contact"
+            title="Nous écrire via le formulaire de contact protégé"
+            className="font-medium text-primary-text hover:underline"
+          >
             formulaire de contact
           </Link>
           . Vous pouvez également introduire une réclamation auprès de la CNIL.

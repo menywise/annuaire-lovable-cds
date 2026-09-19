@@ -143,8 +143,15 @@ function ProspectPage() {
 
   if (prospect === null) {
     return (
-      <CrmShell title="Fiche introuvable" intro="Ce contact n'existe pas ou ne vous appartient pas.">
-        <Link to="/crm/prospects" title="Revenir à la liste des contacts" className="text-sm text-primary-text hover:underline">
+      <CrmShell
+        title="Fiche introuvable"
+        intro="Ce contact n'existe pas ou ne vous appartient pas."
+      >
+        <Link
+          to="/crm/prospects"
+          title="Revenir à la liste des contacts"
+          className="text-sm text-primary-text hover:underline"
+        >
           Revenir à la liste
         </Link>
       </CrmShell>
@@ -158,7 +165,10 @@ function ProspectPage() {
     >
       <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
         <div>
-          <form onSubmit={saveProspect} className="grid gap-3 rounded-xl border border-border bg-card p-5 sm:grid-cols-2">
+          <form
+            onSubmit={saveProspect}
+            className="grid gap-3 rounded-xl border border-border bg-card p-5 sm:grid-cols-2"
+          >
             <div className="space-y-1.5">
               <Label htmlFor="e-name">Nom</Label>
               <Input id="e-name" name="name" defaultValue={prospect.name} required />
@@ -211,7 +221,10 @@ function ProspectPage() {
 
           <section className="mt-8">
             <h2 className="text-base font-semibold text-foreground">Historique des échanges</h2>
-            <form onSubmit={addInteraction} className="mt-3 space-y-3 rounded-xl border border-border bg-card p-5">
+            <form
+              onSubmit={addInteraction}
+              className="mt-3 space-y-3 rounded-xl border border-border bg-card p-5"
+            >
               <div className="space-y-1.5">
                 <Label htmlFor="i-type">Type</Label>
                 <select
@@ -246,7 +259,9 @@ function ProspectPage() {
                         item.type}{" "}
                       · {formatDate(item.created_at)}
                     </p>
-                    <p className="mt-1 whitespace-pre-line text-sm text-foreground">{item.content}</p>
+                    <p className="mt-1 whitespace-pre-line text-sm text-foreground">
+                      {item.content}
+                    </p>
                   </li>
                 ))}
               </ul>
@@ -263,7 +278,11 @@ function ProspectPage() {
               <ul className="mt-3 space-y-2 text-sm">
                 {actions.map((action) => (
                   <li key={action.id} className="flex items-center justify-between gap-2">
-                    <span className={action.done ? "text-muted-foreground line-through" : "text-foreground"}>
+                    <span
+                      className={
+                        action.done ? "text-muted-foreground line-through" : "text-foreground"
+                      }
+                    >
                       {action.title}
                     </span>
                     <span className="text-xs text-muted-foreground">

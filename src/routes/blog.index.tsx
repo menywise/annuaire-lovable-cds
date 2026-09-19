@@ -39,7 +39,10 @@ function BlogIndex() {
   const [tag, setTag] = useState<string | null>(null);
 
   const tags = useMemo(
-    () => [...new Set(posts.flatMap((post) => post.tags ?? []))].sort((a, b) => a.localeCompare(b, "fr")),
+    () =>
+      [...new Set(posts.flatMap((post) => post.tags ?? []))].sort((a, b) =>
+        a.localeCompare(b, "fr"),
+      ),
     [posts],
   );
 

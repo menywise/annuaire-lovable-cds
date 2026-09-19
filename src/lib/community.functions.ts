@@ -52,7 +52,9 @@ export const getForumOverview = createServerFn({ method: "GET" })
           .order("position", { ascending: true }),
         client
           .from("forum_topics")
-          .select("id, title, content, author_id, author_name, locked, views, category_id, created_at, last_activity_at")
+          .select(
+            "id, title, content, author_id, author_name, locked, views, category_id, created_at, last_activity_at",
+          )
           .order("last_activity_at", { ascending: false })
           .limit(200),
         client
@@ -91,7 +93,8 @@ export const getForumOverview = createServerFn({ method: "GET" })
 
     const counts = new Map<string, number>();
     for (const topic of enriched) {
-      if (topic.category_id) counts.set(topic.category_id, (counts.get(topic.category_id) ?? 0) + 1);
+      if (topic.category_id)
+        counts.set(topic.category_id, (counts.get(topic.category_id) ?? 0) + 1);
     }
 
     const recentReplies = (replies ?? []).slice(0, 6).map((reply) => ({
@@ -142,7 +145,9 @@ export const getTopicDetail = createServerFn({ method: "GET" })
     const client = publicClient();
     const { data: topic } = await client
       .from("forum_topics")
-      .select("id, title, content, author_id, author_name, locked, views, category_id, created_at, last_activity_at")
+      .select(
+        "id, title, content, author_id, author_name, locked, views, category_id, created_at, last_activity_at",
+      )
       .eq("id", input.id)
       .maybeSingle();
     if (!topic) return null;
@@ -182,7 +187,9 @@ export const listMembers = createServerFn({ method: "GET" }).handler(async () =>
   const [{ data: members }, { data: ranking }] = await Promise.all([
     client
       .from("member_profiles")
-      .select("user_id, display_name, avatar_url, bio, job_title, website, accepts_messages, created_at")
+      .select(
+        "user_id, display_name, avatar_url, bio, job_title, website, accepts_messages, created_at",
+      )
       .eq("listed", true)
       .order("created_at", { ascending: true }),
     client.rpc("forum_top_members", {}),
@@ -201,7 +208,9 @@ export const getMember = createServerFn({ method: "GET" })
     const client = publicClient();
     const { data: profile } = await client
       .from("member_profiles")
-      .select("user_id, display_name, avatar_url, bio, job_title, website, listed, accepts_messages, created_at")
+      .select(
+        "user_id, display_name, avatar_url, bio, job_title, website, listed, accepts_messages, created_at",
+      )
       .eq("user_id", input.userId)
       .maybeSingle();
     if (!profile) return null;
@@ -228,7 +237,9 @@ export const getMember = createServerFn({ method: "GET" })
 export const listTestimonials = createServerFn({ method: "GET" }).handler(async () => {
   const { data } = await publicClient()
     .from("testimonials")
-    .select("id, author_name, role_title, company, avatar_url, content, outcome, featured, position, created_at")
+    .select(
+      "id, author_name, role_title, company, avatar_url, content, outcome, featured, position, created_at",
+    )
     .eq("approved", true)
     .order("featured", { ascending: false })
     .order("position", { ascending: true })

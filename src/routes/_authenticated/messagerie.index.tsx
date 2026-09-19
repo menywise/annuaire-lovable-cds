@@ -57,7 +57,8 @@ function InboxPage() {
       if (!active) return;
       setRows(
         list.map((conversation) => {
-          const otherId = conversation.user_a === user.id ? conversation.user_b : conversation.user_a;
+          const otherId =
+            conversation.user_a === user.id ? conversation.user_b : conversation.user_a;
           const last = (messages ?? []).find((m) => m.conversation_id === conversation.id);
           return {
             id: conversation.id,
@@ -90,7 +91,11 @@ function InboxPage() {
         ) : rows.length === 0 ? (
           <p className="mt-8 rounded-lg border border-dashed border-border p-10 text-center text-sm text-muted-foreground">
             Aucune conversation.{" "}
-            <Link to="/membres" title="Parcourir l'annuaire des membres" className="text-primary-text hover:underline">
+            <Link
+              to="/membres"
+              title="Parcourir l'annuaire des membres"
+              className="text-primary-text hover:underline"
+            >
               Parcourez l'annuaire
             </Link>{" "}
             pour en démarrer une.
@@ -109,8 +114,12 @@ function InboxPage() {
                     {row.otherName.slice(0, 1).toUpperCase()}
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className="block text-sm font-medium text-foreground">{row.otherName}</span>
-                    <span className="block truncate text-xs text-muted-foreground">{row.preview}</span>
+                    <span className="block text-sm font-medium text-foreground">
+                      {row.otherName}
+                    </span>
+                    <span className="block truncate text-xs text-muted-foreground">
+                      {row.preview}
+                    </span>
                   </span>
                   {row.unread ? (
                     <span className="rounded-full bg-primary px-2 py-0.5 text-[11px] font-medium text-primary-foreground">

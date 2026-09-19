@@ -128,11 +128,23 @@ function ProfilPage() {
             <form className="space-y-4" onSubmit={savePassword}>
               <div className="space-y-1.5">
                 <Label htmlFor="password">Nouveau mot de passe</Label>
-                <Input id="password" name="password" type="password" autoComplete="new-password" required />
+                <Input
+                  id="password"
+                  name="password"
+                  type="password"
+                  autoComplete="new-password"
+                  required
+                />
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="confirm">Confirmer le mot de passe</Label>
-                <Input id="confirm" name="confirm" type="password" autoComplete="new-password" required />
+                <Input
+                  id="confirm"
+                  name="confirm"
+                  type="password"
+                  autoComplete="new-password"
+                  required
+                />
               </div>
               <Button type="submit" disabled={savingPassword}>
                 {savingPassword ? "Modification…" : "Modifier le mot de passe"}

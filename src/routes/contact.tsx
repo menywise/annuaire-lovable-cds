@@ -92,7 +92,6 @@ function ContactPage() {
               </Alert>
             )}
 
-
             <div className="space-y-1.5">
               <Label htmlFor="name">Nom</Label>
               <Input id="name" name="name" autoComplete="name" required placeholder="Prénom Nom" />
@@ -114,7 +113,13 @@ function ContactPage() {
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="message">Message</Label>
-              <Textarea id="message" name="message" required rows={6} placeholder="Votre message…" />
+              <Textarea
+                id="message"
+                name="message"
+                required
+                rows={6}
+                placeholder="Votre message…"
+              />
             </div>
 
             {/* Champ piège : invisible pour les humains, rempli par les robots. */}
@@ -128,7 +133,11 @@ function ContactPage() {
             </Button>
             <p className="text-xs text-muted-foreground">
               Les informations transmises servent uniquement à traiter votre demande. Voir la{" "}
-              <Link to="/legal/confidentialite" title="Lire la politique de confidentialité" className="text-primary-text hover:underline">
+              <Link
+                to="/legal/confidentialite"
+                title="Lire la politique de confidentialité"
+                className="text-primary-text hover:underline"
+              >
                 politique de confidentialité
               </Link>
               .
