@@ -166,7 +166,7 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const { settings } = useBrandSettings();
   const { user } = useAuth();
-  const nav = user ? memberNav : publicNav;
+  const nav = user ? buildMemberNav() : buildPublicNav();
 
   useEffect(() => {
     if (!open) return;
