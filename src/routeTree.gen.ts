@@ -61,6 +61,7 @@ import { Route as MembresMemberIdRouteImport } from './routes/membres.$memberId'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedAdminAbonnesRouteImport } from './routes/_authenticated/admin.abonnes'
+import { Route as AuthenticatedAdminAnnuaireRouteImport } from './routes/_authenticated/admin.annuaire'
 import { Route as AuthenticatedAdminConformiteRouteImport } from './routes/_authenticated/admin.conformite'
 import { Route as AuthenticatedAdminContenusRouteImport } from './routes/_authenticated/admin.contenus'
 import { Route as AuthenticatedAdminForumRouteImport } from './routes/_authenticated/admin.forum'
@@ -343,6 +344,12 @@ const AuthenticatedAdminAbonnesRoute =
     path: '/admin/abonnes',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAdminAnnuaireRoute =
+  AuthenticatedAdminAnnuaireRouteImport.update({
+    id: '/admin/annuaire',
+    path: '/admin/annuaire',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminConformiteRoute =
   AuthenticatedAdminConformiteRouteImport.update({
     id: '/admin/conformite',
@@ -490,6 +497,7 @@ export interface FileRoutesByFullPath {
   '/membres/': typeof MembresIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/admin/abonnes': typeof AuthenticatedAdminAbonnesRoute
+  '/admin/annuaire': typeof AuthenticatedAdminAnnuaireRoute
   '/admin/conformite': typeof AuthenticatedAdminConformiteRoute
   '/admin/contenus': typeof AuthenticatedAdminContenusRoute
   '/admin/forum': typeof AuthenticatedAdminForumRoute
@@ -560,6 +568,7 @@ export interface FileRoutesByTo {
   '/membres': typeof MembresIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/admin/abonnes': typeof AuthenticatedAdminAbonnesRoute
+  '/admin/annuaire': typeof AuthenticatedAdminAnnuaireRoute
   '/admin/conformite': typeof AuthenticatedAdminConformiteRoute
   '/admin/contenus': typeof AuthenticatedAdminContenusRoute
   '/admin/forum': typeof AuthenticatedAdminForumRoute
@@ -632,6 +641,7 @@ export interface FileRoutesById {
   '/membres/': typeof MembresIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/_authenticated/admin/abonnes': typeof AuthenticatedAdminAbonnesRoute
+  '/_authenticated/admin/annuaire': typeof AuthenticatedAdminAnnuaireRoute
   '/_authenticated/admin/conformite': typeof AuthenticatedAdminConformiteRoute
   '/_authenticated/admin/contenus': typeof AuthenticatedAdminContenusRoute
   '/_authenticated/admin/forum': typeof AuthenticatedAdminForumRoute
@@ -704,6 +714,7 @@ export interface FileRouteTypes {
     | '/membres/'
     | '/.lovable/oauth/consent'
     | '/admin/abonnes'
+    | '/admin/annuaire'
     | '/admin/conformite'
     | '/admin/contenus'
     | '/admin/forum'
@@ -774,6 +785,7 @@ export interface FileRouteTypes {
     | '/membres'
     | '/.lovable/oauth/consent'
     | '/admin/abonnes'
+    | '/admin/annuaire'
     | '/admin/conformite'
     | '/admin/contenus'
     | '/admin/forum'
@@ -845,6 +857,7 @@ export interface FileRouteTypes {
     | '/membres/'
     | '/.lovable/oauth/consent'
     | '/_authenticated/admin/abonnes'
+    | '/_authenticated/admin/annuaire'
     | '/_authenticated/admin/conformite'
     | '/_authenticated/admin/contenus'
     | '/_authenticated/admin/forum'
@@ -1283,6 +1296,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminAbonnesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/annuaire': {
+      id: '/_authenticated/admin/annuaire'
+      path: '/admin/annuaire'
+      fullPath: '/admin/annuaire'
+      preLoaderRoute: typeof AuthenticatedAdminAnnuaireRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/conformite': {
       id: '/_authenticated/admin/conformite'
       path: '/admin/conformite'
@@ -1413,6 +1433,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedProfilRoute: typeof AuthenticatedProfilRoute
   AuthenticatedTableauDeBordRoute: typeof AuthenticatedTableauDeBordRoute
   AuthenticatedAdminAbonnesRoute: typeof AuthenticatedAdminAbonnesRoute
+  AuthenticatedAdminAnnuaireRoute: typeof AuthenticatedAdminAnnuaireRoute
   AuthenticatedAdminConformiteRoute: typeof AuthenticatedAdminConformiteRoute
   AuthenticatedAdminContenusRoute: typeof AuthenticatedAdminContenusRoute
   AuthenticatedAdminForumRoute: typeof AuthenticatedAdminForumRoute
@@ -1436,6 +1457,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedProfilRoute: AuthenticatedProfilRoute,
   AuthenticatedTableauDeBordRoute: AuthenticatedTableauDeBordRoute,
   AuthenticatedAdminAbonnesRoute: AuthenticatedAdminAbonnesRoute,
+  AuthenticatedAdminAnnuaireRoute: AuthenticatedAdminAnnuaireRoute,
   AuthenticatedAdminConformiteRoute: AuthenticatedAdminConformiteRoute,
   AuthenticatedAdminContenusRoute: AuthenticatedAdminContenusRoute,
   AuthenticatedAdminForumRoute: AuthenticatedAdminForumRoute,

@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate, type LinkProps } from "@tanstack/react-router";
 import { Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useBrandSettings } from "@/hooks/useSiteSettings";
@@ -6,72 +6,112 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { CookieBanner } from "@/components/cds/CookieBanner";
 import { NewsletterForm } from "@/components/cds/NewsletterForm";
+import { AdSlot } from "@/components/cds/AdSlot";
+import { isFeatureOn } from "@/config/features";
+
+type NavItem = { to: NonNullable<LinkProps["to"]>; label: string; title: string };
 
 /** Menu des visiteurs : découvrir, comparer, échanger. */
-const publicNav = [
-  { to: "/demarrer", label: "Démarrer", title: "Le parcours en trois étapes jusqu'à votre compte" },
-  { to: "/tarifs", label: "Tarifs", title: "Comparer les offres et choisir celle qui vous convient" },
-  { to: "/blog", label: "Blog", title: "Articles et méthodes pour faire avancer votre projet" },
-  { to: "/forum", label: "Forum", title: "Poser une question à la communauté" },
-  { to: "/temoignages", label: "Témoignages", title: "Lire ce que la communauté a obtenu concrètement" },
-  { to: "/faq", label: "FAQ", title: "Réponses aux questions les plus fréquentes" },
-  { to: "/contact", label: "Contact", title: "Écrire via le formulaire de contact protégé" },
-] as const;
+function buildPublicNav(): NavItem[] {
+  return [
+    { to: "/demarrer", label: "Démarrer", title: "Le parcours en trois étapes jusqu'à votre compte" },
+    { to: "/tarifs", label: "Tarifs", title: "Comparer les offres et choisir celle qui vous convient" },
+    ...(isFeatureOn("directory")
+      ? ([{ to: "/annuaire", label: "Annuaire", title: "Trouver un professionnel près de chez vous" }] as NavItem[])
+      : []),
+    ...(isFeatureOn("lms")
+      ? ([{ to: "/formations", label: "Formations", title: "Se former à son rythme, leçon par leçon" }] as NavItem[])
+      : []),
+    ...(isFeatureOn("marketplace")
+      ? ([{ to: "/marketplace", label: "Annonces", title: "Voir les annonces publiées par les membres" }] as NavItem[])
+      : []),
+    { to: "/blog", label: "Blog", title: "Articles et méthodes pour faire avancer votre projet" },
+    { to: "/forum", label: "Forum", title: "Poser une question à la communauté" },
+    { to: "/faq", label: "FAQ", title: "Réponses aux questions les plus fréquentes" },
+    { to: "/contact", label: "Contact", title: "Écrire via le formulaire de contact protégé" },
+  ];
+}
 
 /** Menu des membres connectés : agir dans son espace. */
-const memberNav = [
-  { to: "/tableau-de-bord", label: "Tableau de bord", title: "Vue d'ensemble de votre activité" },
-  { to: "/forum", label: "Forum", title: "Participer aux discussions de la communauté" },
-  { to: "/membres", label: "Annuaire", title: "Découvrir les autres membres" },
-  { to: "/messagerie", label: "Messagerie", title: "Consulter vos échanges privés" },
-  { to: "/blog", label: "Blog", title: "Lire les derniers articles" },
-] as const;
+function buildMemberNav(): NavItem[] {
+  return [
+    { to: "/tableau-de-bord", label: "Tableau de bord", title: "Vue d'ensemble de votre activité" },
+    { to: "/forum", label: "Forum", title: "Participer aux discussions de la communauté" },
+    { to: "/membres", label: "Annuaire des membres", title: "Découvrir les autres membres" },
+    { to: "/messagerie", label: "Messagerie", title: "Consulter vos échanges privés" },
+    ...(isFeatureOn("lms")
+      ? ([{ to: "/mes-formations", label: "Mes formations", title: "Reprendre vos formations en cours" }] as NavItem[])
+      : []),
+    ...(isFeatureOn("marketplace")
+      ? ([{ to: "/mes-annonces", label: "Mes annonces", title: "Gérer vos annonces publiées" }] as NavItem[])
+      : []),
+    ...(isFeatureOn("crm")
+      ? ([{ to: "/crm", label: "Mes contacts", title: "Suivre vos contacts et vos relances" }] as NavItem[])
+      : []),
+    { to: "/blog", label: "Blog", title: "Lire les derniers articles" },
+  ];
+}
 
-const footerColumns = [
-  {
-    title: "Découvrir",
-    links: [
-      { to: "/", label: "Accueil", title: "Revenir à la page d'accueil" },
-      { to: "/demarrer", label: "Démarrer", title: "Le parcours en trois étapes" },
-      { to: "/tarifs", label: "Tarifs", title: "Comparer les offres" },
-      { to: "/composants", label: "Composants", title: "Bibliothèque de composants d'interface" },
-      { to: "/guide", label: "Guide", title: "Comment réutiliser CDS sur un nouveau projet" },
-    ],
-  },
-  {
-    title: "Communauté",
-    links: [
-      { to: "/forum", label: "Forum", title: "Poser une question à la communauté" },
-      { to: "/membres", label: "Annuaire", title: "Découvrir les membres" },
-      { to: "/temoignages", label: "Témoignages", title: "Lire les retours d'expérience" },
-      { to: "/avis", label: "Avis", title: "Consulter les notes et avis" },
-      { to: "/blog", label: "Blog", title: "Articles et méthodes" },
-    ],
-  },
-  {
-    title: "Aide",
-    links: [
-      { to: "/faq", label: "FAQ", title: "Réponses aux questions fréquentes" },
-      { to: "/contact", label: "Contact", title: "Formulaire de contact protégé" },
-      { to: "/a-propos", label: "À propos", title: "Qui édite le site et selon quels engagements" },
-      { to: "/plan-du-site", label: "Plan du site", title: "Toutes les pages réunies sur une page" },
-      { to: "/login", label: "Connexion", title: "Accéder à son espace personnel" },
-    ],
-  },
-  {
-    title: "Informations légales",
-    links: [
-      { to: "/legal/mentions-legales", label: "Mentions légales", title: "Éditeur, hébergeur et propriété intellectuelle" },
-      { to: "/legal/confidentialite", label: "Confidentialité", title: "Données personnelles et droits RGPD" },
-      { to: "/legal/cgu", label: "CGU", title: "Conditions générales d'utilisation" },
-      { to: "/legal/cgv", label: "CGV", title: "Conditions générales de vente" },
-      { to: "/legal/cookies", label: "Cookies", title: "Politique de gestion des cookies" },
-    ],
-  },
-] as const;
+function buildFooterColumns(): Array<{ title: string; links: NavItem[] }> {
+  return [
+    {
+      title: "Découvrir",
+      links: [
+        { to: "/", label: "Accueil", title: "Revenir à la page d'accueil" },
+        { to: "/demarrer", label: "Démarrer", title: "Le parcours en trois étapes" },
+        { to: "/tarifs", label: "Tarifs", title: "Comparer les offres" },
+        ...(isFeatureOn("lms")
+          ? ([{ to: "/formations", label: "Formations", title: "Le catalogue des formations" }] as NavItem[])
+          : []),
+        { to: "/composants", label: "Composants", title: "Bibliothèque de composants d'interface" },
+        { to: "/guide", label: "Guide", title: "Comment réutiliser CDS sur un nouveau projet" },
+      ],
+    },
+    {
+      title: "Communauté",
+      links: [
+        { to: "/forum", label: "Forum", title: "Poser une question à la communauté" },
+        { to: "/membres", label: "Annuaire des membres", title: "Découvrir les membres" },
+        ...(isFeatureOn("directory")
+          ? ([{ to: "/annuaire", label: "Annuaire métier", title: "Trouver un professionnel" }] as NavItem[])
+          : []),
+        ...(isFeatureOn("marketplace")
+          ? ([{ to: "/marketplace", label: "Annonces", title: "Les annonces des membres" }] as NavItem[])
+          : []),
+        { to: "/temoignages", label: "Témoignages", title: "Lire les retours d'expérience" },
+        { to: "/avis", label: "Avis", title: "Consulter les notes et avis" },
+        { to: "/blog", label: "Blog", title: "Articles et méthodes" },
+      ],
+    },
+    {
+      title: "Aide",
+      links: [
+        { to: "/faq", label: "FAQ", title: "Réponses aux questions fréquentes" },
+        { to: "/contact", label: "Contact", title: "Formulaire de contact protégé" },
+        { to: "/a-propos", label: "À propos", title: "Qui édite le site et selon quels engagements" },
+        ...(isFeatureOn("adNetwork")
+          ? ([{ to: "/publicite", label: "Annoncer", title: "Réserver un emplacement publicitaire" }] as NavItem[])
+          : []),
+        { to: "/plan-du-site", label: "Plan du site", title: "Toutes les pages réunies sur une page" },
+        { to: "/login", label: "Connexion", title: "Accéder à son espace personnel" },
+      ],
+    },
+    {
+      title: "Informations légales",
+      links: [
+        { to: "/legal/mentions-legales", label: "Mentions légales", title: "Éditeur, hébergeur et propriété intellectuelle" },
+        { to: "/legal/confidentialite", label: "Confidentialité", title: "Données personnelles et droits RGPD" },
+        { to: "/legal/cgu", label: "CGU", title: "Conditions générales d'utilisation" },
+        { to: "/legal/cgv", label: "CGV", title: "Conditions générales de vente" },
+        { to: "/legal/cookies", label: "Cookies", title: "Politique de gestion des cookies" },
+      ],
+    },
+  ];
+}
 
 const linkClass =
   "inline-flex min-h-11 items-center rounded px-3 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 lg:min-h-9";
+
 
 function AccountLinks({ onNavigate }: { onNavigate?: () => void }) {
   const { user, loading } = useAuth();
@@ -124,7 +164,7 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const { settings } = useBrandSettings();
   const { user } = useAuth();
-  const nav = user ? memberNav : publicNav;
+  const nav = user ? buildMemberNav() : buildPublicNav();
 
   useEffect(() => {
     if (!open) return;
@@ -212,10 +252,12 @@ export function SiteHeader() {
 
 export function SiteFooter() {
   const { settings } = useBrandSettings();
+  const footerColumns = buildFooterColumns();
 
   return (
     <footer className="border-t border-border bg-card">
       <div className="mx-auto max-w-[1200px] px-6 py-10">
+        <AdSlot placement="pied-de-page" className="mb-8" />
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           {footerColumns.map((column) => (
             <nav key={column.title} aria-label={column.title}>

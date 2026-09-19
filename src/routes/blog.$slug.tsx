@@ -3,6 +3,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { PageShell } from "@/components/cds/SiteHeader";
 import { ShareButtons } from "@/components/cds/ShareButtons";
+import { AdSlot } from "@/components/cds/AdSlot";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -135,6 +136,8 @@ function BlogPostPage() {
         ) : null}
 
         <RichText value={post.content} className="mt-6" />
+
+        <AdSlot placement="blog-article" className="mt-8" />
 
         <div className="mt-8 border-t border-border pt-6">
           <ShareButtons path={`/blog/${post.slug}`} title={post.title} />
