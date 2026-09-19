@@ -40,13 +40,13 @@ function buildMemberNav(): NavItem[] {
     { to: "/membres", label: "Annuaire des membres", title: "Découvrir les autres membres" },
     { to: "/messagerie", label: "Messagerie", title: "Consulter vos échanges privés" },
     ...(isFeatureOn("lms")
-      ? [{ to: "/mes-formations", label: "Mes formations", title: "Reprendre vos formations en cours" }]
+      ? ([{ to: "/mes-formations", label: "Mes formations", title: "Reprendre vos formations en cours" }] as NavItem[])
       : []),
     ...(isFeatureOn("marketplace")
-      ? [{ to: "/mes-annonces", label: "Mes annonces", title: "Gérer vos annonces publiées" }]
+      ? ([{ to: "/mes-annonces", label: "Mes annonces", title: "Gérer vos annonces publiées" }] as NavItem[])
       : []),
     ...(isFeatureOn("crm")
-      ? [{ to: "/crm", label: "Mes contacts", title: "Suivre vos contacts et vos relances" }]
+      ? ([{ to: "/crm", label: "Mes contacts", title: "Suivre vos contacts et vos relances" }] as NavItem[])
       : []),
     { to: "/blog", label: "Blog", title: "Lire les derniers articles" },
   ];
