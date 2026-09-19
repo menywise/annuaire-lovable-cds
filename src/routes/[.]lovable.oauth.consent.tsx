@@ -5,10 +5,96 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { supabase } from "@/integrations/supabase/client";
 
+/**
+ * Liste blanche finale stricte des hostnames autorisés pour les redirections OAuth absolues.
+ */
+const ALLOWED_REDIRECT_HOSTNAMES = new Set([
+  "cds-mac97000.lovable.app",
+  "lovable.dev",
+  "lovable.app",
+]);
+
+/**
+ * Valide et assainit une URL de redirection pour prévenir les attaques Open Redirect.
+ *
+ * Règles strictes :
+ * 1. URL relative : doit commencer par "/" mais PAS par "//" ni "/\"
+ * 2. URL absolue :
+ *    - Localhost (127.0.0.1 / localhost) est autorisé UNIQUEMENT en mode développement (import.meta.env.DEV === true).
+ *    - Pour tous les autres domaines distants, le protocole HTTPS est EXIGÉ STRICTEMENT (http:// rejeté).
+ *    - Le hostname doit appartenir à ALLOWED_REDIRECT_HOSTNAMES (ou sous-domaine direct).
+ * 3. En cas d'URL non autorisée ou malformée : repli sur "/tableau-de-bord" + log de sécurité.
+ */
+export function getSafeRedirectUrl(
+  target: string | null | undefined,
+  fallback = "/tableau-de-bord",
+): string {
+  if (!target || typeof target !== "string") return fallback;
+
+  const trimmed = target.trim();
+
+  // 1. URL relative (ex: "/tableau-de-bord")
+  if (trimmed.startsWith("/") && !trimmed.startsWith("//") && !trimmed.startsWith("/\\")) {
+    return trimmed;
+  }
+
+  // 2. URL absolue avec parsing new URL()
+  try {
+    const parsed = new URL(trimmed);
+    const hostname = parsed.hostname.toLowerCase();
+
+    // Localhost autorisé uniquement en développement
+    const isLocalhost = hostname === "localhost" || hostname === "127.0.0.1";
+    if (isLocalhost) {
+      if (import.meta.env.DEV) {
+        return parsed.toString();
+      }
+      console.warn("[OAuth Security] Tentative de redirection localhost bloquée en production.");
+      return fallback;
+    }
+
+    // Domaines distants : HTTPS obligatoire
+    if (parsed.protocol !== "https:") {
+      console.warn(
+        "[OAuth Security] Protocole non sécurisé rejeté (HTTPS requis) :",
+        parsed.protocol,
+      );
+      return fallback;
+    }
+
+    // Vérification de la liste blanche
+    const isAllowed = Array.from(ALLOWED_REDIRECT_HOSTNAMES).some(
+      (domain) => hostname === domain || hostname.endsWith("." + domain),
+    );
+
+    if (isAllowed) {
+      return parsed.toString();
+    }
+  } catch {
+    console.warn("[OAuth Security] URL de redirection malformée :", target);
+    return fallback;
+  }
+
+  console.warn("[OAuth Security] Redirection non autorisée interceptée vers :", target);
+  return fallback;
+}
+
+type AuthorizationData = {
+  client?: { name?: string };
+  redirect_url?: string;
+  redirect_to?: string;
+};
+
 type OauthApi = {
-  getAuthorizationDetails: (id: string) => Promise<{ data: any; error: any }>;
-  approveAuthorization: (id: string) => Promise<{ data: any; error: any }>;
-  denyAuthorization: (id: string) => Promise<{ data: any; error: any }>;
+  getAuthorizationDetails: (
+    id: string,
+  ) => Promise<{ data: AuthorizationData | null; error: { message: string } | null }>;
+  approveAuthorization: (
+    id: string,
+  ) => Promise<{ data: AuthorizationData | null; error: { message: string } | null }>;
+  denyAuthorization: (
+    id: string,
+  ) => Promise<{ data: AuthorizationData | null; error: { message: string } | null }>;
 };
 
 function oauthApi(): OauthApi {
@@ -18,7 +104,7 @@ function oauthApi(): OauthApi {
 export const Route = createFileRoute("/.lovable/oauth/consent")({
   ssr: false,
   validateSearch: (s: Record<string, unknown>) => ({
-    authorization_id: typeof s['authorization_id'] === "string" ? s['authorization_id'] : "",
+    authorization_id: typeof s["authorization_id"] === "string" ? s["authorization_id"] : "",
   }),
   beforeLoad: async ({ search, location }) => {
     if (!search.authorization_id) throw new Error("Demande d'autorisation incomplète.");
@@ -33,7 +119,13 @@ export const Route = createFileRoute("/.lovable/oauth/consent")({
     const { data, error } = await oauthApi().getAuthorizationDetails(authorizationId);
     if (error) throw error;
     const immediate = data?.redirect_url ?? data?.redirect_to;
-    if (immediate && !data?.client) throw redirect({ href: immediate });
+    if (immediate && !data?.client) {
+      const safeTarget = getSafeRedirectUrl(immediate);
+      if (typeof window !== "undefined") {
+        window.location.href = safeTarget;
+      }
+      return data;
+    }
     return data;
   },
   component: ConsentPage,
@@ -45,7 +137,7 @@ export const Route = createFileRoute("/.lovable/oauth/consent")({
 });
 
 function ConsentPage() {
-  const details = Route.useLoaderData() as any;
+  const details = Route.useLoaderData() as AuthorizationData;
   const { authorization_id } = Route.useSearch();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -69,7 +161,9 @@ function ConsentPage() {
       setError("Aucune adresse de retour fournie par le serveur d'autorisation.");
       return;
     }
-    window.location.href = target;
+
+    const safeTarget = getSafeRedirectUrl(target);
+    window.location.href = safeTarget;
   }
 
   return (
@@ -85,10 +179,16 @@ function ConsentPage() {
           </Alert>
         )}
         <p className="text-sm text-light">
-          En autorisant, {clientName} pourra lire et écrire les données auxquelles votre compte a déjà accès.
+          En autorisant, {clientName} pourra lire et écrire les données auxquelles votre compte a
+          déjà accès.
         </p>
         <div className="flex flex-col gap-2 sm:flex-row">
-          <Button className="flex-1" disabled={busy} onClick={() => decide(true)} title="Autoriser l'accès">
+          <Button
+            className="flex-1"
+            disabled={busy}
+            onClick={() => decide(true)}
+            title="Autoriser l'accès"
+          >
             {busy ? "Un instant…" : "Autoriser"}
           </Button>
           <Button

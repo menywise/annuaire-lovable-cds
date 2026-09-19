@@ -16,40 +16,43 @@ function safeHref(url: string) {
 }
 
 function renderInline(text: string, keyPrefix: string): ReactNode[] {
-  return text.split(INLINE).filter(Boolean).map((chunk, index) => {
-    const key = `${keyPrefix}-${index}`;
-    if (chunk.startsWith("**") && chunk.endsWith("**")) {
-      return <strong key={key}>{chunk.slice(2, -2)}</strong>;
-    }
-    if (chunk.startsWith("*") && chunk.endsWith("*")) {
-      return <em key={key}>{chunk.slice(1, -1)}</em>;
-    }
-    if (chunk.startsWith("`") && chunk.endsWith("`")) {
-      return (
-        <code key={key} className="rounded bg-muted px-1.5 py-0.5 text-[0.9em] text-foreground">
-          {chunk.slice(1, -1)}
-        </code>
-      );
-    }
-    const link = /^\[([^\]]+)\]\(([^)\s]+)\)$/.exec(chunk);
-    if (link) {
-      const href = safeHref(link[2] ?? "");
-      if (!href) return <Fragment key={key}>{link[1]}</Fragment>;
-      const external = href.startsWith("http");
-      return (
-        <a
-          key={key}
-          href={href}
-          title={`Ouvrir : ${link[1]}`}
-          {...(external ? { target: "_blank", rel: "noopener noreferrer nofollow" } : {})}
-          className="text-primary-text underline underline-offset-2"
-        >
-          {link[1]}
-        </a>
-      );
-    }
-    return <Fragment key={key}>{chunk}</Fragment>;
-  });
+  return text
+    .split(INLINE)
+    .filter(Boolean)
+    .map((chunk, index) => {
+      const key = `${keyPrefix}-${index}`;
+      if (chunk.startsWith("**") && chunk.endsWith("**")) {
+        return <strong key={key}>{chunk.slice(2, -2)}</strong>;
+      }
+      if (chunk.startsWith("*") && chunk.endsWith("*")) {
+        return <em key={key}>{chunk.slice(1, -1)}</em>;
+      }
+      if (chunk.startsWith("`") && chunk.endsWith("`")) {
+        return (
+          <code key={key} className="rounded bg-muted px-1.5 py-0.5 text-[0.9em] text-foreground">
+            {chunk.slice(1, -1)}
+          </code>
+        );
+      }
+      const link = /^\[([^\]]+)\]\(([^)\s]+)\)$/.exec(chunk);
+      if (link) {
+        const href = safeHref(link[2] ?? "");
+        if (!href) return <Fragment key={key}>{link[1]}</Fragment>;
+        const external = href.startsWith("http");
+        return (
+          <a
+            key={key}
+            href={href}
+            title={`Ouvrir : ${link[1]}`}
+            {...(external ? { target: "_blank", rel: "noopener noreferrer nofollow" } : {})}
+            className="text-primary-text underline underline-offset-2"
+          >
+            {link[1]}
+          </a>
+        );
+      }
+      return <Fragment key={key}>{chunk}</Fragment>;
+    });
 }
 
 /** Affiche un contenu enrichi en toute sécurité. */
@@ -171,8 +174,18 @@ export function richTextToPlain(value: string) {
 }
 
 const TOOLS = [
-  { label: "Gras", title: "Mettre le texte sélectionné en gras", wrap: ["**", "**"], sample: "texte" },
-  { label: "Italique", title: "Mettre le texte sélectionné en italique", wrap: ["*", "*"], sample: "texte" },
+  {
+    label: "Gras",
+    title: "Mettre le texte sélectionné en gras",
+    wrap: ["**", "**"],
+    sample: "texte",
+  },
+  {
+    label: "Italique",
+    title: "Mettre le texte sélectionné en italique",
+    wrap: ["*", "*"],
+    sample: "texte",
+  },
   { label: "Lien", title: "Insérer un lien", wrap: ["[", "](https://)"], sample: "libellé" },
   { label: "Liste", title: "Insérer une liste à puces", wrap: ["\n- ", ""], sample: "élément" },
   { label: "Citation", title: "Insérer une citation", wrap: ["\n> ", ""], sample: "citation" },
@@ -212,7 +225,11 @@ export function RichTextEditor({
 
   return (
     <div className="rounded-lg border border-border bg-card">
-      <div className="flex flex-wrap gap-1 border-b border-border p-1.5" role="group" aria-label="Mise en forme">
+      <div
+        className="flex flex-wrap gap-1 border-b border-border p-1.5"
+        role="group"
+        aria-label="Mise en forme"
+      >
         {TOOLS.map((tool) => (
           <button
             key={tool.label}

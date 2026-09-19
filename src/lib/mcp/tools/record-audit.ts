@@ -49,7 +49,8 @@ export default defineTool({
             description: f.description,
           })),
         );
-        if (fErr) return errorResult(`Audit créé mais anomalies non enregistrées : ${fErr.message}`);
+        if (fErr)
+          return errorResult(`Audit créé mais anomalies non enregistrées : ${fErr.message}`);
       }
       return textResult({ audit, anomalies_enregistrees: findings.length });
     } catch (e) {

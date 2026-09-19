@@ -25,7 +25,8 @@ export const Route = createFileRoute("/marketplace/$slug")({
       return { meta: [{ title: "Annonce introuvable" }, { name: "robots", content: "noindex" }] };
     }
     const { listing } = loaderData;
-    const description = (listing.description ?? "").replace(/\s+/g, " ").slice(0, 180) ||
+    const description =
+      (listing.description ?? "").replace(/\s+/g, " ").slice(0, 180) ||
       `Annonce publiée par ${listing.seller_name}.`;
     const photo = (listing.photos ?? [])[0];
     return {
@@ -179,7 +180,11 @@ function ListingPage() {
           <h2 className="text-sm font-semibold text-foreground">Contacter le vendeur</h2>
           {!user ? (
             <p className="mt-2 text-sm text-muted-foreground">
-              <Link to="/login" title="Se connecter pour contacter le vendeur" className="text-primary-text hover:underline">
+              <Link
+                to="/login"
+                title="Se connecter pour contacter le vendeur"
+                className="text-primary-text hover:underline"
+              >
                 Connectez-vous
               </Link>{" "}
               pour envoyer un message privé.
@@ -191,7 +196,12 @@ function ListingPage() {
               <p className="mt-2 text-sm text-muted-foreground">
                 Votre message part en privé : aucune coordonnée n'est rendue publique.
               </p>
-              <Button className="mt-4" disabled={busy} onClick={contactSeller} title="Envoyer un message privé au vendeur">
+              <Button
+                className="mt-4"
+                disabled={busy}
+                onClick={contactSeller}
+                title="Envoyer un message privé au vendeur"
+              >
                 {busy ? "Ouverture…" : "Envoyer un message"}
               </Button>
             </>

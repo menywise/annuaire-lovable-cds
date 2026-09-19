@@ -1,6 +1,7 @@
 # CDS — Feuille de route
 
 ## Fait
+
 - Tokens CDS (thème clair uniquement), typographie Inter, rayons et ombres, source de vérité `CDS_TOKENS.md`
 - Bibliothèque de composants (`/composants`)
 - Comptes réels : inscription, connexion Google et e-mail, vérification, mot de passe oublié
@@ -14,9 +15,11 @@
 - Pilotage : plan directeur, feuille de route, audits avec mémoire, **grille de conformité du modèle** avec score et audits datés
 
 ## En pause (décision utilisateur)
+
 - Paiement des offres — sera Stripe, activation plus tard
 - Envoi des e-mails — passera par le domaine des projets, configuration plus tard
 
 ## À venir
+
 - Vulnérabilités js-yaml héritées de @tanstack/react-start : aucun correctif amont, à re-vérifier
 - Mesures non réalisées : poids des fichiers livrés, temps de réponse, test mobile réel, test lecteur d'écran

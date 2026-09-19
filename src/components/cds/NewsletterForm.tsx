@@ -27,7 +27,9 @@ export function NewsletterForm({ source = "site" }: { source?: string }) {
     }
     setBusy(true);
     const { error } = await supabase.from("newsletter_subscribers").insert({
-      email: String(form.get("email") ?? "").trim().toLowerCase(),
+      email: String(form.get("email") ?? "")
+        .trim()
+        .toLowerCase(),
       first_name: String(form.get("first_name") ?? "").trim() || null,
       source,
     });
@@ -66,10 +68,18 @@ export function NewsletterForm({ source = "site" }: { source?: string }) {
           Votre inscription est enregistrée. À très vite.
         </p>
       ) : (
-        <form onSubmit={onSubmit} className="mt-4 grid gap-3 sm:grid-cols-[1fr_1fr_auto] sm:items-end">
+        <form
+          onSubmit={onSubmit}
+          className="mt-4 grid gap-3 sm:grid-cols-[1fr_1fr_auto] sm:items-end"
+        >
           <div className="space-y-1.5">
             <Label htmlFor="nl-first-name">Prénom</Label>
-            <Input id="nl-first-name" name="first_name" autoComplete="given-name" placeholder="Votre prénom" />
+            <Input
+              id="nl-first-name"
+              name="first_name"
+              autoComplete="given-name"
+              placeholder="Votre prénom"
+            />
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="nl-email">Adresse e-mail</Label>

@@ -12,12 +12,14 @@ import { GoogleSignInButton } from "@/components/cds/GoogleSignInButton";
 import { seo } from "@/lib/seo";
 
 function safeNext(value: unknown): string | undefined {
-  return typeof value === "string" && value.startsWith("/") && !value.startsWith("//") ? value : undefined;
+  return typeof value === "string" && value.startsWith("/") && !value.startsWith("//")
+    ? value
+    : undefined;
 }
 
 export const Route = createFileRoute("/login")({
   validateSearch: (s: Record<string, unknown>): { next?: string } => {
-    const next = safeNext(s['next']);
+    const next = safeNext(s["next"]);
     return next ? { next } : {};
   },
   head: () =>
@@ -71,7 +73,11 @@ function LoginPage() {
       footer={
         <>
           Pas encore de compte ?{" "}
-          <Link to="/signup" title="Créer un compte PMM RDS" className="font-medium text-primary-text hover:underline">
+          <Link
+            to="/signup"
+            title="Créer un compte PMM RDS"
+            className="font-medium text-primary-text hover:underline"
+          >
             Créer un compte
           </Link>
         </>
@@ -99,7 +105,11 @@ function LoginPage() {
         <div className="space-y-1.5">
           <div className="flex items-center justify-between">
             <Label htmlFor="password">Mot de passe</Label>
-            <Link to="/forgot-password" title="Recevoir un lien de réinitialisation du mot de passe" className="text-xs text-primary-text hover:underline">
+            <Link
+              to="/forgot-password"
+              title="Recevoir un lien de réinitialisation du mot de passe"
+              className="text-xs text-primary-text hover:underline"
+            >
               Mot de passe oublié ?
             </Link>
           </div>

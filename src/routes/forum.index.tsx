@@ -52,7 +52,8 @@ function ForumIndex() {
     setBusy(true);
     const { error } = await supabase.from("forum_topics").insert({
       author_id: user.id,
-      author_name: (user.user_metadata?.["full_name"] as string) || user.email?.split("@")[0] || "Membre",
+      author_name:
+        (user.user_metadata?.["full_name"] as string) || user.email?.split("@")[0] || "Membre",
       title: String(data.get("title") ?? "").trim(),
       content: String(data.get("content") ?? "").trim(),
       category_id: String(data.get("category_id") ?? "") || null,
@@ -63,7 +64,9 @@ function ForumIndex() {
       return;
     }
     form.reset();
-    toast.success("Votre sujet est ouvert.", { description: "La communauté peut désormais y répondre." });
+    toast.success("Votre sujet est ouvert.", {
+      description: "La communauté peut désormais y répondre.",
+    });
     router.invalidate();
   }
 
@@ -75,8 +78,8 @@ function ForumIndex() {
           Posez votre question, repartez avec une réponse utilisable
         </h1>
         <p className="mt-2 max-w-[70ch] text-sm text-muted-foreground">
-          Vous bloquez sur un point précis ? Décrivez-le simplement. Quelqu'un est probablement passé
-          par là avant vous, et la réponse servira aussi aux suivants.
+          Vous bloquez sur un point précis ? Décrivez-le simplement. Quelqu'un est probablement
+          passé par là avant vous, et la réponse servira aussi aux suivants.
         </p>
         <p className="mt-3 text-xs text-muted-foreground">
           {overview.totals.topics} discussion{overview.totals.topics > 1 ? "s" : ""} ·{" "}
@@ -118,7 +121,8 @@ function ForumIndex() {
                     </p>
                     <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
                       <p className="text-xs text-muted-foreground">
-                        {topic.author_name} — {new Date(topic.created_at).toLocaleDateString("fr-FR")}
+                        {topic.author_name} —{" "}
+                        {new Date(topic.created_at).toLocaleDateString("fr-FR")}
                       </p>
                       <TopicMeta replies={topic.replies} likes={topic.likes} views={topic.views} />
                     </div>
@@ -133,7 +137,12 @@ function ForumIndex() {
                 <form onSubmit={createTopic} className="mt-4 space-y-4">
                   <div className="space-y-1.5">
                     <Label htmlFor="topic-title">Sujet</Label>
-                    <Input id="topic-title" name="title" required placeholder="Votre question en une phrase" />
+                    <Input
+                      id="topic-title"
+                      name="title"
+                      required
+                      placeholder="Votre question en une phrase"
+                    />
                   </div>
                   <div className="space-y-1.5">
                     <Label htmlFor="topic-category">Thématique</Label>
@@ -166,11 +175,19 @@ function ForumIndex() {
               ) : (
                 <p className="mt-3 text-sm text-muted-foreground">
                   Pour garder un espace sain, seuls les membres connectés publient.{" "}
-                  <Link to="/login" title="Se connecter pour participer au forum" className="text-primary-text hover:underline">
+                  <Link
+                    to="/login"
+                    title="Se connecter pour participer au forum"
+                    className="text-primary-text hover:underline"
+                  >
                     Se connecter
                   </Link>{" "}
                   ou{" "}
-                  <Link to="/signup" title="Créer un compte pour participer au forum" className="text-primary-text hover:underline">
+                  <Link
+                    to="/signup"
+                    title="Créer un compte pour participer au forum"
+                    className="text-primary-text hover:underline"
+                  >
                     créer un compte
                   </Link>
                   .
@@ -192,7 +209,11 @@ function ForumIndex() {
                       className="flex min-h-11 items-center justify-between gap-2 rounded-md px-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
                     >
                       <span className="flex items-center gap-2">
-                        <span className="size-2.5 rounded-full" style={{ background: category.color }} aria-hidden="true" />
+                        <span
+                          className="size-2.5 rounded-full"
+                          style={{ background: category.color }}
+                          aria-hidden="true"
+                        />
                         {category.name}
                       </span>
                       <span className="text-xs">{category.topics}</span>

@@ -24,13 +24,17 @@ function MentionsLegalesPage() {
     <LegalPage title="Mentions légales" updatedAt="17 septembre 2026">
       <Section title="Éditeur du site">
         <p>
-          {legal.company}, {legal.form} au capital de {legal.capital}, immatriculée au{" "}
-          {legal.rcs}, siège social : {legal.address}, {legal.country}.
+          {legal.company}, {legal.form} au capital de {legal.capital}, immatriculée au {legal.rcs},
+          siège social : {legal.address}, {legal.country}.
         </p>
         <p>Directeur de la publication : {legal.publisher}.</p>
         <p>
           Contact :{" "}
-          <Link to="/contact" title="Nous écrire via le formulaire de contact protégé" className="font-medium text-primary-text hover:underline">
+          <Link
+            to="/contact"
+            title="Nous écrire via le formulaire de contact protégé"
+            className="font-medium text-primary-text hover:underline"
+          >
             formulaire de contact
           </Link>{" "}
           (aucune adresse e-mail n'est publiée en clair, afin de limiter le spam).

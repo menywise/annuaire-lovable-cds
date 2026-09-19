@@ -47,7 +47,11 @@ export const Route = createFileRoute("/forum/$topicId")({
     <PageShell>
       <h1 className="text-2xl font-bold text-foreground">Discussion introuvable</h1>
       <p className="mt-2 text-sm text-muted-foreground">
-        <Link to="/forum" title="Revenir à la liste des discussions" className="text-primary-text hover:underline">
+        <Link
+          to="/forum"
+          title="Revenir à la liste des discussions"
+          className="text-primary-text hover:underline"
+        >
           Revenir au forum
         </Link>
       </p>
@@ -76,7 +80,8 @@ function TopicPage() {
     const { error } = await supabase.from("forum_replies").insert({
       topic_id: topic.id,
       author_id: user.id,
-      author_name: (user.user_metadata?.["full_name"] as string) || user.email?.split("@")[0] || "Membre",
+      author_name:
+        (user.user_metadata?.["full_name"] as string) || user.email?.split("@")[0] || "Membre",
       content: String(data.get("content") ?? "").trim(),
     });
     setBusy(false);
@@ -95,7 +100,9 @@ function TopicPage() {
       .update({ accepted: !current })
       .eq("id", replyId);
     if (error) {
-      toast.error("Marquage impossible.", { description: "Seul l'auteur du sujet peut valider une réponse." });
+      toast.error("Marquage impossible.", {
+        description: "Seul l'auteur du sujet peut valider une réponse.",
+      });
       return;
     }
     toast.success(current ? "Réponse retirée des solutions." : "Réponse marquée comme solution.");
@@ -106,7 +113,11 @@ function TopicPage() {
     <PageShell>
       <article className="mx-auto max-w-[820px]">
         <nav aria-label="Fil d'Ariane" className="text-xs text-muted-foreground">
-          <Link to="/forum" title="Revenir à la liste des discussions" className="font-medium text-primary-text hover:underline">
+          <Link
+            to="/forum"
+            title="Revenir à la liste des discussions"
+            className="font-medium text-primary-text hover:underline"
+          >
             Forum
           </Link>
           {category ? (
@@ -192,7 +203,11 @@ function TopicPage() {
                     <button
                       type="button"
                       onClick={() => accept(item.id, item.accepted)}
-                      title={item.accepted ? "Retirer cette réponse des solutions" : "Marquer cette réponse comme solution"}
+                      title={
+                        item.accepted
+                          ? "Retirer cette réponse des solutions"
+                          : "Marquer cette réponse comme solution"
+                      }
                       className="inline-flex min-h-11 items-center gap-1.5 rounded-md border border-border px-3 text-xs font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
                     >
                       <CheckCircle2 className="size-4" aria-hidden="true" />
@@ -213,7 +228,13 @@ function TopicPage() {
           <form onSubmit={reply} className="mt-6 space-y-3">
             <div className="space-y-1.5">
               <Label htmlFor="reply">Votre réponse</Label>
-              <RichTextEditor id="reply" name="content" rows={5} required placeholder="Votre contribution…" />
+              <RichTextEditor
+                id="reply"
+                name="content"
+                rows={5}
+                required
+                placeholder="Votre contribution…"
+              />
             </div>
             <Button type="submit" disabled={busy} title="Publier votre réponse">
               {busy ? "Envoi…" : "Répondre"}
@@ -221,7 +242,11 @@ function TopicPage() {
           </form>
         ) : (
           <p className="mt-6 rounded-lg border border-dashed border-border p-5 text-sm text-muted-foreground">
-            <Link to="/login" title="Se connecter pour répondre" className="text-primary-text hover:underline">
+            <Link
+              to="/login"
+              title="Se connecter pour répondre"
+              className="text-primary-text hover:underline"
+            >
               Connectez-vous
             </Link>{" "}
             pour participer à cette discussion.

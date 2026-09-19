@@ -67,7 +67,10 @@ Remplacer la balise <head> pour ajouter Inter et les métas CDS :
   <meta name="theme-color" content="#f8fafc" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
   <title>CDS — Consensus Design System</title>
 </head>
 ```
@@ -82,7 +85,13 @@ Remplacer le contenu par :
 @tailwind utilities;
 
 :root {
-  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-family:
+    "Inter",
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
   font-size: 14px;
   line-height: 1.5;
   color: #1e293b;
@@ -113,34 +122,34 @@ body {
  */
 export const cds = {
   colors: {
-    primary: '#0d6efd',
-    primaryHover: '#0a58ca',
-    success: '#198754',
-    warning: '#ffc107',
-    danger: '#dc3545',
-    info: '#0dcaf0',
-    secondary: '#6c757d',
-    purple: '#7c3aed',
-    text: '#1e293b',
-    textMuted: '#64748b',
-    bg: '#f8fafc',
-    bgAlt: '#f3f4f6',
-    border: '#e5e7eb',
-    white: '#ffffff',
+    primary: "#0d6efd",
+    primaryHover: "#0a58ca",
+    success: "#198754",
+    warning: "#ffc107",
+    danger: "#dc3545",
+    info: "#0dcaf0",
+    secondary: "#6c757d",
+    purple: "#7c3aed",
+    text: "#1e293b",
+    textMuted: "#64748b",
+    bg: "#f8fafc",
+    bgAlt: "#f3f4f6",
+    border: "#e5e7eb",
+    white: "#ffffff",
   },
   radius: {
-    sm: '0.25rem',
-    default: '0.375rem',
-    md: '0.5rem',
-    lg: '0.75rem',
-    card: '0.75rem',
-    button: '0.375rem',
+    sm: "0.25rem",
+    default: "0.375rem",
+    md: "0.5rem",
+    lg: "0.75rem",
+    card: "0.75rem",
+    button: "0.375rem",
   },
   shadow: {
-    xs: '0 1px 2px rgba(0, 0, 0, 0.04)',
-    sm: '0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02)',
-    md: '0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04)',
-    lg: '0 8px 24px rgba(0, 0, 0, 0.12)',
+    xs: "0 1px 2px rgba(0, 0, 0, 0.04)",
+    sm: "0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02)",
+    md: "0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04)",
+    lg: "0 8px 24px rgba(0, 0, 0, 0.12)",
   },
 } as const;
 ```
@@ -163,6 +172,7 @@ Après ça, tout nouveau projet peut démarrer depuis CDS.
 ## ÉTAPE 6 — Appliquer à SKIA et KAIRO (via Git push, 0 crédits)
 
 Pour chaque projet existant :
+
 1. Cloner le repo Git du projet
 2. Remplacer tailwind.config.ts par la version CDS (étape 3.1)
 3. Remplacer index.html <head> (étape 3.2)

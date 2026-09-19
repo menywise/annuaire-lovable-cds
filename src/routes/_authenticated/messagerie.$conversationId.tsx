@@ -95,7 +95,11 @@ function ConversationPage() {
   return (
     <PageShell>
       <div className="mx-auto max-w-[760px]">
-        <Link to="/messagerie" title="Revenir à toutes mes conversations" className="text-xs font-medium text-primary-text hover:underline">
+        <Link
+          to="/messagerie"
+          title="Revenir à toutes mes conversations"
+          className="text-xs font-medium text-primary-text hover:underline"
+        >
           ← Ma messagerie
         </Link>
         <h1 className="mt-3 text-2xl font-bold text-foreground">{otherName}</h1>
@@ -132,7 +136,13 @@ function ConversationPage() {
         <form onSubmit={send} className="mt-6 space-y-3">
           <div className="space-y-1.5">
             <Label htmlFor="message">Votre message</Label>
-            <Textarea id="message" name="content" rows={3} required placeholder="Écrivez votre message…" />
+            <Textarea
+              id="message"
+              name="content"
+              rows={3}
+              required
+              placeholder="Écrivez votre message…"
+            />
           </div>
           <Button type="submit" disabled={busy} title="Envoyer votre message">
             {busy ? "Envoi…" : "Envoyer"}

@@ -13,7 +13,11 @@ export function AuthLayout({
 }) {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4 py-12">
-      <Link to="/" title="Revenir à la page d'accueil" className="mb-6 flex items-center gap-2 text-sm font-semibold text-foreground">
+      <Link
+        to="/"
+        title="Revenir à la page d'accueil"
+        className="mb-6 flex items-center gap-2 text-sm font-semibold text-foreground"
+      >
         <span className="grid size-7 place-items-center rounded bg-primary text-xs font-bold text-primary-foreground">
           C
         </span>
@@ -29,8 +33,20 @@ export function AuthLayout({
       {footer && <div className="mt-5 text-sm text-muted-foreground">{footer}</div>}
 
       <div className="mt-8 flex gap-4 text-xs text-muted-foreground">
-        <Link to="/legal/mentions-legales" title="Lire les mentions légales" className="hover:text-foreground">Mentions légales</Link>
-        <Link to="/legal/confidentialite" title="Lire la politique de confidentialité" className="hover:text-foreground">Confidentialité</Link>
+        <Link
+          to="/legal/mentions-legales"
+          title="Lire les mentions légales"
+          className="hover:text-foreground"
+        >
+          Mentions légales
+        </Link>
+        <Link
+          to="/legal/confidentialite"
+          title="Lire la politique de confidentialité"
+          className="hover:text-foreground"
+        >
+          Confidentialité
+        </Link>
       </div>
     </div>
   );

@@ -107,7 +107,11 @@ function MyCoursesPage() {
         ) : rows.length === 0 ? (
           <p className="mt-6 rounded-lg border border-border bg-card p-6 text-sm text-muted-foreground">
             Vous n'êtes inscrit à aucune formation.{" "}
-            <Link to="/formations" title="Parcourir le catalogue des formations" className="text-primary-text hover:underline">
+            <Link
+              to="/formations"
+              title="Parcourir le catalogue des formations"
+              className="text-primary-text hover:underline"
+            >
               Parcourir le catalogue
             </Link>
           </p>

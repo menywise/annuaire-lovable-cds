@@ -9,7 +9,8 @@ export const Route = createFileRoute("/_authenticated/decouvrir")({
   head: () =>
     seo({
       title: "Découvrir tout ce que votre espace permet",
-      description: "Le parcours de prise en main : ce que vous avez déjà activé, et les occasions encore ouvertes.",
+      description:
+        "Le parcours de prise en main : ce que vous avez déjà activé, et les occasions encore ouvertes.",
       path: "/decouvrir",
       noindex: true,
     }),
@@ -40,7 +41,8 @@ const steps: Step[] = [
   {
     key: "profil",
     title: "Compléter votre profil",
-    benefit: "Un profil renseigné vous rend crédible en un coup d'œil : les autres savent qui vous êtes avant même de vous lire.",
+    benefit:
+      "Un profil renseigné vous rend crédible en un coup d'œil : les autres savent qui vous êtes avant même de vous lire.",
     to: "/profil",
     cta: "Compléter mon profil",
     linkTitle: "Renseigner mon nom affiché, mon métier et ma présentation",
@@ -48,7 +50,8 @@ const steps: Step[] = [
   {
     key: "annuaire",
     title: "Apparaître dans l'annuaire",
-    benefit: "Être visible dans l'annuaire, c'est laisser les bonnes personnes vous trouver sans que vous ayez à les chercher.",
+    benefit:
+      "Être visible dans l'annuaire, c'est laisser les bonnes personnes vous trouver sans que vous ayez à les chercher.",
     to: "/membres",
     cta: "Voir l'annuaire",
     linkTitle: "Parcourir l'annuaire des membres",
@@ -56,7 +59,8 @@ const steps: Step[] = [
   {
     key: "sujet",
     title: "Lancer une première discussion",
-    benefit: "Une question posée clairement vous fait gagner des heures de recherche, et reste utile à ceux qui passeront après vous.",
+    benefit:
+      "Une question posée clairement vous fait gagner des heures de recherche, et reste utile à ceux qui passeront après vous.",
     to: "/forum",
     cta: "Ouvrir le forum",
     linkTitle: "Publier une discussion sur le forum",
@@ -64,7 +68,8 @@ const steps: Step[] = [
   {
     key: "reponse",
     title: "Répondre à quelqu'un",
-    benefit: "Chaque réponse utile construit votre réputation et vous place dans le classement des membres les plus actifs.",
+    benefit:
+      "Chaque réponse utile construit votre réputation et vous place dans le classement des membres les plus actifs.",
     to: "/forum",
     cta: "Trouver une discussion",
     linkTitle: "Répondre à une discussion en cours",
@@ -72,7 +77,8 @@ const steps: Step[] = [
   {
     key: "jaime",
     title: "Soutenir un message d'un « j'aime »",
-    benefit: "Un simple geste qui fait remonter les meilleures réponses et guide les prochains lecteurs.",
+    benefit:
+      "Un simple geste qui fait remonter les meilleures réponses et guide les prochains lecteurs.",
     to: "/forum",
     cta: "Parcourir les échanges",
     linkTitle: "Aimer une discussion ou une réponse",
@@ -80,7 +86,8 @@ const steps: Step[] = [
   {
     key: "message",
     title: "Échanger en privé",
-    benefit: "Pour les sujets qui ne se règlent pas en public : un message direct, sans donner votre adresse e-mail.",
+    benefit:
+      "Pour les sujets qui ne se règlent pas en public : un message direct, sans donner votre adresse e-mail.",
     to: "/messagerie",
     cta: "Ouvrir la messagerie",
     linkTitle: "Ouvrir ma messagerie privée",
@@ -88,7 +95,8 @@ const steps: Step[] = [
   {
     key: "commentaire",
     title: "Réagir à un article",
-    benefit: "Vos commentaires prolongent les articles et attirent des lecteurs qui vous découvriront à cette occasion.",
+    benefit:
+      "Vos commentaires prolongent les articles et attirent des lecteurs qui vous découvriront à cette occasion.",
     to: "/blog",
     cta: "Lire le blog",
     linkTitle: "Lire les articles et y réagir",
@@ -96,7 +104,8 @@ const steps: Step[] = [
   {
     key: "avis",
     title: "Déposer un avis",
-    benefit: "Votre retour aide les prochains à décider, et vous donne un droit de regard sur ce qui est construit.",
+    benefit:
+      "Votre retour aide les prochains à décider, et vous donne un droit de regard sur ce qui est construit.",
     to: "/avis",
     cta: "Donner mon avis",
     linkTitle: "Déposer un avis noté",
@@ -104,7 +113,8 @@ const steps: Step[] = [
   {
     key: "temoignage",
     title: "Partager votre expérience",
-    benefit: "Un témoignage publié met en avant votre activité auprès de tous les visiteurs du site.",
+    benefit:
+      "Un témoignage publié met en avant votre activité auprès de tous les visiteurs du site.",
     to: "/temoignages",
     cta: "Écrire mon témoignage",
     linkTitle: "Proposer un témoignage",
@@ -121,16 +131,20 @@ function DecouvrirPage() {
     (async () => {
       const uid = user.id;
       const count = { count: "exact" as const, head: true };
-      const [profil, topics, replies, likes, messages, reviews, testimonials, comments] = await Promise.all([
-        supabase.from("member_profiles").select("user_id, display_name, bio, listed", { count: "exact" }).eq("user_id", uid),
-        supabase.from("forum_topics").select("id", count).eq("author_id", uid),
-        supabase.from("forum_replies").select("id", count).eq("author_id", uid),
-        supabase.from("forum_likes").select("id", count).eq("user_id", uid),
-        supabase.from("messages").select("id", count).eq("sender_id", uid),
-        supabase.from("reviews").select("id", count).eq("author_id", uid),
-        supabase.from("testimonials").select("id", count).eq("author_id", uid),
-        supabase.from("blog_comments").select("id", count).eq("author_id", uid),
-      ]);
+      const [profil, topics, replies, likes, messages, reviews, testimonials, comments] =
+        await Promise.all([
+          supabase
+            .from("member_profiles")
+            .select("user_id, display_name, bio, listed", { count: "exact" })
+            .eq("user_id", uid),
+          supabase.from("forum_topics").select("id", count).eq("author_id", uid),
+          supabase.from("forum_replies").select("id", count).eq("author_id", uid),
+          supabase.from("forum_likes").select("id", count).eq("user_id", uid),
+          supabase.from("messages").select("id", count).eq("sender_id", uid),
+          supabase.from("reviews").select("id", count).eq("author_id", uid),
+          supabase.from("testimonials").select("id", count).eq("author_id", uid),
+          supabase.from("blog_comments").select("id", count).eq("author_id", uid),
+        ]);
       if (!active) return;
       const row = profil.data?.[0];
       setDone({
@@ -158,7 +172,11 @@ function DecouvrirPage() {
     <PageShell>
       <div className="mx-auto max-w-[900px]">
         <nav aria-label="Fil d'Ariane" className="text-xs text-muted-foreground">
-          <Link to="/tableau-de-bord" title="Revenir au tableau de bord" className="hover:text-foreground">
+          <Link
+            to="/tableau-de-bord"
+            title="Revenir au tableau de bord"
+            className="hover:text-foreground"
+          >
             Tableau de bord
           </Link>
           <span aria-hidden="true"> / </span>
@@ -204,12 +222,17 @@ function DecouvrirPage() {
             {steps.map((step) => {
               const isDone = Boolean(done?.[step.key]);
               return (
-                <li key={step.key} className="flex flex-col rounded-xl border border-border bg-card p-5">
+                <li
+                  key={step.key}
+                  className="flex flex-col rounded-xl border border-border bg-card p-5"
+                >
                   <div className="flex items-start gap-2">
                     <span
                       aria-hidden="true"
                       className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[11px] font-bold ${
-                        isDone ? "bg-success-text text-white" : "border border-border text-muted-foreground"
+                        isDone
+                          ? "bg-success-text text-white"
+                          : "border border-border text-muted-foreground"
                       }`}
                     >
                       {isDone ? "✓" : ""}

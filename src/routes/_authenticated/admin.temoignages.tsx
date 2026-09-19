@@ -35,7 +35,9 @@ function AdminTestimonialsPage() {
   const load = useCallback(async () => {
     const { data } = await supabase
       .from("testimonials")
-      .select("id, author_name, role_title, company, content, outcome, approved, featured, created_at")
+      .select(
+        "id, author_name, role_title, company, content, outcome, approved, featured, created_at",
+      )
       .order("created_at", { ascending: false });
     setItems(data ?? []);
   }, []);
@@ -90,24 +92,36 @@ function AdminTestimonialsPage() {
               </div>
               <p className="mt-3 text-sm text-muted-foreground">{item.content}</p>
               {item.outcome ? (
-                <p className="mt-2 text-xs font-medium text-success-text">Résultat : {item.outcome}</p>
+                <p className="mt-2 text-xs font-medium text-success-text">
+                  Résultat : {item.outcome}
+                </p>
               ) : null}
               <div className="mt-4 flex flex-wrap gap-2">
                 <Button
                   variant={item.approved ? "outline" : "default"}
                   onClick={() => update(item.id, { approved: !item.approved })}
-                  title={item.approved ? "Retirer ce témoignage de la page publique" : "Publier ce témoignage"}
+                  title={
+                    item.approved
+                      ? "Retirer ce témoignage de la page publique"
+                      : "Publier ce témoignage"
+                  }
                 >
                   {item.approved ? "Dépublier" : "Publier"}
                 </Button>
                 <Button
                   variant="outline"
                   onClick={() => update(item.id, { featured: !item.featured })}
-                  title={item.featured ? "Retirer de la mise en avant" : "Mettre en avant ce témoignage"}
+                  title={
+                    item.featured ? "Retirer de la mise en avant" : "Mettre en avant ce témoignage"
+                  }
                 >
                   {item.featured ? "Ne plus mettre en avant" : "Mettre en avant"}
                 </Button>
-                <Button variant="destructive" onClick={() => remove(item.id)} title="Supprimer définitivement ce témoignage">
+                <Button
+                  variant="destructive"
+                  onClick={() => remove(item.id)}
+                  title="Supprimer définitivement ce témoignage"
+                >
                   Supprimer
                 </Button>
               </div>

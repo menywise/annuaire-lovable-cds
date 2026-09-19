@@ -14,16 +14,42 @@ type NavItem = { to: NonNullable<LinkProps["to"]>; label: string; title: string 
 /** Menu des visiteurs : découvrir, comparer, échanger. */
 function buildPublicNav(): NavItem[] {
   return [
-    { to: "/demarrer", label: "Démarrer", title: "Le parcours en trois étapes jusqu'à votre compte" },
-    { to: "/tarifs", label: "Tarifs", title: "Comparer les offres et choisir celle qui vous convient" },
+    {
+      to: "/demarrer",
+      label: "Démarrer",
+      title: "Le parcours en trois étapes jusqu'à votre compte",
+    },
+    {
+      to: "/tarifs",
+      label: "Tarifs",
+      title: "Comparer les offres et choisir celle qui vous convient",
+    },
     ...(isFeatureOn("directory")
-      ? ([{ to: "/annuaire", label: "Annuaire", title: "Trouver un professionnel près de chez vous" }] as NavItem[])
+      ? ([
+          {
+            to: "/annuaire",
+            label: "Annuaire",
+            title: "Trouver un professionnel près de chez vous",
+          },
+        ] as NavItem[])
       : []),
     ...(isFeatureOn("lms")
-      ? ([{ to: "/formations", label: "Formations", title: "Se former à son rythme, leçon par leçon" }] as NavItem[])
+      ? ([
+          {
+            to: "/formations",
+            label: "Formations",
+            title: "Se former à son rythme, leçon par leçon",
+          },
+        ] as NavItem[])
       : []),
     ...(isFeatureOn("marketplace")
-      ? ([{ to: "/marketplace", label: "Annonces", title: "Voir les annonces publiées par les membres" }] as NavItem[])
+      ? ([
+          {
+            to: "/marketplace",
+            label: "Annonces",
+            title: "Voir les annonces publiées par les membres",
+          },
+        ] as NavItem[])
       : []),
     { to: "/blog", label: "Blog", title: "Articles et méthodes pour faire avancer votre projet" },
     { to: "/forum", label: "Forum", title: "Poser une question à la communauté" },
@@ -40,13 +66,23 @@ function buildMemberNav(): NavItem[] {
     { to: "/membres", label: "Annuaire des membres", title: "Découvrir les autres membres" },
     { to: "/messagerie", label: "Messagerie", title: "Consulter vos échanges privés" },
     ...(isFeatureOn("lms")
-      ? ([{ to: "/mes-formations", label: "Mes formations", title: "Reprendre vos formations en cours" }] as NavItem[])
+      ? ([
+          {
+            to: "/mes-formations",
+            label: "Mes formations",
+            title: "Reprendre vos formations en cours",
+          },
+        ] as NavItem[])
       : []),
     ...(isFeatureOn("marketplace")
-      ? ([{ to: "/mes-annonces", label: "Mes annonces", title: "Gérer vos annonces publiées" }] as NavItem[])
+      ? ([
+          { to: "/mes-annonces", label: "Mes annonces", title: "Gérer vos annonces publiées" },
+        ] as NavItem[])
       : []),
     ...(isFeatureOn("crm")
-      ? ([{ to: "/crm", label: "Mes contacts", title: "Suivre vos contacts et vos relances" }] as NavItem[])
+      ? ([
+          { to: "/crm", label: "Mes contacts", title: "Suivre vos contacts et vos relances" },
+        ] as NavItem[])
       : []),
     { to: "/blog", label: "Blog", title: "Lire les derniers articles" },
   ];
@@ -61,7 +97,9 @@ function buildFooterColumns(): Array<{ title: string; links: NavItem[] }> {
         { to: "/demarrer", label: "Démarrer", title: "Le parcours en trois étapes" },
         { to: "/tarifs", label: "Tarifs", title: "Comparer les offres" },
         ...(isFeatureOn("lms")
-          ? ([{ to: "/formations", label: "Formations", title: "Le catalogue des formations" }] as NavItem[])
+          ? ([
+              { to: "/formations", label: "Formations", title: "Le catalogue des formations" },
+            ] as NavItem[])
           : []),
         { to: "/composants", label: "Composants", title: "Bibliothèque de composants d'interface" },
         { to: "/guide", label: "Guide", title: "Comment réutiliser CDS sur un nouveau projet" },
@@ -73,10 +111,14 @@ function buildFooterColumns(): Array<{ title: string; links: NavItem[] }> {
         { to: "/forum", label: "Forum", title: "Poser une question à la communauté" },
         { to: "/membres", label: "Annuaire des membres", title: "Découvrir les membres" },
         ...(isFeatureOn("directory")
-          ? ([{ to: "/annuaire", label: "Annuaire métier", title: "Trouver un professionnel" }] as NavItem[])
+          ? ([
+              { to: "/annuaire", label: "Annuaire métier", title: "Trouver un professionnel" },
+            ] as NavItem[])
           : []),
         ...(isFeatureOn("marketplace")
-          ? ([{ to: "/marketplace", label: "Annonces", title: "Les annonces des membres" }] as NavItem[])
+          ? ([
+              { to: "/marketplace", label: "Annonces", title: "Les annonces des membres" },
+            ] as NavItem[])
           : []),
         { to: "/temoignages", label: "Témoignages", title: "Lire les retours d'expérience" },
         { to: "/avis", label: "Avis", title: "Consulter les notes et avis" },
@@ -88,19 +130,41 @@ function buildFooterColumns(): Array<{ title: string; links: NavItem[] }> {
       links: [
         { to: "/faq", label: "FAQ", title: "Réponses aux questions fréquentes" },
         { to: "/contact", label: "Contact", title: "Formulaire de contact protégé" },
-        { to: "/a-propos", label: "À propos", title: "Qui édite le site et selon quels engagements" },
+        {
+          to: "/a-propos",
+          label: "À propos",
+          title: "Qui édite le site et selon quels engagements",
+        },
         ...(isFeatureOn("adNetwork")
-          ? ([{ to: "/publicite", label: "Annoncer", title: "Réserver un emplacement publicitaire" }] as NavItem[])
+          ? ([
+              {
+                to: "/publicite",
+                label: "Annoncer",
+                title: "Réserver un emplacement publicitaire",
+              },
+            ] as NavItem[])
           : []),
-        { to: "/plan-du-site", label: "Plan du site", title: "Toutes les pages réunies sur une page" },
+        {
+          to: "/plan-du-site",
+          label: "Plan du site",
+          title: "Toutes les pages réunies sur une page",
+        },
         { to: "/login", label: "Connexion", title: "Accéder à son espace personnel" },
       ],
     },
     {
       title: "Informations légales",
       links: [
-        { to: "/legal/mentions-legales", label: "Mentions légales", title: "Éditeur, hébergeur et propriété intellectuelle" },
-        { to: "/legal/confidentialite", label: "Confidentialité", title: "Données personnelles et droits RGPD" },
+        {
+          to: "/legal/mentions-legales",
+          label: "Mentions légales",
+          title: "Éditeur, hébergeur et propriété intellectuelle",
+        },
+        {
+          to: "/legal/confidentialite",
+          label: "Confidentialité",
+          title: "Données personnelles et droits RGPD",
+        },
         { to: "/legal/cgu", label: "CGU", title: "Conditions générales d'utilisation" },
         { to: "/legal/cgv", label: "CGV", title: "Conditions générales de vente" },
         { to: "/legal/cookies", label: "Cookies", title: "Politique de gestion des cookies" },
@@ -111,7 +175,6 @@ function buildFooterColumns(): Array<{ title: string; links: NavItem[] }> {
 
 const linkClass =
   "inline-flex min-h-11 items-center rounded px-3 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 lg:min-h-9";
-
 
 function AccountLinks({ onNavigate }: { onNavigate?: () => void }) {
   const { user, loading } = useAuth();
@@ -128,7 +191,12 @@ function AccountLinks({ onNavigate }: { onNavigate?: () => void }) {
   if (!user) {
     return (
       <>
-        <Link to="/login" title="Se connecter à son espace personnel" onClick={onNavigate} className={`flex w-full lg:w-auto ${linkClass}`}>
+        <Link
+          to="/login"
+          title="Se connecter à son espace personnel"
+          onClick={onNavigate}
+          className={`flex w-full lg:w-auto ${linkClass}`}
+        >
           Connexion
         </Link>
         <Link
@@ -145,7 +213,12 @@ function AccountLinks({ onNavigate }: { onNavigate?: () => void }) {
 
   return (
     <>
-      <Link to="/profil" title="Modifier mon profil" onClick={onNavigate} className={`flex w-full lg:w-auto ${linkClass}`}>
+      <Link
+        to="/profil"
+        title="Modifier mon profil"
+        onClick={onNavigate}
+        className={`flex w-full lg:w-auto ${linkClass}`}
+      >
         Mon profil
       </Link>
       <button
@@ -187,7 +260,10 @@ export function SiteHeader() {
           {settings.shortName}
         </Link>
 
-        <nav aria-label="Navigation principale" className="hidden items-center gap-0.5 text-sm lg:flex">
+        <nav
+          aria-label="Navigation principale"
+          className="hidden items-center gap-0.5 text-sm lg:flex"
+        >
           {nav.map((item) => (
             <Link
               key={item.to}
@@ -195,7 +271,6 @@ export function SiteHeader() {
               title={item.title}
               className={linkClass}
               activeProps={{ className: "bg-accent text-foreground" }}
-
             >
               {item.label}
             </Link>
@@ -234,7 +309,6 @@ export function SiteHeader() {
                   onClick={() => setOpen(false)}
                   className={`flex w-full ${linkClass}`}
                   activeProps={{ className: "bg-accent text-foreground" }}
-
                 >
                   {item.label}
                 </Link>

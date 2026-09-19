@@ -8,7 +8,11 @@ export default defineTool({
   description:
     "Lit le plan du site (sitemap.xml) et retourne toutes les adresses publiques du site, prêtes à être auditées une par une.",
   inputSchema: {
-    base_url: z.string().url().optional().describe("Adresse du site à auditer, si différente de la production."),
+    base_url: z
+      .string()
+      .url()
+      .optional()
+      .describe("Adresse du site à auditer, si différente de la production."),
   },
   annotations: { readOnlyHint: true, openWorldHint: true },
   handler: async ({ base_url }, ctx) => {

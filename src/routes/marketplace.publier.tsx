@@ -91,13 +91,20 @@ function PublishPage() {
 
         {!user ? (
           <p className="mt-6 rounded-lg border border-border bg-card p-6 text-sm text-muted-foreground">
-            <Link to="/login" title="Se connecter pour publier une annonce" className="text-primary-text hover:underline">
+            <Link
+              to="/login"
+              title="Se connecter pour publier une annonce"
+              className="text-primary-text hover:underline"
+            >
               Connectez-vous
             </Link>{" "}
             pour publier une annonce.
           </p>
         ) : (
-          <form onSubmit={submit} className="mt-6 space-y-4 rounded-xl border border-border bg-card p-6">
+          <form
+            onSubmit={submit}
+            className="mt-6 space-y-4 rounded-xl border border-border bg-card p-6"
+          >
             <div className="space-y-1.5">
               <Label htmlFor="a-title">Titre</Label>
               <Input id="a-title" name="title" required placeholder="Ce que vous proposez" />

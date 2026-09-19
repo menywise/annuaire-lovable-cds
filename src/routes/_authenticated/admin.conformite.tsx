@@ -22,7 +22,8 @@ export const Route = createFileRoute("/_authenticated/admin/conformite")({
   head: () =>
     seo({
       title: "Conformité du modèle",
-      description: "Grille de contrôle du modèle CDS : ce qui est conforme, à corriger ou à vérifier.",
+      description:
+        "Grille de contrôle du modèle CDS : ce qui est conforme, à corriger ou à vérifier.",
       path: "/admin/conformite",
       noindex: true,
     }),
@@ -51,7 +52,8 @@ function AdminConformite() {
   async function update(check: TemplateCheck, patch: Partial<TemplateCheck>) {
     setChecks((prev) => prev.map((item) => (item.id === check.id ? { ...item, ...patch } : item)));
     const { error } = await supabase.from("template_checks").update(patch).eq("id", check.id);
-    if (error) toast.error("Modification non enregistrée.", { description: "Réessayez dans un instant." });
+    if (error)
+      toast.error("Modification non enregistrée.", { description: "Réessayez dans un instant." });
   }
 
   /** Fige l'état courant de la grille dans un audit daté, avec ses constats. */
@@ -98,7 +100,12 @@ function AdminConformite() {
       <ConformitySummary checks={checks} />
 
       <div className="mt-4">
-        <Button type="button" onClick={snapshot} disabled={busy} title="Figer l'état actuel dans un audit daté">
+        <Button
+          type="button"
+          onClick={snapshot}
+          disabled={busy}
+          title="Figer l'état actuel dans un audit daté"
+        >
           {busy ? "Enregistrement…" : "Enregistrer un audit daté"}
         </Button>
       </div>
@@ -205,7 +212,11 @@ function NewCheckForm({ onDone, nextPosition }: { onDone: () => void; nextPositi
       </div>
       <div className="space-y-1.5 sm:col-span-2">
         <Label htmlFor="check-requirement">Exigence</Label>
-        <Input id="check-requirement" name="requirement" placeholder="Comment savoir que c'est conforme" />
+        <Input
+          id="check-requirement"
+          name="requirement"
+          placeholder="Comment savoir que c'est conforme"
+        />
       </div>
       <div className="sm:col-span-2">
         <Button type="submit" disabled={busy} title="Ajouter ce point à la grille">

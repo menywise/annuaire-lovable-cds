@@ -20,10 +20,18 @@ const groupes = [
     links: [
       { to: "/", label: "Accueil", title: "Fondations, couleurs et gabarits du design system" },
       { to: "/a-propos", label: "À propos", title: "Qui édite le site et selon quels engagements" },
-      { to: "/demarrer", label: "Démarrer", title: "Parcours en trois étapes jusqu'à la création de compte" },
+      {
+        to: "/demarrer",
+        label: "Démarrer",
+        title: "Parcours en trois étapes jusqu'à la création de compte",
+      },
       { to: "/tarifs", label: "Tarifs", title: "Comparer les offres et leurs contenus" },
       { to: "/composants", label: "Composants", title: "Bibliothèque de composants d'interface" },
-      { to: "/guide", label: "Guide de réutilisation", title: "Réutiliser CDS sur un nouveau projet" },
+      {
+        to: "/guide",
+        label: "Guide de réutilisation",
+        title: "Réutiliser CDS sur un nouveau projet",
+      },
     ],
   },
   {
@@ -32,7 +40,11 @@ const groupes = [
       { to: "/blog", label: "Blog", title: "Articles et méthodes" },
       { to: "/faq", label: "Questions fréquentes", title: "Réponses aux questions courantes" },
       { to: "/forum", label: "Forum", title: "Poser une question à la communauté" },
-      { to: "/membres", label: "Annuaire des membres", title: "Découvrir les membres de la communauté" },
+      {
+        to: "/membres",
+        label: "Annuaire des membres",
+        title: "Découvrir les membres de la communauté",
+      },
       { to: "/temoignages", label: "Témoignages", title: "Lire ce que la communauté a obtenu" },
       { to: "/avis", label: "Avis", title: "Retours d'expérience des utilisateurs" },
       { to: "/contact", label: "Contact", title: "Formulaire de contact protégé" },
@@ -43,10 +55,22 @@ const groupes = [
     links: [
       { to: "/login", label: "Connexion", title: "Accéder à son espace personnel" },
       { to: "/signup", label: "Créer un compte", title: "Ouvrir un compte en une minute" },
-      { to: "/verification-email", label: "Vérification de l'adresse e-mail", title: "Renvoyer le lien de confirmation" },
-      { to: "/forgot-password", label: "Mot de passe oublié", title: "Recevoir un lien de réinitialisation" },
+      {
+        to: "/verification-email",
+        label: "Vérification de l'adresse e-mail",
+        title: "Renvoyer le lien de confirmation",
+      },
+      {
+        to: "/forgot-password",
+        label: "Mot de passe oublié",
+        title: "Recevoir un lien de réinitialisation",
+      },
       { to: "/tableau-de-bord", label: "Tableau de bord", title: "Chiffres clés et raccourcis" },
-      { to: "/decouvrir", label: "Découvrir", title: "Faire le tour des fonctionnalités actives de votre espace" },
+      {
+        to: "/decouvrir",
+        label: "Découvrir",
+        title: "Faire le tour des fonctionnalités actives de votre espace",
+      },
       { to: "/messagerie", label: "Messagerie", title: "Vos échanges privés entre membres" },
       { to: "/profil", label: "Mon profil", title: "Nom affiché, profil public et mot de passe" },
       { to: "/compte", label: "Mon compte", title: "Rôle, session et messages reçus" },
@@ -55,10 +79,26 @@ const groupes = [
   {
     title: "Documents légaux",
     links: [
-      { to: "/legal/mentions-legales", label: "Mentions légales", title: "Éditeur, hébergeur et propriété intellectuelle" },
-      { to: "/legal/confidentialite", label: "Politique de confidentialité", title: "Données personnelles et droits RGPD" },
-      { to: "/legal/cgu", label: "Conditions générales d'utilisation", title: "Règles d'usage du service" },
-      { to: "/legal/cgv", label: "Conditions générales de vente", title: "Offres payantes, paiement et rétractation" },
+      {
+        to: "/legal/mentions-legales",
+        label: "Mentions légales",
+        title: "Éditeur, hébergeur et propriété intellectuelle",
+      },
+      {
+        to: "/legal/confidentialite",
+        label: "Politique de confidentialité",
+        title: "Données personnelles et droits RGPD",
+      },
+      {
+        to: "/legal/cgu",
+        label: "Conditions générales d'utilisation",
+        title: "Règles d'usage du service",
+      },
+      {
+        to: "/legal/cgv",
+        label: "Conditions générales de vente",
+        title: "Offres payantes, paiement et rétractation",
+      },
       { to: "/legal/cookies", label: "Politique de cookies", title: "Traceurs et consentement" },
     ],
   },

@@ -62,7 +62,9 @@ function TarifsPage() {
               <article
                 key={plan.id}
                 className={`flex flex-col rounded-xl border bg-card p-6 ${
-                  plan.highlighted ? "border-primary shadow-[0_8px_24px_rgba(0,0,0,0.12)]" : "border-border"
+                  plan.highlighted
+                    ? "border-primary shadow-[0_8px_24px_rgba(0,0,0,0.12)]"
+                    : "border-border"
                 }`}
               >
                 <div className="flex items-center justify-between gap-2">
@@ -73,22 +75,24 @@ function TarifsPage() {
                 <p className="mt-4 text-3xl font-bold text-foreground">
                   {formatPrice(plan.price_cents, plan.currency)}
                   {plan.price_cents > 0 ? (
-                    <span className="text-sm font-normal text-muted-foreground"> / {plan.period}</span>
+                    <span className="text-sm font-normal text-muted-foreground">
+                      {" "}
+                      / {plan.period}
+                    </span>
                   ) : null}
                 </p>
                 <ul className="mt-5 flex-1 space-y-2 text-sm text-muted-foreground">
                   {features.map((feature) => (
                     <li key={feature} className="flex items-start gap-2">
-                      <Check className="mt-0.5 size-4 shrink-0 text-success-text" aria-hidden="true" />
+                      <Check
+                        className="mt-0.5 size-4 shrink-0 text-success-text"
+                        aria-hidden="true"
+                      />
                       <span>{feature}</span>
                     </li>
                   ))}
                 </ul>
-                <Button
-                  asChild
-                  className="mt-6"
-                  variant={plan.highlighted ? "default" : "outline"}
-                >
+                <Button asChild className="mt-6" variant={plan.highlighted ? "default" : "outline"}>
                   <Link to="/signup" title={`Choisir l'offre ${plan.name}`}>
                     {plan.cta_label}
                   </Link>

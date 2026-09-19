@@ -70,9 +70,17 @@ function AdminPilotagePage() {
         .from("roadmap_items")
         .select("id, title, description, lot, status, priority, position, public_visible")
         .order("position", { ascending: true }),
-      supabase.from("masterplan_sections").select("id, title, content, position").order("position", { ascending: true }),
-      supabase.from("audits").select("id, label, score, max_score, summary, performed_at").order("performed_at", { ascending: false }),
-      supabase.from("audit_findings").select("id, audit_id, code, severity, location, description, resolved"),
+      supabase
+        .from("masterplan_sections")
+        .select("id, title, content, position")
+        .order("position", { ascending: true }),
+      supabase
+        .from("audits")
+        .select("id, label, score, max_score, summary, performed_at")
+        .order("performed_at", { ascending: false }),
+      supabase
+        .from("audit_findings")
+        .select("id, audit_id, code, severity, location, description, resolved"),
     ]);
     setItems(roadmap.data ?? []);
     setSections(masterplan.data ?? []);
@@ -112,7 +120,10 @@ function AdminPilotagePage() {
   }
 
   async function saveSection(section: Section, content: string) {
-    const { error } = await supabase.from("masterplan_sections").update({ content }).eq("id", section.id);
+    const { error } = await supabase
+      .from("masterplan_sections")
+      .update({ content })
+      .eq("id", section.id);
     if (error) toast.error("Section non enregistrée.");
     else toast.success("Plan directeur mis à jour.");
   }
@@ -132,7 +143,9 @@ function AdminPilotagePage() {
       return;
     }
     form.reset();
-    toast.success("Audit enregistré.", { description: "Il rejoint l'historique et sert de mémoire." });
+    toast.success("Audit enregistré.", {
+      description: "Il rejoint l'historique et sert de mémoire.",
+    });
     void load();
   }
 
@@ -175,7 +188,11 @@ function AdminPilotagePage() {
                   <button
                     type="button"
                     onClick={() => updateItem(item.id, { public_visible: !item.public_visible })}
-                    title={item.public_visible ? "Masquer cette étape du public" : "Rendre cette étape publique"}
+                    title={
+                      item.public_visible
+                        ? "Masquer cette étape du public"
+                        : "Rendre cette étape publique"
+                    }
                     className="ml-auto min-h-11 rounded-md border border-border px-3 text-xs font-medium text-muted-foreground hover:bg-accent sm:min-h-9"
                   >
                     {item.public_visible ? "Visible du public" : "Interne"}
@@ -222,7 +239,9 @@ function AdminPilotagePage() {
                   defaultValue={section.content}
                   rows={3}
                   className="mt-2"
-                  onBlur={(e) => e.target.value !== section.content && saveSection(section, e.target.value)}
+                  onBlur={(e) =>
+                    e.target.value !== section.content && saveSection(section, e.target.value)
+                  }
                 />
               </li>
             ))}
@@ -259,11 +278,15 @@ function AdminPilotagePage() {
                     <ul className="mt-3 space-y-1.5 text-xs text-muted-foreground">
                       {own.map((finding) => (
                         <li key={finding.id}>
-                          <span className={finding.severity === "majeur" ? "text-warning-text" : ""}>
+                          <span
+                            className={finding.severity === "majeur" ? "text-warning-text" : ""}
+                          >
                             {finding.code} — {finding.description}
                           </span>{" "}
                           <span className="text-muted-foreground">({finding.location})</span>
-                          {finding.resolved ? <span className="text-success-text"> — corrigé</span> : null}
+                          {finding.resolved ? (
+                            <span className="text-success-text"> — corrigé</span>
+                          ) : null}
                         </li>
                       ))}
                     </ul>
@@ -287,7 +310,12 @@ function AdminPilotagePage() {
             </div>
             <div className="space-y-1.5 sm:col-span-3">
               <Label htmlFor="a-summary">Résumé</Label>
-              <Textarea id="a-summary" name="summary" rows={3} placeholder="Ce que l'audit a relevé" />
+              <Textarea
+                id="a-summary"
+                name="summary"
+                rows={3}
+                placeholder="Ce que l'audit a relevé"
+              />
             </div>
             <input type="hidden" name="max_score" value={100} />
           </div>

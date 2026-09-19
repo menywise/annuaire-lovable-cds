@@ -43,28 +43,67 @@ const steps = [
 
 const shipped = [
   { to: "/", label: "Tokens et fondations", title: "Couleurs, typographie, rayons et ombres" },
-  { to: "/admin", label: "Espace d'administration", title: "Paramètres, contenus, modération, abonnés" },
-  { to: "/composants", label: "Bibliothèque de composants", title: "Boutons, champs, tableaux, fenêtres, pagination" },
-  { to: "/demarrer", label: "Tunnel de vente", title: "Parcours en trois étapes jusqu'à la création de compte" },
-  { to: "/tarifs", label: "Offres tarifaires", title: "Grille d'offres pilotée depuis l'administration" },
+  {
+    to: "/admin",
+    label: "Espace d'administration",
+    title: "Paramètres, contenus, modération, abonnés",
+  },
+  {
+    to: "/composants",
+    label: "Bibliothèque de composants",
+    title: "Boutons, champs, tableaux, fenêtres, pagination",
+  },
+  {
+    to: "/demarrer",
+    label: "Tunnel de vente",
+    title: "Parcours en trois étapes jusqu'à la création de compte",
+  },
+  {
+    to: "/tarifs",
+    label: "Offres tarifaires",
+    title: "Grille d'offres pilotée depuis l'administration",
+  },
   { to: "/faq", label: "Questions fréquentes", title: "FAQ balisée pour les moteurs de recherche" },
   { to: "/blog", label: "Blog et commentaires", title: "Articles publiés et commentaires modérés" },
   { to: "/forum", label: "Forum", title: "Sujets et réponses entre membres" },
-  { to: "/avis", label: "Avis et notations", title: "Notes sur cinq étoiles validées avant publication" },
-  { to: "/tableau-de-bord", label: "Tableau de bord", title: "Chiffres clés et raccourcis du compte" },
-  { to: "/login", label: "Écrans de connexion", title: "Connexion, inscription, vérification et mot de passe" },
+  {
+    to: "/avis",
+    label: "Avis et notations",
+    title: "Notes sur cinq étoiles validées avant publication",
+  },
+  {
+    to: "/tableau-de-bord",
+    label: "Tableau de bord",
+    title: "Chiffres clés et raccourcis du compte",
+  },
+  {
+    to: "/login",
+    label: "Écrans de connexion",
+    title: "Connexion, inscription, vérification et mot de passe",
+  },
   { to: "/contact", label: "Formulaire de contact", title: "Formulaire protégé anti-spam" },
-  { to: "/legal/mentions-legales", label: "Pages légales", title: "Mentions légales, confidentialité, CGU, cookies" },
-  { to: "/maintenance", label: "Page de maintenance", title: "Écran affiché pendant une interruption de service" },
+  {
+    to: "/legal/mentions-legales",
+    label: "Pages légales",
+    title: "Mentions légales, confidentialité, CGU, cookies",
+  },
+  {
+    to: "/maintenance",
+    label: "Page de maintenance",
+    title: "Écran affiché pendant une interruption de service",
+  },
 ] as const;
-
 
 function GuidePage() {
   return (
     <PageShell>
       <article className="mx-auto max-w-[760px]">
-        <p className="text-xs font-medium uppercase tracking-wide text-primary-text">Documentation</p>
-        <h1 className="mt-2 text-3xl font-bold text-foreground">Réutiliser CDS sur un nouveau projet</h1>
+        <p className="text-xs font-medium uppercase tracking-wide text-primary-text">
+          Documentation
+        </p>
+        <h1 className="mt-2 text-3xl font-bold text-foreground">
+          Réutiliser CDS sur un nouveau projet
+        </h1>
         <p className="mt-2 text-sm text-muted-foreground">
           CDS est un modèle complet : fondations visuelles, composants, pages de compte et pages
           légales prêtes à l'emploi. Voici la marche à suivre.
@@ -89,7 +128,9 @@ function GuidePage() {
               className="rounded-xl border border-border bg-card p-4 text-sm font-medium text-foreground transition-shadow hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)]"
             >
               {item.label}
-              <span className="mt-1 block text-xs font-normal text-muted-foreground">{item.title}</span>
+              <span className="mt-1 block text-xs font-normal text-muted-foreground">
+                {item.title}
+              </span>
             </Link>
           ))}
         </div>

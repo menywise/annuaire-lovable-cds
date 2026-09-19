@@ -24,9 +24,7 @@ export const Route = createFileRoute("/legal/cgu")({
         <ul>
           <li>Les informations fournies à l'inscription doivent être exactes et à jour.</li>
           <li>L'utilisateur est responsable de la confidentialité de ses identifiants.</li>
-          <li>
-            Tout usage frauduleux doit être signalé sans délai via le formulaire de contact.
-          </li>
+          <li>Tout usage frauduleux doit être signalé sans délai via le formulaire de contact.</li>
         </ul>
       </Section>
       <Section title="Obligations de l'utilisateur">
@@ -50,7 +48,11 @@ export const Route = createFileRoute("/legal/cgu")({
       <Section title="Contact et droit applicable">
         <p>
           Toute question peut être adressée via le{" "}
-          <Link to="/contact" title="Nous écrire via le formulaire de contact protégé" className="font-medium text-primary-text hover:underline">
+          <Link
+            to="/contact"
+            title="Nous écrire via le formulaire de contact protégé"
+            className="font-medium text-primary-text hover:underline"
+          >
             formulaire de contact
           </Link>
           . Les présentes conditions sont soumises au droit français ; à défaut d'accord amiable,

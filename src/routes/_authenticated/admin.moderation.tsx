@@ -110,7 +110,9 @@ function AdminModerationPage() {
                   {review.approved ? "Publié" : "En attente"}
                 </Badge>
               </div>
-              <p className="mt-2 whitespace-pre-line text-sm text-muted-foreground">{review.content}</p>
+              <p className="mt-2 whitespace-pre-line text-sm text-muted-foreground">
+                {review.content}
+              </p>
               <p className="mt-2 text-xs text-muted-foreground">
                 {review.author_name} — {new Date(review.created_at).toLocaleString("fr-FR")}
               </p>
@@ -119,7 +121,12 @@ function AdminModerationPage() {
                   size="sm"
                   onClick={async () =>
                     done(
-                      (await supabase.from("reviews").update({ approved: !review.approved }).eq("id", review.id)).error,
+                      (
+                        await supabase
+                          .from("reviews")
+                          .update({ approved: !review.approved })
+                          .eq("id", review.id)
+                      ).error,
                       review.approved ? "Avis retiré." : "Avis publié.",
                     )
                   }
@@ -131,7 +138,10 @@ function AdminModerationPage() {
                   size="sm"
                   variant="outline"
                   onClick={async () =>
-                    done((await supabase.from("reviews").delete().eq("id", review.id)).error, "Avis supprimé.")
+                    done(
+                      (await supabase.from("reviews").delete().eq("id", review.id)).error,
+                      "Avis supprimé.",
+                    )
                   }
                   title="Supprimer définitivement cet avis"
                 >
@@ -156,7 +166,9 @@ function AdminModerationPage() {
                   {comment.approved ? "Publié" : "En attente"}
                 </Badge>
               </div>
-              <p className="mt-2 whitespace-pre-line text-sm text-muted-foreground">{comment.content}</p>
+              <p className="mt-2 whitespace-pre-line text-sm text-muted-foreground">
+                {comment.content}
+              </p>
               <div className="mt-3 flex gap-2">
                 <Button
                   size="sm"
@@ -215,7 +227,12 @@ function AdminModerationPage() {
                   size="sm"
                   onClick={async () =>
                     done(
-                      (await supabase.from("forum_topics").update({ locked: !topic.locked }).eq("id", topic.id)).error,
+                      (
+                        await supabase
+                          .from("forum_topics")
+                          .update({ locked: !topic.locked })
+                          .eq("id", topic.id)
+                      ).error,
                       topic.locked ? "Discussion rouverte." : "Discussion close.",
                     )
                   }

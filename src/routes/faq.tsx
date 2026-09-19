@@ -88,7 +88,9 @@ function FaqPage() {
   return (
     <PageShell>
       <div className="mx-auto max-w-[760px]">
-        <p className="text-xs font-medium uppercase tracking-wide text-primary-text">Questions fréquentes</p>
+        <p className="text-xs font-medium uppercase tracking-wide text-primary-text">
+          Questions fréquentes
+        </p>
         <h1 className="mt-2 text-3xl font-bold text-foreground">
           Ce que vous vous demandez avant de vous lancer
         </h1>
@@ -128,7 +130,8 @@ function FaqPage() {
 
         {visible.length === 0 ? (
           <p className="mt-8 rounded-lg border border-dashed border-border p-10 text-center text-sm text-muted-foreground">
-            Aucune réponse ne correspond. Posez votre question directement, elle nourrira cette page.
+            Aucune réponse ne correspond. Posez votre question directement, elle nourrira cette
+            page.
           </p>
         ) : (
           categories.map((category) => (
@@ -152,12 +155,20 @@ function FaqPage() {
 
         <p className="mt-8 text-sm text-muted-foreground">
           Votre question n'y figure pas ?{" "}
-          <Link to="/contact" title="Poser votre question via le formulaire de contact" className="text-primary-text hover:underline">
+          <Link
+            to="/contact"
+            title="Poser votre question via le formulaire de contact"
+            className="text-primary-text hover:underline"
+          >
             Posez-la ici
           </Link>
           , vous aurez une réponse sous 48 heures ouvrées. Vous pouvez aussi la soumettre à la
           communauté sur le{" "}
-          <Link to="/forum" title="Poser votre question au forum" className="text-primary-text hover:underline">
+          <Link
+            to="/forum"
+            title="Poser votre question au forum"
+            className="text-primary-text hover:underline"
+          >
             forum
           </Link>
           .

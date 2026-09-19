@@ -2,7 +2,6 @@ import { createFileRoute } from "@tanstack/react-router";
 import { brand } from "@/config/brand";
 import { listPosts, listTopics } from "@/lib/content.functions";
 
-
 /** Pages publiques indexables, avec leur priorité de référencement. */
 const pages: Array<{ path: string; priority: string; changefreq: string }> = [
   { path: "/", priority: "1.0", changefreq: "weekly" },
@@ -29,8 +28,6 @@ const pages: Array<{ path: string; priority: string; changefreq: string }> = [
   { path: "/legal/cgv", priority: "0.4", changefreq: "yearly" },
   { path: "/legal/cookies", priority: "0.4", changefreq: "yearly" },
 ];
-
-
 
 export const Route = createFileRoute("/sitemap.xml")({
   server: {

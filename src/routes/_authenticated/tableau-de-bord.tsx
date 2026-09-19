@@ -29,12 +29,42 @@ type Stats = {
 };
 
 const raccourcis = [
-  { to: "/admin", label: "Paramètres du site", desc: "Nom, coordonnées légales, hébergeur", title: "Régler les paramètres du site" },
-  { to: "/compte", label: "Messages reçus", desc: "Demandes envoyées par le formulaire", title: "Consulter les messages reçus" },
-  { to: "/profil", label: "Mon profil", desc: "Nom affiché, profil public et mot de passe", title: "Modifier mon profil" },
-  { to: "/decouvrir", label: "Découvrir", desc: "Tout ce que votre espace permet déjà", title: "Faire le tour des fonctionnalités actives" },
-  { to: "/messagerie", label: "Messagerie", desc: "Vos échanges privés", title: "Ouvrir ma messagerie" },
-  { to: "/membres", label: "Annuaire", desc: "Les membres de la communauté", title: "Parcourir l'annuaire" },
+  {
+    to: "/admin",
+    label: "Paramètres du site",
+    desc: "Nom, coordonnées légales, hébergeur",
+    title: "Régler les paramètres du site",
+  },
+  {
+    to: "/compte",
+    label: "Messages reçus",
+    desc: "Demandes envoyées par le formulaire",
+    title: "Consulter les messages reçus",
+  },
+  {
+    to: "/profil",
+    label: "Mon profil",
+    desc: "Nom affiché, profil public et mot de passe",
+    title: "Modifier mon profil",
+  },
+  {
+    to: "/decouvrir",
+    label: "Découvrir",
+    desc: "Tout ce que votre espace permet déjà",
+    title: "Faire le tour des fonctionnalités actives",
+  },
+  {
+    to: "/messagerie",
+    label: "Messagerie",
+    desc: "Vos échanges privés",
+    title: "Ouvrir ma messagerie",
+  },
+  {
+    to: "/membres",
+    label: "Annuaire",
+    desc: "Les membres de la communauté",
+    title: "Parcourir l'annuaire",
+  },
   { to: "/forum", label: "Forum", desc: "Discussions en cours", title: "Ouvrir le forum" },
 ] as const;
 
@@ -56,8 +86,18 @@ function DashboardPage() {
       if (cancelled) return;
       setRole(nextRole);
 
-      const count = async (table: "contact_messages" | "newsletter_subscribers" | "reviews" | "forum_topics" | "blog_posts" | "blog_comments") => {
-        const { count: value } = await supabase.from(table).select("id", { count: "exact", head: true });
+      const count = async (
+        table:
+          | "contact_messages"
+          | "newsletter_subscribers"
+          | "reviews"
+          | "forum_topics"
+          | "blog_posts"
+          | "blog_comments",
+      ) => {
+        const { count: value } = await supabase
+          .from(table)
+          .select("id", { count: "exact", head: true });
         return value ?? null;
       };
 

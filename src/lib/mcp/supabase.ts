@@ -35,7 +35,7 @@ function supabasePublishableKey(): string {
       const parsed: unknown = JSON.parse(keyset);
       if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
         const keys = parsed as Record<string, unknown>;
-        const key = [keys['default'], ...Object.values(keys)]
+        const key = [keys["default"], ...Object.values(keys)]
           .find((v): v is string => typeof v === "string" && v.trim().startsWith("sb_publishable_"))
           ?.trim();
         if (key) return key;
@@ -67,7 +67,8 @@ export function supabaseForUser(ctx: ToolContext) {
 }
 
 export function siteBaseUrl(override?: string): string {
-  const base = override?.trim() || configuredEnv(["SITE_URL"]) || "https://cds-mac97000.lovable.app";
+  const base =
+    override?.trim() || configuredEnv(["SITE_URL"]) || "https://cds-mac97000.lovable.app";
   return base.replace(/\/+$/, "");
 }
 

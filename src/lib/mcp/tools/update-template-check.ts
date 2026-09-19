@@ -15,9 +15,17 @@ export default defineTool({
       .optional()
       .describe("Nouvel état."),
     severity: z.enum(["bloquant", "majeur", "mineur"]).optional().describe("Gravité constatée."),
-    evidence: z.string().optional().describe("Constat : fichier + ligne, ou page + élément visible."),
+    evidence: z
+      .string()
+      .optional()
+      .describe("Constat : fichier + ligne, ou page + élément visible."),
   },
-  annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+  annotations: {
+    readOnlyHint: false,
+    destructiveHint: false,
+    idempotentHint: true,
+    openWorldHint: false,
+  },
   handler: async ({ code, status, severity, evidence }, ctx) => {
     try {
       const supabase = await requireAdmin(ctx);
