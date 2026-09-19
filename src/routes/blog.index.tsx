@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
 import { PageShell } from "@/components/cds/SiteHeader";
 import { NewsletterForm } from "@/components/cds/NewsletterForm";
+import { AdSlot } from "@/components/cds/AdSlot";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { listPosts } from "@/lib/content.functions";
