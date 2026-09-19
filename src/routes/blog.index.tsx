@@ -180,6 +180,8 @@ function BlogIndex() {
           .
         </p>
 
+        <AdSlot placement="blog-liste" className="mt-10" />
+
         <div className="mt-10">
           <NewsletterForm source="blog" />
         </div>
