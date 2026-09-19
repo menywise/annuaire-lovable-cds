@@ -17,13 +17,13 @@ function buildPublicNav(): NavItem[] {
     { to: "/demarrer", label: "Démarrer", title: "Le parcours en trois étapes jusqu'à votre compte" },
     { to: "/tarifs", label: "Tarifs", title: "Comparer les offres et choisir celle qui vous convient" },
     ...(isFeatureOn("directory")
-      ? [{ to: "/annuaire", label: "Annuaire", title: "Trouver un professionnel près de chez vous" }]
+      ? ([{ to: "/annuaire", label: "Annuaire", title: "Trouver un professionnel près de chez vous" }] as NavItem[])
       : []),
     ...(isFeatureOn("lms")
-      ? [{ to: "/formations", label: "Formations", title: "Se former à son rythme, leçon par leçon" }]
+      ? ([{ to: "/formations", label: "Formations", title: "Se former à son rythme, leçon par leçon" }] as NavItem[])
       : []),
     ...(isFeatureOn("marketplace")
-      ? [{ to: "/marketplace", label: "Annonces", title: "Voir les annonces publiées par les membres" }]
+      ? ([{ to: "/marketplace", label: "Annonces", title: "Voir les annonces publiées par les membres" }] as NavItem[])
       : []),
     { to: "/blog", label: "Blog", title: "Articles et méthodes pour faire avancer votre projet" },
     { to: "/forum", label: "Forum", title: "Poser une question à la communauté" },
