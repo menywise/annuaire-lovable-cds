@@ -3,6 +3,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { PageShell } from "@/components/cds/SiteHeader";
 import { ShareButtons } from "@/components/cds/ShareButtons";
+import { AdSlot } from "@/components/cds/AdSlot";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
