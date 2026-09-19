@@ -136,6 +136,8 @@ function BlogPostPage() {
 
         <RichText value={post.content} className="mt-6" />
 
+        <AdSlot placement="blog-article" className="mt-8" />
+
         <div className="mt-8 border-t border-border pt-6">
           <ShareButtons path={`/blog/${post.slug}`} title={post.title} />
         </div>
