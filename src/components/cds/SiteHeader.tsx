@@ -254,10 +254,12 @@ export function SiteHeader() {
 
 export function SiteFooter() {
   const { settings } = useBrandSettings();
+  const footerColumns = buildFooterColumns();
 
   return (
     <footer className="border-t border-border bg-card">
       <div className="mx-auto max-w-[1200px] px-6 py-10">
+        <AdSlot placement="pied-de-page" className="mb-8" />
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           {footerColumns.map((column) => (
             <nav key={column.title} aria-label={column.title}>
