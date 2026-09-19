@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate, type LinkProps } from "@tanstack/react-router";
 import { Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useBrandSettings } from "@/hooks/useSiteSettings";
@@ -6,8 +6,10 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { CookieBanner } from "@/components/cds/CookieBanner";
 import { NewsletterForm } from "@/components/cds/NewsletterForm";
+import { AdSlot } from "@/components/cds/AdSlot";
+import { isFeatureOn } from "@/config/features";
 
-type NavItem = { to: string; label: string; title: string };
+type NavItem = { to: NonNullable<LinkProps["to"]>; label: string; title: string };
 
 /** Menu des visiteurs : découvrir, comparer, échanger. */
 function buildPublicNav(): NavItem[] {
