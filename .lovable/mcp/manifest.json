@@ -5,7 +5,9 @@
   "auth": {
     "type": "oauth",
     "issuer": "https://ujrsdpxrokypaazxpbax.supabase.co/auth/v1",
-    "accepted_audiences": ["authenticated"]
+    "accepted_audiences": [
+      "authenticated"
+    ]
   },
   "mcp": {
     "server": {
@@ -33,7 +35,12 @@
             "status": {
               "description": "Filtrer sur un état.",
               "type": "string",
-              "enum": ["conforme", "a_corriger", "a_verifier", "non_applicable"]
+              "enum": [
+                "conforme",
+                "a_corriger",
+                "a_verifier",
+                "non_applicable"
+              ]
             }
           }
         },
@@ -61,19 +68,30 @@
             "status": {
               "description": "Nouvel état.",
               "type": "string",
-              "enum": ["conforme", "a_corriger", "a_verifier", "non_applicable"]
+              "enum": [
+                "conforme",
+                "a_corriger",
+                "a_verifier",
+                "non_applicable"
+              ]
             },
             "severity": {
               "description": "Gravité constatée.",
               "type": "string",
-              "enum": ["bloquant", "majeur", "mineur"]
+              "enum": [
+                "bloquant",
+                "majeur",
+                "mineur"
+              ]
             },
             "evidence": {
               "description": "Constat : fichier + ligne, ou page + élément visible.",
               "type": "string"
             }
           },
-          "required": ["code"]
+          "required": [
+            "code"
+          ]
         },
         "outputSchema": null
       },
@@ -136,7 +154,9 @@
               "format": "uri"
             }
           },
-          "required": ["path"]
+          "required": [
+            "path"
+          ]
         },
         "outputSchema": null
       },
@@ -155,7 +175,11 @@
             "status": {
               "description": "Filtrer sur un statut.",
               "type": "string",
-              "enum": ["a_faire", "en_cours", "fait"]
+              "enum": [
+                "a_faire",
+                "en_cours",
+                "fait"
+              ]
             }
           }
         },
@@ -194,11 +218,19 @@
             },
             "status": {
               "type": "string",
-              "enum": ["a_faire", "en_cours", "fait"]
+              "enum": [
+                "a_faire",
+                "en_cours",
+                "fait"
+              ]
             },
             "priority": {
               "type": "string",
-              "enum": ["normale", "haute", "bloque"]
+              "enum": [
+                "normale",
+                "haute",
+                "bloque"
+              ]
             },
             "public_visible": {
               "type": "boolean"
@@ -249,7 +281,11 @@
                   },
                   "severity": {
                     "type": "string",
-                    "enum": ["bloquant", "majeur", "mineur"]
+                    "enum": [
+                      "bloquant",
+                      "majeur",
+                      "mineur"
+                    ]
                   },
                   "location": {
                     "type": "string",
@@ -260,11 +296,18 @@
                     "description": "Anomalie constatée."
                   }
                 },
-                "required": ["code", "severity", "location", "description"]
+                "required": [
+                  "code",
+                  "severity",
+                  "location",
+                  "description"
+                ]
               }
             }
           },
-          "required": ["label"]
+          "required": [
+            "label"
+          ]
         },
         "outputSchema": null
       },

@@ -71,6 +71,7 @@ import { Route as AuthenticatedAdminGeographieRouteImport } from './routes/_auth
 import { Route as AuthenticatedAdminMarketplaceRouteImport } from './routes/_authenticated/admin.marketplace'
 import { Route as AuthenticatedAdminModerationRouteImport } from './routes/_authenticated/admin.moderation'
 import { Route as AuthenticatedAdminPilotageRouteImport } from './routes/_authenticated/admin.pilotage'
+import { Route as AuthenticatedAdminRegieRouteImport } from './routes/_authenticated/admin.regie'
 import { Route as AuthenticatedAdminTemoignagesRouteImport } from './routes/_authenticated/admin.temoignages'
 import { Route as AuthenticatedCrmIndexRouteImport } from './routes/_authenticated/crm.index'
 import { Route as AuthenticatedCrmActionsRouteImport } from './routes/_authenticated/crm.actions'
@@ -406,6 +407,11 @@ const AuthenticatedAdminPilotageRoute =
     path: '/admin/pilotage',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAdminRegieRoute = AuthenticatedAdminRegieRouteImport.update({
+  id: '/admin/regie',
+  path: '/admin/regie',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedAdminTemoignagesRoute =
   AuthenticatedAdminTemoignagesRouteImport.update({
     id: '/admin/temoignages',
@@ -534,6 +540,7 @@ export interface FileRoutesByFullPath {
   '/admin/marketplace': typeof AuthenticatedAdminMarketplaceRoute
   '/admin/moderation': typeof AuthenticatedAdminModerationRoute
   '/admin/pilotage': typeof AuthenticatedAdminPilotageRoute
+  '/admin/regie': typeof AuthenticatedAdminRegieRoute
   '/admin/temoignages': typeof AuthenticatedAdminTemoignagesRoute
   '/crm/actions': typeof AuthenticatedCrmActionsRoute
   '/crm/prospects': typeof AuthenticatedCrmProspectsRoute
@@ -609,6 +616,7 @@ export interface FileRoutesByTo {
   '/admin/marketplace': typeof AuthenticatedAdminMarketplaceRoute
   '/admin/moderation': typeof AuthenticatedAdminModerationRoute
   '/admin/pilotage': typeof AuthenticatedAdminPilotageRoute
+  '/admin/regie': typeof AuthenticatedAdminRegieRoute
   '/admin/temoignages': typeof AuthenticatedAdminTemoignagesRoute
   '/crm/actions': typeof AuthenticatedCrmActionsRoute
   '/crm/prospects': typeof AuthenticatedCrmProspectsRoute
@@ -686,6 +694,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/marketplace': typeof AuthenticatedAdminMarketplaceRoute
   '/_authenticated/admin/moderation': typeof AuthenticatedAdminModerationRoute
   '/_authenticated/admin/pilotage': typeof AuthenticatedAdminPilotageRoute
+  '/_authenticated/admin/regie': typeof AuthenticatedAdminRegieRoute
   '/_authenticated/admin/temoignages': typeof AuthenticatedAdminTemoignagesRoute
   '/_authenticated/crm/actions': typeof AuthenticatedCrmActionsRoute
   '/_authenticated/crm/prospects': typeof AuthenticatedCrmProspectsRoute
@@ -763,6 +772,7 @@ export interface FileRouteTypes {
     | '/admin/marketplace'
     | '/admin/moderation'
     | '/admin/pilotage'
+    | '/admin/regie'
     | '/admin/temoignages'
     | '/crm/actions'
     | '/crm/prospects'
@@ -838,6 +848,7 @@ export interface FileRouteTypes {
     | '/admin/marketplace'
     | '/admin/moderation'
     | '/admin/pilotage'
+    | '/admin/regie'
     | '/admin/temoignages'
     | '/crm/actions'
     | '/crm/prospects'
@@ -914,6 +925,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/marketplace'
     | '/_authenticated/admin/moderation'
     | '/_authenticated/admin/pilotage'
+    | '/_authenticated/admin/regie'
     | '/_authenticated/admin/temoignages'
     | '/_authenticated/crm/actions'
     | '/_authenticated/crm/prospects'
@@ -1417,6 +1429,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminPilotageRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/regie': {
+      id: '/_authenticated/admin/regie'
+      path: '/admin/regie'
+      fullPath: '/admin/regie'
+      preLoaderRoute: typeof AuthenticatedAdminRegieRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/temoignages': {
       id: '/_authenticated/admin/temoignages'
       path: '/admin/temoignages'
@@ -1522,6 +1541,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminMarketplaceRoute: typeof AuthenticatedAdminMarketplaceRoute
   AuthenticatedAdminModerationRoute: typeof AuthenticatedAdminModerationRoute
   AuthenticatedAdminPilotageRoute: typeof AuthenticatedAdminPilotageRoute
+  AuthenticatedAdminRegieRoute: typeof AuthenticatedAdminRegieRoute
   AuthenticatedAdminTemoignagesRoute: typeof AuthenticatedAdminTemoignagesRoute
   AuthenticatedCrmActionsRoute: typeof AuthenticatedCrmActionsRoute
   AuthenticatedCrmProspectsRoute: typeof AuthenticatedCrmProspectsRoute
@@ -1550,6 +1570,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminMarketplaceRoute: AuthenticatedAdminMarketplaceRoute,
   AuthenticatedAdminModerationRoute: AuthenticatedAdminModerationRoute,
   AuthenticatedAdminPilotageRoute: AuthenticatedAdminPilotageRoute,
+  AuthenticatedAdminRegieRoute: AuthenticatedAdminRegieRoute,
   AuthenticatedAdminTemoignagesRoute: AuthenticatedAdminTemoignagesRoute,
   AuthenticatedCrmActionsRoute: AuthenticatedCrmActionsRoute,
   AuthenticatedCrmProspectsRoute: AuthenticatedCrmProspectsRoute,
