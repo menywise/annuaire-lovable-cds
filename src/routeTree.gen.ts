@@ -65,8 +65,10 @@ import { Route as AuthenticatedAdminAnnuaireRouteImport } from './routes/_authen
 import { Route as AuthenticatedAdminConformiteRouteImport } from './routes/_authenticated/admin.conformite'
 import { Route as AuthenticatedAdminContenusRouteImport } from './routes/_authenticated/admin.contenus'
 import { Route as AuthenticatedAdminCrmRouteImport } from './routes/_authenticated/admin.crm'
+import { Route as AuthenticatedAdminFormationsRouteImport } from './routes/_authenticated/admin.formations'
 import { Route as AuthenticatedAdminForumRouteImport } from './routes/_authenticated/admin.forum'
 import { Route as AuthenticatedAdminGeographieRouteImport } from './routes/_authenticated/admin.geographie'
+import { Route as AuthenticatedAdminMarketplaceRouteImport } from './routes/_authenticated/admin.marketplace'
 import { Route as AuthenticatedAdminModerationRouteImport } from './routes/_authenticated/admin.moderation'
 import { Route as AuthenticatedAdminPilotageRouteImport } from './routes/_authenticated/admin.pilotage'
 import { Route as AuthenticatedAdminTemoignagesRouteImport } from './routes/_authenticated/admin.temoignages'
@@ -369,6 +371,12 @@ const AuthenticatedAdminCrmRoute = AuthenticatedAdminCrmRouteImport.update({
   path: '/admin/crm',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAdminFormationsRoute =
+  AuthenticatedAdminFormationsRouteImport.update({
+    id: '/admin/formations',
+    path: '/admin/formations',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminForumRoute = AuthenticatedAdminForumRouteImport.update({
   id: '/admin/forum',
   path: '/admin/forum',
@@ -378,6 +386,12 @@ const AuthenticatedAdminGeographieRoute =
   AuthenticatedAdminGeographieRouteImport.update({
     id: '/admin/geographie',
     path: '/admin/geographie',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminMarketplaceRoute =
+  AuthenticatedAdminMarketplaceRouteImport.update({
+    id: '/admin/marketplace',
+    path: '/admin/marketplace',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedAdminModerationRoute =
@@ -514,8 +528,10 @@ export interface FileRoutesByFullPath {
   '/admin/conformite': typeof AuthenticatedAdminConformiteRoute
   '/admin/contenus': typeof AuthenticatedAdminContenusRoute
   '/admin/crm': typeof AuthenticatedAdminCrmRoute
+  '/admin/formations': typeof AuthenticatedAdminFormationsRoute
   '/admin/forum': typeof AuthenticatedAdminForumRoute
   '/admin/geographie': typeof AuthenticatedAdminGeographieRoute
+  '/admin/marketplace': typeof AuthenticatedAdminMarketplaceRoute
   '/admin/moderation': typeof AuthenticatedAdminModerationRoute
   '/admin/pilotage': typeof AuthenticatedAdminPilotageRoute
   '/admin/temoignages': typeof AuthenticatedAdminTemoignagesRoute
@@ -587,8 +603,10 @@ export interface FileRoutesByTo {
   '/admin/conformite': typeof AuthenticatedAdminConformiteRoute
   '/admin/contenus': typeof AuthenticatedAdminContenusRoute
   '/admin/crm': typeof AuthenticatedAdminCrmRoute
+  '/admin/formations': typeof AuthenticatedAdminFormationsRoute
   '/admin/forum': typeof AuthenticatedAdminForumRoute
   '/admin/geographie': typeof AuthenticatedAdminGeographieRoute
+  '/admin/marketplace': typeof AuthenticatedAdminMarketplaceRoute
   '/admin/moderation': typeof AuthenticatedAdminModerationRoute
   '/admin/pilotage': typeof AuthenticatedAdminPilotageRoute
   '/admin/temoignages': typeof AuthenticatedAdminTemoignagesRoute
@@ -662,8 +680,10 @@ export interface FileRoutesById {
   '/_authenticated/admin/conformite': typeof AuthenticatedAdminConformiteRoute
   '/_authenticated/admin/contenus': typeof AuthenticatedAdminContenusRoute
   '/_authenticated/admin/crm': typeof AuthenticatedAdminCrmRoute
+  '/_authenticated/admin/formations': typeof AuthenticatedAdminFormationsRoute
   '/_authenticated/admin/forum': typeof AuthenticatedAdminForumRoute
   '/_authenticated/admin/geographie': typeof AuthenticatedAdminGeographieRoute
+  '/_authenticated/admin/marketplace': typeof AuthenticatedAdminMarketplaceRoute
   '/_authenticated/admin/moderation': typeof AuthenticatedAdminModerationRoute
   '/_authenticated/admin/pilotage': typeof AuthenticatedAdminPilotageRoute
   '/_authenticated/admin/temoignages': typeof AuthenticatedAdminTemoignagesRoute
@@ -737,8 +757,10 @@ export interface FileRouteTypes {
     | '/admin/conformite'
     | '/admin/contenus'
     | '/admin/crm'
+    | '/admin/formations'
     | '/admin/forum'
     | '/admin/geographie'
+    | '/admin/marketplace'
     | '/admin/moderation'
     | '/admin/pilotage'
     | '/admin/temoignages'
@@ -810,8 +832,10 @@ export interface FileRouteTypes {
     | '/admin/conformite'
     | '/admin/contenus'
     | '/admin/crm'
+    | '/admin/formations'
     | '/admin/forum'
     | '/admin/geographie'
+    | '/admin/marketplace'
     | '/admin/moderation'
     | '/admin/pilotage'
     | '/admin/temoignages'
@@ -884,8 +908,10 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/conformite'
     | '/_authenticated/admin/contenus'
     | '/_authenticated/admin/crm'
+    | '/_authenticated/admin/formations'
     | '/_authenticated/admin/forum'
     | '/_authenticated/admin/geographie'
+    | '/_authenticated/admin/marketplace'
     | '/_authenticated/admin/moderation'
     | '/_authenticated/admin/pilotage'
     | '/_authenticated/admin/temoignages'
@@ -1349,6 +1375,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminCrmRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/formations': {
+      id: '/_authenticated/admin/formations'
+      path: '/admin/formations'
+      fullPath: '/admin/formations'
+      preLoaderRoute: typeof AuthenticatedAdminFormationsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/forum': {
       id: '/_authenticated/admin/forum'
       path: '/admin/forum'
@@ -1361,6 +1394,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/geographie'
       fullPath: '/admin/geographie'
       preLoaderRoute: typeof AuthenticatedAdminGeographieRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/marketplace': {
+      id: '/_authenticated/admin/marketplace'
+      path: '/admin/marketplace'
+      fullPath: '/admin/marketplace'
+      preLoaderRoute: typeof AuthenticatedAdminMarketplaceRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/admin/moderation': {
@@ -1476,8 +1516,10 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminConformiteRoute: typeof AuthenticatedAdminConformiteRoute
   AuthenticatedAdminContenusRoute: typeof AuthenticatedAdminContenusRoute
   AuthenticatedAdminCrmRoute: typeof AuthenticatedAdminCrmRoute
+  AuthenticatedAdminFormationsRoute: typeof AuthenticatedAdminFormationsRoute
   AuthenticatedAdminForumRoute: typeof AuthenticatedAdminForumRoute
   AuthenticatedAdminGeographieRoute: typeof AuthenticatedAdminGeographieRoute
+  AuthenticatedAdminMarketplaceRoute: typeof AuthenticatedAdminMarketplaceRoute
   AuthenticatedAdminModerationRoute: typeof AuthenticatedAdminModerationRoute
   AuthenticatedAdminPilotageRoute: typeof AuthenticatedAdminPilotageRoute
   AuthenticatedAdminTemoignagesRoute: typeof AuthenticatedAdminTemoignagesRoute
@@ -1502,8 +1544,10 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminConformiteRoute: AuthenticatedAdminConformiteRoute,
   AuthenticatedAdminContenusRoute: AuthenticatedAdminContenusRoute,
   AuthenticatedAdminCrmRoute: AuthenticatedAdminCrmRoute,
+  AuthenticatedAdminFormationsRoute: AuthenticatedAdminFormationsRoute,
   AuthenticatedAdminForumRoute: AuthenticatedAdminForumRoute,
   AuthenticatedAdminGeographieRoute: AuthenticatedAdminGeographieRoute,
+  AuthenticatedAdminMarketplaceRoute: AuthenticatedAdminMarketplaceRoute,
   AuthenticatedAdminModerationRoute: AuthenticatedAdminModerationRoute,
   AuthenticatedAdminPilotageRoute: AuthenticatedAdminPilotageRoute,
   AuthenticatedAdminTemoignagesRoute: AuthenticatedAdminTemoignagesRoute,
