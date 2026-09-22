@@ -156,7 +156,7 @@ function PlanDuSitePage() {
         </p>
 
         <div className="mt-8 grid gap-4 sm:grid-cols-2">
-          {groupes.map((groupe) => (
+          {[...groupes, ...(modulesGroup() ? [modulesGroup()!] : [])].map((groupe) => (
             <section key={groupe.title} className="rounded-xl border border-border bg-card p-5">
               <h2 className="text-base font-semibold text-foreground">{groupe.title}</h2>
               <ul className="mt-3 space-y-1.5 text-sm">
