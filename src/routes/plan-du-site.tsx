@@ -1,6 +1,7 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, type LinkProps } from "@tanstack/react-router";
 import { PageShell } from "@/components/cds/SiteHeader";
 import { seo } from "@/lib/seo";
+import { isFeatureOn } from "@/config/features";
 
 export const Route = createFileRoute("/plan-du-site")({
   head: () =>
@@ -102,7 +103,46 @@ const groupes = [
       { to: "/legal/cookies", label: "Politique de cookies", title: "Traceurs et consentement" },
     ],
   },
-] as const;
+];
+
+type PlanLink = { to: NonNullable<LinkProps["to"]>; label: string; title: string };
+
+/** Liens des briques optionnelles : présents seulement si la brique est active. */
+function modulesGroup(): { title: string; links: PlanLink[] } | null {
+  const links: PlanLink[] = [
+    ...(isFeatureOn("directory")
+      ? ([
+          { to: "/annuaire", label: "Annuaire métier", title: "Trouver un professionnel près de chez vous" },
+          { to: "/annuaire/soumettre", label: "Proposer une fiche", title: "Ajouter un professionnel à l'annuaire" },
+        ] as PlanLink[])
+      : []),
+    ...(isFeatureOn("geo")
+      ? ([
+          { to: "/annuaire/departements", label: "Départements", title: "Parcourir l'annuaire département par département" },
+        ] as PlanLink[])
+      : []),
+    ...(isFeatureOn("lms")
+      ? ([
+          { to: "/formations", label: "Formations", title: "Catalogue des formations en ligne" },
+          { to: "/mes-formations", label: "Mes formations", title: "Reprendre vos formations en cours" },
+        ] as PlanLink[])
+      : []),
+    ...(isFeatureOn("marketplace")
+      ? ([
+          { to: "/marketplace", label: "Annonces", title: "Petites annonces entre membres" },
+          { to: "/marketplace/publier", label: "Publier une annonce", title: "Mettre en vente un article" },
+          { to: "/mes-annonces", label: "Mes annonces", title: "Gérer vos annonces publiées" },
+        ] as PlanLink[])
+      : []),
+    ...(isFeatureOn("crm")
+      ? ([{ to: "/crm", label: "Mes contacts", title: "Suivre vos prospects et vos relances" }] as PlanLink[])
+      : []),
+    ...(isFeatureOn("adNetwork")
+      ? ([{ to: "/publicite", label: "Annoncer sur le site", title: "Formats publicitaires et contact régie" }] as PlanLink[])
+      : []),
+  ];
+  return links.length ? { title: "Modules", links } : null;
+}
 
 function PlanDuSitePage() {
   return (
@@ -116,7 +156,7 @@ function PlanDuSitePage() {
         </p>
 
         <div className="mt-8 grid gap-4 sm:grid-cols-2">
-          {groupes.map((groupe) => (
+          {[...groupes, ...(modulesGroup() ? [modulesGroup()!] : [])].map((groupe) => (
             <section key={groupe.title} className="rounded-xl border border-border bg-card p-5">
               <h2 className="text-base font-semibold text-foreground">{groupe.title}</h2>
               <ul className="mt-3 space-y-1.5 text-sm">

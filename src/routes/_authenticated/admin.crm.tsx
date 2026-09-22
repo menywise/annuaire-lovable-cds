@@ -55,8 +55,9 @@ function AdminCrmPage() {
   }, []);
 
   const byStage = CRM_STAGES.map((stage) => ({
-    stage,
-    count: (rows ?? []).filter((row) => row.stage === stage).length,
+    value: stage.value,
+    label: stage.label,
+    count: (rows ?? []).filter((row) => row.stage === stage.value).length,
   }));
 
   return (
@@ -89,8 +90,8 @@ function AdminCrmPage() {
             <h2 className="text-sm font-semibold text-foreground">Répartition par étape</h2>
             <ul className="mt-3 grid gap-2 sm:grid-cols-3">
               {byStage.map((item) => (
-                <li key={item.stage} className="flex items-center justify-between rounded-lg bg-muted px-3 py-2 text-sm">
-                  <span className="text-muted-foreground">{CRM_STAGE_LABEL[item.stage]}</span>
+                <li key={item.value} className="flex items-center justify-between rounded-lg bg-muted px-3 py-2 text-sm">
+                  <span className="text-muted-foreground">{item.label}</span>
                   <span className="font-semibold text-foreground">{item.count}</span>
                 </li>
               ))}

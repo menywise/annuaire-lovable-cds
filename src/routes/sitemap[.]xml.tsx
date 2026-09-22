@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { brand } from "@/config/brand";
 import { listPosts, listTopics } from "@/lib/content.functions";
+import { isFeatureOn } from "@/config/features";
+
 
 /** Pages publiques indexables, avec leur priorité de référencement. */
 const pages: Array<{ path: string; priority: string; changefreq: string }> = [
@@ -29,6 +31,26 @@ const pages: Array<{ path: string; priority: string; changefreq: string }> = [
   { path: "/legal/cookies", priority: "0.4", changefreq: "yearly" },
 ];
 
+/** Pages ajoutées seulement quand la brique correspondante est active. */
+const optionalPages: Array<{ path: string; priority: string; changefreq: string }> = [
+  ...(isFeatureOn("directory")
+    ? [
+        { path: "/annuaire", priority: "0.9", changefreq: "daily" },
+        { path: "/annuaire/soumettre", priority: "0.6", changefreq: "monthly" },
+      ]
+    : []),
+  ...(isFeatureOn("geo") ? [{ path: "/annuaire/departements", priority: "0.8", changefreq: "weekly" }] : []),
+  ...(isFeatureOn("lms") ? [{ path: "/formations", priority: "0.9", changefreq: "weekly" }] : []),
+  ...(isFeatureOn("marketplace")
+    ? [
+        { path: "/marketplace", priority: "0.9", changefreq: "daily" },
+        { path: "/marketplace/publier", priority: "0.6", changefreq: "monthly" },
+      ]
+    : []),
+  ...(isFeatureOn("adNetwork") ? [{ path: "/publicite", priority: "0.6", changefreq: "monthly" }] : []),
+];
+
+
 export const Route = createFileRoute("/sitemap.xml")({
   server: {
     handlers: {
@@ -48,7 +70,7 @@ export const Route = createFileRoute("/sitemap.xml")({
         }
         const body = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${[...pages, ...dynamic]
+${[...pages, ...optionalPages, ...dynamic]
   .map(
     (page) =>
       `  <url>\n    <loc>${brand.url}${page.path === "/" ? "/" : page.path}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>${page.changefreq}</changefreq>\n    <priority>${page.priority}</priority>\n  </url>`,
