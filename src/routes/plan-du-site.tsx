@@ -1,6 +1,7 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, type LinkProps } from "@tanstack/react-router";
 import { PageShell } from "@/components/cds/SiteHeader";
 import { seo } from "@/lib/seo";
+import { isFeatureOn } from "@/config/features";
 
 export const Route = createFileRoute("/plan-du-site")({
   head: () =>
