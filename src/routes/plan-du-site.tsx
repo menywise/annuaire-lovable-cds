@@ -102,7 +102,46 @@ const groupes = [
       { to: "/legal/cookies", label: "Politique de cookies", title: "Traceurs et consentement" },
     ],
   },
-] as const;
+];
+
+type PlanLink = { to: NonNullable<LinkProps["to"]>; label: string; title: string };
+
+/** Liens des briques optionnelles : présents seulement si la brique est active. */
+function modulesGroup(): { title: string; links: PlanLink[] } | null {
+  const links: PlanLink[] = [
+    ...(isFeatureOn("directory")
+      ? ([
+          { to: "/annuaire", label: "Annuaire métier", title: "Trouver un professionnel près de chez vous" },
+          { to: "/annuaire/soumettre", label: "Proposer une fiche", title: "Ajouter un professionnel à l'annuaire" },
+        ] as PlanLink[])
+      : []),
+    ...(isFeatureOn("geo")
+      ? ([
+          { to: "/annuaire/departements", label: "Départements", title: "Parcourir l'annuaire département par département" },
+        ] as PlanLink[])
+      : []),
+    ...(isFeatureOn("lms")
+      ? ([
+          { to: "/formations", label: "Formations", title: "Catalogue des formations en ligne" },
+          { to: "/mes-formations", label: "Mes formations", title: "Reprendre vos formations en cours" },
+        ] as PlanLink[])
+      : []),
+    ...(isFeatureOn("marketplace")
+      ? ([
+          { to: "/marketplace", label: "Annonces", title: "Petites annonces entre membres" },
+          { to: "/marketplace/publier", label: "Publier une annonce", title: "Mettre en vente un article" },
+          { to: "/mes-annonces", label: "Mes annonces", title: "Gérer vos annonces publiées" },
+        ] as PlanLink[])
+      : []),
+    ...(isFeatureOn("crm")
+      ? ([{ to: "/crm", label: "Mes contacts", title: "Suivre vos prospects et vos relances" }] as PlanLink[])
+      : []),
+    ...(isFeatureOn("adNetwork")
+      ? ([{ to: "/publicite", label: "Annoncer sur le site", title: "Formats publicitaires et contact régie" }] as PlanLink[])
+      : []),
+  ];
+  return links.length ? { title: "Modules", links } : null;
+}
 
 function PlanDuSitePage() {
   return (
