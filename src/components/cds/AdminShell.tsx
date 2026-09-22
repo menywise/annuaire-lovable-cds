@@ -115,7 +115,7 @@ export function AdminShell({
         <p className="mt-2 text-sm text-muted-foreground">{intro}</p>
 
         <nav aria-label="Sections d'administration" className="mt-6 flex flex-wrap gap-2">
-          {adminNav.map((item) => (
+          {buildAdminNav().map((item) => (
             <Link
               key={item.to}
               to={item.to}
