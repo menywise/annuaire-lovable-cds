@@ -1,34 +1,63 @@
-import { Link } from "@tanstack/react-router";
+import { Link, type LinkProps } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { PageShell } from "@/components/cds/SiteHeader";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { isFeatureOn } from "@/config/features";
 
-const adminNav = [
-  { to: "/admin", label: "Paramètres", title: "Identité du site, mentions légales et hébergeur" },
-  { to: "/admin/contenus", label: "Contenus", title: "Gérer la FAQ, les offres et les articles" },
-  {
-    to: "/admin/moderation",
-    label: "Modération",
-    title: "Valider les avis, commentaires et discussions",
-  },
-  { to: "/admin/forum", label: "Forum", title: "Gérer les thématiques du forum" },
-  {
-    to: "/admin/temoignages",
-    label: "Témoignages",
-    title: "Valider et mettre en avant les témoignages",
-  },
-  { to: "/admin/pilotage", label: "Pilotage", title: "Feuille de route, plan directeur et audits" },
-  {
-    to: "/admin/conformite",
-    label: "Conformité",
-    title: "Grille de recettage du modèle et score de complétude",
-  },
-  { to: "/admin/abonnes", label: "Abonnés", title: "Consulter et exporter la liste d'abonnés" },
-  { to: "/compte", label: "Messages", title: "Consulter les messages du formulaire de contact" },
-] as const;
+type AdminNavItem = { to: NonNullable<LinkProps["to"]>; label: string; title: string };
+
+function buildAdminNav(): AdminNavItem[] {
+  return [
+    { to: "/admin", label: "Paramètres", title: "Identité du site, mentions légales et hébergeur" },
+    { to: "/admin/contenus", label: "Contenus", title: "Gérer la FAQ, les offres et les articles" },
+    {
+      to: "/admin/moderation",
+      label: "Modération",
+      title: "Valider les avis, commentaires et discussions",
+    },
+    { to: "/admin/forum", label: "Forum", title: "Gérer les thématiques du forum" },
+    {
+      to: "/admin/temoignages",
+      label: "Témoignages",
+      title: "Valider et mettre en avant les témoignages",
+    },
+    ...(isFeatureOn("directory")
+      ? ([
+          { to: "/admin/annuaire", label: "Annuaire", title: "Fiches, catégories, avis et revendications" },
+        ] as AdminNavItem[])
+      : []),
+    ...(isFeatureOn("geo")
+      ? ([
+          { to: "/admin/geographie", label: "Géographie", title: "Départements couverts et fiches rattachées" },
+        ] as AdminNavItem[])
+      : []),
+    ...(isFeatureOn("crm")
+      ? ([{ to: "/admin/crm", label: "Contacts", title: "Vue consolidée du suivi des contacts" }] as AdminNavItem[])
+      : []),
+    ...(isFeatureOn("lms")
+      ? ([{ to: "/admin/formations", label: "Formations", title: "Catalogue, modules et leçons" }] as AdminNavItem[])
+      : []),
+    ...(isFeatureOn("marketplace")
+      ? ([
+          { to: "/admin/marketplace", label: "Annonces", title: "Modérer les annonces et les catégories" },
+        ] as AdminNavItem[])
+      : []),
+    ...(isFeatureOn("adNetwork")
+      ? ([{ to: "/admin/regie", label: "Régie", title: "Emplacements, campagnes et statistiques" }] as AdminNavItem[])
+      : []),
+    { to: "/admin/pilotage", label: "Pilotage", title: "Feuille de route, plan directeur et audits" },
+    {
+      to: "/admin/conformite",
+      label: "Conformité",
+      title: "Grille de recettage du modèle et score de complétude",
+    },
+    { to: "/admin/abonnes", label: "Abonnés", title: "Consulter et exporter la liste d'abonnés" },
+    { to: "/compte", label: "Messages", title: "Consulter les messages du formulaire de contact" },
+  ];
+}
 
 /** Vérifie le rôle administrateur et affiche la navigation de l'espace d'administration. */
 export function useIsAdmin() {
