@@ -31,6 +31,26 @@ const pages: Array<{ path: string; priority: string; changefreq: string }> = [
   { path: "/legal/cookies", priority: "0.4", changefreq: "yearly" },
 ];
 
+/** Pages ajoutées seulement quand la brique correspondante est active. */
+const optionalPages: Array<{ path: string; priority: string; changefreq: string }> = [
+  ...(isFeatureOn("directory")
+    ? [
+        { path: "/annuaire", priority: "0.9", changefreq: "daily" },
+        { path: "/annuaire/soumettre", priority: "0.6", changefreq: "monthly" },
+      ]
+    : []),
+  ...(isFeatureOn("geo") ? [{ path: "/annuaire/departements", priority: "0.8", changefreq: "weekly" }] : []),
+  ...(isFeatureOn("lms") ? [{ path: "/formations", priority: "0.9", changefreq: "weekly" }] : []),
+  ...(isFeatureOn("marketplace")
+    ? [
+        { path: "/marketplace", priority: "0.9", changefreq: "daily" },
+        { path: "/marketplace/publier", priority: "0.6", changefreq: "monthly" },
+      ]
+    : []),
+  ...(isFeatureOn("adNetwork") ? [{ path: "/publicite", priority: "0.6", changefreq: "monthly" }] : []),
+];
+
+
 export const Route = createFileRoute("/sitemap.xml")({
   server: {
     handlers: {
