@@ -55,8 +55,9 @@ function AdminCrmPage() {
   }, []);
 
   const byStage = CRM_STAGES.map((stage) => ({
-    stage,
-    count: (rows ?? []).filter((row) => row.stage === stage).length,
+    value: stage.value,
+    label: stage.label,
+    count: (rows ?? []).filter((row) => row.stage === stage.value).length,
   }));
 
   return (
