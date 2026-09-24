@@ -25,3 +25,4 @@
 
 - Vulnérabilités js-yaml héritées de @tanstack/react-start : aucun correctif amont, à re-vérifier
 - Mesures non réalisées : poids des fichiers livrés, temps de réponse, test mobile réel, test lecteur d'écran
+- [x] Audit de correction des bugs d'interface (recette robot 40+ pages, ordinateur et mobile, connecté/déconnecté : zéro page blanche, zéro erreur)
