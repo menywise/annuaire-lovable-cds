@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,13 @@ export function NewsletterForm({ source = "site" }: { source?: string }) {
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
   const openedAt = useRef(Date.now());
+  // Formulaire monté après chargement : les extensions (gestionnaires de mots de passe)
+  // injectent des éléments dans les champs et provoquaient un décalage d'affichage.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    openedAt.current = Date.now();
+    setMounted(true);
+  }, []);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -67,6 +74,8 @@ export function NewsletterForm({ source = "site" }: { source?: string }) {
         <p className="mt-4 rounded-lg border border-border bg-muted p-4 text-sm text-foreground">
           Votre inscription est enregistrée. À très vite.
         </p>
+      ) : !mounted ? (
+        <div className="mt-4 h-[74px]" aria-hidden="true" />
       ) : (
         <form
           onSubmit={onSubmit}
