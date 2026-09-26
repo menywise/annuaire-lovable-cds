@@ -55,6 +55,9 @@ Il n'existe **aucun** `tailwind.config.ts` ni `src/index.css` : en Tailwind v4 l
 | `--muted-foreground`   | `#64748b` | Texte secondaire                                 | 4,55:1                  |
 | `--text-light`         | `#5b6472` | Texte tertiaire (ancien `#8e95a1`, non conforme) | 5,72:1                  |
 | `--border` / `--input` | `#e5e7eb` | Bordures et champs                               | —                       |
+| `--border-strong`      | `#cbd5e1` | Bordure renforcée au survol ou sur une sélection | —                       |
+| `--surface-raised`     | `#ffffff` | Cartes détachées du fond                         | —                       |
+| `--surface-sunken`     | `#f1f5f9` | Champs et zones légèrement creusées              | —                       |
 | `--ring`               | `#0d6efd` | Anneau de focus                                  | —                       |
 
 ## Rayons
@@ -75,6 +78,9 @@ Il n'existe **aucun** `tailwind.config.ts` ni `src/index.css` : en Tailwind v4 l
 | `sm` | `0 1px 3px rgba(0,0,0,.04), 0 1px 2px rgba(0,0,0,.02)`  |
 | `md` | `0 4px 12px rgba(0,0,0,.08), 0 2px 4px rgba(0,0,0,.04)` |
 | `lg` | `0 8px 24px rgba(0,0,0,.12)`                            |
+| `field-inset` | `inset 0 1px 2px rgba(15,23,42,.06)` |
+| `card-tactile` | `0 1px 2px rgba(15,23,42,.05), 0 6px 18px rgba(15,23,42,.06)` |
+| `card-hover` | `0 2px 4px rgba(15,23,42,.06), 0 12px 28px rgba(15,23,42,.09)` |
 
 ## Transitions
 

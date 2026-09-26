@@ -15,6 +15,7 @@
 - Pilotage : plan directeur, feuille de route, audits avec mémoire, **grille de conformité du modèle** avec score et audits datés
 - MCP d'audit (`/mcp`) : 9 outils pour Claude et Letta, connexion par compte administrateur
 - 6 briques optionnelles livrées et éteintes par défaut (`src/config/features.ts`) : annuaire métier, géographie, suivi de contacts, formations, petites annonces, régie publicitaire — base de données, pages publiques, pages d'administration, liens de menus, pied de page, plan du site et sitemap conditionnels
+- Thème tactile léger : surfaces hiérarchisées, cartes mieux détachées, champs creusés et états actifs renforcés
 
 ## En pause (décision utilisateur)
 

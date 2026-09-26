@@ -180,7 +180,7 @@ function AdminContenusPage() {
         </TabsList>
 
         <TabsContent value="faq" className="space-y-4 pt-6">
-          <form onSubmit={addFaq} className="space-y-3 rounded-xl border border-border bg-card p-5">
+          <form onSubmit={addFaq} className="space-y-4 rounded-xl border border-border bg-card p-5 shadow-[var(--shadow-card-tactile)] sm:p-6">
             <h2 className="text-base font-semibold text-foreground">Ajouter une question</h2>
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-1.5">
@@ -207,7 +207,7 @@ function AdminContenusPage() {
           </form>
 
           {faqs.map((item) => (
-            <div key={item.id} className="rounded-xl border border-border bg-card p-5">
+            <div key={item.id} className="rounded-xl border border-border border-l-4 border-l-primary bg-card p-5 shadow-[var(--shadow-card-tactile)] transition-[border-color,box-shadow,transform] hover:shadow-[var(--shadow-card-hover)] motion-safe:hover:-translate-y-px">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <p className="text-sm font-semibold text-foreground">{item.question}</p>
@@ -239,7 +239,7 @@ function AdminContenusPage() {
 
         <TabsContent value="offres" className="space-y-4 pt-6">
           {plans.map((plan) => (
-            <div key={plan.id} className="space-y-3 rounded-xl border border-border bg-card p-5">
+            <div key={plan.id} className="space-y-3 rounded-xl border border-border border-l-4 border-l-primary bg-card p-5 shadow-[var(--shadow-card-tactile)]">
               <div className="grid gap-3 sm:grid-cols-2">
                 <div className="space-y-1.5">
                   <Label htmlFor={`plan-name-${plan.id}`}>Nom de l'offre</Label>
@@ -299,7 +299,7 @@ function AdminContenusPage() {
         <TabsContent value="articles" className="space-y-4 pt-6">
           <form
             onSubmit={addPost}
-            className="space-y-3 rounded-xl border border-border bg-card p-5"
+            className="space-y-4 rounded-xl border border-border bg-card p-5 shadow-[var(--shadow-card-tactile)] sm:p-6"
           >
             <h2 className="text-base font-semibold text-foreground">Écrire un article</h2>
             <div className="space-y-1.5">

@@ -114,14 +114,14 @@ export function AdminShell({
         <h1 className="mt-2 text-3xl font-bold text-foreground">{title}</h1>
         <p className="mt-2 text-sm text-muted-foreground">{intro}</p>
 
-        <nav aria-label="Sections d'administration" className="mt-6 flex flex-wrap gap-2">
+        <nav aria-label="Sections d'administration" className="mt-6 flex flex-wrap gap-2 rounded-xl border border-border bg-card p-2 shadow-[var(--shadow-card-tactile)]">
           {buildAdminNav().map((item) => (
             <Link
               key={item.to}
               to={item.to}
               title={item.title}
-              className="rounded-md border border-border px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-              activeProps={{ className: "border-primary bg-accent text-foreground" }}
+              className="min-h-9 rounded-md border border-transparent px-3 py-1.5 text-sm text-muted-foreground transition-[background-color,border-color,color,box-shadow] hover:bg-accent hover:text-foreground"
+              activeProps={{ className: "border-primary bg-card text-foreground shadow-sm" }}
               activeOptions={{ exact: true }}
             >
               {item.label}

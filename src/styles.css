@@ -20,6 +20,8 @@
   --color-foreground: var(--foreground);
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
+  --color-surface-raised: var(--surface-raised);
+  --color-surface-sunken: var(--surface-sunken);
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
@@ -42,6 +44,7 @@
   --color-info-text: var(--info-text);
   --color-cds-purple: var(--cds-purple);
   --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
   --color-input: var(--input);
   --color-ring: var(--ring);
 }
@@ -55,6 +58,8 @@
   --foreground: #1e293b;
   --card: #ffffff;
   --card-foreground: #1e293b;
+  --surface-raised: #ffffff;
+  --surface-sunken: #f1f5f9;
   --popover: #ffffff;
   --popover-foreground: #1e293b;
   --primary: #0d6efd;
@@ -78,8 +83,14 @@
   --primary-text: #0a58ca; /* bleu CDS en texte : contraste AA sur fond clair */
   --text-light: #5b6472;
   --border: #e5e7eb;
+  --border-strong: #cbd5e1;
   --input: #e5e7eb;
   --ring: #0d6efd;
+
+  /* CDS relief tactile */
+  --shadow-field-inset: inset 0 1px 2px rgba(15, 23, 42, 0.06);
+  --shadow-card-tactile: 0 1px 2px rgba(15, 23, 42, 0.05), 0 6px 18px rgba(15, 23, 42, 0.06);
+  --shadow-card-hover: 0 2px 4px rgba(15, 23, 42, 0.06), 0 12px 28px rgba(15, 23, 42, 0.09);
 }
 
 /* INTERDIT : dark mode — aucune classe .dark, aucun prefers-color-scheme */
@@ -98,6 +109,32 @@
     font-family: var(--font-sans);
     font-size: 16px;
     line-height: 1.5;
+  }
+}
+
+/* Relief partagé : une carte reste une unité distincte, sans effet décoratif lourd. */
+:where(.rounded-xl, .rounded-lg).border.border-border.bg-card {
+  box-shadow: var(--shadow-card-tactile);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  :where(a, button, article, li).rounded-xl.border.border-border.bg-card {
+    transition:
+      border-color 200ms ease,
+      box-shadow 200ms ease,
+      transform 200ms ease;
+  }
+
+  :where(a, button, article, li).rounded-xl.border.border-border.bg-card:hover {
+    border-color: var(--border-strong);
+    box-shadow: var(--shadow-card-hover);
+    transform: translateY(-1px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :where(a, button, article, li).rounded-xl.border.border-border.bg-card {
+    transition: none;
   }
 }
 
