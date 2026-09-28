@@ -6,7 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
-import { type BrandSettings, saveBrandSettings, useBrandSettings } from "@/hooks/useSiteSettings";
+import {
+  type BrandSettings,
+  saveBrandSettings,
+  useEditableBrandSettings,
+} from "@/hooks/useSiteSettings";
 import { seo } from "@/lib/seo";
 
 export const Route = createFileRoute("/_authenticated/admin/")({
@@ -44,7 +48,7 @@ function Field({
 }
 
 function AdminPage() {
-  const { settings, loading, setSettings } = useBrandSettings();
+  const { settings, loading, setSettings } = useEditableBrandSettings();
   const [saving, setSaving] = useState(false);
 
   function patch(next: Partial<BrandSettings>) {
@@ -57,7 +61,7 @@ function AdminPage() {
     try {
       await saveBrandSettings(settings);
       toast.success("Paramètres enregistrés.", {
-        description: "Le site utilise désormais ces informations.",
+        description: "Titres, mentions légales, sitemap et partages utilisent désormais ces informations.",
       });
     } catch {
       toast.error("Enregistrement impossible.", {
@@ -107,7 +111,11 @@ function AdminPage() {
                 label="Adresse publique du site"
                 value={settings.url}
                 onChange={(v) => patch({ url: v })}
-                hint="Sans barre oblique finale."
+                hint={
+                  settings.url.trim()
+                    ? "Sans barre oblique finale. Sert au canonical, au sitemap, au flux RSS et aux partages."
+                    : "À remplir : tant qu'elle est vide, le canonical, le sitemap et les partages restent relatifs."
+                }
               />
             </div>
           </section>

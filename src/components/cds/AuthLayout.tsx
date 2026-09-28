@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { useBrandSettings } from "@/hooks/useSiteSettings";
 
 export function AuthLayout({
   title,
@@ -11,17 +12,18 @@ export function AuthLayout({
   children: React.ReactNode;
   footer?: React.ReactNode;
 }) {
+  const { settings } = useBrandSettings();
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4 py-12">
       <Link
         to="/"
-        title="Revenir à la page d'accueil"
+        title={`${settings.name} — accueil`}
         className="mb-6 flex items-center gap-2 text-sm font-semibold text-foreground"
       >
         <span className="grid size-7 place-items-center rounded bg-primary text-xs font-bold text-primary-foreground">
-          C
+          {settings.shortName.slice(0, 1).toUpperCase()}
         </span>
-        CDS
+        {settings.shortName}
       </Link>
 
       <div className="w-full max-w-[400px] rounded-xl border border-border bg-card p-8 shadow-[0_4px_12px_rgba(0,0,0,0.08),0_2px_4px_rgba(0,0,0,0.04)]">

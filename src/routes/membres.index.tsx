@@ -2,8 +2,10 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageShell } from "@/components/cds/SiteHeader";
 import { listMembers } from "@/lib/community.functions";
 import { seo } from "@/lib/seo";
+import { requireFeature } from "@/config/features";
 
 export const Route = createFileRoute("/membres/")({
+  beforeLoad: () => requireFeature("members"),
   loader: () => listMembers(),
   head: () =>
     seo({

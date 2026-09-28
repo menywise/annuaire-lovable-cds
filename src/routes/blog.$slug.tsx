@@ -12,10 +12,12 @@ import { useAuth } from "@/hooks/useAuth";
 import { getPost } from "@/lib/content.functions";
 import { RichText } from "@/lib/richtext";
 import { readingMinutes } from "@/lib/reading";
-import { absoluteUrl } from "@/config/brand";
+import { absoluteUrl } from "@/lib/site-config";
 import { breadcrumbJsonLd, seo } from "@/lib/seo";
+import { requireFeature } from "@/config/features";
 
 export const Route = createFileRoute("/blog/$slug")({
+  beforeLoad: () => requireFeature("blog"),
   loader: async ({ params }) => {
     const data = await getPost({ data: { slug: params.slug } });
     if (!data) throw notFound();

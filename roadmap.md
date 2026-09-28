@@ -14,7 +14,9 @@
 - Installation sur l'écran d'accueil (manifeste + icônes)
 - Pilotage : plan directeur, feuille de route, audits avec mémoire, **grille de conformité du modèle** avec score et audits datés
 - MCP d'audit (`/mcp`) : 9 outils pour Claude et Letta, connexion par compte administrateur
-- 6 briques optionnelles livrées et éteintes par défaut (`src/config/features.ts`) : annuaire métier, géographie, suivi de contacts, formations, petites annonces, régie publicitaire — base de données, pages publiques, pages d'administration, liens de menus, pied de page, plan du site et sitemap conditionnels
+- 6 briques optionnelles livrées et éteintes par défaut : annuaire métier, géographie, suivi de contacts, formations, petites annonces, régie publicitaire — base de données, pages publiques, pages d'administration, liens de menus, pied de page, plan du site et sitemap conditionnels
+- V0 · lot 1 « Base » : règles d'accès visiteur, forum, messagerie, lettre d'information, admins du studio en base
+- V0 · lot 2 « Socle » : paramètres du site lus côté serveur (source unique `site_settings`), zéro valeur en dur, 19 modules pilotés en base (écran « Modules »), écran « Utilisateurs et rôles », suppression de son compte avec anonymisation, annuaire des membres sur inscription volontaire
 - Thème tactile léger : surfaces hiérarchisées, cartes mieux détachées, champs creusés et états actifs renforcés
 
 ## En pause (décision utilisateur)
@@ -23,6 +25,10 @@
 - Envoi des e-mails — passera par le domaine des projets, configuration plus tard
 
 ## À venir
+
+- V0 · lot 3 « Admin complet » : contenus, offres, abonnés, boîte de contact, modération
+- V0 · lot 4 : failles des briques 12 à 16
+- V0 · lot 5 : médiathèque, e-mails transactionnels, pages libres (dont l'accueil)
 
 - Vulnérabilités js-yaml héritées de @tanstack/react-start : aucun correctif amont, à re-vérifier
 - Mesures non réalisées : poids des fichiers livrés, temps de réponse, test mobile réel, test lecteur d'écran

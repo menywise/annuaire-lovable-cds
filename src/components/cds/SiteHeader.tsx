@@ -7,143 +7,206 @@ import { supabase } from "@/integrations/supabase/client";
 import { CookieBanner } from "@/components/cds/CookieBanner";
 import { NewsletterForm } from "@/components/cds/NewsletterForm";
 import { AdSlot } from "@/components/cds/AdSlot";
-import { isFeatureOn } from "@/config/features";
+import { isFeatureOn, withActiveModules, type FeatureKey } from "@/config/features";
 
-type NavItem = { to: NonNullable<LinkProps["to"]>; label: string; title: string };
+type NavItem = {
+  to: NonNullable<LinkProps["to"]>;
+  label: string;
+  title: string;
+  /** Module dont dépend le lien : masqué quand le module est éteint. */
+  module?: FeatureKey;
+};
 
 /** Menu des visiteurs : découvrir, comparer, échanger. */
 function buildPublicNav(): NavItem[] {
-  return [
+  return withActiveModules<NavItem>([
     {
       to: "/demarrer",
       label: "Démarrer",
       title: "Le parcours en trois étapes jusqu'à votre compte",
+      module: "onboarding",
     },
     {
       to: "/tarifs",
       label: "Tarifs",
       title: "Comparer les offres et choisir celle qui vous convient",
+      module: "pricing",
     },
-    ...(isFeatureOn("directory")
-      ? ([
-          {
-            to: "/annuaire",
-            label: "Annuaire",
-            title: "Trouver un professionnel près de chez vous",
-          },
-        ] as NavItem[])
-      : []),
-    ...(isFeatureOn("lms")
-      ? ([
-          {
-            to: "/formations",
-            label: "Formations",
-            title: "Se former à son rythme, leçon par leçon",
-          },
-        ] as NavItem[])
-      : []),
-    ...(isFeatureOn("marketplace")
-      ? ([
-          {
-            to: "/marketplace",
-            label: "Annonces",
-            title: "Voir les annonces publiées par les membres",
-          },
-        ] as NavItem[])
-      : []),
-    { to: "/blog", label: "Blog", title: "Articles et méthodes pour faire avancer votre projet" },
-    { to: "/forum", label: "Forum", title: "Poser une question à la communauté" },
-    { to: "/faq", label: "FAQ", title: "Réponses aux questions les plus fréquentes" },
-    { to: "/contact", label: "Contact", title: "Écrire via le formulaire de contact protégé" },
-  ];
+    {
+      to: "/annuaire",
+      label: "Annuaire",
+      title: "Trouver un professionnel près de chez vous",
+      module: "directory",
+    },
+    {
+      to: "/formations",
+      label: "Formations",
+      title: "Se former à son rythme, leçon par leçon",
+      module: "lms",
+    },
+    {
+      to: "/marketplace",
+      label: "Annonces",
+      title: "Voir les annonces publiées par les membres",
+      module: "marketplace",
+    },
+    {
+      to: "/blog",
+      label: "Blog",
+      title: "Articles et méthodes pour faire avancer votre projet",
+      module: "blog",
+    },
+    {
+      to: "/forum",
+      label: "Forum",
+      title: "Poser une question à la communauté",
+      module: "forum",
+    },
+    {
+      to: "/faq",
+      label: "FAQ",
+      title: "Réponses aux questions les plus fréquentes",
+      module: "faq",
+    },
+    {
+      to: "/contact",
+      label: "Contact",
+      title: "Écrire via le formulaire de contact protégé",
+      module: "contact",
+    },
+  ]);
 }
 
 /** Menu des membres connectés : agir dans son espace. */
 function buildMemberNav(): NavItem[] {
-  return [
+  return withActiveModules<NavItem>([
     { to: "/tableau-de-bord", label: "Tableau de bord", title: "Vue d'ensemble de votre activité" },
-    { to: "/forum", label: "Forum", title: "Participer aux discussions de la communauté" },
-    { to: "/membres", label: "Annuaire des membres", title: "Découvrir les autres membres" },
-    { to: "/messagerie", label: "Messagerie", title: "Consulter vos échanges privés" },
-    ...(isFeatureOn("lms")
-      ? ([
-          {
-            to: "/mes-formations",
-            label: "Mes formations",
-            title: "Reprendre vos formations en cours",
-          },
-        ] as NavItem[])
-      : []),
-    ...(isFeatureOn("marketplace")
-      ? ([
-          { to: "/mes-annonces", label: "Mes annonces", title: "Gérer vos annonces publiées" },
-        ] as NavItem[])
-      : []),
-    ...(isFeatureOn("crm")
-      ? ([
-          { to: "/crm", label: "Mes contacts", title: "Suivre vos contacts et vos relances" },
-        ] as NavItem[])
-      : []),
-    { to: "/blog", label: "Blog", title: "Lire les derniers articles" },
-  ];
+    {
+      to: "/forum",
+      label: "Forum",
+      title: "Participer aux discussions de la communauté",
+      module: "forum",
+    },
+    {
+      to: "/membres",
+      label: "Annuaire des membres",
+      title: "Découvrir les autres membres",
+      module: "members",
+    },
+    {
+      to: "/messagerie",
+      label: "Messagerie",
+      title: "Consulter vos échanges privés",
+      module: "messaging",
+    },
+    {
+      to: "/mes-formations",
+      label: "Mes formations",
+      title: "Reprendre vos formations en cours",
+      module: "lms",
+    },
+    {
+      to: "/mes-annonces",
+      label: "Mes annonces",
+      title: "Gérer vos annonces publiées",
+      module: "marketplace",
+    },
+    { to: "/crm", label: "Mes contacts", title: "Suivre vos contacts et vos relances", module: "crm" },
+    { to: "/blog", label: "Blog", title: "Lire les derniers articles", module: "blog" },
+  ]);
 }
 
 function buildFooterColumns(): Array<{ title: string; links: NavItem[] }> {
-  return [
+  const columns: Array<{ title: string; links: NavItem[] }> = [
     {
       title: "Découvrir",
       links: [
         { to: "/", label: "Accueil", title: "Revenir à la page d'accueil" },
-        { to: "/demarrer", label: "Démarrer", title: "Le parcours en trois étapes" },
-        { to: "/tarifs", label: "Tarifs", title: "Comparer les offres" },
-        ...(isFeatureOn("lms")
-          ? ([
-              { to: "/formations", label: "Formations", title: "Le catalogue des formations" },
-            ] as NavItem[])
-          : []),
-        { to: "/composants", label: "Composants", title: "Bibliothèque de composants d'interface" },
-        { to: "/guide", label: "Guide", title: "Comment réutiliser CDS sur un nouveau projet" },
+        {
+          to: "/demarrer",
+          label: "Démarrer",
+          title: "Le parcours en trois étapes",
+          module: "onboarding",
+        },
+        { to: "/tarifs", label: "Tarifs", title: "Comparer les offres", module: "pricing" },
+        {
+          to: "/formations",
+          label: "Formations",
+          title: "Le catalogue des formations",
+          module: "lms",
+        },
+        {
+          to: "/composants",
+          label: "Composants",
+          title: "Bibliothèque de composants d'interface",
+          module: "showcase",
+        },
+        {
+          to: "/guide",
+          label: "Guide",
+          title: "Comment réutiliser le modèle sur un nouveau projet",
+          module: "showcase",
+        },
       ],
     },
     {
       title: "Communauté",
       links: [
-        { to: "/forum", label: "Forum", title: "Poser une question à la communauté" },
-        { to: "/membres", label: "Annuaire des membres", title: "Découvrir les membres" },
-        ...(isFeatureOn("directory")
-          ? ([
-              { to: "/annuaire", label: "Annuaire métier", title: "Trouver un professionnel" },
-            ] as NavItem[])
-          : []),
-        ...(isFeatureOn("marketplace")
-          ? ([
-              { to: "/marketplace", label: "Annonces", title: "Les annonces des membres" },
-            ] as NavItem[])
-          : []),
-        { to: "/temoignages", label: "Témoignages", title: "Lire les retours d'expérience" },
-        { to: "/avis", label: "Avis", title: "Consulter les notes et avis" },
-        { to: "/blog", label: "Blog", title: "Articles et méthodes" },
+        {
+          to: "/forum",
+          label: "Forum",
+          title: "Poser une question à la communauté",
+          module: "forum",
+        },
+        {
+          to: "/membres",
+          label: "Annuaire des membres",
+          title: "Découvrir les membres",
+          module: "members",
+        },
+        {
+          to: "/annuaire",
+          label: "Annuaire métier",
+          title: "Trouver un professionnel",
+          module: "directory",
+        },
+        {
+          to: "/marketplace",
+          label: "Annonces",
+          title: "Les annonces des membres",
+          module: "marketplace",
+        },
+        {
+          to: "/temoignages",
+          label: "Témoignages",
+          title: "Lire les retours d'expérience",
+          module: "testimonials",
+        },
+        { to: "/avis", label: "Avis", title: "Consulter les notes et avis", module: "reviews" },
+        { to: "/blog", label: "Blog", title: "Articles et méthodes", module: "blog" },
       ],
     },
     {
       title: "Aide",
       links: [
-        { to: "/faq", label: "FAQ", title: "Réponses aux questions fréquentes" },
-        { to: "/contact", label: "Contact", title: "Formulaire de contact protégé" },
+        { to: "/faq", label: "FAQ", title: "Réponses aux questions fréquentes", module: "faq" },
+        {
+          to: "/contact",
+          label: "Contact",
+          title: "Formulaire de contact protégé",
+          module: "contact",
+        },
         {
           to: "/a-propos",
           label: "À propos",
           title: "Qui édite le site et selon quels engagements",
         },
-        ...(isFeatureOn("adNetwork")
-          ? ([
-              {
-                to: "/publicite",
-                label: "Annoncer",
-                title: "Réserver un emplacement publicitaire",
-              },
-            ] as NavItem[])
-          : []),
+        {
+          to: "/publicite",
+          label: "Annoncer",
+          title: "Réserver un emplacement publicitaire",
+          module: "adNetwork",
+        },
         {
           to: "/plan-du-site",
           label: "Plan du site",
@@ -171,6 +234,9 @@ function buildFooterColumns(): Array<{ title: string; links: NavItem[] }> {
       ],
     },
   ];
+  return columns
+    .map((column) => ({ ...column, links: withActiveModules(column.links) }))
+    .filter((column) => column.links.length > 0);
 }
 
 const linkClass =
@@ -353,12 +419,15 @@ export function SiteFooter() {
           ))}
         </div>
 
-        <div className="mt-10">
-          <NewsletterForm source="pied-de-page" />
-        </div>
+        {isFeatureOn("newsletter") ? (
+          <div className="mt-10">
+            <NewsletterForm source="pied-de-page" />
+          </div>
+        ) : null}
 
         <p className="mt-8 border-t border-border pt-6 text-xs text-muted-foreground">
-          {settings.tagline} — © {new Date().getFullYear()} {settings.name}
+          {settings.tagline ? `${settings.tagline} — ` : ""}© {new Date().getFullYear()}{" "}
+          {settings.legal.company || settings.name}
         </p>
       </div>
     </footer>

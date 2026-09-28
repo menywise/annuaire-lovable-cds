@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageShell } from "@/components/cds/SiteHeader";
 import { seo } from "@/lib/seo";
+import { isFeatureOn } from "@/config/features";
 
 export const Route = createFileRoute("/merci")({
   head: () =>
@@ -32,13 +33,15 @@ function MerciPage() {
           >
             Retour à l'accueil
           </Link>
-          <Link
-            to="/contact"
-            title="Envoyer un nouveau message via le formulaire de contact"
-            className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
-          >
-            Envoyer un autre message
-          </Link>
+          {isFeatureOn("contact") ? (
+            <Link
+              to="/contact"
+              title="Envoyer un nouveau message via le formulaire de contact"
+              className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
+            >
+              Envoyer un autre message
+            </Link>
+          ) : null}
         </div>
       </div>
     </PageShell>

@@ -5,12 +5,19 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
+import { isFeatureOn } from "@/config/features";
 
 /**
  * Bloc d'inscription à la lettre d'information.
  * Protégé par piège à robots (champ invisible + délai minimal).
  */
+/** Formulaire d'inscription : rien n'est affiché quand le module Lettre d'information est éteint. */
 export function NewsletterForm({ source = "site" }: { source?: string }) {
+  if (!isFeatureOn("newsletter")) return null;
+  return <NewsletterFormInner source={source} />;
+}
+
+function NewsletterFormInner({ source }: { source: string }) {
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
   const openedAt = useRef(Date.now());

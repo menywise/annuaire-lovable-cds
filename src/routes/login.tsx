@@ -10,6 +10,7 @@ import { bootstrapCurrentUser } from "@/hooks/useAuth";
 import { GoogleSignInButton } from "@/components/cds/GoogleSignInButton";
 
 import { seo } from "@/lib/seo";
+import { getSiteConfig } from "@/lib/site-config";
 
 function safeNext(value: unknown): string | undefined {
   // Chemin interne uniquement : « // » et « /\ » mèneraient vers un autre site.
@@ -25,7 +26,7 @@ export const Route = createFileRoute("/login")({
     seo({
       title: "Connexion",
       description:
-        "Connectez-vous à votre espace personnel PMM RDS avec votre adresse e-mail et votre mot de passe.",
+        `Connectez-vous à votre espace personnel ${getSiteConfig().brand.name} avec votre adresse e-mail et votre mot de passe.`,
       path: "/login",
       type: "website",
     }),
@@ -74,7 +75,7 @@ function LoginPage() {
           Pas encore de compte ?{" "}
           <Link
             to="/signup"
-            title="Créer un compte PMM RDS"
+            title="Créer un compte"
             className="font-medium text-primary-text hover:underline"
           >
             Créer un compte

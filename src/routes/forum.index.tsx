@@ -11,8 +11,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { getForumOverview, getTopMembers } from "@/lib/community.functions";
 import { seo } from "@/lib/seo";
+import { requireFeature, isFeatureOn } from "@/config/features";
 
 export const Route = createFileRoute("/forum/")({
+  beforeLoad: () => requireFeature("forum"),
   loader: async () => ({
     overview: await getForumOverview({ data: {} }),
     members: await getTopMembers(),
@@ -262,19 +264,21 @@ function ForumIndex() {
 
             <TopMembers data={members} />
 
-            <section className="rounded-xl border border-border bg-card p-5">
-              <h2 className="text-sm font-semibold text-foreground">Annuaire</h2>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Découvrez qui compose la communauté et échangez en privé.
-              </p>
-              <Link
-                to="/membres"
-                title="Parcourir l'annuaire des membres"
-                className="mt-3 inline-flex min-h-11 items-center rounded-md border border-border px-3 text-sm font-medium text-foreground transition-colors hover:bg-accent"
-              >
-                Voir les membres
-              </Link>
-            </section>
+            {isFeatureOn("members") ? (
+              <section className="rounded-xl border border-border bg-card p-5">
+                <h2 className="text-sm font-semibold text-foreground">Annuaire</h2>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Découvrez qui compose la communauté et échangez en privé.
+                </p>
+                <Link
+                  to="/membres"
+                  title="Parcourir l'annuaire des membres"
+                  className="mt-3 inline-flex min-h-11 items-center rounded-md border border-border px-3 text-sm font-medium text-foreground transition-colors hover:bg-accent"
+                >
+                  Voir les membres
+                </Link>
+              </section>
+            ) : null}
           </aside>
         </div>
       </div>

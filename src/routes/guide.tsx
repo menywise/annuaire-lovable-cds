@@ -1,8 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageShell } from "@/components/cds/SiteHeader";
 import { seo } from "@/lib/seo";
+import { requireFeature } from "@/config/features";
 
 export const Route = createFileRoute("/guide")({
+  beforeLoad: () => requireFeature("showcase"),
   head: () =>
     seo({
       title: "Guide de réutilisation",
@@ -21,7 +23,7 @@ const steps = [
   },
   {
     title: "2. Régler la marque depuis l'administration",
-    body: "Aucun fichier à modifier : l'espace Administration (réservé aux comptes administrateurs) permet de changer le nom du site, l'adresse publique, les coordonnées légales et l'hébergeur. Les modifications s'appliquent immédiatement sur l'en-tête, le pied de page et les pages légales.",
+    body: "Aucun fichier à modifier : l'espace Administration (réservé aux comptes administrateurs) permet de changer le nom du site, l'adresse publique, les coordonnées légales et l'hébergeur. Ces paramètres sont lus par le serveur : titres, adresse canonique, sitemap, flux RSS, pages légales et aperçus de partage les reprennent.",
   },
   {
     title: "3. Reprendre les pages fournies",
@@ -29,7 +31,7 @@ const steps = [
   },
   {
     title: "4. Activer les modules utiles au projet",
-    body: "FAQ, blog avec commentaires modérés, forum, avis et notations, lettre d'information, offres tarifaires et tunnel de vente sont déjà branchés. Tout se remplit et se modère depuis l'administration : Contenus, Modération, Abonnés.",
+    body: "Administration → Modules : chaque module s'allume ou s'éteint, dépendances comprises. Un module éteint ne laisse aucune trace (pages, menus, pied de page, sitemap, administration). Le contenu se remplit et se modère ensuite depuis Contenus, Modération, Abonnés.",
   },
   {
     title: "5. Vérifier le référencement",

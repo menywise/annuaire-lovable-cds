@@ -140,7 +140,7 @@ function PublishPage() {
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="a-city">Ville</Label>
-                <Input id="a-city" name="city" placeholder="Limoges" />
+                <Input id="a-city" name="city" placeholder="Votre ville" />
               </div>
             </div>
             <div className="flex items-center gap-2">

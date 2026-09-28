@@ -1,25 +1,27 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { brand } from "@/config/brand";
 import { listPosts, listTopics } from "@/lib/content.functions";
-import { isFeatureOn } from "@/config/features";
+import { isModuleOn, onlyActive, type FeatureKey } from "@/config/modules";
+import { loadSiteConfig } from "@/lib/site-config.functions";
+import { fallbackSiteConfig } from "@/lib/site-config";
 
+type SitemapPage = { path: string; priority: string; changefreq: string; module?: FeatureKey };
 
-/** Pages publiques indexables, avec leur priorité de référencement. */
-const pages: Array<{ path: string; priority: string; changefreq: string }> = [
+/** Pages publiques indexables, avec leur priorité et le module dont elles dépendent. */
+const pages: SitemapPage[] = [
   { path: "/", priority: "1.0", changefreq: "weekly" },
   { path: "/a-propos", priority: "0.8", changefreq: "monthly" },
-  { path: "/demarrer", priority: "0.9", changefreq: "monthly" },
-  { path: "/composants", priority: "0.9", changefreq: "weekly" },
-  { path: "/tarifs", priority: "0.9", changefreq: "monthly" },
-  { path: "/blog", priority: "0.9", changefreq: "weekly" },
-  { path: "/faq", priority: "0.8", changefreq: "monthly" },
-  { path: "/forum", priority: "0.8", changefreq: "daily" },
-  { path: "/membres", priority: "0.7", changefreq: "weekly" },
-  { path: "/temoignages", priority: "0.8", changefreq: "weekly" },
-  { path: "/avis", priority: "0.8", changefreq: "weekly" },
-  { path: "/guide", priority: "0.9", changefreq: "monthly" },
+  { path: "/demarrer", priority: "0.9", changefreq: "monthly", module: "onboarding" },
+  { path: "/composants", priority: "0.9", changefreq: "weekly", module: "showcase" },
+  { path: "/guide", priority: "0.9", changefreq: "monthly", module: "showcase" },
+  { path: "/tarifs", priority: "0.9", changefreq: "monthly", module: "pricing" },
+  { path: "/blog", priority: "0.9", changefreq: "weekly", module: "blog" },
+  { path: "/faq", priority: "0.8", changefreq: "monthly", module: "faq" },
+  { path: "/forum", priority: "0.8", changefreq: "daily", module: "forum" },
+  { path: "/membres", priority: "0.7", changefreq: "weekly", module: "members" },
+  { path: "/temoignages", priority: "0.8", changefreq: "weekly", module: "testimonials" },
+  { path: "/avis", priority: "0.8", changefreq: "weekly", module: "reviews" },
   { path: "/plan-du-site", priority: "0.6", changefreq: "monthly" },
-  { path: "/contact", priority: "0.7", changefreq: "yearly" },
+  { path: "/contact", priority: "0.7", changefreq: "yearly", module: "contact" },
   { path: "/login", priority: "0.5", changefreq: "yearly" },
   { path: "/signup", priority: "0.5", changefreq: "yearly" },
   { path: "/verification-email", priority: "0.3", changefreq: "yearly" },
@@ -29,36 +31,27 @@ const pages: Array<{ path: string; priority: string; changefreq: string }> = [
   { path: "/legal/cgu", priority: "0.4", changefreq: "yearly" },
   { path: "/legal/cgv", priority: "0.4", changefreq: "yearly" },
   { path: "/legal/cookies", priority: "0.4", changefreq: "yearly" },
+  { path: "/annuaire", priority: "0.9", changefreq: "daily", module: "directory" },
+  { path: "/annuaire/soumettre", priority: "0.6", changefreq: "monthly", module: "directory" },
+  { path: "/annuaire/departements", priority: "0.8", changefreq: "weekly", module: "geo" },
+  { path: "/formations", priority: "0.9", changefreq: "weekly", module: "lms" },
+  { path: "/marketplace", priority: "0.9", changefreq: "daily", module: "marketplace" },
+  { path: "/marketplace/publier", priority: "0.6", changefreq: "monthly", module: "marketplace" },
+  { path: "/publicite", priority: "0.6", changefreq: "monthly", module: "adNetwork" },
 ];
-
-/** Pages ajoutées seulement quand la brique correspondante est active. */
-const optionalPages: Array<{ path: string; priority: string; changefreq: string }> = [
-  ...(isFeatureOn("directory")
-    ? [
-        { path: "/annuaire", priority: "0.9", changefreq: "daily" },
-        { path: "/annuaire/soumettre", priority: "0.6", changefreq: "monthly" },
-      ]
-    : []),
-  ...(isFeatureOn("geo") ? [{ path: "/annuaire/departements", priority: "0.8", changefreq: "weekly" }] : []),
-  ...(isFeatureOn("lms") ? [{ path: "/formations", priority: "0.9", changefreq: "weekly" }] : []),
-  ...(isFeatureOn("marketplace")
-    ? [
-        { path: "/marketplace", priority: "0.9", changefreq: "daily" },
-        { path: "/marketplace/publier", priority: "0.6", changefreq: "monthly" },
-      ]
-    : []),
-  ...(isFeatureOn("adNetwork") ? [{ path: "/publicite", priority: "0.6", changefreq: "monthly" }] : []),
-];
-
 
 export const Route = createFileRoute("/sitemap.xml")({
   server: {
     handlers: {
       GET: async () => {
+        const site = await loadSiteConfig().catch(() => fallbackSiteConfig);
         const lastmod = new Date().toISOString().slice(0, 10);
-        const dynamic: Array<{ path: string; priority: string; changefreq: string }> = [];
+        const dynamic: SitemapPage[] = [];
         try {
-          const [posts, topics] = await Promise.all([listPosts(), listTopics()]);
+          const [posts, topics] = await Promise.all([
+            isModuleOn(site.modules, "blog") ? listPosts() : Promise.resolve([]),
+            isModuleOn(site.modules, "forum") ? listTopics() : Promise.resolve([]),
+          ]);
           for (const post of posts) {
             dynamic.push({ path: `/blog/${post.slug}`, priority: "0.8", changefreq: "monthly" });
           }
@@ -70,10 +63,10 @@ export const Route = createFileRoute("/sitemap.xml")({
         }
         const body = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${[...pages, ...optionalPages, ...dynamic]
+${[...onlyActive(site.modules, pages), ...dynamic]
   .map(
     (page) =>
-      `  <url>\n    <loc>${brand.url}${page.path === "/" ? "/" : page.path}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>${page.changefreq}</changefreq>\n    <priority>${page.priority}</priority>\n  </url>`,
+      `  <url>\n    <loc>${site.brand.url}${page.path === "/" ? "/" : page.path}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>${page.changefreq}</changefreq>\n    <priority>${page.priority}</priority>\n  </url>`,
   )
   .join("\n")}
 </urlset>

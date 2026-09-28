@@ -9,7 +9,7 @@ import { requireFeature } from "@/config/features";
 import { getMarketplaceListing } from "@/lib/marketplace.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { absoluteUrl } from "@/config/brand";
+import { absoluteUrl } from "@/lib/site-config";
 import { breadcrumbJsonLd, seo } from "@/lib/seo";
 import { formatDate, formatPrice } from "@/lib/format";
 

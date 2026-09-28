@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { seo } from "@/lib/seo";
+import { isFeatureOn, requireAnyFeature } from "@/config/features";
 
 export const Route = createFileRoute("/_authenticated/admin/moderation")({
   head: () =>
@@ -16,6 +17,7 @@ export const Route = createFileRoute("/_authenticated/admin/moderation")({
       path: "/admin/moderation",
       noindex: true,
     }),
+  beforeLoad: () => requireAnyFeature(["reviews", "blog", "forum"]),
   component: AdminModerationPage,
 });
 
@@ -122,16 +124,28 @@ function AdminModerationPage() {
           </button>
         </div>
       )}
-      <Tabs defaultValue="avis">
+      <Tabs
+        defaultValue={
+          isFeatureOn("reviews") ? "avis" : isFeatureOn("blog") ? "commentaires" : "forum"
+        }
+      >
         <TabsList>
-          <TabsTrigger value="avis">
-            Avis {pendingReviews > 0 ? `(${pendingReviews})` : ""}
-          </TabsTrigger>
-          <TabsTrigger value="commentaires">
-            Commentaires {pendingComments > 0 ? `(${pendingComments})` : ""}
-          </TabsTrigger>
-          <TabsTrigger value="forum">Discussions</TabsTrigger>
-          <TabsTrigger value="reponses">Réponses</TabsTrigger>
+          {isFeatureOn("reviews") ? (
+            <TabsTrigger value="avis">
+              Avis {pendingReviews > 0 ? `(${pendingReviews})` : ""}
+            </TabsTrigger>
+          ) : null}
+          {isFeatureOn("blog") ? (
+            <TabsTrigger value="commentaires">
+              Commentaires {pendingComments > 0 ? `(${pendingComments})` : ""}
+            </TabsTrigger>
+          ) : null}
+          {isFeatureOn("forum") ? (
+            <>
+              <TabsTrigger value="forum">Discussions</TabsTrigger>
+              <TabsTrigger value="reponses">Réponses</TabsTrigger>
+            </>
+          ) : null}
         </TabsList>
 
         <TabsContent value="avis" className="space-y-3 pt-6">

@@ -4,8 +4,10 @@ import { PageShell } from "@/components/cds/SiteHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { seo } from "@/lib/seo";
+import { requireFeature } from "@/config/features";
 
 export const Route = createFileRoute("/_authenticated/messagerie/")({
+  beforeLoad: () => requireFeature("messaging"),
   head: () =>
     seo({
       title: "Ma messagerie",

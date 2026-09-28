@@ -1,5 +1,37 @@
+import { Link } from "@tanstack/react-router";
 import { PageShell } from "./SiteHeader";
 import { useBrandSettings } from "@/hooks/useSiteSettings";
+import { isFeatureOn } from "@/config/features";
+import type { BrandSettings } from "@/lib/site-config";
+
+/** Nom de l'éditeur : raison sociale saisie en admin, sinon nom du site. */
+export function editorName(brand: BrandSettings) {
+  return brand.legal.company || brand.name;
+}
+
+/**
+ * Moyen de contact cité dans les documents légaux : le formulaire si le module
+ * Contact est actif, sinon un courrier au siège social saisi en admin.
+ */
+export function ContactChannel({ title = "Nous écrire via le formulaire de contact protégé" }: { title?: string }) {
+  const { settings } = useBrandSettings();
+  if (isFeatureOn("contact")) {
+    return (
+      <>
+        le{" "}
+        <Link to="/contact" title={title} className="font-medium text-primary-text hover:underline">
+          formulaire de contact
+        </Link>
+      </>
+    );
+  }
+  return (
+    <>
+      un courrier adressé au siège social
+      {settings.legal.address ? ` (${settings.legal.address})` : ""}
+    </>
+  );
+}
 
 export function LegalPage({
   title,
@@ -24,8 +56,16 @@ export function LegalPage({
           {children}
         </div>
         <p className="mt-10 rounded-lg border border-border bg-muted p-4 text-xs text-muted-foreground">
-          {settings.legal.company} — {settings.legal.form} au capital de {settings.legal.capital},{" "}
-          {settings.legal.address}. Site hébergé par {settings.host.name}.
+          {[
+            editorName(settings),
+            settings.legal.form && settings.legal.capital
+              ? `${settings.legal.form} au capital de ${settings.legal.capital}`
+              : settings.legal.form,
+            settings.legal.address,
+          ]
+            .filter(Boolean)
+            .join(" — ")}
+          .{settings.host.name ? ` Site hébergé par ${settings.host.name}.` : ""}
         </p>
       </article>
     </PageShell>

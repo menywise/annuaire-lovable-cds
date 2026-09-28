@@ -10,13 +10,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { GoogleSignInButton } from "@/components/cds/GoogleSignInButton";
 
 import { seo } from "@/lib/seo";
+import { getSiteConfig } from "@/lib/site-config";
 
 export const Route = createFileRoute("/signup")({
   head: () =>
     seo({
       title: "Créer un compte",
       description:
-        "Créez votre compte PMM RDS en quelques secondes : nom, adresse e-mail et mot de passe, avec confirmation par e-mail.",
+        `Créez votre compte ${getSiteConfig().brand.name} en quelques secondes : nom, adresse e-mail et mot de passe, avec confirmation par e-mail.`,
       path: "/signup",
       type: "website",
     }),

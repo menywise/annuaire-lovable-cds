@@ -12,7 +12,10 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Toaster } from "@/components/ui/sonner";
-import { brand } from "@/config/brand";
+import { siteLocale } from "@/config/brand";
+import { getSiteConfig, setSiteConfig, siteConfigScript } from "@/lib/site-config";
+import { loadSiteConfig } from "@/lib/site-config.functions";
+import { isFeatureOn } from "@/config/features";
 
 export function NotFoundComponent() {
   return (
@@ -31,13 +34,15 @@ export function NotFoundComponent() {
           >
             Retour à l'accueil
           </Link>
-          <Link
-            to="/contact"
-            title="Signaler un lien cassé via le formulaire de contact"
-            className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
-          >
-            Nous signaler le problème
-          </Link>
+          {isFeatureOn("contact") ? (
+            <Link
+              to="/contact"
+              title="Signaler un lien cassé via le formulaire de contact"
+              className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
+            >
+              Nous signaler le problème
+            </Link>
+          ) : null}
         </div>
       </div>
     </div>
@@ -84,61 +89,96 @@ export function ErrorComponent({ error, reset }: { error: Error; reset: () => vo
   );
 }
 
-export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
-  head: () => ({
-    meta: [
-      { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
-      { name: "theme-color", content: "#f8fafc" },
-      { name: "mobile-web-app-capable", content: "yes" },
-      { name: "apple-mobile-web-app-capable", content: "yes" },
-      { name: "apple-mobile-web-app-title", content: "CDS" },
-      { name: "apple-mobile-web-app-status-bar-style", content: "default" },
-      { name: "author", content: brand.legal.company },
-      { property: "og:site_name", content: brand.name },
-      { property: "og:locale", content: "fr_FR" },
-    ],
-    links: [
-      {
-        rel: "stylesheet",
-        href: appCss,
-      },
-      { rel: "preconnect", href: "https://fonts.googleapis.com" },
-      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-      {
-        rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap",
-      },
-      { rel: "icon", type: "image/png", href: "/favicon.png" },
-      { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
-      { rel: "manifest", href: "/manifest.webmanifest" },
-    ],
-    scripts: [
-      {
-        type: "application/ld+json",
-        children: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "Organization",
-          name: brand.legal.company,
-          legalName: `${brand.legal.company} — ${brand.legal.form}`,
-          url: brand.url,
+/** Données structurées de l'éditeur : uniquement les champs saisis en admin. */
+function organizationJsonLd() {
+  const { brand } = getSiteConfig();
+  const name = brand.legal.company || brand.name;
+  return {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name,
+    ...(brand.legal.company && brand.legal.form
+      ? { legalName: `${brand.legal.company} — ${brand.legal.form}` }
+      : {}),
+    ...(brand.url ? { url: brand.url } : {}),
+    ...(brand.legal.address
+      ? {
           address: {
             "@type": "PostalAddress",
-            streetAddress: "Rue du Champfour",
-            postalCode: "87000",
-            addressLocality: "Limoges",
-            addressCountry: "FR",
+            streetAddress: brand.legal.address,
+            ...(brand.legal.country ? { addressCountry: brand.legal.country } : {}),
           },
+        }
+      : {}),
+    ...(brand.url
+      ? {
           contactPoint: {
             "@type": "ContactPoint",
             contactType: "customer support",
             url: `${brand.url}/contact`,
-            availableLanguage: ["fr"],
+            availableLanguage: [siteLocale.lang],
           },
-        }),
-      },
-    ],
-  }),
+        }
+      : {}),
+  };
+}
+
+export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
+  /**
+   * Paramètres du site lus en base AVANT toute autre route : titres, canonical,
+   * JSON-LD et interrupteurs des modules sont justes dans le HTML indexé.
+   * En cas d'échec, la dernière configuration connue (ou le repli neutre) reste en place.
+   */
+  beforeLoad: async () => {
+    const onServer = typeof window === "undefined";
+    if (onServer || !window.__CDS_SITE__) {
+      try {
+        setSiteConfig(await loadSiteConfig());
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  },
+  head: () => {
+    const { brand } = getSiteConfig();
+    return {
+      meta: [
+        { charSet: "utf-8" },
+        { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
+        { name: "theme-color", content: "#f8fafc" },
+        { name: "mobile-web-app-capable", content: "yes" },
+        { name: "apple-mobile-web-app-capable", content: "yes" },
+        { name: "apple-mobile-web-app-title", content: brand.shortName },
+        { name: "apple-mobile-web-app-status-bar-style", content: "default" },
+        ...(brand.legal.company ? [{ name: "author", content: brand.legal.company }] : []),
+        { property: "og:site_name", content: brand.name },
+        { property: "og:locale", content: siteLocale.og },
+      ],
+      links: [
+        {
+          rel: "stylesheet",
+          href: appCss,
+        },
+        { rel: "preconnect", href: "https://fonts.googleapis.com" },
+        { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+        {
+          rel: "stylesheet",
+          href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap",
+        },
+        { rel: "icon", type: "image/png", href: "/favicon.png" },
+        { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
+        { rel: "manifest", href: "/manifest.webmanifest" },
+      ],
+      scripts: [
+        // Doit précéder le code du navigateur : l'hydratation relit ces valeurs.
+        { children: siteConfigScript() },
+        {
+          type: "application/ld+json",
+          children: JSON.stringify(organizationJsonLd()),
+        },
+      ],
+    };
+  },
   shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
@@ -147,7 +187,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang={brand.lang}>
+    <html lang={siteLocale.lang}>
       <head>
         <HeadContent />
       </head>

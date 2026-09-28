@@ -1,5 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { LegalPage, Section } from "@/components/cds/LegalPage";
+import { ContactChannel, LegalPage, Section, editorName } from "@/components/cds/LegalPage";
+import { useBrandSettings } from "@/hooks/useSiteSettings";
+import { getSiteConfig } from "@/lib/site-config";
 
 import { seo } from "@/lib/seo";
 
@@ -8,15 +10,21 @@ export const Route = createFileRoute("/legal/cgu")({
     seo({
       title: "Conditions générales d'utilisation",
       description:
-        "Conditions générales d'utilisation des services PMM RDS : accès, compte, obligations, résiliation et droit applicable.",
+        `Conditions générales d'utilisation des services ${editorName(getSiteConfig().brand)} : accès, compte, obligations, résiliation et droit applicable.`,
       path: "/legal/cgu",
       type: "article",
     }),
-  component: () => (
+  component: CguPage,
+});
+
+function CguPage() {
+  const { settings } = useBrandSettings();
+  const editor = editorName(settings);
+  return (
     <LegalPage title="Conditions générales d'utilisation" updatedAt="17 septembre 2026">
       <Section title="Objet">
         <p>
-          Les présentes conditions régissent l'accès aux services édités par PMM RDS et leur
+          Les présentes conditions régissent l'accès aux services édités par {editor} et leur
           utilisation par tout utilisateur.
         </p>
       </Section>
@@ -24,7 +32,9 @@ export const Route = createFileRoute("/legal/cgu")({
         <ul>
           <li>Les informations fournies à l'inscription doivent être exactes et à jour.</li>
           <li>L'utilisateur est responsable de la confidentialité de ses identifiants.</li>
-          <li>Tout usage frauduleux doit être signalé sans délai via le formulaire de contact.</li>
+          <li>
+            Tout usage frauduleux doit être signalé sans délai via <ContactChannel />.
+          </li>
         </ul>
       </Section>
       <Section title="Obligations de l'utilisateur">
@@ -41,24 +51,26 @@ export const Route = createFileRoute("/legal/cgu")({
       </Section>
       <Section title="Résiliation">
         <p>
-          L'utilisateur peut supprimer son compte à tout moment. PMM RDS peut suspendre un compte en
-          cas de manquement aux présentes conditions.
+          L'utilisateur peut supprimer son compte à tout moment depuis la page{" "}
+          <Link
+            to="/profil"
+            title="Gérer mon compte et le supprimer"
+            className="font-medium text-primary-text hover:underline"
+          >
+            Mon profil
+          </Link>
+          . Ses données personnelles sont alors effacées ; ses contributions publiques (forum,
+          commentaires, avis) restent en ligne sous le nom « Ancien membre ». {editor} peut
+          suspendre un compte en cas de manquement aux présentes conditions.
         </p>
       </Section>
       <Section title="Contact et droit applicable">
         <p>
-          Toute question peut être adressée via le{" "}
-          <Link
-            to="/contact"
-            title="Nous écrire via le formulaire de contact protégé"
-            className="font-medium text-primary-text hover:underline"
-          >
-            formulaire de contact
-          </Link>
-          . Les présentes conditions sont soumises au droit français ; à défaut d'accord amiable,
-          les tribunaux de Limoges sont compétents.
+          Toute question peut être adressée via <ContactChannel />. Les présentes conditions sont
+          soumises au droit français ; à défaut d'accord amiable, les tribunaux du ressort du siège
+          social de l'éditeur sont compétents.
         </p>
       </Section>
     </LegalPage>
-  ),
-});
+  );
+}

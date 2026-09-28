@@ -1,5 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { LegalPage, Section } from "@/components/cds/LegalPage";
+import { createFileRoute } from "@tanstack/react-router";
+import { ContactChannel, LegalPage, Section, editorName } from "@/components/cds/LegalPage";
+import { getSiteConfig } from "@/lib/site-config";
 import { useBrandSettings } from "@/hooks/useSiteSettings";
 
 import { seo } from "@/lib/seo";
@@ -9,7 +10,7 @@ export const Route = createFileRoute("/legal/mentions-legales")({
     seo({
       title: "Mentions légales",
       description:
-        "Mentions légales de PMM RDS, SAS au capital de 1 000 €, siège social à Limoges — site hébergé par OVH.",
+        `Mentions légales de ${editorName(getSiteConfig().brand)} : éditeur, directeur de la publication, hébergeur et propriété intellectuelle.`,
       path: "/legal/mentions-legales",
       type: "article",
     }),
@@ -19,53 +20,64 @@ export const Route = createFileRoute("/legal/mentions-legales")({
 function MentionsLegalesPage() {
   const { settings } = useBrandSettings();
   const { legal, host } = settings;
+  const editor = editorName(settings);
 
   return (
     <LegalPage title="Mentions légales" updatedAt="17 septembre 2026">
       <Section title="Éditeur du site">
         <p>
-          {legal.company}, {legal.form} au capital de {legal.capital}, immatriculée au {legal.rcs},
-          siège social : {legal.address}, {legal.country}.
+          {[
+            editor,
+            legal.form && legal.capital ? `${legal.form} au capital de ${legal.capital}` : legal.form,
+            legal.rcs ? `immatriculée au ${legal.rcs}` : "",
+            [legal.address, legal.country].filter(Boolean).join(", ")
+              ? `siège social : ${[legal.address, legal.country].filter(Boolean).join(", ")}`
+              : "",
+          ]
+            .filter(Boolean)
+            .join(", ")}
+          .
         </p>
-        <p>Directeur de la publication : {legal.publisher}.</p>
+        {legal.publisher ? <p>Directeur de la publication : {legal.publisher}.</p> : null}
         <p>
-          Contact :{" "}
-          <Link
-            to="/contact"
-            title="Nous écrire via le formulaire de contact protégé"
-            className="font-medium text-primary-text hover:underline"
-          >
-            formulaire de contact
-          </Link>{" "}
-          (aucune adresse e-mail n'est publiée en clair, afin de limiter le spam).
+          Contact : <ContactChannel /> (aucune adresse e-mail n'est publiée en clair, afin de limiter
+          le spam).
         </p>
       </Section>
 
       <Section title="Hébergement">
         <p>
-          Le site est hébergé par {host.name}, immatriculée sous le numéro {host.detail}, siège
-          social : {host.address} — téléphone : {host.phone}.
+          {host.name
+            ? [
+                `Le site est hébergé par ${host.name}`,
+                host.detail ? `immatriculée sous le numéro ${host.detail}` : "",
+                host.address ? `siège social : ${host.address}` : "",
+                host.phone ? `téléphone : ${host.phone}` : "",
+              ]
+                .filter(Boolean)
+                .join(", ") + "."
+            : "Hébergeur : à renseigner dans l'administration (Paramètres du site)."}
         </p>
       </Section>
 
       <Section title="Propriété intellectuelle">
         <p>
           L'ensemble des contenus du site (textes, images, marques, logos, code source) est la
-          propriété de {legal.company} ou de ses partenaires. Toute reproduction ou représentation,
+          propriété de {editor} ou de ses partenaires. Toute reproduction ou représentation,
           totale ou partielle, sans autorisation écrite préalable est interdite.
         </p>
       </Section>
 
       <Section title="Responsabilité">
         <p>
-          {legal.company} s'efforce d'assurer l'exactitude des informations publiées mais ne saurait
+          {editor} s'efforce d'assurer l'exactitude des informations publiées mais ne saurait
           être tenue responsable des erreurs, omissions ou indisponibilités temporaires du service.
         </p>
       </Section>
 
       <Section title="Liens externes">
         <p>
-          Les liens vers des sites tiers sont fournis à titre informatif ; {legal.company} n'exerce
+          Les liens vers des sites tiers sont fournis à titre informatif ; {editor} n'exerce
           aucun contrôle sur leur contenu et décline toute responsabilité à leur égard.
         </p>
       </Section>

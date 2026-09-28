@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/accordion";
 import { listFaq } from "@/lib/content.functions";
 import { breadcrumbJsonLd, seo } from "@/lib/seo";
+import { requireFeature, isFeatureOn } from "@/config/features";
 
 function anchorOf(value: string) {
   return value
@@ -24,6 +25,7 @@ function anchorOf(value: string) {
 }
 
 export const Route = createFileRoute("/faq")({
+  beforeLoad: () => requireFeature("faq"),
   loader: () => listFaq(),
   head: ({ loaderData }) => {
     const base = seo({
@@ -153,26 +155,36 @@ function FaqPage() {
           ))
         )}
 
-        <p className="mt-8 text-sm text-muted-foreground">
-          Votre question n'y figure pas ?{" "}
-          <Link
-            to="/contact"
-            title="Poser votre question via le formulaire de contact"
-            className="text-primary-text hover:underline"
-          >
-            Posez-la ici
-          </Link>
-          , vous aurez une réponse sous 48 heures ouvrées. Vous pouvez aussi la soumettre à la
-          communauté sur le{" "}
-          <Link
-            to="/forum"
-            title="Poser votre question au forum"
-            className="text-primary-text hover:underline"
-          >
-            forum
-          </Link>
-          .
-        </p>
+        {isFeatureOn("contact") || isFeatureOn("forum") ? (
+          <p className="mt-8 text-sm text-muted-foreground">
+            Votre question n'y figure pas ?{" "}
+            {isFeatureOn("contact") ? (
+              <>
+                <Link
+                  to="/contact"
+                  title="Poser votre question via le formulaire de contact"
+                  className="text-primary-text hover:underline"
+                >
+                  Posez-la ici
+                </Link>
+                , vous aurez une réponse sous 48 heures ouvrées.{" "}
+              </>
+            ) : null}
+            {isFeatureOn("forum") ? (
+              <>
+                Vous pouvez aussi la soumettre à la communauté sur le{" "}
+                <Link
+                  to="/forum"
+                  title="Poser votre question au forum"
+                  className="text-primary-text hover:underline"
+                >
+                  forum
+                </Link>
+                .
+              </>
+            ) : null}
+          </p>
+        ) : null}
 
         <div className="mt-10">
           <NewsletterForm source="faq" />

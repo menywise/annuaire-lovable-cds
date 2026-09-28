@@ -17,8 +17,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { seo } from "@/lib/seo";
+import { requireFeature } from "@/config/features";
 
 export const Route = createFileRoute("/_authenticated/admin/conformite")({
+  beforeLoad: () => requireFeature("studio"),
   head: () =>
     seo({
       title: "Conformité du modèle",

@@ -1,46 +1,37 @@
 /**
- * CDS — Configuration de marque
- * Point de modification UNIQUE pour réutiliser le design system sur un nouveau projet :
- * nom, URL publique, coordonnées légales, hébergeur, adresses administratrices.
+ * CDS — Valeurs de repli de la marque.
+ *
+ * La source unique est la table `site_settings` (clé « brand »), saisie dans
+ * l'administration et lue côté serveur (voir `src/lib/site-config.ts`).
+ * Ce fichier ne sert que si la base est vide ou injoignable : valeurs neutres,
+ * aucune donnée propre à un projet.
  */
 
-export const brand = {
+export const brandFallback = {
   /** Nom court affiché dans l'en-tête et le logo. */
-  shortName: "CDS",
+  shortName: "Site",
   /** Nom complet utilisé dans les titres et métadonnées. */
-  name: "Consensus Design System",
+  name: "Nouveau site",
   /** Signature affichée dans le pied de page. */
-  tagline: "Consensus Design System — GNOSIA",
-  /** URL publique du site (sans slash final) — utilisée pour canonical, og:url, sitemap. */
-  url: "https://cds-mac97000.lovable.app",
-  /** Langue du document. */
-  locale: "fr-FR",
-  lang: "fr",
-
-  /** Éditeur du site (mentions légales). */
+  tagline: "",
+  /** URL publique du site (sans slash final) — vide tant qu'elle n'est pas saisie en admin. */
+  url: "",
   legal: {
-    company: "PMM RDS",
-    form: "SAS",
-    capital: "1 000 €",
-    rcs: "RCS Limoges",
-    address: "Rue du Champfour, 87000 Limoges",
+    company: "",
+    form: "",
+    capital: "",
+    rcs: "",
+    address: "",
     country: "France",
-    publisher: "Manuel ROHAUT",
+    publisher: "",
   },
-
-  /** Hébergeur. */
   host: {
-    name: "OVH SAS",
-    detail: "424 761 419 RCS Lille Métropole",
-    address: "2 rue Kellermann, 59100 Roubaix, France",
-    phone: "1007",
+    name: "",
+    detail: "",
+    address: "",
+    phone: "",
   },
+};
 
-  /** Adresses obtenant automatiquement le rôle administrateur. */
-  adminEmails: ["manuel.rohaut@gmail.com", "ac.rohaut@gmail.com"],
-} as const;
-
-/** Construit une URL absolue à partir d'un chemin interne. */
-export function absoluteUrl(path: string) {
-  return `${brand.url}${path.startsWith("/") ? path : `/${path}`}`;
-}
+/** Langue du document (multilingue hors périmètre). */
+export const siteLocale = { locale: "fr-FR", lang: "fr", og: "fr_FR" } as const;

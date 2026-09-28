@@ -1,6 +1,6 @@
 import { Link2, Linkedin, Facebook } from "lucide-react";
 import { toast } from "sonner";
-import { absoluteUrl } from "@/config/brand";
+import { absoluteUrl } from "@/lib/site-config";
 
 /** Partage sur les réseaux sociaux + copie du lien. */
 export function ShareButtons({ path, title }: { path: string; title: string }) {

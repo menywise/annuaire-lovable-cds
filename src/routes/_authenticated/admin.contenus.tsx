@@ -10,6 +10,7 @@ import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { seo } from "@/lib/seo";
+import { requireAnyFeature, withActiveModules } from "@/config/features";
 
 export const Route = createFileRoute("/_authenticated/admin/contenus")({
   head: () =>
@@ -19,6 +20,7 @@ export const Route = createFileRoute("/_authenticated/admin/contenus")({
       path: "/admin/contenus",
       noindex: true,
     }),
+  beforeLoad: () => requireAnyFeature(["faq", "pricing", "blog"]),
   component: AdminContenusPage,
 });
 
@@ -167,16 +169,24 @@ function AdminContenusPage() {
     notifyResult(error, "Article supprimé.");
   }
 
+  const tabs = withActiveModules([
+    { value: "faq", label: "FAQ", module: "faq" as const },
+    { value: "offres", label: "Offres", module: "pricing" as const },
+    { value: "articles", label: "Articles", module: "blog" as const },
+  ]);
+
   return (
     <AdminShell
       title="Contenus"
       intro="Vos pages publiques se remplissent ici : questions fréquentes, offres et articles. Aucune ligne de code à toucher."
     >
-      <Tabs defaultValue="faq">
+      <Tabs defaultValue={tabs[0]?.value ?? "faq"}>
         <TabsList>
-          <TabsTrigger value="faq">FAQ</TabsTrigger>
-          <TabsTrigger value="offres">Offres</TabsTrigger>
-          <TabsTrigger value="articles">Articles</TabsTrigger>
+          {tabs.map((tab) => (
+            <TabsTrigger key={tab.value} value={tab.value}>
+              {tab.label}
+            </TabsTrigger>
+          ))}
         </TabsList>
 
         <TabsContent value="faq" className="space-y-4 pt-6">

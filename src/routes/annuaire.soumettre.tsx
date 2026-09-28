@@ -176,7 +176,7 @@ function SubmitListingPage() {
             <div className="grid gap-4 sm:grid-cols-3">
               <div className="space-y-1.5">
                 <Label htmlFor="f-city">Ville</Label>
-                <Input id="f-city" name="city" placeholder="Limoges" />
+                <Input id="f-city" name="city" placeholder="Votre ville" />
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="f-phone">Téléphone</Label>

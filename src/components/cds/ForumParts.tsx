@@ -4,6 +4,7 @@ import { Heart, MessageSquare, Eye, Bell, BellOff } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { isFeatureOn } from "@/config/features";
 
 export function CategoryBadge({ name, color }: { name: string; color: string }) {
   return (
@@ -274,14 +275,11 @@ export function TopMembers({
               <span className="grid size-6 shrink-0 place-items-center rounded-full bg-muted text-xs font-semibold text-foreground">
                 {index + 1}
               </span>
-              <Link
-                to="/membres/$memberId"
-                params={{ memberId: member.user_id }}
-                title={`Voir le profil de ${member.display_name}`}
+              <MemberName
+                id={member.user_id}
+                name={member.display_name}
                 className="truncate text-foreground hover:text-primary-text"
-              >
-                {member.display_name}
-              </Link>
+              />
               <span className="ml-auto shrink-0 text-xs text-muted-foreground">
                 {member.score} pts
               </span>
@@ -290,5 +288,33 @@ export function TopMembers({
         </ol>
       )}
     </section>
+  );
+}
+
+/** Identifiant neutre des contributions d'un compte supprimé (voir delete_my_account). */
+export const FORMER_MEMBER_ID = "00000000-0000-0000-0000-000000000000";
+
+/** Nom d'auteur : lien vers son profil public si le module Membres est actif et le compte existe. */
+export function MemberName({
+  id,
+  name,
+  className = "",
+}: {
+  id: string;
+  name: string;
+  className?: string;
+}) {
+  if (!isFeatureOn("members") || id === FORMER_MEMBER_ID) {
+    return <span className={className}>{name}</span>;
+  }
+  return (
+    <Link
+      to="/membres/$memberId"
+      params={{ memberId: id }}
+      title={`Voir le profil de ${name}`}
+      className={className}
+    >
+      {name}
+    </Link>
   );
 }

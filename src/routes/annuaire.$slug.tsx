@@ -12,7 +12,7 @@ import { requireFeature } from "@/config/features";
 import { getDirectoryListing } from "@/lib/directory.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { absoluteUrl } from "@/config/brand";
+import { absoluteUrl } from "@/lib/site-config";
 import { breadcrumbJsonLd, seo } from "@/lib/seo";
 import { formatDate } from "@/lib/format";
 

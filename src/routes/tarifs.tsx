@@ -5,8 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { listPlans } from "@/lib/content.functions";
 import { seo } from "@/lib/seo";
+import { requireFeature, isFeatureOn } from "@/config/features";
 
 export const Route = createFileRoute("/tarifs")({
+  beforeLoad: () => requireFeature("pricing"),
   loader: () => listPlans(),
   head: () =>
     seo({
@@ -109,16 +111,20 @@ function TarifsPage() {
             recommandation honnête, y compris si l'offre gratuite suffit.
           </p>
           <div className="mt-4 flex flex-wrap justify-center gap-3">
-            <Button asChild>
-              <Link to="/contact" title="Décrire votre projet et recevoir une recommandation">
-                Décrire mon projet
-              </Link>
-            </Button>
-            <Button asChild variant="outline">
-              <Link to="/faq" title="Consulter les questions fréquentes">
-                Lire les questions fréquentes
-              </Link>
-            </Button>
+            {isFeatureOn("contact") ? (
+              <Button asChild>
+                <Link to="/contact" title="Décrire votre projet et recevoir une recommandation">
+                  Décrire mon projet
+                </Link>
+              </Button>
+            ) : null}
+            {isFeatureOn("faq") ? (
+              <Button asChild variant="outline">
+                <Link to="/faq" title="Consulter les questions fréquentes">
+                  Lire les questions fréquentes
+                </Link>
+              </Button>
+            ) : null}
           </div>
         </section>
       </div>

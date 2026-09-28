@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { PageShell } from "@/components/cds/SiteHeader";
@@ -6,9 +6,20 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { seo } from "@/lib/seo";
+import { isFeatureOn } from "@/config/features";
 
 export const Route = createFileRoute("/_authenticated/profil")({
   head: () =>
@@ -122,7 +133,7 @@ function ProfilPage() {
           </CardContent>
         </Card>
 
-        <PublicProfileCard />
+        {isFeatureOn("members") ? <PublicProfileCard /> : null}
 
         <Card className="mt-6">
           <CardHeader>
@@ -157,8 +168,92 @@ function ProfilPage() {
             </form>
           </CardContent>
         </Card>
+
+        <DeleteAccountCard />
       </div>
     </PageShell>
+  );
+}
+
+/**
+ * Suppression de son compte (promise dans les CGU) : données personnelles effacées,
+ * contributions publiques conservées sous le nom « Ancien membre ». Tout se fait en base
+ * (fonction delete_my_account), en une seule opération.
+ */
+function DeleteAccountCard() {
+  const navigate = useNavigate();
+  const [confirmation, setConfirmation] = useState("");
+  const [deleting, setDeleting] = useState(false);
+  const ready = confirmation.trim().toUpperCase() === "SUPPRIMER";
+
+  async function deleteAccount() {
+    if (!ready) return;
+    setDeleting(true);
+    const { error } = await supabase.rpc("delete_my_account");
+    if (error) {
+      setDeleting(false);
+      toast.error("Suppression impossible.", {
+        description: error.message.includes("dernier administrateur")
+          ? "Vous êtes le dernier administrateur : nommez-en un autre avant de partir."
+          : "Réessayez dans un instant.",
+      });
+      return;
+    }
+    await supabase.auth.signOut();
+    toast.success("Compte supprimé.", {
+      description: "Vos données personnelles ont été effacées.",
+    });
+    navigate({ to: "/", replace: true });
+  }
+
+  return (
+    <Card className="mt-6 border-destructive/40">
+      <CardHeader>
+        <CardTitle className="text-base">Supprimer mon compte</CardTitle>
+        <CardDescription>
+          Définitif. Votre compte, votre profil, vos messages privés, vos annonces et votre suivi
+          de contacts sont effacés. Vos discussions, réponses, commentaires et avis restent en
+          ligne sous le nom « Ancien membre ».
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button variant="destructive" title="Supprimer définitivement mon compte">
+              Supprimer mon compte
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Supprimer définitivement votre compte ?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Cette action ne peut pas être annulée. Tapez SUPPRIMER pour confirmer.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <div className="space-y-1.5">
+              <Label htmlFor="delete-confirm">Confirmation</Label>
+              <Input
+                id="delete-confirm"
+                value={confirmation}
+                onChange={(e) => setConfirmation(e.target.value)}
+                autoComplete="off"
+                placeholder="SUPPRIMER"
+              />
+            </div>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={() => setConfirmation("")}>Annuler</AlertDialogCancel>
+              <Button
+                variant="destructive"
+                disabled={!ready || deleting}
+                onClick={() => void deleteAccount()}
+              >
+                {deleting ? "Suppression…" : "Supprimer définitivement"}
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -176,7 +271,8 @@ const emptyProfile: PublicProfile = {
   job_title: "",
   bio: "",
   website: "",
-  listed: true,
+  // Inscription volontaire dans l'annuaire des membres (RGPD).
+  listed: false,
   accepts_messages: true,
 };
 

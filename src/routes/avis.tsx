@@ -11,8 +11,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { listReviews } from "@/lib/content.functions";
 import { seo } from "@/lib/seo";
+import { requireFeature } from "@/config/features";
 
 export const Route = createFileRoute("/avis")({
+  beforeLoad: () => requireFeature("reviews"),
   loader: () => listReviews(),
   head: () =>
     seo({

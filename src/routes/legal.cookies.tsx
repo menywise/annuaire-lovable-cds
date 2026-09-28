@@ -1,5 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { LegalPage, Section } from "@/components/cds/LegalPage";
+import { createFileRoute } from "@tanstack/react-router";
+import { ContactChannel, LegalPage, Section, editorName } from "@/components/cds/LegalPage";
+import { getSiteConfig } from "@/lib/site-config";
 
 import { seo } from "@/lib/seo";
 
@@ -8,11 +9,15 @@ export const Route = createFileRoute("/legal/cookies")({
     seo({
       title: "Politique de cookies",
       description:
-        "Politique de gestion des cookies PMM RDS : traceurs utilisés, consentement, durée de conservation et paramétrage.",
+        `Politique de gestion des cookies ${editorName(getSiteConfig().brand)} : traceurs utilisés, consentement, durée de conservation et paramétrage.`,
       path: "/legal/cookies",
       type: "article",
     }),
-  component: () => (
+  component: CookiesPage,
+});
+
+function CookiesPage() {
+  return (
     <LegalPage title="Politique cookies" updatedAt="17 septembre 2026">
       <Section title="Qu'est-ce qu'un cookie ?">
         <p>
@@ -41,17 +46,9 @@ export const Route = createFileRoute("/legal/cookies")({
       </Section>
       <Section title="Contact">
         <p>
-          Pour toute question relative aux traceurs, utilisez le{" "}
-          <Link
-            to="/contact"
-            title="Nous écrire via le formulaire de contact protégé"
-            className="font-medium text-primary-text hover:underline"
-          >
-            formulaire de contact
-          </Link>
-          .
+          Pour toute question relative aux traceurs, utilisez <ContactChannel />.
         </p>
       </Section>
     </LegalPage>
-  ),
-});
+  );
+}

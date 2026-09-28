@@ -1,0 +1,39 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { fallbackSiteConfig } from "@/lib/site-config";
+import { loadSiteConfig } from "@/lib/site-config.functions";
+import { siteLocale } from "@/config/brand";
+
+/** Manifeste d'installation sur l'écran d'accueil : nom repris des paramètres du site. */
+export const Route = createFileRoute("/manifest.webmanifest")({
+  server: {
+    handlers: {
+      GET: async () => {
+        const { brand } = await loadSiteConfig().catch(() => fallbackSiteConfig);
+        const manifest = {
+          name: brand.name,
+          short_name: brand.shortName,
+          ...(brand.tagline ? { description: brand.tagline } : {}),
+          lang: siteLocale.lang,
+          start_url: "/",
+          scope: "/",
+          display: "standalone",
+          orientation: "portrait",
+          background_color: "#f8fafc",
+          theme_color: "#f8fafc",
+          icons: [
+            { src: "/favicon.png", sizes: "64x64", type: "image/png" },
+            { src: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+            { src: "/icon-512.png", sizes: "512x512", type: "image/png", purpose: "any" },
+            { src: "/icon-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
+          ],
+        };
+        return new Response(JSON.stringify(manifest, null, 2), {
+          headers: {
+            "Content-Type": "application/manifest+json; charset=utf-8",
+            "Cache-Control": "public, max-age=3600",
+          },
+        });
+      },
+    },
+  },
+});

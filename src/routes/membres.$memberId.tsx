@@ -8,8 +8,11 @@ import { useAuth } from "@/hooks/useAuth";
 import { getMember } from "@/lib/community.functions";
 import { richTextToPlain } from "@/lib/richtext";
 import { breadcrumbJsonLd, seo } from "@/lib/seo";
+import { requireFeature, isFeatureOn } from "@/config/features";
+import { getSiteConfig } from "@/lib/site-config";
 
 export const Route = createFileRoute("/membres/$memberId")({
+  beforeLoad: () => requireFeature("members"),
   loader: async ({ params }) => {
     const data = await getMember({ data: { userId: params.memberId } });
     if (!data || !data.profile.listed) throw notFound();
@@ -20,7 +23,7 @@ export const Route = createFileRoute("/membres/$memberId")({
     const base = seo({
       title: profile?.display_name ?? "Profil membre",
       description: (
-        profile?.bio || `${profile?.display_name ?? "Ce membre"} contribue à la communauté CDS.`
+        profile?.bio || `${profile?.display_name ?? "Ce membre"} contribue à la communauté ${getSiteConfig().brand.name}.`
       ).slice(0, 155),
       path: `/membres/${params.memberId}`,
       type: "article",
@@ -119,7 +122,7 @@ function MemberPage() {
               <p className="text-sm text-muted-foreground">{profile.job_title}</p>
             ) : null}
           </div>
-          {profile.accepts_messages && user?.id !== profile.user_id ? (
+          {isFeatureOn("messaging") && profile.accepts_messages && user?.id !== profile.user_id ? (
             <Button
               className="ml-auto"
               onClick={openConversation}
@@ -146,52 +149,56 @@ function MemberPage() {
           </p>
         ) : null}
 
-        <section className="mt-10">
-          <h2 className="text-lg font-semibold text-foreground">Discussions ouvertes</h2>
-          {topics.length === 0 ? (
-            <p className="mt-2 text-sm text-muted-foreground">Aucune discussion pour l'instant.</p>
-          ) : (
-            <ul className="mt-3 space-y-2 text-sm">
-              {topics.map((topic) => (
-                <li key={topic.id}>
-                  <Link
-                    to="/forum/$topicId"
-                    params={{ topicId: topic.id }}
-                    title={`Ouvrir la discussion : ${topic.title}`}
-                    className="text-muted-foreground hover:text-primary-text"
-                  >
-                    {topic.title}
-                  </Link>
-                  <span className="ml-2 text-xs text-muted-foreground">
-                    {new Date(topic.created_at).toLocaleDateString("fr-FR")}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
+        {isFeatureOn("forum") ? (
+          <>
+            <section className="mt-10">
+              <h2 className="text-lg font-semibold text-foreground">Discussions ouvertes</h2>
+              {topics.length === 0 ? (
+                <p className="mt-2 text-sm text-muted-foreground">Aucune discussion pour l'instant.</p>
+              ) : (
+                <ul className="mt-3 space-y-2 text-sm">
+                  {topics.map((topic) => (
+                    <li key={topic.id}>
+                      <Link
+                        to="/forum/$topicId"
+                        params={{ topicId: topic.id }}
+                        title={`Ouvrir la discussion : ${topic.title}`}
+                        className="text-muted-foreground hover:text-primary-text"
+                      >
+                        {topic.title}
+                      </Link>
+                      <span className="ml-2 text-xs text-muted-foreground">
+                        {new Date(topic.created_at).toLocaleDateString("fr-FR")}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </section>
 
-        <section className="mt-8">
-          <h2 className="text-lg font-semibold text-foreground">Dernières réponses</h2>
-          {replies.length === 0 ? (
-            <p className="mt-2 text-sm text-muted-foreground">Aucune réponse pour l'instant.</p>
-          ) : (
-            <ul className="mt-3 space-y-2 text-sm">
-              {replies.map((reply) => (
-                <li key={reply.id}>
-                  <Link
-                    to="/forum/$topicId"
-                    params={{ topicId: reply.topic_id }}
-                    title="Ouvrir la discussion concernée"
-                    className="text-muted-foreground hover:text-primary-text"
-                  >
-                    {richTextToPlain(reply.content).slice(0, 90)}…
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
+            <section className="mt-8">
+              <h2 className="text-lg font-semibold text-foreground">Dernières réponses</h2>
+              {replies.length === 0 ? (
+                <p className="mt-2 text-sm text-muted-foreground">Aucune réponse pour l'instant.</p>
+              ) : (
+                <ul className="mt-3 space-y-2 text-sm">
+                  {replies.map((reply) => (
+                    <li key={reply.id}>
+                      <Link
+                        to="/forum/$topicId"
+                        params={{ topicId: reply.topic_id }}
+                        title="Ouvrir la discussion concernée"
+                        className="text-muted-foreground hover:text-primary-text"
+                      >
+                        {richTextToPlain(reply.content).slice(0, 90)}…
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </section>
+          </>
+        ) : null}
       </div>
     </PageShell>
   );
