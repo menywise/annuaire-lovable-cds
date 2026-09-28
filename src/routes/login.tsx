@@ -12,9 +12,8 @@ import { GoogleSignInButton } from "@/components/cds/GoogleSignInButton";
 import { seo } from "@/lib/seo";
 
 function safeNext(value: unknown): string | undefined {
-  return typeof value === "string" && value.startsWith("/") && !value.startsWith("//")
-    ? value
-    : undefined;
+  // Chemin interne uniquement : « // » et « /\ » mèneraient vers un autre site.
+  return typeof value === "string" && /^\/(?![/\\])/.test(value) ? value : undefined;
 }
 
 export const Route = createFileRoute("/login")({

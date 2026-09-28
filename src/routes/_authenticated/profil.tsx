@@ -46,13 +46,18 @@ function ProfilPage() {
   async function saveName(e: React.FormEvent) {
     e.preventDefault();
     if (!user) return;
+    const name = fullName.trim();
     setSavingName(true);
+    // upsert : la ligne existe même si le compte a été créé avant son initialisation.
     const { error } = await supabase
       .from("profiles")
-      .update({ full_name: fullName.trim() })
-      .eq("id", user.id);
+      .upsert({ id: user.id, email: user.email ?? null, full_name: name }, { onConflict: "id" });
+    // Le forum, le blog et les avis affichent le nom enregistré dans le compte.
+    const { error: metaError } = error
+      ? { error: null }
+      : await supabase.auth.updateUser({ data: { full_name: name } });
     setSavingName(false);
-    if (error) toast.error("Le nom n'a pas pu être enregistré.");
+    if (error || metaError) toast.error("Le nom n'a pas pu être enregistré.");
     else toast.success("Nom mis à jour.");
   }
 

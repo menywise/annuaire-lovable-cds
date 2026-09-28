@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Heart, MessageSquare, Eye, Bell, BellOff } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -58,6 +58,24 @@ export function LikeButton({
   const [liked, setLiked] = useState(false);
   const [busy, setBusy] = useState(false);
 
+  // État réel lu en base : sans lui, un second clic tente un doublon.
+  useEffect(() => {
+    if (!user) {
+      setLiked(false);
+      return;
+    }
+    let cancelled = false;
+    const query = supabase.from("forum_likes").select("id").eq("user_id", user.id);
+    void (topicId ? query.eq("topic_id", topicId) : query.eq("reply_id", replyId!))
+      .maybeSingle()
+      .then(({ data }) => {
+        if (!cancelled) setLiked(Boolean(data));
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [user, topicId, replyId]);
+
   async function toggle() {
     if (!user) {
       toast.info("Connectez-vous pour aimer cette contribution.");
@@ -72,6 +90,8 @@ export function LikeButton({
       if (!error) {
         setLiked(false);
         setCount((c) => Math.max(0, c - 1));
+      } else {
+        toast.error("Impossible de retirer votre j'aime. Réessayez.");
       }
     } else {
       const { error } = await supabase.from("forum_likes").insert({
@@ -81,8 +101,10 @@ export function LikeButton({
       if (!error) {
         setLiked(true);
         setCount((c) => c + 1);
-      } else {
+      } else if (error.code === "23505") {
         setLiked(true);
+      } else {
+        toast.error("Impossible d'enregistrer votre j'aime. Réessayez.");
       }
     }
     setBusy(false);
@@ -113,6 +135,26 @@ export function FollowButton({ topicId }: { topicId: string }) {
   const [following, setFollowing] = useState(false);
   const [busy, setBusy] = useState(false);
 
+  useEffect(() => {
+    if (!user) {
+      setFollowing(false);
+      return;
+    }
+    let cancelled = false;
+    void supabase
+      .from("forum_follows")
+      .select("id")
+      .eq("user_id", user.id)
+      .eq("topic_id", topicId)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (!cancelled) setFollowing(Boolean(data));
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [user, topicId]);
+
   async function toggle() {
     if (!user) {
       toast.info("Connectez-vous pour suivre cette discussion.");
@@ -120,16 +162,29 @@ export function FollowButton({ topicId }: { topicId: string }) {
     }
     setBusy(true);
     if (following) {
-      await supabase.from("forum_follows").delete().eq("user_id", user.id).eq("topic_id", topicId);
-      setFollowing(false);
-      toast.success("Vous ne suivez plus cette discussion.");
+      const { error } = await supabase
+        .from("forum_follows")
+        .delete()
+        .eq("user_id", user.id)
+        .eq("topic_id", topicId);
+      if (error) {
+        toast.error("Impossible de ne plus suivre cette discussion. Réessayez.");
+      } else {
+        setFollowing(false);
+        toast.success("Vous ne suivez plus cette discussion.");
+      }
     } else {
       const { error } = await supabase
         .from("forum_follows")
         .insert({ user_id: user.id, topic_id: topicId });
-      setFollowing(true);
-      if (!error)
-        toast.success("Discussion suivie.", { description: "Retrouvez-la dans votre espace." });
+      if (!error || error.code === "23505") {
+        setFollowing(true);
+        toast.success("Discussion suivie.", {
+          description: "Retrouvez-la dans votre tableau de bord.",
+        });
+      } else {
+        toast.error("Impossible de suivre cette discussion. Réessayez.");
+      }
     }
     setBusy(false);
   }
