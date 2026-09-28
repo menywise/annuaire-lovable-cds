@@ -1561,6 +1561,21 @@ export type Database = {
         }
         Relationships: []
       }
+      studio_admins: {
+        Row: {
+          created_at: string
+          email: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+        }
+        Relationships: []
+      }
       template_checks: {
         Row: {
           area: string
@@ -1704,6 +1719,7 @@ export type Database = {
         Args: { _conversation_id: string; _user_id: string }
         Returns: boolean
       }
+      member_accepts_messages: { Args: { _user_id: string }; Returns: boolean }
       request_directory_claim: {
         Args: { _listing_id: string }
         Returns: boolean
