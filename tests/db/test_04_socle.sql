@@ -18,12 +18,13 @@ SELECT public.bootstrap_current_user('Associé');
 RESET ROLE;
 
 -- 1. Modules en base ------------------------------------------------------------------
--- Un visiteur lit les interrupteurs ; les 19 clés existent ; les briques optionnelles sont éteintes.
+-- Un visiteur lit les interrupteurs ; toutes les clés de module_defaults() existent ; les briques optionnelles sont éteintes.
 SELECT pg_temp.as_anon();
 DO $$ DECLARE _m jsonb; BEGIN
   SELECT value INTO _m FROM public.site_settings WHERE key = 'modules';
   IF _m IS NULL THEN RAISE EXCEPTION 'modules absents'; END IF;
-  IF (SELECT count(*) FROM jsonb_object_keys(_m)) <> 19 THEN RAISE EXCEPTION 'il faut 19 modules, trouvé %', (SELECT count(*) FROM jsonb_object_keys(_m)); END IF;
+  IF (SELECT count(*) FROM jsonb_object_keys(_m)) <> (SELECT count(*) FROM jsonb_object_keys(public.module_defaults())) OR (SELECT count(*) FROM jsonb_object_keys(_m)) < 19
+    THEN RAISE EXCEPTION 'modules incomplets : %', (SELECT count(*) FROM jsonb_object_keys(_m)); END IF;
   IF (_m ->> 'forum')::boolean IS NOT TRUE OR (_m ->> 'geo')::boolean IS NOT FALSE THEN RAISE EXCEPTION 'valeurs par défaut inattendues'; END IF;
 END $$;
 RESET ROLE;

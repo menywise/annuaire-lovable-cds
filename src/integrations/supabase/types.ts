@@ -1304,6 +1304,48 @@ export type Database = {
         }
         Relationships: []
       }
+      media_files: {
+        Row: {
+          alt: string
+          created_at: string
+          created_by: string | null
+          height: number | null
+          id: string
+          mime_type: string
+          name: string
+          path: string
+          size_bytes: number
+          updated_at: string
+          width: number | null
+        }
+        Insert: {
+          alt?: string
+          created_at?: string
+          created_by?: string | null
+          height?: number | null
+          id?: string
+          mime_type: string
+          name?: string
+          path: string
+          size_bytes?: number
+          updated_at?: string
+          width?: number | null
+        }
+        Update: {
+          alt?: string
+          created_at?: string
+          created_by?: string | null
+          height?: number | null
+          id?: string
+          mime_type?: string
+          name?: string
+          path?: string
+          size_bytes?: number
+          updated_at?: string
+          width?: number | null
+        }
+        Relationships: []
+      }
       member_profiles: {
         Row: {
           accepts_messages: boolean
@@ -1405,6 +1447,48 @@ export type Database = {
           id?: string
           source?: string
           unsubscribed_at?: string | null
+        }
+        Relationships: []
+      }
+      pages: {
+        Row: {
+          created_at: string
+          data: Json
+          description: string
+          id: string
+          is_home: boolean
+          published: boolean
+          published_at: string | null
+          slug: string
+          title: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          description?: string
+          id?: string
+          is_home?: boolean
+          published?: boolean
+          published_at?: string | null
+          slug: string
+          title: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          description?: string
+          id?: string
+          is_home?: boolean
+          published?: boolean
+          published_at?: string | null
+          slug?: string
+          title?: string
+          updated_at?: string
+          updated_by?: string | null
         }
         Relationships: []
       }
@@ -1762,6 +1846,8 @@ export type Database = {
       }
       member_accepts_messages: { Args: { _user_id: string }; Returns: boolean }
       module_defaults: { Args: never; Returns: Json }
+      module_enabled: { Args: { _key: string }; Returns: boolean }
+      valid_page_data: { Args: { _data: Json }; Returns: boolean }
       request_directory_claim: {
         Args: { _listing_id: string }
         Returns: boolean

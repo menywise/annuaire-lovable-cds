@@ -5,20 +5,49 @@ import { cds } from "@/lib/cds-tokens";
 import { seo } from "@/lib/seo";
 import { getSiteConfig } from "@/lib/site-config";
 import { useBrandSettings } from "@/hooks/useSiteSettings";
-import { withActiveModules } from "@/config/features";
+import { isFeatureOn, withActiveModules } from "@/config/features";
+import { PageRender } from "@/components/cds/PageSections";
+import { getHomePage } from "@/lib/content.functions";
+import { pageExcerpt, pageFaqJsonLd, toPageRow } from "@/lib/pages";
 
 export const Route = createFileRoute("/")({
-  head: () =>
-    seo({
-      title: getSiteConfig().brand.name,
+  // Module « pages » allumé et page d'accueil publiée : elle remplace l'accueil de démonstration.
+  loader: async () => (isFeatureOn("pages") ? toPageRow(await getHomePage().catch(() => null)) : null),
+  head: ({ loaderData: page }) => {
+    const brand = getSiteConfig().brand;
+    if (page) {
+      const faq = pageFaqJsonLd(page.data);
+      return {
+        ...seo({
+          title: page.title || brand.name,
+          description: page.description || pageExcerpt(page.data) || brand.tagline || page.title,
+          path: "/",
+          type: "website",
+        }),
+        ...(faq ? { scripts: [faq] } : {}),
+      };
+    }
+    return seo({
+      title: brand.name,
       description:
-        getSiteConfig().brand.tagline ||
+        brand.tagline ||
         "Le socle complet pour les indépendants, artisans et solopreneurs : comptes, pages légales, contenus, communauté et administration, déjà reliés et prêts à servir.",
       path: "/",
       type: "website",
-    }),
-  component: Index,
+    });
+  },
+  component: Home,
 });
+
+function Home() {
+  const page = Route.useLoaderData();
+  if (!page) return <Index />;
+  return (
+    <PageShell>
+      <PageRender data={page.data} titleFallback={page.title} />
+    </PageShell>
+  );
+}
 
 function Swatch({ name, value }: { name: string; value: string }) {
   return (

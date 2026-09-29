@@ -129,3 +129,38 @@ export const getTopic = createServerFn({ method: "GET" })
       .order("created_at", { ascending: true });
     return { topic, replies: replies ?? [] };
   });
+
+/* Pages libres (module « pages ») : la base ne renvoie que les pages publiées, module allumé.
+   Le contenu brut (`data`) est normalisé par `toPageRow` (src/lib/pages.ts) côté route. */
+const PAGE_COLUMNS = "id, slug, title, description, data, is_home, published, published_at, updated_at";
+
+export const getHomePage = createServerFn({ method: "GET" }).handler(async () => {
+  const { data } = await publicClient()
+    .from("pages")
+    .select(PAGE_COLUMNS)
+    .eq("is_home", true)
+    .eq("published", true)
+    .maybeSingle();
+  return data;
+});
+
+export const getPublicPage = createServerFn({ method: "GET" })
+  .inputValidator((input: { slug: string }) => input)
+  .handler(async ({ data: input }) => {
+    const { data } = await publicClient()
+      .from("pages")
+      .select(PAGE_COLUMNS)
+      .eq("slug", input.slug)
+      .eq("published", true)
+      .maybeSingle();
+    return data;
+  });
+
+export const listPublicPages = createServerFn({ method: "GET" }).handler(async () => {
+  const { data } = await publicClient()
+    .from("pages")
+    .select("slug, title, is_home, updated_at")
+    .eq("published", true)
+    .order("title", { ascending: true });
+  return data ?? [];
+});

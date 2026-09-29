@@ -31,6 +31,18 @@ function buildAdminNav(): AdminNavItem[] {
       anyOf: ["faq", "pricing", "blog"],
     },
     {
+      to: "/admin/pages",
+      label: "Pages",
+      title: "Composer les pages du site, accueil compris",
+      module: "pages",
+    },
+    {
+      to: "/admin/mediatheque",
+      label: "Médiathèque",
+      title: "Envoyer et gérer les images et fichiers",
+      module: "media",
+    },
+    {
       to: "/admin/moderation",
       label: "Modération",
       title: "Valider les avis, commentaires et discussions",

@@ -29,3 +29,34 @@ CREATE FUNCTION auth.role() RETURNS text LANGUAGE sql STABLE AS $$
   SELECT auth.jwt() ->> 'role'
 $$;
 GRANT EXECUTE ON FUNCTION auth.jwt(), auth.uid(), auth.role() TO anon, authenticated, service_role;
+
+-- Stockage de fichiers (Supabase Storage) : tables et fonction utilisées par les règles d'accès.
+CREATE SCHEMA storage;
+GRANT USAGE ON SCHEMA storage TO anon, authenticated, service_role;
+CREATE TABLE storage.buckets (
+  id text PRIMARY KEY,
+  name text NOT NULL UNIQUE,
+  owner uuid,
+  public boolean DEFAULT false,
+  file_size_limit bigint,
+  allowed_mime_types text[],
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
+);
+CREATE TABLE storage.objects (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  bucket_id text REFERENCES storage.buckets(id),
+  name text,
+  owner uuid,
+  metadata jsonb,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now(),
+  UNIQUE (bucket_id, name)
+);
+ALTER TABLE storage.objects ENABLE ROW LEVEL SECURITY;
+GRANT ALL ON storage.objects TO anon, authenticated, service_role;
+GRANT SELECT ON storage.buckets TO anon, authenticated, service_role;
+CREATE FUNCTION storage.foldername(name text) RETURNS text[] LANGUAGE sql IMMUTABLE AS $$
+  SELECT (string_to_array(name, '/'))[1:array_length(string_to_array(name, '/'), 1) - 1]
+$$;
+GRANT EXECUTE ON FUNCTION storage.foldername(text) TO anon, authenticated, service_role;

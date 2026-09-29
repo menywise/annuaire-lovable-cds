@@ -2,6 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { AdminShell } from "@/components/cds/AdminShell";
+import { ConfirmButton } from "@/components/cds/ConfirmButton";
+import { ImageListField } from "@/components/cds/MediaPicker";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -33,6 +35,7 @@ type Listing = {
   approved: boolean;
   views: number;
   created_at: string;
+  photos: string[];
 };
 
 type Category = { id: string; name: string; slug: string; position: number };
@@ -40,12 +43,13 @@ type Category = { id: string; name: string; slug: string; position: number };
 function AdminMarketplacePage() {
   const [listings, setListings] = useState<Listing[] | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [openPhotos, setOpenPhotos] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     const [l, c] = await Promise.all([
       supabase
         .from("marketplace_listings")
-        .select("id, title, slug, seller_name, price_cents, status, approved, views, created_at")
+        .select("id, title, slug, seller_name, price_cents, status, approved, views, created_at, photos")
         .order("created_at", { ascending: false }),
       supabase.from("marketplace_categories").select("id, name, slug, position").order("position"),
     ]);
@@ -147,21 +151,63 @@ function AdminMarketplacePage() {
                     Archiver
                   </Button>
                   <Button
-                    variant="destructive"
+                    variant="outline"
+                    title="Modifier les photos de cette annonce"
+                    onClick={() => setOpenPhotos(openPhotos === item.id ? null : item.id)}
+                  >
+                    {openPhotos === item.id ? "Masquer les photos" : "Photos"}
+                  </Button>
+                  <ConfirmButton
+                    size="default"
                     title="Supprimer définitivement cette annonce"
-                    onClick={async () => {
-                      await supabase.from("marketplace_listings").delete().eq("id", item.id);
+                    question={`Supprimer l'annonce « ${item.title} » ?`}
+                    onConfirm={async () => {
+                      const { error } = await supabase.from("marketplace_listings").delete().eq("id", item.id);
+                      if (error) toast.error("Annonce non supprimée.");
+                      else {
+                        toast.success("Annonce supprimée.");
+                        void load();
+                      }
+                    }}
+                  />
+                </div>
+                {openPhotos === item.id ? (
+                  <ListingPhotos
+                    item={item}
+                    onSaved={() => {
+                      setOpenPhotos(null);
                       void load();
                     }}
-                  >
-                    Supprimer
-                  </Button>
-                </div>
+                  />
+                ) : null}
               </li>
             ))}
           </ul>
         </>
       )}
     </AdminShell>
+  );
+}
+
+function ListingPhotos({ item, onSaved }: { item: Listing; onSaved: () => void }) {
+  const [photos, setPhotos] = useState<string[]>(item.photos ?? []);
+
+  async function save(event: React.FormEvent) {
+    event.preventDefault();
+    const { error } = await supabase.from("marketplace_listings").update({ photos }).eq("id", item.id);
+    if (error) toast.error("Photos non enregistrées.");
+    else {
+      toast.success("Photos enregistrées.");
+      onSaved();
+    }
+  }
+
+  return (
+    <form onSubmit={save} className="mt-4 space-y-3 border-t border-border pt-4">
+      <ImageListField id={`mk-photos-${item.id}`} label="Photos" value={photos} onChange={setPhotos} max={5} />
+      <Button type="submit" size="sm">
+        Enregistrer les photos
+      </Button>
+    </form>
   );
 }
