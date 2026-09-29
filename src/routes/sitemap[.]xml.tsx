@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { listPosts, listTopics } from "@/lib/content.functions";
+import { listPosts, listPublicPages, listTopics } from "@/lib/content.functions";
 import { isModuleOn, onlyActive, type FeatureKey } from "@/config/modules";
 import { loadSiteConfig } from "@/lib/site-config.functions";
 import { fallbackSiteConfig } from "@/lib/site-config";
@@ -48,10 +48,15 @@ export const Route = createFileRoute("/sitemap.xml")({
         const lastmod = new Date().toISOString().slice(0, 10);
         const dynamic: SitemapPage[] = [];
         try {
-          const [posts, topics] = await Promise.all([
+          const [posts, topics, freePages] = await Promise.all([
             isModuleOn(site.modules, "blog") ? listPosts() : Promise.resolve([]),
             isModuleOn(site.modules, "forum") ? listTopics() : Promise.resolve([]),
+            isModuleOn(site.modules, "pages") ? listPublicPages() : Promise.resolve([]),
           ]);
+          for (const page of freePages) {
+            if (page.is_home) continue; // l'accueil est déjà « / »
+            dynamic.push({ path: `/pages/${page.slug}`, priority: "0.7", changefreq: "monthly" });
+          }
           for (const post of posts) {
             dynamic.push({ path: `/blog/${post.slug}`, priority: "0.8", changefreq: "monthly" });
           }

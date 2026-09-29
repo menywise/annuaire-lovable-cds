@@ -1450,6 +1450,48 @@ export type Database = {
         }
         Relationships: []
       }
+      pages: {
+        Row: {
+          created_at: string
+          data: Json
+          description: string
+          id: string
+          is_home: boolean
+          published: boolean
+          published_at: string | null
+          slug: string
+          title: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          description?: string
+          id?: string
+          is_home?: boolean
+          published?: boolean
+          published_at?: string | null
+          slug: string
+          title: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          description?: string
+          id?: string
+          is_home?: boolean
+          published?: boolean
+          published_at?: string | null
+          slug?: string
+          title?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       pricing_plans: {
         Row: {
           active: boolean
@@ -1805,6 +1847,7 @@ export type Database = {
       member_accepts_messages: { Args: { _user_id: string }; Returns: boolean }
       module_defaults: { Args: never; Returns: Json }
       module_enabled: { Args: { _key: string }; Returns: boolean }
+      valid_page_data: { Args: { _data: Json }; Returns: boolean }
       request_directory_claim: {
         Args: { _listing_id: string }
         Returns: boolean

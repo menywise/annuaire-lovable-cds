@@ -1,7 +1,8 @@
 import { createFileRoute, Link, type LinkProps } from "@tanstack/react-router";
 import { PageShell } from "@/components/cds/SiteHeader";
 import { seo } from "@/lib/seo";
-import { withActiveModules, type FeatureKey } from "@/config/features";
+import { isFeatureOn, withActiveModules, type FeatureKey } from "@/config/features";
+import { listPublicPages } from "@/lib/content.functions";
 import { getSiteConfig } from "@/lib/site-config";
 
 export const Route = createFileRoute("/plan-du-site")({
@@ -13,6 +14,8 @@ export const Route = createFileRoute("/plan-du-site")({
       path: "/plan-du-site",
       type: "website",
     }),
+  loader: async () =>
+    isFeatureOn("pages") ? await listPublicPages().catch(() => []) : [],
   component: PlanDuSitePage,
 });
 
@@ -180,6 +183,7 @@ function visibleGroups() {
 }
 
 function PlanDuSitePage() {
+  const freePages = Route.useLoaderData().filter((page) => !page.is_home);
   return (
     <PageShell>
       <div className="mx-auto max-w-[900px]">
@@ -209,6 +213,25 @@ function PlanDuSitePage() {
               </ul>
             </section>
           ))}
+          {freePages.length ? (
+            <section className="rounded-xl border border-border bg-card p-5">
+              <h2 className="text-base font-semibold text-foreground">Pages</h2>
+              <ul className="mt-3 space-y-1.5 text-sm">
+                {freePages.map((page) => (
+                  <li key={page.slug}>
+                    <Link
+                      to="/pages/$slug"
+                      params={{ slug: page.slug }}
+                      title={page.title}
+                      className="text-primary-text hover:underline"
+                    >
+                      {page.title}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ) : null}
         </div>
       </div>
     </PageShell>

@@ -24,6 +24,7 @@ export const MODULES = [
   { key: "studio", label: "Pilotage, conformité, MCP", requires: [], defaultOn: true },
   { key: "showcase", label: "Composants et guide", requires: [], defaultOn: true },
   { key: "media", label: "Médiathèque (envoi d'images et de fichiers)", requires: [], defaultOn: true },
+  { key: "pages", label: "Pages libres par sections (dont l'accueil)", requires: [], defaultOn: false },
 ] as const satisfies ReadonlyArray<{
   key: string;
   label: string;

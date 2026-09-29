@@ -20,6 +20,7 @@
 - V0 · lot 3 « Admin complet » : boîte de réception, contenus entièrement modifiables, offres créées et supprimées, modération verrouillée en base, confirmation avant toute suppression
 - V0 · lot 4 : failles des briques 12 à 16 fermées en base (annonces, annuaire, formations) ; contenu des leçons protégé, règlements des formations payantes saisis en admin
 - V0 · lot 5 A « Médiathèque » : envoi d'images et de PDF dans Supabase Storage (l'admin dépose, le public lit), écran d'administration, sélecteur d'image dans les formulaires (articles, formations, fiches, annonces, régie)
+- V0 · lot 5 C « Pages libres » : pages par sections modifiables sans code, accueil compris (format de données Puck, éditeur maison)
 - Thème tactile léger : surfaces hiérarchisées, cartes mieux détachées, champs creusés et états actifs renforcés
 
 ## En pause (décision utilisateur)
@@ -29,7 +30,7 @@
 
 ## À venir
 
-- V0 · lot 5 C : pages libres par sections (dont l'accueil)
+- Pages libres : éditeur de menu, historique des versions, éditeur Puck glisser-déposer (quand la dépendance pourra être validée côté Lovable)
 - V0 · lot 5 B : e-mails transactionnels (en pause, décision du 29/09)
 
 - Vulnérabilités js-yaml héritées de @tanstack/react-start : aucun correctif amont, à re-vérifier

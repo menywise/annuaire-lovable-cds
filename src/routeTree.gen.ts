@@ -60,6 +60,7 @@ import { Route as MarketplaceSlugRouteImport } from './routes/marketplace.$slug'
 import { Route as MarketplacePublierRouteImport } from './routes/marketplace.publier'
 import { Route as MembresIndexRouteImport } from './routes/membres.index'
 import { Route as MembresMemberIdRouteImport } from './routes/membres.$memberId'
+import { Route as PagesSlugRouteImport } from './routes/pages.$slug'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedAdminAbonnesRouteImport } from './routes/_authenticated/admin.abonnes'
@@ -75,6 +76,7 @@ import { Route as AuthenticatedAdminMediathequeRouteImport } from './routes/_aut
 import { Route as AuthenticatedAdminMessagesRouteImport } from './routes/_authenticated/admin.messages'
 import { Route as AuthenticatedAdminModerationRouteImport } from './routes/_authenticated/admin.moderation'
 import { Route as AuthenticatedAdminModulesRouteImport } from './routes/_authenticated/admin.modules'
+import { Route as AuthenticatedAdminPagesRouteImport } from './routes/_authenticated/admin.pages'
 import { Route as AuthenticatedAdminPilotageRouteImport } from './routes/_authenticated/admin.pilotage'
 import { Route as AuthenticatedAdminRegieRouteImport } from './routes/_authenticated/admin.regie'
 import { Route as AuthenticatedAdminTemoignagesRouteImport } from './routes/_authenticated/admin.temoignages'
@@ -349,6 +351,11 @@ const MembresMemberIdRoute = MembresMemberIdRouteImport.update({
   path: '/membres/$memberId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PagesSlugRoute = PagesSlugRouteImport.update({
+  id: '/pages/$slug',
+  path: '/pages/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
   id: '/.lovable/oauth/consent',
   path: '/.lovable/oauth/consent',
@@ -435,6 +442,11 @@ const AuthenticatedAdminModulesRoute =
     path: '/admin/modules',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAdminPagesRoute = AuthenticatedAdminPagesRouteImport.update({
+  id: '/admin/pages',
+  path: '/admin/pages',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedAdminPilotageRoute =
   AuthenticatedAdminPilotageRouteImport.update({
     id: '/admin/pilotage',
@@ -564,6 +576,7 @@ export interface FileRoutesByFullPath {
   '/marketplace/$slug': typeof MarketplaceSlugRoute
   '/marketplace/publier': typeof MarketplacePublierRoute
   '/membres/$memberId': typeof MembresMemberIdRoute
+  '/pages/$slug': typeof PagesSlugRoute
   '/annuaire/': typeof AnnuaireIndexRoute
   '/blog/': typeof BlogIndexRoute
   '/formations/': typeof FormationsIndexRoute
@@ -584,6 +597,7 @@ export interface FileRoutesByFullPath {
   '/admin/messages': typeof AuthenticatedAdminMessagesRoute
   '/admin/moderation': typeof AuthenticatedAdminModerationRoute
   '/admin/modules': typeof AuthenticatedAdminModulesRoute
+  '/admin/pages': typeof AuthenticatedAdminPagesRoute
   '/admin/pilotage': typeof AuthenticatedAdminPilotageRoute
   '/admin/regie': typeof AuthenticatedAdminRegieRoute
   '/admin/temoignages': typeof AuthenticatedAdminTemoignagesRoute
@@ -646,6 +660,7 @@ export interface FileRoutesByTo {
   '/marketplace/$slug': typeof MarketplaceSlugRoute
   '/marketplace/publier': typeof MarketplacePublierRoute
   '/membres/$memberId': typeof MembresMemberIdRoute
+  '/pages/$slug': typeof PagesSlugRoute
   '/annuaire': typeof AnnuaireIndexRoute
   '/blog': typeof BlogIndexRoute
   '/formations': typeof FormationsIndexRoute
@@ -666,6 +681,7 @@ export interface FileRoutesByTo {
   '/admin/messages': typeof AuthenticatedAdminMessagesRoute
   '/admin/moderation': typeof AuthenticatedAdminModerationRoute
   '/admin/modules': typeof AuthenticatedAdminModulesRoute
+  '/admin/pages': typeof AuthenticatedAdminPagesRoute
   '/admin/pilotage': typeof AuthenticatedAdminPilotageRoute
   '/admin/regie': typeof AuthenticatedAdminRegieRoute
   '/admin/temoignages': typeof AuthenticatedAdminTemoignagesRoute
@@ -730,6 +746,7 @@ export interface FileRoutesById {
   '/marketplace/$slug': typeof MarketplaceSlugRoute
   '/marketplace/publier': typeof MarketplacePublierRoute
   '/membres/$memberId': typeof MembresMemberIdRoute
+  '/pages/$slug': typeof PagesSlugRoute
   '/annuaire/': typeof AnnuaireIndexRoute
   '/blog/': typeof BlogIndexRoute
   '/formations/': typeof FormationsIndexRoute
@@ -750,6 +767,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/messages': typeof AuthenticatedAdminMessagesRoute
   '/_authenticated/admin/moderation': typeof AuthenticatedAdminModerationRoute
   '/_authenticated/admin/modules': typeof AuthenticatedAdminModulesRoute
+  '/_authenticated/admin/pages': typeof AuthenticatedAdminPagesRoute
   '/_authenticated/admin/pilotage': typeof AuthenticatedAdminPilotageRoute
   '/_authenticated/admin/regie': typeof AuthenticatedAdminRegieRoute
   '/_authenticated/admin/temoignages': typeof AuthenticatedAdminTemoignagesRoute
@@ -814,6 +832,7 @@ export interface FileRouteTypes {
     | '/marketplace/$slug'
     | '/marketplace/publier'
     | '/membres/$memberId'
+    | '/pages/$slug'
     | '/annuaire/'
     | '/blog/'
     | '/formations/'
@@ -834,6 +853,7 @@ export interface FileRouteTypes {
     | '/admin/messages'
     | '/admin/moderation'
     | '/admin/modules'
+    | '/admin/pages'
     | '/admin/pilotage'
     | '/admin/regie'
     | '/admin/temoignages'
@@ -896,6 +916,7 @@ export interface FileRouteTypes {
     | '/marketplace/$slug'
     | '/marketplace/publier'
     | '/membres/$memberId'
+    | '/pages/$slug'
     | '/annuaire'
     | '/blog'
     | '/formations'
@@ -916,6 +937,7 @@ export interface FileRouteTypes {
     | '/admin/messages'
     | '/admin/moderation'
     | '/admin/modules'
+    | '/admin/pages'
     | '/admin/pilotage'
     | '/admin/regie'
     | '/admin/temoignages'
@@ -979,6 +1001,7 @@ export interface FileRouteTypes {
     | '/marketplace/$slug'
     | '/marketplace/publier'
     | '/membres/$memberId'
+    | '/pages/$slug'
     | '/annuaire/'
     | '/blog/'
     | '/formations/'
@@ -999,6 +1022,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/messages'
     | '/_authenticated/admin/moderation'
     | '/_authenticated/admin/modules'
+    | '/_authenticated/admin/pages'
     | '/_authenticated/admin/pilotage'
     | '/_authenticated/admin/regie'
     | '/_authenticated/admin/temoignages'
@@ -1057,6 +1081,7 @@ export interface RootRouteChildren {
   MarketplaceSlugRoute: typeof MarketplaceSlugRoute
   MarketplacePublierRoute: typeof MarketplacePublierRoute
   MembresMemberIdRoute: typeof MembresMemberIdRoute
+  PagesSlugRoute: typeof PagesSlugRoute
   AnnuaireIndexRoute: typeof AnnuaireIndexRoute
   BlogIndexRoute: typeof BlogIndexRoute
   FormationsIndexRoute: typeof FormationsIndexRoute
@@ -1430,6 +1455,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MembresMemberIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/pages/$slug': {
+      id: '/pages/$slug'
+      path: '/pages/$slug'
+      fullPath: '/pages/$slug'
+      preLoaderRoute: typeof PagesSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/.lovable/oauth/consent': {
       id: '/.lovable/oauth/consent'
       path: '/.lovable/oauth/consent'
@@ -1533,6 +1565,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/modules'
       fullPath: '/admin/modules'
       preLoaderRoute: typeof AuthenticatedAdminModulesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/pages': {
+      id: '/_authenticated/admin/pages'
+      path: '/admin/pages'
+      fullPath: '/admin/pages'
+      preLoaderRoute: typeof AuthenticatedAdminPagesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/admin/pilotage': {
@@ -1663,6 +1702,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminMessagesRoute: typeof AuthenticatedAdminMessagesRoute
   AuthenticatedAdminModerationRoute: typeof AuthenticatedAdminModerationRoute
   AuthenticatedAdminModulesRoute: typeof AuthenticatedAdminModulesRoute
+  AuthenticatedAdminPagesRoute: typeof AuthenticatedAdminPagesRoute
   AuthenticatedAdminPilotageRoute: typeof AuthenticatedAdminPilotageRoute
   AuthenticatedAdminRegieRoute: typeof AuthenticatedAdminRegieRoute
   AuthenticatedAdminTemoignagesRoute: typeof AuthenticatedAdminTemoignagesRoute
@@ -1696,6 +1736,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminMessagesRoute: AuthenticatedAdminMessagesRoute,
   AuthenticatedAdminModerationRoute: AuthenticatedAdminModerationRoute,
   AuthenticatedAdminModulesRoute: AuthenticatedAdminModulesRoute,
+  AuthenticatedAdminPagesRoute: AuthenticatedAdminPagesRoute,
   AuthenticatedAdminPilotageRoute: AuthenticatedAdminPilotageRoute,
   AuthenticatedAdminRegieRoute: AuthenticatedAdminRegieRoute,
   AuthenticatedAdminTemoignagesRoute: AuthenticatedAdminTemoignagesRoute,
@@ -1755,6 +1796,7 @@ const rootRouteChildren: RootRouteChildren = {
   MarketplaceSlugRoute: MarketplaceSlugRoute,
   MarketplacePublierRoute: MarketplacePublierRoute,
   MembresMemberIdRoute: MembresMemberIdRoute,
+  PagesSlugRoute: PagesSlugRoute,
   AnnuaireIndexRoute: AnnuaireIndexRoute,
   BlogIndexRoute: BlogIndexRoute,
   FormationsIndexRoute: FormationsIndexRoute,
