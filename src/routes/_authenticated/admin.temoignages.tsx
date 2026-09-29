@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
+import { ConfirmButton } from "@/components/cds/ConfirmButton";
 import { AdminShell } from "@/components/cds/AdminShell";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -119,13 +120,12 @@ function AdminTestimonialsPage() {
                 >
                   {item.featured ? "Ne plus mettre en avant" : "Mettre en avant"}
                 </Button>
-                <Button
-                  variant="destructive"
-                  onClick={() => remove(item.id)}
+                <ConfirmButton
+                  size="default"
                   title="Supprimer définitivement ce témoignage"
-                >
-                  Supprimer
-                </Button>
+                  question="Supprimer ce témoignage ?"
+                  onConfirm={() => remove(item.id)}
+                />
               </div>
             </li>
           ))}

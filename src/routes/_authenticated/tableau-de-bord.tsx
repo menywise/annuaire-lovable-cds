@@ -37,7 +37,7 @@ const raccourcis = [
     title: "Régler les paramètres du site",
   },
   {
-    to: "/compte",
+    to: "/admin/messages",
     label: "Messages reçus",
     desc: "Demandes envoyées par le formulaire",
     title: "Consulter les messages reçus",
@@ -243,7 +243,7 @@ function DashboardPage() {
         <h2 className="text-lg font-semibold text-foreground">Vos raccourcis</h2>
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
           {withActiveModules(raccourcis)
-            .filter((item) => role === "admin" || (item.to !== "/admin" && item.to !== "/compte"))
+            .filter((item) => role === "admin" || (item.to !== "/admin" && item.to !== "/admin/messages"))
             .map((item) => (
               <Link
                 key={item.to}

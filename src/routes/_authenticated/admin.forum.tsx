@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
+import { ConfirmButton } from "@/components/cds/ConfirmButton";
 import { AdminShell } from "@/components/cds/AdminShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -167,13 +168,13 @@ function AdminForumPage() {
                       }
                     />
                   </div>
-                  <Button
-                    variant="destructive"
-                    onClick={() => remove(category)}
+                  <ConfirmButton
+                    size="default"
                     title={`Supprimer la thématique ${category.name}`}
-                  >
-                    Supprimer
-                  </Button>
+                    question={`Supprimer la thématique « ${category.name} » ?`}
+                    detail="Les discussions de cette thématique restent en ligne, sans thématique."
+                    onConfirm={() => remove(category)}
+                  />
                 </div>
                 <p className="mt-2 text-xs text-muted-foreground">
                   Adresse : /forum/categorie/{category.slug}

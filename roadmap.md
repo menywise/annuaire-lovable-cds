@@ -17,6 +17,7 @@
 - 6 briques optionnelles livrées et éteintes par défaut : annuaire métier, géographie, suivi de contacts, formations, petites annonces, régie publicitaire — base de données, pages publiques, pages d'administration, liens de menus, pied de page, plan du site et sitemap conditionnels
 - V0 · lot 1 « Base » : règles d'accès visiteur, forum, messagerie, lettre d'information, admins du studio en base
 - V0 · lot 2 « Socle » : paramètres du site lus côté serveur (source unique `site_settings`), zéro valeur en dur, 19 modules pilotés en base (écran « Modules »), écran « Utilisateurs et rôles », suppression de son compte avec anonymisation, annuaire des membres sur inscription volontaire
+- V0 · lot 3 « Admin complet » : boîte de réception, contenus entièrement modifiables, offres créées et supprimées, modération verrouillée en base, confirmation avant toute suppression
 - Thème tactile léger : surfaces hiérarchisées, cartes mieux détachées, champs creusés et états actifs renforcés
 
 ## En pause (décision utilisateur)
@@ -26,7 +27,6 @@
 
 ## À venir
 
-- V0 · lot 3 « Admin complet » : contenus, offres, abonnés, boîte de contact, modération
 - V0 · lot 4 : failles des briques 12 à 16
 - V0 · lot 5 : médiathèque, e-mails transactionnels, pages libres (dont l'accueil)
 

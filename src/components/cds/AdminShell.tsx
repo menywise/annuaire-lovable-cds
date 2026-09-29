@@ -93,9 +93,9 @@ function buildAdminNav(): AdminNavItem[] {
       module: "newsletter",
     },
     {
-      to: "/compte",
+      to: "/admin/messages",
       label: "Messages",
-      title: "Consulter les messages du formulaire de contact",
+      title: "Boîte de réception du formulaire de contact",
       module: "contact",
     },
   ]);

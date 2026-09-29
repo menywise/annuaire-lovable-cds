@@ -63,6 +63,7 @@ import { Route as MembresMemberIdRouteImport } from './routes/membres.$memberId'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedAdminAbonnesRouteImport } from './routes/_authenticated/admin.abonnes'
+import { Route as AuthenticatedAdminMessagesRouteImport } from './routes/_authenticated/admin.messages'
 import { Route as AuthenticatedAdminUtilisateursRouteImport } from './routes/_authenticated/admin.utilisateurs'
 import { Route as AuthenticatedAdminModulesRouteImport } from './routes/_authenticated/admin.modules'
 import { Route as AuthenticatedAdminAnnuaireRouteImport } from './routes/_authenticated/admin.annuaire'
@@ -363,6 +364,12 @@ const AuthenticatedAdminAbonnesRoute =
     path: '/admin/abonnes',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAdminMessagesRoute =
+  AuthenticatedAdminMessagesRouteImport.update({
+    id: '/admin/messages',
+    path: '/admin/messages',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminUtilisateursRoute =
   AuthenticatedAdminUtilisateursRouteImport.update({
     id: '/admin/utilisateurs',
@@ -558,6 +565,7 @@ export interface FileRoutesByFullPath {
   '/membres/': typeof MembresIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/admin/abonnes': typeof AuthenticatedAdminAbonnesRoute
+  '/admin/messages': typeof AuthenticatedAdminMessagesRoute
   '/admin/utilisateurs': typeof AuthenticatedAdminUtilisateursRoute
   '/admin/modules': typeof AuthenticatedAdminModulesRoute
   '/admin/annuaire': typeof AuthenticatedAdminAnnuaireRoute
@@ -638,6 +646,7 @@ export interface FileRoutesByTo {
   '/membres': typeof MembresIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/admin/abonnes': typeof AuthenticatedAdminAbonnesRoute
+  '/admin/messages': typeof AuthenticatedAdminMessagesRoute
   '/admin/utilisateurs': typeof AuthenticatedAdminUtilisateursRoute
   '/admin/modules': typeof AuthenticatedAdminModulesRoute
   '/admin/annuaire': typeof AuthenticatedAdminAnnuaireRoute
@@ -720,6 +729,7 @@ export interface FileRoutesById {
   '/membres/': typeof MembresIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/_authenticated/admin/abonnes': typeof AuthenticatedAdminAbonnesRoute
+  '/_authenticated/admin/messages': typeof AuthenticatedAdminMessagesRoute
   '/_authenticated/admin/utilisateurs': typeof AuthenticatedAdminUtilisateursRoute
   '/_authenticated/admin/modules': typeof AuthenticatedAdminModulesRoute
   '/_authenticated/admin/annuaire': typeof AuthenticatedAdminAnnuaireRoute
@@ -802,6 +812,7 @@ export interface FileRouteTypes {
     | '/membres/'
     | '/.lovable/oauth/consent'
     | '/admin/abonnes'
+    | '/admin/messages'
     | '/admin/utilisateurs'
     | '/admin/modules'
     | '/admin/annuaire'
@@ -882,6 +893,7 @@ export interface FileRouteTypes {
     | '/membres'
     | '/.lovable/oauth/consent'
     | '/admin/abonnes'
+    | '/admin/messages'
     | '/admin/utilisateurs'
     | '/admin/modules'
     | '/admin/annuaire'
@@ -963,6 +975,7 @@ export interface FileRouteTypes {
     | '/membres/'
     | '/.lovable/oauth/consent'
     | '/_authenticated/admin/abonnes'
+    | '/_authenticated/admin/messages'
     | '/_authenticated/admin/utilisateurs'
     | '/_authenticated/admin/modules'
     | '/_authenticated/admin/annuaire'
@@ -1425,6 +1438,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminAbonnesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/messages': {
+      id: '/_authenticated/admin/messages'
+      path: '/admin/messages'
+      fullPath: '/admin/messages'
+      preLoaderRoute: typeof AuthenticatedAdminMessagesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/utilisateurs': {
       id: '/_authenticated/admin/utilisateurs'
       path: '/admin/utilisateurs'
@@ -1611,6 +1631,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedProfilRoute: typeof AuthenticatedProfilRoute
   AuthenticatedTableauDeBordRoute: typeof AuthenticatedTableauDeBordRoute
   AuthenticatedAdminAbonnesRoute: typeof AuthenticatedAdminAbonnesRoute
+  AuthenticatedAdminMessagesRoute: typeof AuthenticatedAdminMessagesRoute
   AuthenticatedAdminUtilisateursRoute: typeof AuthenticatedAdminUtilisateursRoute
   AuthenticatedAdminModulesRoute: typeof AuthenticatedAdminModulesRoute
   AuthenticatedAdminAnnuaireRoute: typeof AuthenticatedAdminAnnuaireRoute
@@ -1642,6 +1663,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedProfilRoute: AuthenticatedProfilRoute,
   AuthenticatedTableauDeBordRoute: AuthenticatedTableauDeBordRoute,
   AuthenticatedAdminAbonnesRoute: AuthenticatedAdminAbonnesRoute,
+  AuthenticatedAdminMessagesRoute: AuthenticatedAdminMessagesRoute,
   AuthenticatedAdminUtilisateursRoute: AuthenticatedAdminUtilisateursRoute,
   AuthenticatedAdminModulesRoute: AuthenticatedAdminModulesRoute,
   AuthenticatedAdminAnnuaireRoute: AuthenticatedAdminAnnuaireRoute,
