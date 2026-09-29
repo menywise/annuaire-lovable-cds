@@ -86,12 +86,9 @@ function ListingPage() {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    void supabase
-      .from("marketplace_listings")
-      .update({ views: (listing.views ?? 0) + 1 })
-      .eq("id", listing.id);
-    // Vue comptée une fois par ouverture de la page.
-  }, [listing.id, listing.views]);
+    // Vue comptée une fois par ouverture de la page (fonction en base : le vendeur ne peut pas gonfler le compteur).
+    void supabase.rpc("increment_listing_views", { _listing_id: listing.id });
+  }, [listing.id]);
 
   async function contactSeller() {
     if (!user) return;

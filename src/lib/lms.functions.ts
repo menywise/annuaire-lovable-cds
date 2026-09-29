@@ -74,9 +74,7 @@ export const getLesson = createServerFn({ method: "GET" })
 
     const { data: lessons } = await client
       .from("lms_lessons")
-      .select(
-        "id, module_id, title, content, content_type, video_url, duration_minutes, position, free_preview",
-      )
+      .select("id, module_id, title, content_type, duration_minutes, position, free_preview")
       .in("module_id", moduleIds)
       .order("position", { ascending: true });
 
@@ -87,5 +85,13 @@ export const getLesson = createServerFn({ method: "GET" })
     });
     const lesson = ordered.find((item) => item.id === input.lessonId);
     if (!lesson) return null;
-    return { course, lesson, lessons: ordered };
+    // Contenu lu par la base selon les droits du visiteur : ici seulement les aperçus gratuits.
+    // Les leçons réservées sont relues dans le navigateur avec la session de l'inscrit.
+    const { data: content } = await client.rpc("lms_lesson_content", { _lesson_id: lesson.id });
+    const preview = content?.[0] ?? null;
+    return {
+      course,
+      lesson: { ...lesson, content: preview?.content ?? null, video_url: preview?.video_url ?? null },
+      lessons: ordered,
+    };
   });

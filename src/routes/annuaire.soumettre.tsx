@@ -69,8 +69,9 @@ function SubmitListingPage() {
       email: String(data.get("email") ?? "").trim(),
       website: String(data.get("website") ?? "").trim(),
       created_by: user.id,
-      claimed_by: user.id,
-      claimed_at: new Date().toISOString(),
+      // Demande de revendication : l'admin la valide en même temps que la fiche.
+      claim_requested_by: user.id,
+      claim_requested_at: new Date().toISOString(),
       status: "draft",
     });
     setBusy(false);

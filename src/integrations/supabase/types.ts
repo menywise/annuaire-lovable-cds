@@ -1027,18 +1027,21 @@ export type Database = {
         Row: {
           course_id: string
           enrolled_at: string
+          paid_at: string | null
           id: string
           user_id: string
         }
         Insert: {
           course_id: string
           enrolled_at?: string
+          paid_at?: string | null
           id?: string
           user_id: string
         }
         Update: {
           course_id?: string
           enrolled_at?: string
+          paid_at?: string | null
           id?: string
           user_id?: string
         }
@@ -1736,11 +1739,26 @@ export type Database = {
         }
         Returns: boolean
       }
+      can_access_lesson: {
+        Args: { _lesson_id: string; _user_id: string }
+        Returns: boolean
+      }
       delete_my_account: { Args: never; Returns: undefined }
+      increment_listing_views: {
+        Args: { _listing_id: string }
+        Returns: undefined
+      }
       increment_topic_views: { Args: { _topic_id: string }; Returns: undefined }
       is_conversation_participant: {
         Args: { _conversation_id: string; _user_id: string }
         Returns: boolean
+      }
+      lms_lesson_content: {
+        Args: { _lesson_id: string }
+        Returns: {
+          content: string
+          video_url: string
+        }[]
       }
       member_accepts_messages: { Args: { _user_id: string }; Returns: boolean }
       module_defaults: { Args: never; Returns: Json }

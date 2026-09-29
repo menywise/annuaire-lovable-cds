@@ -18,6 +18,7 @@
 - V0 · lot 1 « Base » : règles d'accès visiteur, forum, messagerie, lettre d'information, admins du studio en base
 - V0 · lot 2 « Socle » : paramètres du site lus côté serveur (source unique `site_settings`), zéro valeur en dur, 19 modules pilotés en base (écran « Modules »), écran « Utilisateurs et rôles », suppression de son compte avec anonymisation, annuaire des membres sur inscription volontaire
 - V0 · lot 3 « Admin complet » : boîte de réception, contenus entièrement modifiables, offres créées et supprimées, modération verrouillée en base, confirmation avant toute suppression
+- V0 · lot 4 : failles des briques 12 à 16 fermées en base (annonces, annuaire, formations) ; contenu des leçons protégé, règlements des formations payantes saisis en admin
 - Thème tactile léger : surfaces hiérarchisées, cartes mieux détachées, champs creusés et états actifs renforcés
 
 ## En pause (décision utilisateur)
@@ -27,7 +28,6 @@
 
 ## À venir
 
-- V0 · lot 4 : failles des briques 12 à 16
 - V0 · lot 5 : médiathèque, e-mails transactionnels, pages libres (dont l'accueil)
 
 - Vulnérabilités js-yaml héritées de @tanstack/react-start : aucun correctif amont, à re-vérifier

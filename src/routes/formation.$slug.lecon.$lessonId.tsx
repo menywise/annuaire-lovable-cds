@@ -55,6 +55,20 @@ function LessonPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [enrolled, setEnrolled] = useState(false);
+  // Contenu : aperçu gratuit fourni par le serveur, sinon relu avec la session de l'inscrit.
+  const [body, setBody] = useState<{ content: string | null; video_url: string | null } | null>(
+    lesson.content !== null || lesson.video_url !== null
+      ? { content: lesson.content, video_url: lesson.video_url }
+      : null,
+  );
+  useEffect(() => {
+    // Changement de leçon sans rechargement : repartir du contenu fourni par le serveur.
+    setBody(
+      lesson.content !== null || lesson.video_url !== null
+        ? { content: lesson.content, video_url: lesson.video_url }
+        : null,
+    );
+  }, [lesson.id, lesson.content, lesson.video_url]);
   const [doneIds, setDoneIds] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
 
@@ -74,11 +88,17 @@ function LessonPage() {
       if (cancelled) return;
       setEnrolled(Boolean(enrollment));
       setDoneIds((progress ?? []).map((row) => row.lesson_id));
+      if (!lesson.free_preview) {
+        const { data: content } = await supabase.rpc("lms_lesson_content", {
+          _lesson_id: lesson.id,
+        });
+        if (!cancelled) setBody(content?.[0] ?? null);
+      }
     })();
     return () => {
       cancelled = true;
     };
-  }, [user, course.id]);
+  }, [user, course.id, lesson.id, lesson.free_preview]);
 
   const index = lessons.findIndex((item) => item.id === lesson.id);
   const previous = index > 0 ? lessons[index - 1] : null;
@@ -86,7 +106,8 @@ function LessonPage() {
   const doneCount = lessons.filter((item) => doneIds.includes(item.id)).length;
   const percent = lessons.length ? Math.round((doneCount / lessons.length) * 100) : 0;
   const done = doneIds.includes(lesson.id);
-  const locked = !lesson.free_preview && !enrolled;
+  // Verrouillé tant que la base ne renvoie pas le contenu (non inscrit, ou formation payante non réglée).
+  const locked = body === null;
 
   async function markDone() {
     if (!user) return;
@@ -145,7 +166,9 @@ function LessonPage() {
         {locked ? (
           <div className="mt-6 rounded-xl border border-border bg-card p-6">
             <p className="text-sm text-muted-foreground">
-              Cette leçon est réservée aux personnes inscrites.
+              {enrolled
+                ? "Votre place est réservée : la leçon s'ouvre dès que votre règlement est enregistré."
+                : "Cette leçon est réservée aux personnes inscrites."}
             </p>
             <Button asChild className="mt-4" title="Voir le programme et s'inscrire">
               <Link to="/formation/$slug" params={{ slug: course.slug }}>
@@ -155,10 +178,10 @@ function LessonPage() {
           </div>
         ) : (
           <>
-            {lesson.video_url ? (
+            {body?.video_url ? (
               <div className="mt-6 aspect-video w-full overflow-hidden rounded-xl border border-border">
                 <iframe
-                  src={lesson.video_url}
+                  src={body.video_url}
                   title={`Vidéo de la leçon ${lesson.title}`}
                   allowFullScreen
                   className="size-full"
@@ -166,8 +189,8 @@ function LessonPage() {
               </div>
             ) : null}
 
-            {lesson.content ? (
-              <RichText value={lesson.content} className="mt-6 text-sm text-foreground" />
+            {body?.content ? (
+              <RichText value={body.content} className="mt-6 text-sm text-foreground" />
             ) : (
               <p className="mt-6 text-sm text-muted-foreground">Contenu en cours de rédaction.</p>
             )}
