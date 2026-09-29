@@ -2,6 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { AdminShell } from "@/components/cds/AdminShell";
+import { ConfirmButton } from "@/components/cds/ConfirmButton";
+import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -38,12 +40,21 @@ type Course = {
 
 type Module = { id: string; course_id: string; title: string; position: number };
 type Lesson = { id: string; module_id: string; title: string; position: number; free_preview: boolean };
+type Enrollment = {
+  id: string;
+  user_id: string;
+  course_id: string;
+  enrolled_at: string;
+  paid_at: string | null;
+};
 
 function AdminCoursesPage() {
   const [courses, setCourses] = useState<Course[] | null>(null);
   const [modules, setModules] = useState<Module[]>([]);
   const [lessons, setLessons] = useState<Lesson[]>([]);
-  const [enrollments, setEnrollments] = useState<Array<{ course_id: string }>>([]);
+  const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
+  const [people, setPeople] = useState<Record<string, string>>({});
+  const [editingLesson, setEditingLesson] = useState<string | null>(null);
   const [openCourse, setOpenCourse] = useState<string | null>(null);
 
   const load = useCallback(async () => {
@@ -54,12 +65,25 @@ function AdminCoursesPage() {
         .order("position"),
       supabase.from("lms_modules").select("id, course_id, title, position").order("position"),
       supabase.from("lms_lessons").select("id, module_id, title, position, free_preview").order("position"),
-      supabase.from("lms_enrollments").select("course_id"),
+      supabase.from("lms_enrollments").select("id, user_id, course_id, enrolled_at, paid_at"),
     ]);
     setCourses(c.data ?? []);
     setModules(m.data ?? []);
     setLessons(l.data ?? []);
-    setEnrollments(e.data ?? []);
+    const rows = (e.data ?? []) as Enrollment[];
+    setEnrollments(rows);
+    const ids = [...new Set(rows.map((row) => row.user_id))];
+    if (ids.length) {
+      const { data: profiles } = await supabase
+        .from("profiles")
+        .select("id, email, full_name")
+        .in("id", ids);
+      setPeople(
+        Object.fromEntries(
+          (profiles ?? []).map((p) => [p.id, p.full_name ? `${p.full_name} (${p.email ?? ""})` : (p.email ?? p.id)]),
+        ),
+      );
+    }
   }, []);
 
   useEffect(() => {
@@ -202,8 +226,29 @@ function AdminCoursesPage() {
                               .filter((lesson) => lesson.module_id === module.id)
                               .map((lesson) => (
                                 <li key={lesson.id}>
-                                  · {lesson.title}
-                                  {lesson.free_preview ? " (aperçu libre)" : ""}
+                                  {editingLesson === lesson.id ? (
+                                    <LessonEditor
+                                      lesson={lesson}
+                                      onClose={() => setEditingLesson(null)}
+                                      onSaved={() => {
+                                        setEditingLesson(null);
+                                        void load();
+                                      }}
+                                    />
+                                  ) : (
+                                    <span className="flex flex-wrap items-center gap-2">
+                                      · {lesson.title}
+                                      {lesson.free_preview ? " (aperçu libre)" : ""}
+                                      <button
+                                        type="button"
+                                        className="text-xs text-primary-text underline"
+                                        onClick={() => setEditingLesson(lesson.id)}
+                                        title={`Modifier la leçon ${lesson.title}`}
+                                      >
+                                        Modifier
+                                      </button>
+                                    </span>
+                                  )}
                                 </li>
                               ))}
                           </ul>
@@ -223,6 +268,13 @@ function AdminCoursesPage() {
                           </form>
                         </div>
                       ))}
+                      {course.price_cents > 0 ? (
+                        <EnrollmentsPanel
+                          rows={enrollments.filter((row) => row.course_id === course.id)}
+                          people={people}
+                          onChanged={() => void load()}
+                        />
+                      ) : null}
                       <form
                         className="flex gap-2"
                         onSubmit={(event) => {
@@ -246,5 +298,165 @@ function AdminCoursesPage() {
         </>
       )}
     </AdminShell>
+  );
+}
+
+/** Édition d'une leçon : le contenu est lu par la fonction réservée (lms_lesson_content). */
+function LessonEditor({
+  lesson,
+  onClose,
+  onSaved,
+}: {
+  lesson: Lesson;
+  onClose: () => void;
+  onSaved: () => void;
+}) {
+  const [title, setTitle] = useState(lesson.title);
+  const [content, setContent] = useState("");
+  const [videoUrl, setVideoUrl] = useState("");
+  const [preview, setPreview] = useState(lesson.free_preview);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    void supabase.rpc("lms_lesson_content", { _lesson_id: lesson.id }).then(({ data }) => {
+      if (cancelled) return;
+      setContent(data?.[0]?.content ?? "");
+      setVideoUrl(data?.[0]?.video_url ?? "");
+      setLoading(false);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [lesson.id]);
+
+  async function save(event: React.FormEvent) {
+    event.preventDefault();
+    const { error } = await supabase
+      .from("lms_lessons")
+      .update({
+        title: title.trim() || lesson.title,
+        content,
+        video_url: videoUrl.trim() || null,
+        free_preview: preview,
+      })
+      .eq("id", lesson.id);
+    if (error) toast.error("Leçon non enregistrée.");
+    else {
+      toast.success("Leçon enregistrée.");
+      onSaved();
+    }
+  }
+
+  async function remove() {
+    const { error } = await supabase.from("lms_lessons").delete().eq("id", lesson.id);
+    if (error) toast.error("Leçon non supprimée.");
+    else {
+      toast.success("Leçon supprimée.");
+      onSaved();
+    }
+  }
+
+  return (
+    <form onSubmit={save} className="my-2 space-y-2 rounded-lg border border-border bg-card p-3">
+      <div className="space-y-1">
+        <Label htmlFor={`lesson-title-${lesson.id}`}>Titre</Label>
+        <Input id={`lesson-title-${lesson.id}`} value={title} onChange={(e) => setTitle(e.target.value)} />
+      </div>
+      <div className="space-y-1">
+        <Label htmlFor={`lesson-content-${lesson.id}`}>Contenu</Label>
+        <Textarea
+          id={`lesson-content-${lesson.id}`}
+          rows={10}
+          value={content}
+          disabled={loading}
+          onChange={(e) => setContent(e.target.value)}
+          placeholder={loading ? "Chargement…" : "Texte de la leçon (**gras**, *italique*, - liste, [lien](adresse))"}
+        />
+      </div>
+      <div className="space-y-1">
+        <Label htmlFor={`lesson-video-${lesson.id}`}>Vidéo (adresse d'intégration)</Label>
+        <Input
+          id={`lesson-video-${lesson.id}`}
+          type="url"
+          value={videoUrl}
+          onChange={(e) => setVideoUrl(e.target.value)}
+          placeholder="https://…"
+        />
+      </div>
+      <label className="flex min-h-11 items-center gap-2 text-xs text-muted-foreground">
+        <Switch checked={preview} onCheckedChange={setPreview} aria-label="Aperçu libre" />
+        Aperçu libre (lisible sans inscription)
+      </label>
+      <div className="flex flex-wrap gap-2">
+        <Button type="submit" size="sm" disabled={loading}>
+          Enregistrer
+        </Button>
+        <Button type="button" size="sm" variant="outline" onClick={onClose}>
+          Annuler
+        </Button>
+        <ConfirmButton
+          title="Supprimer cette leçon"
+          question={`Supprimer la leçon « ${lesson.title} » ?`}
+          detail="La leçon et la progression des inscrits sur cette leçon sont supprimées."
+          onConfirm={remove}
+        />
+      </div>
+    </form>
+  );
+}
+
+/** Formation payante : l'admin enregistre les règlements (en attendant le paiement en ligne). */
+function EnrollmentsPanel({
+  rows,
+  people,
+  onChanged,
+}: {
+  rows: Enrollment[];
+  people: Record<string, string>;
+  onChanged: () => void;
+}) {
+  async function setPaid(row: Enrollment, paid: boolean) {
+    const { error } = await supabase
+      .from("lms_enrollments")
+      .update({ paid_at: paid ? new Date().toISOString() : null })
+      .eq("id", row.id);
+    if (error) toast.error("Modification non enregistrée.");
+    else {
+      toast.success(paid ? "Règlement enregistré : la formation est ouverte." : "Règlement retiré.");
+      onChanged();
+    }
+  }
+
+  return (
+    <div className="rounded-lg border border-border p-3">
+      <p className="text-sm font-medium text-foreground">Inscriptions et règlements</p>
+      <p className="mt-1 text-xs text-muted-foreground">
+        Formation payante : le contenu s'ouvre quand le règlement est enregistré ici.
+      </p>
+      {rows.length === 0 ? (
+        <p className="mt-2 text-sm text-muted-foreground">Aucune inscription pour l'instant.</p>
+      ) : (
+        <ul className="mt-2 divide-y divide-border text-sm">
+          {rows.map((row) => (
+            <li key={row.id} className="flex flex-wrap items-center gap-3 py-2">
+              <span className="min-w-0 flex-1 break-all text-foreground">
+                {people[row.user_id] ?? row.user_id}
+              </span>
+              <label className="flex min-h-11 items-center gap-2 text-xs text-muted-foreground">
+                <Switch
+                  checked={Boolean(row.paid_at)}
+                  onCheckedChange={(v) => void setPaid(row, v)}
+                  aria-label="Règlement reçu"
+                />
+                {row.paid_at
+                  ? `Réglé le ${new Date(row.paid_at).toLocaleDateString("fr-FR")}`
+                  : "En attente de règlement"}
+              </label>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
 }
