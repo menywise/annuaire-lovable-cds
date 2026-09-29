@@ -6,6 +6,7 @@ import {
   useRouter,
   HeadContent,
   Scripts,
+  redirect,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 
@@ -16,10 +17,14 @@ import { siteLocale } from "@/config/brand";
 import { getSiteConfig, setSiteConfig, siteConfigScript } from "@/lib/site-config";
 import { loadSiteConfig } from "@/lib/site-config.functions";
 import { isFeatureOn } from "@/config/features";
+import { isPathOff } from "@/config/modules";
 
 export function NotFoundComponent() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
+      {/* Aucune route ne fournit de titre ici : React place ces balises dans <head>. */}
+      <title>{`Page introuvable — ${getSiteConfig().brand.shortName}`}</title>
+      <meta name="robots" content="noindex" />
       <div className="max-w-md text-center">
         <p className="text-7xl font-bold text-primary-text">404</p>
         <h1 className="mt-4 text-xl font-semibold text-foreground">Page introuvable</h1>
@@ -129,7 +134,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
    * JSON-LD et interrupteurs des modules sont justes dans le HTML indexé.
    * En cas d'échec, la dernière configuration connue (ou le repli neutre) reste en place.
    */
-  beforeLoad: async () => {
+  beforeLoad: async ({ location }) => {
     const onServer = typeof window === "undefined";
     if (onServer || !window.__CDS_SITE__) {
       try {
@@ -138,6 +143,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         console.error(error);
       }
     }
+    // Page de l'espace connecté d'un module éteint : retour à l'accueil dès le serveur.
+    if (isPathOff(getSiteConfig().modules, location.pathname)) throw redirect({ to: "/" });
   },
   head: () => {
     const { brand } = getSiteConfig();
