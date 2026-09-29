@@ -2,6 +2,7 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
 import { PageShell } from "@/components/cds/SiteHeader";
+import { ModerationNote } from "@/components/cds/ModerationNote";
 import { ShareButtons } from "@/components/cds/ShareButtons";
 import { AdSlot } from "@/components/cds/AdSlot";
 import { Button } from "@/components/ui/button";
@@ -197,6 +198,7 @@ function BlogPostPage() {
                   <p className="mt-2 whitespace-pre-line text-sm text-muted-foreground">
                     {comment.content}
                   </p>
+                  <ModerationNote note={comment.moderation_note} at={comment.moderated_at} />
                 </li>
               ))}
             </ul>

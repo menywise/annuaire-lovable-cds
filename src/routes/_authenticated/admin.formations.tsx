@@ -2,8 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { AdminShell } from "@/components/cds/AdminShell";
-import { ImageField } from "@/components/cds/MediaPicker";
 import { ConfirmButton } from "@/components/cds/ConfirmButton";
+import { ImageField } from "@/components/cds/MediaPicker";
+import { RecordEditor } from "@/components/cds/RecordEditor";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,6 +14,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { requireFeature } from "@/config/features";
 import { downloadCsv } from "@/lib/csv";
 import { formatPrice, slugify } from "@/lib/format";
+import { moveRow } from "@/lib/reorder";
 import { seo } from "@/lib/seo";
 
 export const Route = createFileRoute("/_authenticated/admin/formations")({
@@ -38,6 +40,7 @@ type Course = {
   published: boolean;
   position: number;
   cover_url: string | null;
+  description: string;
 };
 
 type Module = { id: string; course_id: string; title: string; position: number };
@@ -59,17 +62,23 @@ function AdminCoursesPage() {
   const [editingLesson, setEditingLesson] = useState<string | null>(null);
   const [openCourse, setOpenCourse] = useState<string | null>(null);
   const [courseFormKey, setCourseFormKey] = useState(0);
+  const [editingCourse, setEditingCourse] = useState<string | null>(null);
+  const [failed, setFailed] = useState(false);
 
   const load = useCallback(async () => {
     const [c, m, l, e] = await Promise.all([
       supabase
         .from("lms_courses")
-        .select("id, title, slug, excerpt, level, price_cents, duration_minutes, published, position, cover_url")
+        .select(
+          "id, title, slug, excerpt, level, price_cents, duration_minutes, published, position, cover_url, description",
+        )
         .order("position"),
       supabase.from("lms_modules").select("id, course_id, title, position").order("position"),
       supabase.from("lms_lessons").select("id, module_id, title, position, free_preview").order("position"),
       supabase.from("lms_enrollments").select("id, user_id, course_id, enrolled_at, paid_at"),
     ]);
+    setFailed(Boolean(c.error || m.error || l.error || e.error));
+    if (c.error) return;
     setCourses(c.data ?? []);
     setModules(m.data ?? []);
     setLessons(l.data ?? []);
@@ -124,6 +133,47 @@ function AdminCoursesPage() {
     else void load();
   }
 
+  /** Écrit une modification et signale l'échec ; renvoie vrai si c'est enregistré. */
+  async function write(
+    table: "lms_courses" | "lms_modules" | "lms_lessons",
+    id: string,
+    changes: Record<string, unknown>,
+    message: string,
+  ) {
+    const { error } = await supabase
+      .from(table)
+      .update(changes as never)
+      .eq("id", id);
+    if (error) {
+      toast.error("Modification non enregistrée.", {
+        description: error.code === "23505" ? "Cette adresse est déjà prise." : undefined,
+      });
+      return false;
+    }
+    toast.success(message);
+    void load();
+    return true;
+  }
+
+  async function removeRow(table: "lms_courses" | "lms_modules" | "lms_lessons", id: string, message: string) {
+    const { error } = await supabase.from(table).delete().eq("id", id);
+    if (error) toast.error("Suppression impossible.");
+    else {
+      toast.success(message);
+      void load();
+    }
+  }
+
+  async function reorder(
+    table: "lms_courses" | "lms_modules" | "lms_lessons",
+    rows: ReadonlyArray<{ id: string; position: number }>,
+    index: number,
+    delta: number,
+  ) {
+    if (!(await moveRow(table, rows, index, delta))) toast.error("Ordre non enregistré.");
+    void load();
+  }
+
   async function addLesson(moduleId: string, title: string) {
     const count = lessons.filter((item) => item.module_id === moduleId).length;
     const { error } = await supabase.from("lms_lessons").insert({ module_id: moduleId, title, position: count });
@@ -171,6 +221,14 @@ function AdminCoursesPage() {
         </div>
       </form>
 
+      {failed ? (
+        <p role="alert" className="mt-6 rounded-lg border border-destructive/40 p-4 text-sm text-destructive">
+          Une partie du catalogue n'a pas pu être chargée.{" "}
+          <button type="button" className="underline" onClick={() => void load()}>
+            Réessayer
+          </button>
+        </p>
+      ) : null}
       {courses === null ? (
         <p className="mt-6 text-sm text-muted-foreground">Chargement…</p>
       ) : (
@@ -190,7 +248,7 @@ function AdminCoursesPage() {
           </div>
 
           <ul className="mt-3 space-y-3">
-            {courses.map((course) => {
+            {courses.map((course, courseIndex) => {
               const courseModules = modules.filter((item) => item.course_id === course.id);
               const learners = enrollments.filter((item) => item.course_id === course.id).length;
               return (
@@ -208,13 +266,47 @@ function AdminCoursesPage() {
                     <Button
                       variant={course.published ? "outline" : "default"}
                       title={course.published ? "Retirer du catalogue" : "Publier au catalogue"}
-                      onClick={async () => {
-                        await supabase.from("lms_courses").update({ published: !course.published }).eq("id", course.id);
-                        void load();
-                      }}
+                      onClick={() =>
+                        void write(
+                          "lms_courses",
+                          course.id,
+                          { published: !course.published },
+                          course.published ? "Formation retirée du catalogue." : "Formation publiée.",
+                        )
+                      }
                     >
                       {course.published ? "Dépublier" : "Publier"}
                     </Button>
+                    <Button
+                      variant="outline"
+                      title="Modifier titre, prix, niveau, description et image"
+                      onClick={() => setEditingCourse(editingCourse === course.id ? null : course.id)}
+                    >
+                      {editingCourse === course.id ? "Fermer" : "Modifier"}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      disabled={courseIndex === 0}
+                      onClick={() => void reorder("lms_courses", courses, courseIndex, -1)}
+                      aria-label={`Monter la formation ${course.title}`}
+                    >
+                      ↑
+                    </Button>
+                    <Button
+                      variant="outline"
+                      disabled={courseIndex === courses.length - 1}
+                      onClick={() => void reorder("lms_courses", courses, courseIndex, 1)}
+                      aria-label={`Descendre la formation ${course.title}`}
+                    >
+                      ↓
+                    </Button>
+                    <ConfirmButton
+                      size="default"
+                      title="Supprimer définitivement cette formation"
+                      question={`Supprimer la formation « ${course.title} » ?`}
+                      detail={`Modules, leçons, inscriptions (${learners}) et progression sont supprimés définitivement. Pour la retirer sans rien perdre, dépubliez-la.`}
+                      onConfirm={() => removeRow("lms_courses", course.id, "Formation supprimée.")}
+                    />
                     <Button
                       variant="outline"
                       title="Afficher ou masquer le programme"
@@ -224,16 +316,62 @@ function AdminCoursesPage() {
                     </Button>
                   </div>
 
+                  {editingCourse === course.id ? (
+                    <div className="mt-4 border-t border-border pt-4">
+                      <RecordEditor
+                        idPrefix={`course-${course.id}`}
+                        fields={[
+                          { key: "title", label: "Titre", type: "text", required: true },
+                          { key: "slug", label: "Adresse (/formation/…)", type: "text", required: true },
+                          { key: "excerpt", label: "Promesse en une phrase", type: "text", wide: true },
+                          { key: "description", label: "Description", type: "textarea" },
+                          {
+                            key: "level",
+                            label: "Niveau",
+                            type: "select",
+                            options: [
+                              { value: "debutant", label: "Débutant" },
+                              { value: "intermediaire", label: "Intermédiaire" },
+                              { value: "avance", label: "Avancé" },
+                            ],
+                          },
+                          { key: "price_cents", label: "Prix (0 = gratuite)", type: "euros" },
+                          { key: "duration_minutes", label: "Durée totale (minutes)", type: "number" },
+                          { key: "cover_url", label: "Image de couverture", type: "image", nullable: true },
+                        ]}
+                        values={course}
+                        onCancel={() => setEditingCourse(null)}
+                        onSave={async (changes) => {
+                          const ok = await write(
+                            "lms_courses",
+                            course.id,
+                            { ...changes, slug: slugify(String(changes["slug"] ?? "")) },
+                            "Formation modifiée.",
+                          );
+                          if (ok) setEditingCourse(null);
+                          return ok;
+                        }}
+                      />
+                    </div>
+                  ) : null}
+
                   {openCourse === course.id ? (
                     <div className="mt-4 space-y-3 border-t border-border pt-4">
-                      <CourseCover course={course} onSaved={() => void load()} />
-                      {courseModules.map((module) => (
+                      {courseModules.map((module, moduleIndex) => {
+                        const moduleLessons = lessons.filter((lesson) => lesson.module_id === module.id);
+                        return (
                         <div key={module.id} className="rounded-lg bg-muted p-3">
-                          <p className="text-sm font-medium text-foreground">{module.title}</p>
+                          <ModuleHeader
+                            module={module}
+                            first={moduleIndex === 0}
+                            last={moduleIndex === courseModules.length - 1}
+                            lessonCount={moduleLessons.length}
+                            onRename={(title) => write("lms_modules", module.id, { title }, "Module renommé.")}
+                            onMove={(delta) => void reorder("lms_modules", courseModules, moduleIndex, delta)}
+                            onRemove={() => removeRow("lms_modules", module.id, "Module supprimé.")}
+                          />
                           <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
-                            {lessons
-                              .filter((lesson) => lesson.module_id === module.id)
-                              .map((lesson) => (
+                            {moduleLessons.map((lesson, lessonIndex) => (
                                 <li key={lesson.id}>
                                   {editingLesson === lesson.id ? (
                                     <LessonEditor
@@ -256,6 +394,32 @@ function AdminCoursesPage() {
                                       >
                                         Modifier
                                       </button>
+                                      <Button
+                                        type="button"
+                                        size="sm"
+                                        variant="ghost"
+                                        disabled={lessonIndex === 0}
+                                        onClick={() => void reorder("lms_lessons", moduleLessons, lessonIndex, -1)}
+                                        aria-label={`Monter la leçon ${lesson.title}`}
+                                      >
+                                        ↑
+                                      </Button>
+                                      <Button
+                                        type="button"
+                                        size="sm"
+                                        variant="ghost"
+                                        disabled={lessonIndex === moduleLessons.length - 1}
+                                        onClick={() => void reorder("lms_lessons", moduleLessons, lessonIndex, 1)}
+                                        aria-label={`Descendre la leçon ${lesson.title}`}
+                                      >
+                                        ↓
+                                      </Button>
+                                      <ConfirmButton
+                                        title={`Supprimer la leçon ${lesson.title}`}
+                                        question={`Supprimer la leçon « ${lesson.title} » ?`}
+                                        detail="Son contenu et la progression des inscrits sur cette leçon sont supprimés."
+                                        onConfirm={() => removeRow("lms_lessons", lesson.id, "Leçon supprimée.")}
+                                      />
                                     </span>
                                   )}
                                 </li>
@@ -276,7 +440,8 @@ function AdminCoursesPage() {
                             </Button>
                           </form>
                         </div>
-                      ))}
+                        );
+                      })}
                       {course.price_cents > 0 ? (
                         <EnrollmentsPanel
                           rows={enrollments.filter((row) => row.course_id === course.id)}
@@ -470,30 +635,54 @@ function EnrollmentsPanel({
   );
 }
 
-function CourseCover({ course, onSaved }: { course: Course; onSaved: () => void }) {
-  const [cover, setCover] = useState(course.cover_url ?? "");
-  const changed = cover.trim() !== (course.cover_url ?? "");
-
-  async function save() {
-    const { error } = await supabase
-      .from("lms_courses")
-      .update({ cover_url: cover.trim() || null })
-      .eq("id", course.id);
-    if (error) toast.error("Image non enregistrée.");
-    else {
-      toast.success("Image enregistrée.");
-      onSaved();
-    }
-  }
-
+function ModuleHeader({
+  module,
+  first,
+  last,
+  lessonCount,
+  onRename,
+  onMove,
+  onRemove,
+}: {
+  module: Module;
+  first: boolean;
+  last: boolean;
+  lessonCount: number;
+  onRename: (title: string) => Promise<boolean>;
+  onMove: (delta: number) => void;
+  onRemove: () => Promise<void>;
+}) {
+  const [title, setTitle] = useState(module.title);
+  const dirty = title.trim() !== module.title && title.trim() !== "";
   return (
-    <div className="space-y-2 rounded-lg bg-muted p-3">
-      <ImageField id={`course-cover-${course.id}`} label="Image de couverture" value={cover} onChange={setCover} />
-      {changed ? (
-        <Button type="button" size="sm" onClick={() => void save()}>
-          Enregistrer l'image
-        </Button>
-      ) : null}
-    </div>
+    <form
+      className="flex flex-wrap items-center gap-2"
+      onSubmit={(e) => {
+        e.preventDefault();
+        if (dirty) void onRename(title.trim());
+      }}
+    >
+      <Input
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        aria-label="Titre du module"
+        className="min-w-[180px] flex-1 font-medium"
+      />
+      <Button type="submit" size="sm" variant="outline" disabled={!dirty}>
+        Renommer
+      </Button>
+      <Button type="button" size="sm" variant="ghost" disabled={first} onClick={() => onMove(-1)} aria-label={`Monter le module ${module.title}`}>
+        ↑
+      </Button>
+      <Button type="button" size="sm" variant="ghost" disabled={last} onClick={() => onMove(1)} aria-label={`Descendre le module ${module.title}`}>
+        ↓
+      </Button>
+      <ConfirmButton
+        title={`Supprimer le module ${module.title}`}
+        question={`Supprimer le module « ${module.title} » ?`}
+        detail={`Ses ${lessonCount} leçons et la progression associée sont supprimées définitivement.`}
+        onConfirm={onRemove}
+      />
+    </form>
   );
 }

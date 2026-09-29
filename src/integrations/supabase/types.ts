@@ -223,6 +223,9 @@ export type Database = {
       }
       blog_comments: {
         Row: {
+          moderated_at: string | null
+          moderated_by: string | null
+          moderation_note: string | null
           approved: boolean
           author_id: string
           author_name: string
@@ -232,6 +235,9 @@ export type Database = {
           post_id: string
         }
         Insert: {
+          moderated_at?: string | null
+          moderated_by?: string | null
+          moderation_note?: string | null
           approved?: boolean
           author_id: string
           author_name?: string
@@ -241,6 +247,9 @@ export type Database = {
           post_id: string
         }
         Update: {
+          moderated_at?: string | null
+          moderated_by?: string | null
+          moderation_note?: string | null
           approved?: boolean
           author_id?: string
           author_name?: string
@@ -640,6 +649,9 @@ export type Database = {
       }
       directory_reviews: {
         Row: {
+          moderated_at: string | null
+          moderated_by: string | null
+          moderation_note: string | null
           approved: boolean
           author_id: string
           author_name: string
@@ -650,6 +662,9 @@ export type Database = {
           rating: number
         }
         Insert: {
+          moderated_at?: string | null
+          moderated_by?: string | null
+          moderation_note?: string | null
           approved?: boolean
           author_id: string
           author_name?: string
@@ -660,6 +675,9 @@ export type Database = {
           rating: number
         }
         Update: {
+          moderated_at?: string | null
+          moderated_by?: string | null
+          moderation_note?: string | null
           approved?: boolean
           author_id?: string
           author_name?: string
@@ -815,6 +833,9 @@ export type Database = {
       }
       forum_replies: {
         Row: {
+          moderated_at: string | null
+          moderated_by: string | null
+          moderation_note: string | null
           accepted: boolean
           author_id: string
           author_name: string
@@ -824,6 +845,9 @@ export type Database = {
           topic_id: string
         }
         Insert: {
+          moderated_at?: string | null
+          moderated_by?: string | null
+          moderation_note?: string | null
           accepted?: boolean
           author_id: string
           author_name?: string
@@ -833,6 +857,9 @@ export type Database = {
           topic_id: string
         }
         Update: {
+          moderated_at?: string | null
+          moderated_by?: string | null
+          moderation_note?: string | null
           accepted?: boolean
           author_id?: string
           author_name?: string
@@ -853,6 +880,9 @@ export type Database = {
       }
       forum_topics: {
         Row: {
+          moderated_at: string | null
+          moderated_by: string | null
+          moderation_note: string | null
           author_id: string
           author_name: string
           category_id: string | null
@@ -866,6 +896,9 @@ export type Database = {
           views: number
         }
         Insert: {
+          moderated_at?: string | null
+          moderated_by?: string | null
+          moderation_note?: string | null
           author_id: string
           author_name?: string
           category_id?: string | null
@@ -879,6 +912,9 @@ export type Database = {
           views?: number
         }
         Update: {
+          moderated_at?: string | null
+          moderated_by?: string | null
+          moderation_note?: string | null
           author_id?: string
           author_name?: string
           category_id?: string | null
@@ -1563,6 +1599,9 @@ export type Database = {
       }
       reviews: {
         Row: {
+          moderated_at: string | null
+          moderated_by: string | null
+          moderation_note: string | null
           approved: boolean
           author_id: string
           author_name: string
@@ -1573,6 +1612,9 @@ export type Database = {
           title: string
         }
         Insert: {
+          moderated_at?: string | null
+          moderated_by?: string | null
+          moderation_note?: string | null
           approved?: boolean
           author_id: string
           author_name?: string
@@ -1583,6 +1625,9 @@ export type Database = {
           title?: string
         }
         Update: {
+          moderated_at?: string | null
+          moderated_by?: string | null
+          moderation_note?: string | null
           approved?: boolean
           author_id?: string
           author_name?: string
@@ -1713,6 +1758,9 @@ export type Database = {
       }
       testimonials: {
         Row: {
+          moderated_at: string | null
+          moderated_by: string | null
+          moderation_note: string | null
           approved: boolean
           author_id: string | null
           author_name: string
@@ -1728,6 +1776,9 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          moderated_at?: string | null
+          moderated_by?: string | null
+          moderation_note?: string | null
           approved?: boolean
           author_id?: string | null
           author_name: string
@@ -1743,6 +1794,9 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          moderated_at?: string | null
+          moderated_by?: string | null
+          moderation_note?: string | null
           approved?: boolean
           author_id?: string | null
           author_name?: string

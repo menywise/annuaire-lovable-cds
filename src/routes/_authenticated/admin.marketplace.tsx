@@ -2,7 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { AdminShell } from "@/components/cds/AdminShell";
+import { CategoryManager } from "@/components/cds/CategoryManager";
 import { ConfirmButton } from "@/components/cds/ConfirmButton";
+import { RecordEditor } from "@/components/cds/RecordEditor";
 import { ImageListField } from "@/components/cds/MediaPicker";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,6 +38,12 @@ type Listing = {
   views: number;
   created_at: string;
   photos: string[];
+  description: string;
+  category_id: string | null;
+  tags: string[];
+  negotiable: boolean;
+  city: string;
+  departement: string | null;
 };
 
 type Category = { id: string; name: string; slug: string; position: number };
@@ -44,60 +52,67 @@ function AdminMarketplacePage() {
   const [listings, setListings] = useState<Listing[] | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
   const [openPhotos, setOpenPhotos] = useState<string | null>(null);
+  const [editing, setEditing] = useState<string | null>(null);
+  const [failed, setFailed] = useState(false);
 
   const load = useCallback(async () => {
     const [l, c] = await Promise.all([
       supabase
         .from("marketplace_listings")
-        .select("id, title, slug, seller_name, price_cents, status, approved, views, created_at, photos")
+        .select(
+          "id, title, slug, seller_name, price_cents, status, approved, views, created_at, photos, description, category_id, tags, negotiable, city, departement",
+        )
         .order("created_at", { ascending: false }),
       supabase.from("marketplace_categories").select("id, name, slug, position").order("position"),
     ]);
+    setFailed(Boolean(l.error || c.error));
+    if (l.error) return;
     setListings(l.data ?? []);
     setCategories(c.data ?? []);
   }, []);
+
+  async function update(id: string, changes: Record<string, unknown>, message: string) {
+    const { error } = await supabase
+      .from("marketplace_listings")
+      .update(changes as never)
+      .eq("id", id);
+    if (error) {
+      toast.error("Modification non enregistrée.", {
+        description: error.code === "23505" ? "Cette adresse est déjà prise." : undefined,
+      });
+      return false;
+    }
+    toast.success(message);
+    void load();
+    return true;
+  }
 
   useEffect(() => {
     void load();
   }, [load]);
 
-  async function addCategory(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const form = event.currentTarget;
-    const name = String(new FormData(form).get("name") ?? "").trim();
-    if (!name) return;
-    const { error } = await supabase
-      .from("marketplace_categories")
-      .insert({ name, slug: slugify(name), position: categories.length });
-    if (error) toast.error("Catégorie non créée.");
-    else {
-      toast.success("Catégorie créée.");
-      form.reset();
-      void load();
-    }
-  }
-
   return (
     <AdminShell
       title="Annonces"
-      intro="Chaque annonce passe sous vos yeux avant d'être visible. Vous gardez la main sur les catégories."
+      intro="Chaque annonce passe sous vos yeux avant d'être visible. Vous pouvez la corriger, l'archiver ou la supprimer, et gérer les catégories."
     >
-      <form onSubmit={addCategory} className="flex flex-wrap items-end gap-3 rounded-xl border border-border bg-card p-5">
-        <div className="flex-1">
-          <Label htmlFor="mk-cat">Nouvelle catégorie</Label>
-          <Input id="mk-cat" name="name" required placeholder="Matériel" className="mt-1" />
+      <details className="rounded-xl border border-border bg-card p-4">
+        <summary className="min-h-11 cursor-pointer text-sm font-semibold text-foreground">
+          Catégories ({categories.length})
+        </summary>
+        <div className="mt-4">
+          <CategoryManager table="marketplace_categories" placeholder="Matériel" usage="annonces" />
         </div>
-        <Button type="submit" title="Créer cette catégorie">
-          Ajouter
-        </Button>
-      </form>
+      </details>
 
-      {categories.length > 0 ? (
-        <p className="mt-3 text-xs text-muted-foreground">
-          Catégories : {categories.map((item) => item.name).join(", ")}
+      {failed ? (
+        <p role="alert" className="mt-6 rounded-lg border border-destructive/40 p-4 text-sm text-destructive">
+          Les annonces n'ont pas pu être chargées.{" "}
+          <button type="button" className="underline" onClick={() => void load()}>
+            Réessayer
+          </button>
         </p>
       ) : null}
-
       {listings === null ? (
         <p className="mt-6 text-sm text-muted-foreground">Chargement…</p>
       ) : (
@@ -130,25 +145,35 @@ function AdminMarketplacePage() {
                   <Button
                     variant={item.approved ? "outline" : "default"}
                     title={item.approved ? "Retirer cette annonce du site" : "Valider cette annonce"}
-                    onClick={async () => {
-                      await supabase
-                        .from("marketplace_listings")
-                        .update({ approved: !item.approved })
-                        .eq("id", item.id);
-                      void load();
-                    }}
+                    onClick={() =>
+                      void update(
+                        item.id,
+                        { approved: !item.approved },
+                        item.approved ? "Annonce retirée du site." : "Annonce validée.",
+                      )
+                    }
                   >
                     {item.approved ? "Retirer" : "Valider"}
                   </Button>
                   <Button
                     variant="outline"
                     title="Archiver cette annonce"
-                    onClick={async () => {
-                      await supabase.from("marketplace_listings").update({ status: "archived" }).eq("id", item.id);
-                      void load();
-                    }}
+                    onClick={() =>
+                      void update(
+                        item.id,
+                        { status: item.status === "archived" ? "active" : "archived" },
+                        item.status === "archived" ? "Annonce réactivée." : "Annonce archivée.",
+                      )
+                    }
                   >
-                    Archiver
+                    {item.status === "archived" ? "Réactiver" : "Archiver"}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    title="Modifier le contenu de cette annonce"
+                    onClick={() => setEditing(editing === item.id ? null : item.id)}
+                  >
+                    {editing === item.id ? "Fermer" : "Modifier"}
                   </Button>
                   <Button
                     variant="outline"
@@ -171,6 +196,57 @@ function AdminMarketplacePage() {
                     }}
                   />
                 </div>
+                {editing === item.id ? (
+                  <div className="mt-4 border-t border-border pt-4">
+                    <RecordEditor
+                      idPrefix={`mk-${item.id}`}
+                      fields={[
+                        { key: "title", label: "Titre", type: "text", required: true },
+                        { key: "slug", label: "Adresse (/marketplace/…)", type: "text", required: true },
+                        {
+                          key: "category_id",
+                          label: "Catégorie",
+                          type: "select",
+                          nullable: true,
+                          options: categories.map((c) => ({ value: c.id, label: c.name })),
+                        },
+                        {
+                          key: "status",
+                          label: "État",
+                          type: "select",
+                          options: [
+                            { value: "draft", label: "Brouillon" },
+                            { value: "active", label: "En ligne" },
+                            { value: "sold", label: "Vendue" },
+                            { value: "archived", label: "Archivée" },
+                          ],
+                        },
+                        { key: "price_cents", label: "Prix", type: "euros" },
+                        { key: "negotiable", label: "Prix à débattre", type: "checkbox" },
+                        { key: "description", label: "Description", type: "textarea" },
+                        { key: "city", label: "Ville", type: "text" },
+                        {
+                          key: "departement",
+                          label: "Département (code)",
+                          type: "text",
+                          nullable: true,
+                        },
+                        { key: "tags", label: "Étiquettes", type: "tags" },
+                      ]}
+                      values={item}
+                      onCancel={() => setEditing(null)}
+                      onSave={async (changes) => {
+                        const ok = await update(
+                          item.id,
+                          { ...changes, slug: slugify(String(changes["slug"] ?? "")) },
+                          "Annonce modifiée.",
+                        );
+                        if (ok) setEditing(null);
+                        return ok;
+                      }}
+                    />
+                  </div>
+                ) : null}
                 {openPhotos === item.id ? (
                   <ListingPhotos
                     item={item}

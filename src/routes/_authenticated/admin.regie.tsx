@@ -2,7 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { AdminShell } from "@/components/cds/AdminShell";
+import { ConfirmButton } from "@/components/cds/ConfirmButton";
 import { ImageField } from "@/components/cds/MediaPicker";
+import { RecordEditor } from "@/components/cds/RecordEditor";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -24,7 +26,16 @@ export const Route = createFileRoute("/_authenticated/admin/regie")({
   component: AdminAdsPage,
 });
 
-type Placement = { id: string; name: string; slug: string; location: string; format: string; active: boolean };
+type Placement = {
+  id: string;
+  name: string;
+  slug: string;
+  location: string;
+  format: string;
+  active: boolean;
+  width: number | null;
+  height: number | null;
+};
 type Campaign = {
   id: string;
   placement_id: string;
@@ -36,23 +47,52 @@ type Campaign = {
   active: boolean;
   starts_at: string | null;
   ends_at: string | null;
+  contact_email: string;
+  alt_text: string;
+  affiliate_code: string;
+  commission_pct: number;
 };
+
+const LOCATIONS = [
+  { value: "header", label: "En-tête" },
+  { value: "sidebar", label: "Colonne latérale" },
+  { value: "in-content", label: "Dans le contenu" },
+  { value: "footer", label: "Pied de page" },
+  { value: "interstitial", label: "Interstitiel" },
+];
+const FORMATS = [
+  { value: "banner", label: "Bandeau" },
+  { value: "square", label: "Carré" },
+  { value: "text-link", label: "Lien texte" },
+];
+const TYPES = [
+  { value: "direct", label: "Direct" },
+  { value: "affiliation", label: "Affiliation" },
+  { value: "cross-promo", label: "Promotion croisée" },
+  { value: "sponsorise", label: "Contenu sponsorisé" },
+];
 
 function AdminAdsPage() {
   const [placements, setPlacements] = useState<Placement[] | null>(null);
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [stats, setStats] = useState<Record<string, { impressions: number; clicks: number }>>({});
   const [campaignFormKey, setCampaignFormKey] = useState(0);
+  const [editing, setEditing] = useState<string | null>(null);
+  const [failed, setFailed] = useState(false);
 
   const load = useCallback(async () => {
     const [p, c, e] = await Promise.all([
-      supabase.from("ad_placements").select("id, name, slug, location, format, active").order("name"),
+      supabase.from("ad_placements").select("id, name, slug, location, format, active, width, height").order("name"),
       supabase
         .from("ad_campaigns")
-        .select("id, placement_id, advertiser, title, link_url, image_url, type, active, starts_at, ends_at")
+        .select(
+          "id, placement_id, advertiser, title, link_url, image_url, type, active, starts_at, ends_at, contact_email, alt_text, affiliate_code, commission_pct",
+        )
         .order("created_at", { ascending: false }),
       supabase.from("ad_events").select("campaign_id, event_type"),
     ]);
+    setFailed(Boolean(p.error || c.error || e.error));
+    if (p.error) return;
     setPlacements(p.data ?? []);
     setCampaigns(c.data ?? []);
     const totals: Record<string, { impressions: number; clicks: number }> = {};
@@ -67,6 +107,34 @@ function AdminAdsPage() {
   useEffect(() => {
     void load();
   }, [load]);
+
+  async function write(
+    table: "ad_placements" | "ad_campaigns",
+    id: string,
+    changes: Record<string, unknown>,
+    message: string,
+  ) {
+    const { error } = await supabase
+      .from(table)
+      .update(changes as never)
+      .eq("id", id);
+    if (error) {
+      toast.error("Modification non enregistrée.");
+      return false;
+    }
+    toast.success(message);
+    void load();
+    return true;
+  }
+
+  async function removeRow(table: "ad_placements" | "ad_campaigns", id: string, message: string) {
+    const { error } = await supabase.from(table).delete().eq("id", id);
+    if (error) toast.error("Suppression impossible.");
+    else {
+      toast.success(message);
+      void load();
+    }
+  }
 
   async function addPlacement(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -155,16 +223,70 @@ function AdminAdsPage() {
         </div>
       </form>
 
+      {failed ? (
+        <p role="alert" className="mt-6 rounded-lg border border-destructive/40 p-4 text-sm text-destructive">
+          Une partie de la régie n'a pas pu être chargée.{" "}
+          <button type="button" className="underline" onClick={() => void load()}>
+            Réessayer
+          </button>
+        </p>
+      ) : null}
       {placements === null ? (
         <p className="mt-6 text-sm text-muted-foreground">Chargement…</p>
       ) : (
         <>
-          <ul className="mt-4 flex flex-wrap gap-2 text-xs text-muted-foreground">
-            {placements.map((item) => (
-              <li key={item.id} className="rounded-full bg-muted px-3 py-1">
-                {item.name} — code « {item.slug} »
-              </li>
-            ))}
+          <ul className="mt-4 space-y-2">
+            {placements.map((item) => {
+              const key = `pl:${item.id}`;
+              const count = campaigns.filter((c) => c.placement_id === item.id).length;
+              return (
+                <li key={item.id} className="rounded-xl border border-border bg-card p-4">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <p className="text-sm font-semibold text-foreground">{item.name}</p>
+                    <span className="text-xs text-muted-foreground">
+                      code « {item.slug} » · {LOCATIONS.find((l) => l.value === item.location)?.label ?? item.location} ·{" "}
+                      {count} campagne{count > 1 ? "s" : ""} · {item.active ? "actif" : "désactivé"}
+                    </span>
+                    <div className="ml-auto flex flex-wrap gap-2">
+                      <Button size="sm" variant="outline" onClick={() => setEditing(editing === key ? null : key)}>
+                        {editing === key ? "Fermer" : "Modifier"}
+                      </Button>
+                      <ConfirmButton
+                        title={`Supprimer l'emplacement ${item.name}`}
+                        question={`Supprimer l'emplacement « ${item.name} » ?`}
+                        detail={`Ses ${count} campagnes et leurs statistiques sont supprimées définitivement. Pour l'arrêter sans rien perdre, désactivez-le.`}
+                        onConfirm={() => removeRow("ad_placements", item.id, "Emplacement supprimé.")}
+                      />
+                    </div>
+                  </div>
+                  {editing === key ? (
+                    <div className="mt-3 border-t border-border pt-3">
+                      <RecordEditor
+                        idPrefix={key}
+                        fields={[
+                          { key: "name", label: "Nom", type: "text", required: true },
+                          { key: "location", label: "Position", type: "select", options: LOCATIONS },
+                          { key: "format", label: "Format", type: "select", options: FORMATS },
+                          { key: "width", label: "Largeur (px)", type: "number", nullable: true },
+                          { key: "height", label: "Hauteur (px)", type: "number", nullable: true },
+                          { key: "active", label: "Emplacement actif", type: "checkbox" },
+                        ]}
+                        values={item}
+                        onCancel={() => setEditing(null)}
+                        onSave={async (changes) => {
+                          const ok = await write("ad_placements", item.id, changes, "Emplacement modifié.");
+                          if (ok) setEditing(null);
+                          return ok;
+                        }}
+                      />
+                      <p className="mt-2 text-xs text-muted-foreground">
+                        Le code « {item.slug} » n'est pas modifiable : il relie l'emplacement aux pages du site.
+                      </p>
+                    </div>
+                  ) : null}
+                </li>
+              );
+            })}
           </ul>
 
           <form onSubmit={addCampaign} className="mt-6 grid gap-3 rounded-xl border border-border bg-card p-5 sm:grid-cols-2">
@@ -256,28 +378,68 @@ function AdminAdsPage() {
                       {stat.impressions} affichages · {stat.clicks} clics · {ctr} %
                     </span>
                   </div>
-                  <div className="mt-3 flex gap-2">
+                  <div className="mt-3 flex flex-wrap gap-2">
                     <Button
                       variant={item.active ? "outline" : "default"}
                       title={item.active ? "Mettre cette campagne en pause" : "Activer cette campagne"}
-                      onClick={async () => {
-                        await supabase.from("ad_campaigns").update({ active: !item.active }).eq("id", item.id);
-                        void load();
-                      }}
+                      onClick={() =>
+                        void write(
+                          "ad_campaigns",
+                          item.id,
+                          { active: !item.active },
+                          item.active ? "Campagne en pause." : "Campagne activée.",
+                        )
+                      }
                     >
                       {item.active ? "Mettre en pause" : "Activer"}
                     </Button>
                     <Button
-                      variant="destructive"
-                      title="Supprimer cette campagne"
-                      onClick={async () => {
-                        await supabase.from("ad_campaigns").delete().eq("id", item.id);
-                        void load();
-                      }}
+                      variant="outline"
+                      onClick={() => setEditing(editing === `ca:${item.id}` ? null : `ca:${item.id}`)}
                     >
-                      Supprimer
+                      {editing === `ca:${item.id}` ? "Fermer" : "Modifier"}
                     </Button>
+                    <ConfirmButton
+                      size="default"
+                      title="Supprimer cette campagne"
+                      question={`Supprimer la campagne « ${item.title} » ?`}
+                      detail="La campagne et ses statistiques sont supprimées définitivement."
+                      onConfirm={() => removeRow("ad_campaigns", item.id, "Campagne supprimée.")}
+                    />
                   </div>
+                  {editing === `ca:${item.id}` ? (
+                    <div className="mt-3 border-t border-border pt-3">
+                      <RecordEditor
+                        idPrefix={`ca-${item.id}`}
+                        fields={[
+                          {
+                            key: "placement_id",
+                            label: "Emplacement",
+                            type: "select",
+                            options: placements.map((p) => ({ value: p.id, label: p.name })),
+                          },
+                          { key: "type", label: "Type", type: "select", options: TYPES },
+                          { key: "advertiser", label: "Annonceur", type: "text", required: true },
+                          { key: "contact_email", label: "E-mail de l'annonceur", type: "email" },
+                          { key: "title", label: "Message affiché", type: "text", required: true },
+                          { key: "alt_text", label: "Description du visuel", type: "text" },
+                          { key: "link_url", label: "Lien de destination", type: "url", required: true, wide: true },
+                          { key: "image_url", label: "Visuel", type: "image", nullable: true },
+                          { key: "starts_at", label: "Début", type: "datetime" },
+                          { key: "ends_at", label: "Fin", type: "datetime" },
+                          { key: "affiliate_code", label: "Code d'affiliation", type: "text" },
+                          { key: "commission_pct", label: "Commission (%)", type: "number" },
+                        ]}
+                        values={item}
+                        onCancel={() => setEditing(null)}
+                        onSave={async (changes) => {
+                          const ok = await write("ad_campaigns", item.id, changes, "Campagne modifiée.");
+                          if (ok) setEditing(null);
+                          return ok;
+                        }}
+                      />
+                    </div>
+                  ) : null}
                 </li>
               );
             })}

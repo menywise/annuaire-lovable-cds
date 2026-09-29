@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { PageShell } from "@/components/cds/SiteHeader";
+import { ModerationNote } from "@/components/cds/ModerationNote";
 import { ShareButtons } from "@/components/cds/ShareButtons";
 import {
   CategoryBadge,
@@ -158,6 +159,7 @@ function TopicPage() {
         </p>
 
         <RichText value={topic.content} className="mt-4 text-sm text-muted-foreground" />
+        <ModerationNote note={topic.moderation_note} at={topic.moderated_at} />
 
         <div className="mt-6 flex flex-wrap items-center gap-2 border-t border-border pt-5">
           <LikeButton topicId={topic.id} initialCount={topic.likes} />
@@ -198,6 +200,7 @@ function TopicPage() {
                   {new Date(item.created_at).toLocaleDateString("fr-FR")}
                 </p>
                 <RichText value={item.content} className="mt-2 text-sm text-muted-foreground" />
+                <ModerationNote note={item.moderation_note} at={item.moderated_at} />
                 <div className="mt-3 flex flex-wrap items-center gap-2">
                   <LikeButton replyId={item.id} initialCount={item.likes} />
                   {isOwner ? (

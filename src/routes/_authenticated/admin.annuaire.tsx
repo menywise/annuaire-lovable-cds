@@ -2,6 +2,11 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { AdminShell } from "@/components/cds/AdminShell";
+import { CategoryManager } from "@/components/cds/CategoryManager";
+import { ConfirmButton } from "@/components/cds/ConfirmButton";
+import { RecordEditor } from "@/components/cds/RecordEditor";
+import { ModerationControl } from "@/components/cds/ModerationEditor";
+import { ModerationNote } from "@/components/cds/ModerationNote";
 import { ImageField, ImageListField } from "@/components/cds/MediaPicker";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -39,6 +44,16 @@ type Listing = {
   logo_url: string | null;
   cover_url: string | null;
   photos: string[];
+  description: string;
+  excerpt: string;
+  category_id: string | null;
+  tags: string[];
+  address: string;
+  postal_code: string;
+  departement: string | null;
+  phone: string;
+  email: string;
+  website: string;
 };
 
 type Category = { id: string; name: string; slug: string; position: number };
@@ -49,6 +64,7 @@ type Review = {
   rating: number;
   content: string;
   approved: boolean;
+  moderation_note: string | null;
 };
 
 const TABS = [
@@ -64,21 +80,25 @@ function AdminDirectoryPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [openImages, setOpenImages] = useState<string | null>(null);
+  const [editing, setEditing] = useState<string | null>(null);
+  const [failed, setFailed] = useState(false);
 
   const load = useCallback(async () => {
     const [l, c, r] = await Promise.all([
       supabase
         .from("directory_listings")
         .select(
-          "id, name, slug, city, status, plan, featured, verified, claimed_by, claim_requested_by, created_at, logo_url, cover_url, photos",
+          "id, name, slug, city, status, plan, featured, verified, claimed_by, claim_requested_by, created_at, logo_url, cover_url, photos, description, excerpt, category_id, tags, address, postal_code, departement, phone, email, website",
         )
         .order("created_at", { ascending: false }),
       supabase.from("directory_categories").select("id, name, slug, position").order("position"),
       supabase
         .from("directory_reviews")
-        .select("id, listing_id, author_name, rating, content, approved")
+        .select("id, listing_id, author_name, rating, content, approved, moderation_note")
         .order("created_at", { ascending: false }),
     ]);
+    setFailed(Boolean(l.error || c.error || r.error));
+    if (l.error) return;
     setListings(l.data ?? []);
     setCategories(c.data ?? []);
     setReviews(r.data ?? []);
@@ -90,35 +110,35 @@ function AdminDirectoryPage() {
 
   async function updateListing(id: string, changes: Partial<Listing>) {
     const { error } = await supabase.from("directory_listings").update(changes).eq("id", id);
-    if (error) toast.error("Modification non enregistrée.");
+    if (error) {
+      toast.error("Modification non enregistrée.", {
+        description: error.code === "23505" ? "Cette adresse est déjà prise." : undefined,
+      });
+      return false;
+    }
+    toast.success("Fiche mise à jour.");
+    void load();
+    return true;
+  }
+
+  async function removeListing(item: Listing) {
+    const { error } = await supabase.from("directory_listings").delete().eq("id", item.id);
+    if (error) toast.error("Fiche non supprimée.");
     else {
-      toast.success("Fiche mise à jour.");
+      toast.success("Fiche supprimée.");
       void load();
     }
   }
 
+  /** Accepter : la fiche est confiée au membre, datée ; la demande est close. */
   async function approveClaim(item: Listing) {
     if (!item.claim_requested_by) return;
     await updateListing(item.id, {
       claimed_by: item.claim_requested_by,
+      claimed_at: new Date().toISOString(),
       claim_requested_by: null,
+      claim_requested_at: null,
     } as Partial<Listing>);
-  }
-
-  async function addCategory(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const form = event.currentTarget;
-    const name = String(new FormData(form).get("name") ?? "").trim();
-    if (!name) return;
-    const { error } = await supabase
-      .from("directory_categories")
-      .insert({ name, slug: slugify(name), position: categories.length });
-    if (error) toast.error("Catégorie non créée.");
-    else {
-      toast.success("Catégorie créée.");
-      form.reset();
-      void load();
-    }
   }
 
   const pendingClaims = (listings ?? []).filter((item) => item.claim_requested_by);
@@ -154,6 +174,14 @@ function AdminDirectoryPage() {
         </Button>
       </div>
 
+      {failed ? (
+        <p role="alert" className="mt-6 rounded-lg border border-destructive/40 p-4 text-sm text-destructive">
+          Une partie de l'annuaire n'a pas pu être chargée.{" "}
+          <button type="button" className="underline" onClick={() => void load()}>
+            Réessayer
+          </button>
+        </p>
+      ) : null}
       {listings === null ? (
         <p className="mt-6 text-sm text-muted-foreground">Chargement…</p>
       ) : tab === "fiches" ? (
@@ -230,7 +258,74 @@ function AdminDirectoryPage() {
                 >
                   {openImages === item.id ? "Masquer les images" : "Images"}
                 </Button>
+                <Button
+                  variant="outline"
+                  title="Modifier le contenu de cette fiche"
+                  onClick={() => setEditing(editing === item.id ? null : item.id)}
+                >
+                  {editing === item.id ? "Fermer" : "Modifier"}
+                </Button>
+                <Button
+                  variant="outline"
+                  title={item.status === "archived" ? "Remettre en brouillon" : "Retirer du site sans supprimer"}
+                  onClick={() =>
+                    updateListing(item.id, { status: item.status === "archived" ? "draft" : "archived" })
+                  }
+                >
+                  {item.status === "archived" ? "Désarchiver" : "Archiver"}
+                </Button>
+                <ConfirmButton
+                  size="default"
+                  title="Supprimer définitivement cette fiche"
+                  question={`Supprimer la fiche « ${item.name} » ?`}
+                  detail="La fiche et ses avis sont supprimés définitivement. Pour la retirer sans la perdre, archivez-la."
+                  onConfirm={() => removeListing(item)}
+                />
               </div>
+              {editing === item.id ? (
+                <div className="mt-4 border-t border-border pt-4">
+                  <RecordEditor
+                    idPrefix={`dir-${item.id}`}
+                    fields={[
+                      { key: "name", label: "Nom", type: "text", required: true },
+                      { key: "slug", label: "Adresse (/annuaire/…)", type: "text", required: true },
+                      {
+                        key: "category_id",
+                        label: "Catégorie",
+                        type: "select",
+                        nullable: true,
+                        options: categories.map((c) => ({ value: c.id, label: c.name })),
+                      },
+                      { key: "tags", label: "Étiquettes", type: "tags" },
+                      { key: "excerpt", label: "Résumé", type: "text", wide: true },
+                      { key: "description", label: "Description", type: "textarea" },
+                      { key: "address", label: "Adresse postale", type: "text", wide: true },
+                      { key: "postal_code", label: "Code postal", type: "text" },
+                      { key: "city", label: "Ville", type: "text" },
+                      {
+                        key: "departement",
+                        label: "Département (code)",
+                        type: "text",
+                        nullable: true,
+                        hint: "Code INSEE, par exemple 75 ou 2A. Vide si inconnu.",
+                      },
+                      { key: "phone", label: "Téléphone", type: "text" },
+                      { key: "email", label: "E-mail", type: "email" },
+                      { key: "website", label: "Site web", type: "url" },
+                    ]}
+                    values={item}
+                    onCancel={() => setEditing(null)}
+                    onSave={async (changes) => {
+                      const ok = await updateListing(item.id, {
+                        ...changes,
+                        slug: slugify(String(changes["slug"] ?? "")),
+                      } as Partial<Listing>);
+                      if (ok) setEditing(null);
+                      return ok;
+                    }}
+                  />
+                </div>
+              ) : null}
               {openImages === item.id ? (
                 <ListingImages
                   item={item}
@@ -241,30 +336,8 @@ function AdminDirectoryPage() {
           ))}
         </ul>
       ) : tab === "categories" ? (
-        <div className="mt-6 space-y-4">
-          <form
-            onSubmit={addCategory}
-            className="flex flex-wrap items-end gap-3 rounded-xl border border-border bg-card p-5"
-          >
-            <div className="flex-1">
-              <Label htmlFor="cat-name">Nom de la catégorie</Label>
-              <Input id="cat-name" name="name" required placeholder="Plombiers" className="mt-1" />
-            </div>
-            <Button type="submit" title="Créer cette catégorie">
-              Ajouter
-            </Button>
-          </form>
-          <ul className="space-y-2">
-            {categories.map((item) => (
-              <li
-                key={item.id}
-                className="flex items-center justify-between rounded-lg border border-border bg-card px-4 py-3 text-sm"
-              >
-                <span className="text-foreground">{item.name}</span>
-                <span className="text-xs text-muted-foreground">/{item.slug}</span>
-              </li>
-            ))}
-          </ul>
+        <div className="mt-6">
+          <CategoryManager table="directory_categories" withDescription placeholder="Plombiers" usage="fiches" />
         </div>
       ) : tab === "avis" ? (
         <ul className="mt-6 space-y-3">
@@ -277,30 +350,39 @@ function AdminDirectoryPage() {
                 {item.author_name} — {item.rating}/5
               </p>
               <p className="mt-2 text-sm text-muted-foreground">{item.content}</p>
-              <div className="mt-3 flex gap-2">
+              <ModerationNote note={item.moderation_note} />
+              <div className="mt-3 flex flex-wrap gap-2">
                 <Button
                   variant={item.approved ? "outline" : "default"}
                   title={item.approved ? "Retirer cet avis du site" : "Publier cet avis"}
                   onClick={async () => {
-                    await supabase
+                    const { error } = await supabase
                       .from("directory_reviews")
                       .update({ approved: !item.approved })
                       .eq("id", item.id);
+                    if (error) toast.error("Modification non enregistrée.");
                     void load();
                   }}
                 >
                   {item.approved ? "Dépublier" : "Publier"}
                 </Button>
-                <Button
-                  variant="destructive"
+                <ConfirmButton
+                  size="default"
                   title="Supprimer cet avis"
-                  onClick={async () => {
-                    await supabase.from("directory_reviews").delete().eq("id", item.id);
+                  question={`Supprimer l'avis de ${item.author_name} ?`}
+                  onConfirm={async () => {
+                    const { error } = await supabase.from("directory_reviews").delete().eq("id", item.id);
+                    if (error) toast.error("Avis non supprimé.");
+                    else toast.success("Avis supprimé.");
                     void load();
                   }}
-                >
-                  Supprimer
-                </Button>
+                />
+                <ModerationControl
+                  table="directory_reviews"
+                  item={item}
+                  approvable
+                  onDone={() => void load()}
+                />
               </div>
             </li>
           ))}
@@ -326,7 +408,10 @@ function AdminDirectoryPage() {
                   variant="outline"
                   title="Refuser cette demande"
                   onClick={() =>
-                    updateListing(item.id, { claim_requested_by: null } as Partial<Listing>)
+                    updateListing(item.id, {
+                      claim_requested_by: null,
+                      claim_requested_at: null,
+                    } as Partial<Listing>)
                   }
                 >
                   Refuser
@@ -345,7 +430,7 @@ function ListingImages({
   onSave,
 }: {
   item: Listing;
-  onSave: (changes: Partial<Listing>) => Promise<void>;
+  onSave: (changes: Partial<Listing>) => Promise<unknown>;
 }) {
   const [logo, setLogo] = useState(item.logo_url ?? "");
   const [cover, setCover] = useState(item.cover_url ?? "");
