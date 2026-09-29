@@ -23,6 +23,7 @@ type Row = { code: string; nom: string; region: string; slug: string; population
 
 function AdminGeoPage() {
   const [rows, setRows] = useState<Row[] | null>(null);
+  const [failed, setFailed] = useState(false);
 
   useEffect(() => {
     void (async () => {
@@ -30,6 +31,10 @@ function AdminGeoPage() {
         supabase.from("geo_departements").select("code, nom, region, slug, population").order("code"),
         supabase.from("directory_listings").select("departement").eq("status", "published"),
       ]);
+      if (deps.error || listings.error) {
+        setFailed(true);
+        return;
+      }
       const counts = new Map<string, number>();
       for (const item of listings.data ?? []) {
         if (item.departement) counts.set(item.departement, (counts.get(item.departement) ?? 0) + 1);
@@ -43,7 +48,11 @@ function AdminGeoPage() {
       title="Géographie"
       intro="Les pages départementales se génèrent automatiquement à partir de cette liste : rien à créer à la main."
     >
-      {rows === null ? (
+      {failed ? (
+        <p role="alert" className="rounded-lg border border-destructive/40 p-4 text-sm text-destructive">
+          Les départements n'ont pas pu être chargés. Rechargez la page.
+        </p>
+      ) : rows === null ? (
         <p className="text-sm text-muted-foreground">Chargement…</p>
       ) : (
         <>

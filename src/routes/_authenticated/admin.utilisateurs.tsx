@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { AdminShell, useIsAdmin } from "@/components/cds/AdminShell";
+import { ConfirmButton } from "@/components/cds/ConfirmButton";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -165,20 +166,26 @@ function AdminUsersPage() {
             {studio.map((row) => (
               <li key={row.email} className="flex flex-wrap items-center gap-3 px-4 py-2 text-sm">
                 <span className="min-w-0 flex-1 break-all text-foreground">{row.email}</span>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  disabled={busy === row.email || studio.length <= 1}
-                  onClick={() => void removeStudioAdmin(row)}
-                  title={
-                    studio.length <= 1
-                      ? "Il faut au moins une adresse d'admin du studio"
-                      : `Retirer ${row.email} de la liste`
-                  }
-                >
-                  Retirer
-                </Button>
+                {busy === row.email || studio.length <= 1 ? (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    disabled
+                    title="Il faut au moins une adresse d'admin du studio"
+                  >
+                    Retirer
+                  </Button>
+                ) : (
+                  <ConfirmButton
+                    label="Retirer"
+                    confirmLabel="Retirer"
+                    title={`Retirer ${row.email} de la liste`}
+                    question={`Retirer ${row.email} des admins du studio ?`}
+                    detail="Le compte reste administrateur tant que vous ne le rétrogradez pas, mais il n'est plus protégé contre la rétrogradation."
+                    onConfirm={() => removeStudioAdmin(row)}
+                  />
+                )}
               </li>
             ))}
           </ul>
@@ -262,22 +269,30 @@ function AdminUsersPage() {
                       </TableCell>
                       <TableCell className="text-right">
                         {row.is_admin ? (
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            disabled={busy === row.id || isSelf || row.is_studio_admin}
-                            onClick={() => void setAdmin(row, false)}
-                            title={
-                              isSelf
-                                ? "Vous ne pouvez pas retirer votre propre rôle"
-                                : row.is_studio_admin
-                                  ? "Retirez d'abord l'adresse de la liste des admins du studio"
-                                  : `Retirer le rôle administrateur de ${row.email}`
-                            }
-                          >
-                            Rétrograder
-                          </Button>
+                          busy === row.id || isSelf || row.is_studio_admin ? (
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              disabled
+                              title={
+                                isSelf
+                                  ? "Vous ne pouvez pas retirer votre propre rôle"
+                                  : "Retirez d'abord l'adresse de la liste des admins du studio"
+                              }
+                            >
+                              Rétrograder
+                            </Button>
+                          ) : (
+                            <ConfirmButton
+                              label="Rétrograder"
+                              confirmLabel="Rétrograder"
+                              title={`Retirer le rôle administrateur de ${row.email}`}
+                              question={`Rétrograder ${row.email} en simple membre ?`}
+                              detail="Il perd aussitôt l'accès à l'administration."
+                              onConfirm={() => setAdmin(row, false)}
+                            />
+                          )
                         ) : (
                           <Button
                             type="button"
