@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { brand } from "@/config/brand";
 import { listPosts } from "@/lib/content.functions";
+import { isModuleOn } from "@/config/modules";
+import { fallbackSiteConfig } from "@/lib/site-config";
+import { loadSiteConfig } from "@/lib/site-config.functions";
 
 function escapeXml(value: string) {
   return value
@@ -16,6 +18,11 @@ export const Route = createFileRoute("/rss.xml")({
   server: {
     handlers: {
       GET: async () => {
+        const site = await loadSiteConfig().catch(() => fallbackSiteConfig);
+        if (!isModuleOn(site.modules, "blog")) {
+          return new Response("Flux indisponible", { status: 404 });
+        }
+        const brand = site.brand;
         let items = "";
         try {
           const posts = await listPosts();
@@ -38,7 +45,7 @@ export const Route = createFileRoute("/rss.xml")({
     <title>${escapeXml(brand.name)} — Blog</title>
     <link>${brand.url}/blog</link>
     <atom:link href="${brand.url}/rss.xml" rel="self" type="application/rss+xml" />
-    <description>Méthodes concrètes pour les indépendants, artisans et solopreneurs qui lancent un site qui tient debout.</description>
+    <description>${escapeXml(brand.tagline || `Les articles de ${brand.name}`)}</description>
     <language>fr-FR</language>
 ${items}
   </channel>

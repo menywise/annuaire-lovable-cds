@@ -5,58 +5,100 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { isFeatureOn } from "@/config/features";
+import { withActiveModules, type FeatureKey } from "@/config/features";
 
-type AdminNavItem = { to: NonNullable<LinkProps["to"]>; label: string; title: string };
+type AdminNavItem = {
+  to: NonNullable<LinkProps["to"]>;
+  label: string;
+  title: string;
+  module?: FeatureKey;
+  anyOf?: readonly FeatureKey[];
+};
 
 function buildAdminNav(): AdminNavItem[] {
-  return [
+  return withActiveModules<AdminNavItem>([
     { to: "/admin", label: "Paramètres", title: "Identité du site, mentions légales et hébergeur" },
-    { to: "/admin/contenus", label: "Contenus", title: "Gérer la FAQ, les offres et les articles" },
+    { to: "/admin/modules", label: "Modules", title: "Allumer ou éteindre les modules du site" },
+    {
+      to: "/admin/utilisateurs",
+      label: "Utilisateurs",
+      title: "Comptes, rôles et admins du studio",
+    },
+    {
+      to: "/admin/contenus",
+      label: "Contenus",
+      title: "Gérer la FAQ, les offres et les articles",
+      anyOf: ["faq", "pricing", "blog"],
+    },
     {
       to: "/admin/moderation",
       label: "Modération",
       title: "Valider les avis, commentaires et discussions",
+      anyOf: ["reviews", "blog", "forum"],
     },
-    { to: "/admin/forum", label: "Forum", title: "Gérer les thématiques du forum" },
+    { to: "/admin/forum", label: "Forum", title: "Gérer les thématiques du forum", module: "forum" },
     {
       to: "/admin/temoignages",
       label: "Témoignages",
       title: "Valider et mettre en avant les témoignages",
+      module: "testimonials",
     },
-    ...(isFeatureOn("directory")
-      ? ([
-          { to: "/admin/annuaire", label: "Annuaire", title: "Fiches, catégories, avis et revendications" },
-        ] as AdminNavItem[])
-      : []),
-    ...(isFeatureOn("geo")
-      ? ([
-          { to: "/admin/geographie", label: "Géographie", title: "Départements couverts et fiches rattachées" },
-        ] as AdminNavItem[])
-      : []),
-    ...(isFeatureOn("crm")
-      ? ([{ to: "/admin/crm", label: "Contacts", title: "Vue consolidée du suivi des contacts" }] as AdminNavItem[])
-      : []),
-    ...(isFeatureOn("lms")
-      ? ([{ to: "/admin/formations", label: "Formations", title: "Catalogue, modules et leçons" }] as AdminNavItem[])
-      : []),
-    ...(isFeatureOn("marketplace")
-      ? ([
-          { to: "/admin/marketplace", label: "Annonces", title: "Modérer les annonces et les catégories" },
-        ] as AdminNavItem[])
-      : []),
-    ...(isFeatureOn("adNetwork")
-      ? ([{ to: "/admin/regie", label: "Régie", title: "Emplacements, campagnes et statistiques" }] as AdminNavItem[])
-      : []),
-    { to: "/admin/pilotage", label: "Pilotage", title: "Feuille de route, plan directeur et audits" },
+    {
+      to: "/admin/annuaire",
+      label: "Annuaire",
+      title: "Fiches, catégories, avis et revendications",
+      module: "directory",
+    },
+    {
+      to: "/admin/geographie",
+      label: "Géographie",
+      title: "Départements couverts et fiches rattachées",
+      module: "geo",
+    },
+    { to: "/admin/crm", label: "Contacts", title: "Vue consolidée du suivi des contacts", module: "crm" },
+    {
+      to: "/admin/formations",
+      label: "Formations",
+      title: "Catalogue, modules et leçons",
+      module: "lms",
+    },
+    {
+      to: "/admin/marketplace",
+      label: "Annonces",
+      title: "Modérer les annonces et les catégories",
+      module: "marketplace",
+    },
+    {
+      to: "/admin/regie",
+      label: "Régie",
+      title: "Emplacements, campagnes et statistiques",
+      module: "adNetwork",
+    },
+    {
+      to: "/admin/pilotage",
+      label: "Pilotage",
+      title: "Feuille de route, plan directeur et audits",
+      module: "studio",
+    },
     {
       to: "/admin/conformite",
       label: "Conformité",
       title: "Grille de recettage du modèle et score de complétude",
+      module: "studio",
     },
-    { to: "/admin/abonnes", label: "Abonnés", title: "Consulter et exporter la liste d'abonnés" },
-    { to: "/compte", label: "Messages", title: "Consulter les messages du formulaire de contact" },
-  ];
+    {
+      to: "/admin/abonnes",
+      label: "Abonnés",
+      title: "Consulter et exporter la liste d'abonnés",
+      module: "newsletter",
+    },
+    {
+      to: "/compte",
+      label: "Messages",
+      title: "Consulter les messages du formulaire de contact",
+      module: "contact",
+    },
+  ]);
 }
 
 /** Vérifie le rôle administrateur et affiche la navigation de l'espace d'administration. */

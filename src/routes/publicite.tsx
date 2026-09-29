@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageShell } from "@/components/cds/SiteHeader";
-import { requireFeature } from "@/config/features";
+import { requireFeature, isFeatureOn } from "@/config/features";
 import { seo } from "@/lib/seo";
 
 const FORMATS = [
@@ -75,13 +75,15 @@ function AdvertisePage() {
             <li>Vous envoyez votre visuel et votre lien, nous mettons en ligne.</li>
             <li>Vous recevez le relevé des impressions et des clics, et la facture.</li>
           </ol>
-          <Link
-            to="/contact"
-            title="Nous écrire pour réserver un emplacement"
-            className="mt-5 inline-flex min-h-11 items-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground hover:opacity-90"
-          >
-            Réserver un emplacement
-          </Link>
+          {isFeatureOn("contact") ? (
+            <Link
+              to="/contact"
+              title="Nous écrire pour réserver un emplacement"
+              className="mt-5 inline-flex min-h-11 items-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground hover:opacity-90"
+            >
+              Réserver un emplacement
+            </Link>
+          ) : null}
         </div>
       </div>
     </PageShell>

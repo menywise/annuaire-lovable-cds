@@ -1,54 +1,65 @@
 import { createFileRoute, Link, type LinkProps } from "@tanstack/react-router";
 import { PageShell } from "@/components/cds/SiteHeader";
 import { seo } from "@/lib/seo";
-import { isFeatureOn } from "@/config/features";
+import { withActiveModules, type FeatureKey } from "@/config/features";
+import { getSiteConfig } from "@/lib/site-config";
 
 export const Route = createFileRoute("/plan-du-site")({
   head: () =>
     seo({
       title: "Plan du site",
       description:
-        "Toutes les pages du Consensus Design System réunies : découverte, offres, contenus, compte, documents légaux et administration.",
+        `Toutes les pages de ${getSiteConfig().brand.name} réunies : découverte, offres, contenus, compte et documents légaux.`,
       path: "/plan-du-site",
       type: "website",
     }),
   component: PlanDuSitePage,
 });
 
-const groupes = [
+type PlanLink = {
+  to: NonNullable<LinkProps["to"]>;
+  label: string;
+  title: string;
+  module?: FeatureKey;
+};
+
+const groupes: Array<{ title: string; links: PlanLink[] }> = [
   {
     title: "Découvrir",
     links: [
-      { to: "/", label: "Accueil", title: "Fondations, couleurs et gabarits du design system" },
+      { to: "/", label: "Accueil", title: "Revenir à la page d'accueil" },
       { to: "/a-propos", label: "À propos", title: "Qui édite le site et selon quels engagements" },
       {
         to: "/demarrer",
         label: "Démarrer",
         title: "Parcours en trois étapes jusqu'à la création de compte",
+        module: "onboarding",
       },
-      { to: "/tarifs", label: "Tarifs", title: "Comparer les offres et leurs contenus" },
-      { to: "/composants", label: "Composants", title: "Bibliothèque de composants d'interface" },
+      { to: "/tarifs", label: "Tarifs", title: "Comparer les offres et leurs contenus", module: "pricing" },
+      { to: "/composants", label: "Composants", title: "Bibliothèque de composants d'interface", module: "showcase" },
       {
         to: "/guide",
         label: "Guide de réutilisation",
-        title: "Réutiliser CDS sur un nouveau projet",
+        title: "Réutiliser le modèle sur un nouveau projet",
+        module: "showcase",
       },
     ],
   },
   {
     title: "Échanger",
     links: [
-      { to: "/blog", label: "Blog", title: "Articles et méthodes" },
-      { to: "/faq", label: "Questions fréquentes", title: "Réponses aux questions courantes" },
-      { to: "/forum", label: "Forum", title: "Poser une question à la communauté" },
+      { to: "/blog", label: "Blog", title: "Articles et méthodes", module: "blog" },
+      { to: "/faq", label: "Questions fréquentes", title: "Réponses aux questions courantes", module: "faq" },
+      { to: "/forum", label: "Forum", title: "Poser une question à la communauté", module: "forum" },
       {
         to: "/membres",
         label: "Annuaire des membres",
         title: "Découvrir les membres de la communauté",
+        module: "members",
       },
-      { to: "/temoignages", label: "Témoignages", title: "Lire ce que la communauté a obtenu" },
-      { to: "/avis", label: "Avis", title: "Retours d'expérience des utilisateurs" },
-      { to: "/contact", label: "Contact", title: "Formulaire de contact protégé" },
+      { to: "/temoignages", label: "Témoignages", title: "Lire ce que la communauté a obtenu", module: "testimonials" },
+      { to: "/avis", label: "Avis", title: "Retours d'expérience des utilisateurs", module: "reviews" },
+      { to: "/contact", label: "Contact", title: "Formulaire de contact protégé", module: "contact" },
     ],
   },
   {
@@ -71,8 +82,9 @@ const groupes = [
         to: "/decouvrir",
         label: "Découvrir",
         title: "Faire le tour des fonctionnalités actives de votre espace",
+        module: "onboarding",
       },
-      { to: "/messagerie", label: "Messagerie", title: "Vos échanges privés entre membres" },
+      { to: "/messagerie", label: "Messagerie", title: "Vos échanges privés entre membres", module: "messaging" },
       { to: "/profil", label: "Mon profil", title: "Nom affiché, profil public et mot de passe" },
       { to: "/compte", label: "Mon compte", title: "Rôle, session et messages reçus" },
     ],
@@ -105,43 +117,66 @@ const groupes = [
   },
 ];
 
-type PlanLink = { to: NonNullable<LinkProps["to"]>; label: string; title: string };
 
 /** Liens des briques optionnelles : présents seulement si la brique est active. */
-function modulesGroup(): { title: string; links: PlanLink[] } | null {
-  const links: PlanLink[] = [
-    ...(isFeatureOn("directory")
-      ? ([
-          { to: "/annuaire", label: "Annuaire métier", title: "Trouver un professionnel près de chez vous" },
-          { to: "/annuaire/soumettre", label: "Proposer une fiche", title: "Ajouter un professionnel à l'annuaire" },
-        ] as PlanLink[])
-      : []),
-    ...(isFeatureOn("geo")
-      ? ([
-          { to: "/annuaire/departements", label: "Départements", title: "Parcourir l'annuaire département par département" },
-        ] as PlanLink[])
-      : []),
-    ...(isFeatureOn("lms")
-      ? ([
-          { to: "/formations", label: "Formations", title: "Catalogue des formations en ligne" },
-          { to: "/mes-formations", label: "Mes formations", title: "Reprendre vos formations en cours" },
-        ] as PlanLink[])
-      : []),
-    ...(isFeatureOn("marketplace")
-      ? ([
-          { to: "/marketplace", label: "Annonces", title: "Petites annonces entre membres" },
-          { to: "/marketplace/publier", label: "Publier une annonce", title: "Mettre en vente un article" },
-          { to: "/mes-annonces", label: "Mes annonces", title: "Gérer vos annonces publiées" },
-        ] as PlanLink[])
-      : []),
-    ...(isFeatureOn("crm")
-      ? ([{ to: "/crm", label: "Mes contacts", title: "Suivre vos prospects et vos relances" }] as PlanLink[])
-      : []),
-    ...(isFeatureOn("adNetwork")
-      ? ([{ to: "/publicite", label: "Annoncer sur le site", title: "Formats publicitaires et contact régie" }] as PlanLink[])
-      : []),
-  ];
-  return links.length ? { title: "Modules", links } : null;
+const modulesLinks: PlanLink[] = [
+  {
+    to: "/annuaire",
+    label: "Annuaire métier",
+    title: "Trouver un professionnel près de chez vous",
+    module: "directory",
+  },
+  {
+    to: "/annuaire/soumettre",
+    label: "Proposer une fiche",
+    title: "Ajouter un professionnel à l'annuaire",
+    module: "directory",
+  },
+  {
+    to: "/annuaire/departements",
+    label: "Départements",
+    title: "Parcourir l'annuaire département par département",
+    module: "geo",
+  },
+  { to: "/formations", label: "Formations", title: "Catalogue des formations en ligne", module: "lms" },
+  {
+    to: "/mes-formations",
+    label: "Mes formations",
+    title: "Reprendre vos formations en cours",
+    module: "lms",
+  },
+  {
+    to: "/marketplace",
+    label: "Annonces",
+    title: "Petites annonces entre membres",
+    module: "marketplace",
+  },
+  {
+    to: "/marketplace/publier",
+    label: "Publier une annonce",
+    title: "Mettre en vente un article",
+    module: "marketplace",
+  },
+  {
+    to: "/mes-annonces",
+    label: "Mes annonces",
+    title: "Gérer vos annonces publiées",
+    module: "marketplace",
+  },
+  { to: "/crm", label: "Mes contacts", title: "Suivre vos prospects et vos relances", module: "crm" },
+  {
+    to: "/publicite",
+    label: "Annoncer sur le site",
+    title: "Formats publicitaires et contact régie",
+    module: "adNetwork",
+  },
+];
+
+/** Groupes visibles : liens des modules éteints retirés, groupes vides masqués. */
+function visibleGroups() {
+  return [...groupes, { title: "Modules", links: modulesLinks }]
+    .map((groupe) => ({ ...groupe, links: withActiveModules(groupe.links) }))
+    .filter((groupe) => groupe.links.length > 0);
 }
 
 function PlanDuSitePage() {
@@ -156,7 +191,7 @@ function PlanDuSitePage() {
         </p>
 
         <div className="mt-8 grid gap-4 sm:grid-cols-2">
-          {[...groupes, ...(modulesGroup() ? [modulesGroup()!] : [])].map((groupe) => (
+          {visibleGroups().map((groupe) => (
             <section key={groupe.title} className="rounded-xl border border-border bg-card p-5">
               <h2 className="text-base font-semibold text-foreground">{groupe.title}</h2>
               <ul className="mt-3 space-y-1.5 text-sm">

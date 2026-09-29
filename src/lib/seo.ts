@@ -1,4 +1,5 @@
-import { absoluteUrl, brand } from "@/config/brand";
+import { absoluteUrl, getSiteConfig } from "@/lib/site-config";
+import { siteLocale } from "@/config/brand";
 
 type SeoInput = {
   /** Titre de la page, sans le suffixe de marque. */
@@ -16,18 +17,18 @@ type SeoInput = {
 /**
  * Métadonnées SEO cohérentes pour toutes les routes :
  * title, description, canonical auto-référent, Open Graph et Twitter.
+ * Nom et URL viennent des paramètres saisis en admin (`site_settings`).
  */
-const DEFAULT_IMAGE = absoluteUrl("/og-cds.jpg");
-
 export function seo({
   title,
   description,
   path,
   type = "website",
   noindex,
-  image = DEFAULT_IMAGE,
+  image = absoluteUrl("/og-cds.jpg"),
 }: SeoInput) {
-  const fullTitle = title.includes(brand.shortName) ? title : `${title} — ${brand.shortName}`;
+  const { brand } = getSiteConfig();
+  const fullTitle = !brand.shortName || title.includes(brand.shortName) ? title : `${title} — ${brand.shortName}`;
   const url = absoluteUrl(path);
 
   const meta: Array<Record<string, string>> = [
@@ -37,7 +38,7 @@ export function seo({
     { property: "og:description", content: description },
     { property: "og:type", content: type },
     { property: "og:url", content: url },
-    { property: "og:locale", content: "fr_FR" },
+    { property: "og:locale", content: siteLocale.og },
     { property: "og:site_name", content: brand.name },
     { name: "twitter:card", content: image ? "summary_large_image" : "summary" },
     { name: "twitter:title", content: fullTitle },

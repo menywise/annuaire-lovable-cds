@@ -2,13 +2,17 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageShell } from "@/components/cds/SiteHeader";
 import { Button } from "@/components/ui/button";
 import { seo } from "@/lib/seo";
+import { isFeatureOn } from "@/config/features";
+import { editorName } from "@/components/cds/LegalPage";
+import { useBrandSettings } from "@/hooks/useSiteSettings";
+import { getSiteConfig } from "@/lib/site-config";
 
 export const Route = createFileRoute("/a-propos")({
   head: () =>
     seo({
       title: "À propos",
       description:
-        "Qui édite le Consensus Design System, pour qui il est conçu — indépendants, artisans et solopreneurs — et selon quels engagements : clarté, accessibilité et propriété de vos données.",
+        `Qui édite ${getSiteConfig().brand.name}, pour qui il est conçu et selon quels engagements : clarté, accessibilité et propriété de vos données.`,
       path: "/a-propos",
       type: "article",
     }),
@@ -31,6 +35,15 @@ const engagements = [
 ];
 
 function AProposPage() {
+  const { settings } = useBrandSettings();
+  const { legal } = settings;
+  const editorLine = [
+    editorName(settings),
+    legal.form ? legal.form : "",
+    legal.address ? `siège : ${legal.address}` : "",
+  ]
+    .filter(Boolean)
+    .join(", ");
   return (
     <PageShell>
       <article className="mx-auto max-w-[760px]">
@@ -39,16 +52,17 @@ function AProposPage() {
           Un socle solide pour celles et ceux qui travaillent seuls
         </h1>
         <p className="mt-3 text-sm text-muted-foreground">
-          Le Consensus Design System est né d'un constat simple : un indépendant, un artisan ou un
+          {settings.name} est né d'un constat simple : un indépendant, un artisan ou un
           solopreneur n'a ni le temps ni le budget de reconstruire à chaque projet un site sérieux,
-          conforme et trouvable. CDS assemble une fois pour toutes ce socle, pour que vous
+          conforme et trouvable. Ce socle est assemblé une fois pour toutes, pour que vous
           consacriez votre énergie à votre métier.
         </p>
 
         <h2 className="mt-10 text-lg font-semibold text-foreground">Qui édite ce site</h2>
         <p className="mt-2 text-sm text-muted-foreground">
-          CDS est édité par PMM RDS, société par actions simplifiée établie à Limoges, sous la
-          direction de Manuel ROHAUT. Les informations complètes figurent dans les{" "}
+          {settings.name} est édité par {editorLine}
+          {legal.publisher ? `, sous la direction de ${legal.publisher}` : ""}. Les informations
+          complètes figurent dans les{" "}
           <Link
             to="/legal/mentions-legales"
             title="Consulter les mentions légales du site"
@@ -77,16 +91,20 @@ function AProposPage() {
         </p>
 
         <div className="mt-6 flex flex-wrap gap-3">
-          <Button asChild>
-            <Link to="/demarrer" title="Découvrir le parcours en trois étapes">
-              Voir comment démarrer
-            </Link>
-          </Button>
-          <Button asChild variant="outline">
-            <Link to="/contact" title="Poser une question via le formulaire de contact">
-              Poser une question
-            </Link>
-          </Button>
+          {isFeatureOn("onboarding") ? (
+            <Button asChild>
+              <Link to="/demarrer" title="Découvrir le parcours en trois étapes">
+                Voir comment démarrer
+              </Link>
+            </Button>
+          ) : null}
+          {isFeatureOn("contact") ? (
+            <Button asChild variant="outline">
+              <Link to="/contact" title="Poser une question via le formulaire de contact">
+                Poser une question
+              </Link>
+            </Button>
+          ) : null}
         </div>
       </article>
     </PageShell>

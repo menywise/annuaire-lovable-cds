@@ -9,8 +9,10 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { supabase } from "@/integrations/supabase/client";
 
 import { seo } from "@/lib/seo";
+import { requireFeature } from "@/config/features";
 
 export const Route = createFileRoute("/contact")({
+  beforeLoad: () => requireFeature("contact"),
   head: () =>
     seo({
       title: "Contact",

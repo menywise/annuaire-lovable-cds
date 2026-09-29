@@ -4,8 +4,10 @@ import { CategoryBadge, TopicMeta } from "@/components/cds/ForumParts";
 import { richTextToPlain } from "@/lib/richtext";
 import { getForumOverview } from "@/lib/community.functions";
 import { breadcrumbJsonLd, seo } from "@/lib/seo";
+import { requireFeature } from "@/config/features";
 
 export const Route = createFileRoute("/forum/categorie/$slug")({
+  beforeLoad: () => requireFeature("forum"),
   loader: async ({ params }) => {
     const overview = await getForumOverview({ data: { category: params.slug } });
     if (!overview.activeCategory) throw notFound();

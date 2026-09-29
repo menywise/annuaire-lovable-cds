@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { supabase } from "@/integrations/supabase/client";
 import { bootstrapCurrentUser, useAuth } from "@/hooks/useAuth";
 import { seo } from "@/lib/seo";
+import { isFeatureOn } from "@/config/features";
 
 export const Route = createFileRoute("/_authenticated/compte")({
   head: () =>
@@ -91,7 +92,7 @@ function ComptePage() {
         </div>
       </div>
 
-      {role === "admin" && (
+      {role === "admin" && isFeatureOn("contact") && (
         <section className="mt-10">
           <h2 className="text-lg font-semibold text-foreground">Messages reçus</h2>
           <p className="mt-1 text-sm text-muted-foreground">

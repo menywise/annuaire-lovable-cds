@@ -47,8 +47,10 @@ import {
 import { toast } from "sonner";
 
 import { seo } from "@/lib/seo";
+import { requireFeature } from "@/config/features";
 
 export const Route = createFileRoute("/composants")({
+  beforeLoad: () => requireFeature("showcase"),
   head: () =>
     seo({
       title: "Composants",

@@ -29,6 +29,8 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as RssDotxmlRouteImport } from './routes/rss[.]xml'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as ManifestDotwebmanifestRouteImport } from './routes/manifest[.]webmanifest'
+import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as TarifsRouteImport } from './routes/tarifs'
 import { Route as TemoignagesRouteImport } from './routes/temoignages'
 import { Route as VerificationEmailRouteImport } from './routes/verification-email'
@@ -61,6 +63,8 @@ import { Route as MembresMemberIdRouteImport } from './routes/membres.$memberId'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedAdminAbonnesRouteImport } from './routes/_authenticated/admin.abonnes'
+import { Route as AuthenticatedAdminUtilisateursRouteImport } from './routes/_authenticated/admin.utilisateurs'
+import { Route as AuthenticatedAdminModulesRouteImport } from './routes/_authenticated/admin.modules'
 import { Route as AuthenticatedAdminAnnuaireRouteImport } from './routes/_authenticated/admin.annuaire'
 import { Route as AuthenticatedAdminConformiteRouteImport } from './routes/_authenticated/admin.conformite'
 import { Route as AuthenticatedAdminContenusRouteImport } from './routes/_authenticated/admin.contenus'
@@ -182,6 +186,16 @@ const SignupRoute = SignupRouteImport.update({
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ManifestDotwebmanifestRoute = ManifestDotwebmanifestRouteImport.update({
+  id: '/manifest.webmanifest',
+  path: '/manifest.webmanifest',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
+  id: '/robots.txt',
+  path: '/robots.txt',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TarifsRoute = TarifsRouteImport.update({
@@ -349,6 +363,18 @@ const AuthenticatedAdminAbonnesRoute =
     path: '/admin/abonnes',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAdminUtilisateursRoute =
+  AuthenticatedAdminUtilisateursRouteImport.update({
+    id: '/admin/utilisateurs',
+    path: '/admin/utilisateurs',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminModulesRoute =
+  AuthenticatedAdminModulesRouteImport.update({
+    id: '/admin/modules',
+    path: '/admin/modules',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminAnnuaireRoute =
   AuthenticatedAdminAnnuaireRouteImport.update({
     id: '/admin/annuaire',
@@ -499,6 +525,8 @@ export interface FileRoutesByFullPath {
   '/rss.xml': typeof RssDotxmlRoute
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
+  '/robots.txt': typeof RobotsDottxtRoute
   '/tarifs': typeof TarifsRoute
   '/temoignages': typeof TemoignagesRoute
   '/verification-email': typeof VerificationEmailRoute
@@ -530,6 +558,8 @@ export interface FileRoutesByFullPath {
   '/membres/': typeof MembresIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/admin/abonnes': typeof AuthenticatedAdminAbonnesRoute
+  '/admin/utilisateurs': typeof AuthenticatedAdminUtilisateursRoute
+  '/admin/modules': typeof AuthenticatedAdminModulesRoute
   '/admin/annuaire': typeof AuthenticatedAdminAnnuaireRoute
   '/admin/conformite': typeof AuthenticatedAdminConformiteRoute
   '/admin/contenus': typeof AuthenticatedAdminContenusRoute
@@ -575,6 +605,8 @@ export interface FileRoutesByTo {
   '/rss.xml': typeof RssDotxmlRoute
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
+  '/robots.txt': typeof RobotsDottxtRoute
   '/tarifs': typeof TarifsRoute
   '/temoignages': typeof TemoignagesRoute
   '/verification-email': typeof VerificationEmailRoute
@@ -606,6 +638,8 @@ export interface FileRoutesByTo {
   '/membres': typeof MembresIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/admin/abonnes': typeof AuthenticatedAdminAbonnesRoute
+  '/admin/utilisateurs': typeof AuthenticatedAdminUtilisateursRoute
+  '/admin/modules': typeof AuthenticatedAdminModulesRoute
   '/admin/annuaire': typeof AuthenticatedAdminAnnuaireRoute
   '/admin/conformite': typeof AuthenticatedAdminConformiteRoute
   '/admin/contenus': typeof AuthenticatedAdminContenusRoute
@@ -653,6 +687,8 @@ export interface FileRoutesById {
   '/rss.xml': typeof RssDotxmlRoute
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
+  '/robots.txt': typeof RobotsDottxtRoute
   '/tarifs': typeof TarifsRoute
   '/temoignages': typeof TemoignagesRoute
   '/verification-email': typeof VerificationEmailRoute
@@ -684,6 +720,8 @@ export interface FileRoutesById {
   '/membres/': typeof MembresIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/_authenticated/admin/abonnes': typeof AuthenticatedAdminAbonnesRoute
+  '/_authenticated/admin/utilisateurs': typeof AuthenticatedAdminUtilisateursRoute
+  '/_authenticated/admin/modules': typeof AuthenticatedAdminModulesRoute
   '/_authenticated/admin/annuaire': typeof AuthenticatedAdminAnnuaireRoute
   '/_authenticated/admin/conformite': typeof AuthenticatedAdminConformiteRoute
   '/_authenticated/admin/contenus': typeof AuthenticatedAdminContenusRoute
@@ -731,6 +769,8 @@ export interface FileRouteTypes {
     | '/rss.xml'
     | '/signup'
     | '/sitemap.xml'
+    | '/manifest.webmanifest'
+    | '/robots.txt'
     | '/tarifs'
     | '/temoignages'
     | '/verification-email'
@@ -762,6 +802,8 @@ export interface FileRouteTypes {
     | '/membres/'
     | '/.lovable/oauth/consent'
     | '/admin/abonnes'
+    | '/admin/utilisateurs'
+    | '/admin/modules'
     | '/admin/annuaire'
     | '/admin/conformite'
     | '/admin/contenus'
@@ -807,6 +849,8 @@ export interface FileRouteTypes {
     | '/rss.xml'
     | '/signup'
     | '/sitemap.xml'
+    | '/manifest.webmanifest'
+    | '/robots.txt'
     | '/tarifs'
     | '/temoignages'
     | '/verification-email'
@@ -838,6 +882,8 @@ export interface FileRouteTypes {
     | '/membres'
     | '/.lovable/oauth/consent'
     | '/admin/abonnes'
+    | '/admin/utilisateurs'
+    | '/admin/modules'
     | '/admin/annuaire'
     | '/admin/conformite'
     | '/admin/contenus'
@@ -884,6 +930,8 @@ export interface FileRouteTypes {
     | '/rss.xml'
     | '/signup'
     | '/sitemap.xml'
+    | '/manifest.webmanifest'
+    | '/robots.txt'
     | '/tarifs'
     | '/temoignages'
     | '/verification-email'
@@ -915,6 +963,8 @@ export interface FileRouteTypes {
     | '/membres/'
     | '/.lovable/oauth/consent'
     | '/_authenticated/admin/abonnes'
+    | '/_authenticated/admin/utilisateurs'
+    | '/_authenticated/admin/modules'
     | '/_authenticated/admin/annuaire'
     | '/_authenticated/admin/conformite'
     | '/_authenticated/admin/contenus'
@@ -962,6 +1012,8 @@ export interface RootRouteChildren {
   RssDotxmlRoute: typeof RssDotxmlRoute
   SignupRoute: typeof SignupRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  ManifestDotwebmanifestRoute: typeof ManifestDotwebmanifestRoute
+  RobotsDottxtRoute: typeof RobotsDottxtRoute
   TarifsRoute: typeof TarifsRoute
   TemoignagesRoute: typeof TemoignagesRoute
   VerificationEmailRoute: typeof VerificationEmailRoute
@@ -1133,6 +1185,20 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/manifest.webmanifest': {
+      id: '/manifest.webmanifest'
+      path: '/manifest.webmanifest'
+      fullPath: '/manifest.webmanifest'
+      preLoaderRoute: typeof ManifestDotwebmanifestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/robots.txt': {
+      id: '/robots.txt'
+      path: '/robots.txt'
+      fullPath: '/robots.txt'
+      preLoaderRoute: typeof RobotsDottxtRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/tarifs': {
@@ -1359,6 +1425,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminAbonnesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/utilisateurs': {
+      id: '/_authenticated/admin/utilisateurs'
+      path: '/admin/utilisateurs'
+      fullPath: '/admin/utilisateurs'
+      preLoaderRoute: typeof AuthenticatedAdminUtilisateursRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/modules': {
+      id: '/_authenticated/admin/modules'
+      path: '/admin/modules'
+      fullPath: '/admin/modules'
+      preLoaderRoute: typeof AuthenticatedAdminModulesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/annuaire': {
       id: '/_authenticated/admin/annuaire'
       path: '/admin/annuaire'
@@ -1531,6 +1611,8 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedProfilRoute: typeof AuthenticatedProfilRoute
   AuthenticatedTableauDeBordRoute: typeof AuthenticatedTableauDeBordRoute
   AuthenticatedAdminAbonnesRoute: typeof AuthenticatedAdminAbonnesRoute
+  AuthenticatedAdminUtilisateursRoute: typeof AuthenticatedAdminUtilisateursRoute
+  AuthenticatedAdminModulesRoute: typeof AuthenticatedAdminModulesRoute
   AuthenticatedAdminAnnuaireRoute: typeof AuthenticatedAdminAnnuaireRoute
   AuthenticatedAdminConformiteRoute: typeof AuthenticatedAdminConformiteRoute
   AuthenticatedAdminContenusRoute: typeof AuthenticatedAdminContenusRoute
@@ -1560,6 +1642,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedProfilRoute: AuthenticatedProfilRoute,
   AuthenticatedTableauDeBordRoute: AuthenticatedTableauDeBordRoute,
   AuthenticatedAdminAbonnesRoute: AuthenticatedAdminAbonnesRoute,
+  AuthenticatedAdminUtilisateursRoute: AuthenticatedAdminUtilisateursRoute,
+  AuthenticatedAdminModulesRoute: AuthenticatedAdminModulesRoute,
   AuthenticatedAdminAnnuaireRoute: AuthenticatedAdminAnnuaireRoute,
   AuthenticatedAdminConformiteRoute: AuthenticatedAdminConformiteRoute,
   AuthenticatedAdminContenusRoute: AuthenticatedAdminContenusRoute,
@@ -1607,6 +1691,8 @@ const rootRouteChildren: RootRouteChildren = {
   RssDotxmlRoute: RssDotxmlRoute,
   SignupRoute: SignupRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  ManifestDotwebmanifestRoute: ManifestDotwebmanifestRoute,
+  RobotsDottxtRoute: RobotsDottxtRoute,
   TarifsRoute: TarifsRoute,
   TemoignagesRoute: TemoignagesRoute,
   VerificationEmailRoute: VerificationEmailRoute,

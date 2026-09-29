@@ -1,6 +1,8 @@
 /** Export CSV côté navigateur : simple, sans dépendance. */
 function escapeCell(value: unknown) {
-  const text = value === null || value === undefined ? "" : String(value);
+  const raw = value === null || value === undefined ? "" : String(value);
+  // Neutralise les formules pour qu'un tableur n'exécute rien (=, +, -, @).
+  const text = /^[=+\-@\t\r]/.test(raw) ? `'${raw}` : raw;
   return `"${text.replace(/"/g, '""')}"`;
 }
 

@@ -5,8 +5,10 @@ import { AdminShell } from "@/components/cds/AdminShell";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { seo } from "@/lib/seo";
+import { requireFeature } from "@/config/features";
 
 export const Route = createFileRoute("/_authenticated/admin/temoignages")({
+  beforeLoad: () => requireFeature("testimonials"),
   head: () =>
     seo({
       title: "Administration — Témoignages",

@@ -7,8 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { listPlans } from "@/lib/content.functions";
 import { seo } from "@/lib/seo";
+import { requireFeature, isFeatureOn } from "@/config/features";
 
 export const Route = createFileRoute("/demarrer")({
+  beforeLoad: () => requireFeature("onboarding"),
   loader: () => listPlans(),
   head: () =>
     seo({
@@ -177,11 +179,13 @@ function DemarrerPage() {
                   Créer mon compte
                 </Link>
               </Button>
-              <Button asChild variant="outline">
-                <Link to="/contact" title="Poser une question avant de créer un compte">
-                  J'ai encore une question
-                </Link>
-              </Button>
+              {isFeatureOn("contact") ? (
+                <Button asChild variant="outline">
+                  <Link to="/contact" title="Poser une question avant de créer un compte">
+                    J'ai encore une question
+                  </Link>
+                </Button>
+              ) : null}
               <Button
                 variant="ghost"
                 onClick={() => setStep(1)}

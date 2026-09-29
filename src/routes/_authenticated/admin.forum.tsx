@@ -7,8 +7,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { seo } from "@/lib/seo";
+import { requireFeature } from "@/config/features";
 
 export const Route = createFileRoute("/_authenticated/admin/forum")({
+  beforeLoad: () => requireFeature("forum"),
   head: () =>
     seo({
       title: "Administration — Forum",

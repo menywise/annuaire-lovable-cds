@@ -4,8 +4,10 @@ import { PageShell } from "@/components/cds/SiteHeader";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { seo } from "@/lib/seo";
+import { requireFeature, withActiveModules, type FeatureKey } from "@/config/features";
 
 export const Route = createFileRoute("/_authenticated/decouvrir")({
+  beforeLoad: () => requireFeature("onboarding"),
   head: () =>
     seo({
       title: "Découvrir tout ce que votre espace permet",
@@ -35,9 +37,10 @@ type Step = {
   to: string;
   cta: string;
   linkTitle: string;
+  module?: FeatureKey;
 };
 
-const steps: Step[] = [
+const allSteps: Step[] = [
   {
     key: "profil",
     title: "Compléter votre profil",
@@ -55,6 +58,7 @@ const steps: Step[] = [
     to: "/membres",
     cta: "Voir l'annuaire",
     linkTitle: "Parcourir l'annuaire des membres",
+    module: "members",
   },
   {
     key: "sujet",
@@ -64,6 +68,7 @@ const steps: Step[] = [
     to: "/forum",
     cta: "Ouvrir le forum",
     linkTitle: "Publier une discussion sur le forum",
+    module: "forum",
   },
   {
     key: "reponse",
@@ -73,6 +78,7 @@ const steps: Step[] = [
     to: "/forum",
     cta: "Trouver une discussion",
     linkTitle: "Répondre à une discussion en cours",
+    module: "forum",
   },
   {
     key: "jaime",
@@ -82,6 +88,7 @@ const steps: Step[] = [
     to: "/forum",
     cta: "Parcourir les échanges",
     linkTitle: "Aimer une discussion ou une réponse",
+    module: "forum",
   },
   {
     key: "message",
@@ -91,6 +98,7 @@ const steps: Step[] = [
     to: "/messagerie",
     cta: "Ouvrir la messagerie",
     linkTitle: "Ouvrir ma messagerie privée",
+    module: "messaging",
   },
   {
     key: "commentaire",
@@ -100,6 +108,7 @@ const steps: Step[] = [
     to: "/blog",
     cta: "Lire le blog",
     linkTitle: "Lire les articles et y réagir",
+    module: "blog",
   },
   {
     key: "avis",
@@ -109,6 +118,7 @@ const steps: Step[] = [
     to: "/avis",
     cta: "Donner mon avis",
     linkTitle: "Déposer un avis noté",
+    module: "reviews",
   },
   {
     key: "temoignage",
@@ -118,12 +128,14 @@ const steps: Step[] = [
     to: "/temoignages",
     cta: "Écrire mon témoignage",
     linkTitle: "Proposer un témoignage",
+    module: "testimonials",
   },
 ];
 
 function DecouvrirPage() {
   const { user } = useAuth();
   const [done, setDone] = useState<Record<StepKey, boolean> | null>(null);
+  const steps = withActiveModules(allSteps);
 
   useEffect(() => {
     if (!user) return;

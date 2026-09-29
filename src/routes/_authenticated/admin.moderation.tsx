@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { AdminShell, useIsAdmin } from "@/components/cds/AdminShell";
@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { seo } from "@/lib/seo";
+import { isFeatureOn, requireAnyFeature } from "@/config/features";
 
 export const Route = createFileRoute("/_authenticated/admin/moderation")({
   head: () =>
@@ -16,6 +17,7 @@ export const Route = createFileRoute("/_authenticated/admin/moderation")({
       path: "/admin/moderation",
       noindex: true,
     }),
+  beforeLoad: () => requireAnyFeature(["reviews", "blog", "forum"]),
   component: AdminModerationPage,
 });
 
@@ -45,21 +47,47 @@ type Topic = {
   created_at: string;
 };
 
+type Reply = {
+  id: string;
+  topic_id: string;
+  author_name: string;
+  content: string;
+  created_at: string;
+  forum_topics: { title: string } | null;
+};
+
+/** Texte brut d'une réponse enregistrée en HTML, pour un aperçu court et sûr. */
+function plainText(html: string) {
+  return html
+    .replace(/<[^>]*>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 function AdminModerationPage() {
   const isAdmin = useIsAdmin();
   const [reviews, setReviews] = useState<Review[]>([]);
   const [comments, setComments] = useState<Comment[]>([]);
   const [topics, setTopics] = useState<Topic[]>([]);
+  const [replies, setReplies] = useState<Reply[]>([]);
+  const [loadError, setLoadError] = useState(false);
 
   const reload = useCallback(async () => {
-    const [r, c, t] = await Promise.all([
+    const [r, c, t, rp] = await Promise.all([
       supabase.from("reviews").select("*").order("created_at", { ascending: false }),
       supabase.from("blog_comments").select("*").order("created_at", { ascending: false }),
       supabase.from("forum_topics").select("*").order("created_at", { ascending: false }),
+      supabase
+        .from("forum_replies")
+        .select("id, topic_id, author_name, content, created_at, forum_topics(title)")
+        .order("created_at", { ascending: false })
+        .limit(200),
     ]);
+    setLoadError(Boolean(r.error || c.error || t.error || rp.error));
     setReviews((r.data ?? []) as Review[]);
     setComments((c.data ?? []) as Comment[]);
     setTopics((t.data ?? []) as Topic[]);
+    setReplies((rp.data ?? []) as Reply[]);
   }, []);
 
   useEffect(() => {
@@ -83,15 +111,41 @@ function AdminModerationPage() {
       title="Modération"
       intro="Vous gardez la main sur ce qui apparaît publiquement : rien n'est publié tant que vous ne l'avez pas validé."
     >
-      <Tabs defaultValue="avis">
+      {loadError && (
+        <div className="mb-6 rounded-lg border border-destructive/40 p-4 text-sm text-destructive">
+          Une partie des contenus n'a pas pu être chargée.{" "}
+          <button
+            type="button"
+            className="underline"
+            onClick={() => void reload()}
+            title="Recharger les contenus à modérer"
+          >
+            Réessayer
+          </button>
+        </div>
+      )}
+      <Tabs
+        defaultValue={
+          isFeatureOn("reviews") ? "avis" : isFeatureOn("blog") ? "commentaires" : "forum"
+        }
+      >
         <TabsList>
-          <TabsTrigger value="avis">
-            Avis {pendingReviews > 0 ? `(${pendingReviews})` : ""}
-          </TabsTrigger>
-          <TabsTrigger value="commentaires">
-            Commentaires {pendingComments > 0 ? `(${pendingComments})` : ""}
-          </TabsTrigger>
-          <TabsTrigger value="forum">Forum</TabsTrigger>
+          {isFeatureOn("reviews") ? (
+            <TabsTrigger value="avis">
+              Avis {pendingReviews > 0 ? `(${pendingReviews})` : ""}
+            </TabsTrigger>
+          ) : null}
+          {isFeatureOn("blog") ? (
+            <TabsTrigger value="commentaires">
+              Commentaires {pendingComments > 0 ? `(${pendingComments})` : ""}
+            </TabsTrigger>
+          ) : null}
+          {isFeatureOn("forum") ? (
+            <>
+              <TabsTrigger value="forum">Discussions</TabsTrigger>
+              <TabsTrigger value="reponses">Réponses</TabsTrigger>
+            </>
+          ) : null}
         </TabsList>
 
         <TabsContent value="avis" className="space-y-3 pt-6">
@@ -243,13 +297,63 @@ function AdminModerationPage() {
                 <Button
                   size="sm"
                   variant="outline"
-                  onClick={async () =>
+                  onClick={async () => {
+                    if (
+                      !window.confirm(
+                        `Supprimer la discussion « ${topic.title} » et ses réponses ?`,
+                      )
+                    )
+                      return;
                     done(
                       (await supabase.from("forum_topics").delete().eq("id", topic.id)).error,
                       "Discussion supprimée.",
-                    )
-                  }
+                    );
+                  }}
                   title="Supprimer définitivement cette discussion"
+                >
+                  Supprimer
+                </Button>
+              </div>
+            </div>
+          ))}
+        </TabsContent>
+
+        <TabsContent value="reponses" className="space-y-3 pt-6">
+          {replies.length === 0 && (
+            <p className="rounded-lg border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
+              Aucune réponse publiée.
+            </p>
+          )}
+          {replies.map((reply) => (
+            <div key={reply.id} className="rounded-xl border border-border bg-card p-5">
+              <p className="text-xs text-muted-foreground">
+                {reply.author_name} — {new Date(reply.created_at).toLocaleString("fr-FR")} — dans «{" "}
+                {reply.forum_topics?.title ?? "discussion supprimée"} »
+              </p>
+              <p className="mt-2 line-clamp-3 text-sm text-foreground">
+                {plainText(reply.content)}
+              </p>
+              <div className="mt-3 flex gap-2">
+                <Button size="sm" variant="outline" asChild>
+                  <Link
+                    to="/forum/$topicId"
+                    params={{ topicId: reply.topic_id }}
+                    title="Voir la réponse dans sa discussion"
+                  >
+                    Voir
+                  </Link>
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={async () => {
+                    if (!window.confirm("Supprimer définitivement cette réponse ?")) return;
+                    done(
+                      (await supabase.from("forum_replies").delete().eq("id", reply.id)).error,
+                      "Réponse supprimée.",
+                    );
+                  }}
+                  title="Supprimer définitivement cette réponse"
                 >
                   Supprimer
                 </Button>

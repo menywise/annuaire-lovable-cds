@@ -1,5 +1,7 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { LegalPage, Section } from "@/components/cds/LegalPage";
+import { createFileRoute } from "@tanstack/react-router";
+import { ContactChannel, LegalPage, Section, editorName } from "@/components/cds/LegalPage";
+import { useBrandSettings } from "@/hooks/useSiteSettings";
+import { getSiteConfig } from "@/lib/site-config";
 
 import { seo } from "@/lib/seo";
 
@@ -8,31 +10,36 @@ export const Route = createFileRoute("/legal/confidentialite")({
     seo({
       title: "Politique de confidentialité",
       description:
-        "Politique de confidentialité PMM RDS : données collectées, finalités, durées de conservation et droits RGPD.",
+        `Politique de confidentialité ${editorName(getSiteConfig().brand)} : données collectées, finalités, durées de conservation et droits RGPD.`,
       path: "/legal/confidentialite",
       type: "article",
     }),
-  component: () => (
+  component: ConfidentialitePage,
+});
+
+function ConfidentialitePage() {
+  const { settings } = useBrandSettings();
+  const { legal, host } = settings;
+  const identity = [
+    legal.form ? `${editorName(settings)} (${legal.form})` : editorName(settings),
+    legal.address,
+    legal.country,
+  ]
+    .filter(Boolean)
+    .join(", ");
+  return (
     <LegalPage title="Politique de confidentialité" updatedAt="17 septembre 2026">
       <Section title="Responsable du traitement">
         <p>
-          PMM RDS (SAS), Rue du Champfour, 87000 Limoges, France. Responsable : Manuel ROHAUT. Pour
-          toute demande, utilisez le{" "}
-          <Link
-            to="/contact"
-            title="Nous écrire via le formulaire de contact protégé"
-            className="font-medium text-primary-text hover:underline"
-          >
-            formulaire de contact
-          </Link>
-          .
+          {identity}.{legal.publisher ? ` Responsable : ${legal.publisher}.` : ""} Pour toute
+          demande, utilisez <ContactChannel />.
         </p>
       </Section>
       <Section title="Données collectées">
         <ul>
           <li>Données de compte : nom, adresse e-mail, mot de passe chiffré.</li>
           <li>Données d'usage : pages consultées, journaux techniques, adresse IP.</li>
-          <li>Données transmises volontairement via le formulaire de contact.</li>
+          <li>Données transmises volontairement (formulaires, messages, contributions).</li>
         </ul>
       </Section>
       <Section title="Finalités et bases légales">
@@ -44,14 +51,15 @@ export const Route = createFileRoute("/legal/confidentialite")({
       </Section>
       <Section title="Durée de conservation">
         <p>
-          Les données de compte sont conservées pendant la durée d'utilisation du service, puis 3
-          ans après la clôture. Les journaux techniques sont conservés 12 mois. Les messages de
+          Les données de compte sont conservées pendant la durée d'utilisation du service. Quand
+          vous supprimez votre compte, elles sont effacées immédiatement ; vos contributions
+          publiques restent en ligne sous le nom « Ancien membre ». Les journaux techniques sont conservés 12 mois. Les messages de
           contact sont conservés 3 ans à compter du dernier échange.
         </p>
       </Section>
       <Section title="Destinataires et sous-traitants">
         <p>
-          Les données sont hébergées par OVH SAS (France, Union européenne). D'autres prestataires
+          {host.name ? `Les données sont hébergées par ${host.name}. ` : ""}D'autres prestataires
           (envoi d'e-mails, mesure d'audience) peuvent intervenir, encadrés par des clauses
           contractuelles conformes au RGPD.
         </p>
@@ -59,15 +67,7 @@ export const Route = createFileRoute("/legal/confidentialite")({
       <Section title="Vos droits">
         <p>
           Vous disposez des droits d'accès, de rectification, d'effacement, de limitation,
-          d'opposition et de portabilité. Exercez-les via le{" "}
-          <Link
-            to="/contact"
-            title="Nous écrire via le formulaire de contact protégé"
-            className="font-medium text-primary-text hover:underline"
-          >
-            formulaire de contact
-          </Link>
-          . Vous pouvez également introduire une réclamation auprès de la CNIL.
+          d'opposition et de portabilité. Exercez-les via <ContactChannel />. Vous pouvez également introduire une réclamation auprès de la CNIL.
         </p>
       </Section>
       <Section title="Sécurité">
@@ -76,5 +76,5 @@ export const Route = createFileRoute("/legal/confidentialite")({
         </p>
       </Section>
     </LegalPage>
-  ),
-});
+  );
+}

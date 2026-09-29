@@ -4,7 +4,12 @@ import { CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { PageShell } from "@/components/cds/SiteHeader";
 import { ShareButtons } from "@/components/cds/ShareButtons";
-import { CategoryBadge, FollowButton, LikeButton } from "@/components/cds/ForumParts";
+import {
+  CategoryBadge,
+  FollowButton,
+  LikeButton,
+  MemberName,
+} from "@/components/cds/ForumParts";
 import { RichText, RichTextEditor, richTextToPlain } from "@/lib/richtext";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -12,8 +17,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { getTopicDetail } from "@/lib/community.functions";
 import { breadcrumbJsonLd, seo } from "@/lib/seo";
+import { requireFeature } from "@/config/features";
 
 export const Route = createFileRoute("/forum/$topicId")({
+  beforeLoad: () => requireFeature("forum"),
   loader: async ({ params }) => {
     const data = await getTopicDetail({ data: { id: params.topicId } });
     if (!data) throw notFound();
@@ -142,14 +149,11 @@ function TopicPage() {
 
         <h1 className="mt-2 text-2xl font-bold text-foreground">{topic.title}</h1>
         <p className="mt-1 text-xs text-muted-foreground">
-          <Link
-            to="/membres/$memberId"
-            params={{ memberId: topic.author_id }}
-            title={`Voir le profil de ${topic.author_name}`}
+          <MemberName
+            id={topic.author_id}
+            name={topic.author_name}
             className="hover:text-primary-text"
-          >
-            {topic.author_name}
-          </Link>{" "}
+          />{" "}
           — {new Date(topic.created_at).toLocaleDateString("fr-FR")}
         </p>
 
@@ -184,14 +188,11 @@ function TopicPage() {
                   </p>
                 ) : null}
                 <p className="text-sm font-medium text-foreground">
-                  <Link
-                    to="/membres/$memberId"
-                    params={{ memberId: item.author_id }}
-                    title={`Voir le profil de ${item.author_name}`}
+                  <MemberName
+                    id={item.author_id}
+                    name={item.author_name}
                     className="hover:text-primary-text"
-                  >
-                    {item.author_name}
-                  </Link>
+                  />
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground">
                   {new Date(item.created_at).toLocaleDateString("fr-FR")}

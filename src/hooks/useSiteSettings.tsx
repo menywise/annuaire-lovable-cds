@@ -1,69 +1,35 @@
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { Json } from "@/integrations/supabase/types";
-import { brand } from "@/config/brand";
+import { normalizeModules, type ModuleStates } from "@/config/modules";
+import {
+  BRAND_SETTINGS_KEY,
+  MODULES_SETTINGS_KEY,
+  getSiteConfig,
+  normalizeBrand,
+  setSiteConfig,
+  type BrandSettings,
+} from "@/lib/site-config";
 
-/** Paramètres de marque modifiables depuis l'espace d'administration. */
-export type BrandSettings = {
-  shortName: string;
-  name: string;
-  tagline: string;
-  url: string;
-  legal: {
-    company: string;
-    form: string;
-    capital: string;
-    rcs: string;
-    address: string;
-    country: string;
-    publisher: string;
-  };
-  host: {
-    name: string;
-    detail: string;
-    address: string;
-    phone: string;
-  };
-};
+export type { BrandSettings } from "@/lib/site-config";
+export { defaultBrandSettings, BRAND_SETTINGS_KEY } from "@/lib/site-config";
 
-export const BRAND_SETTINGS_KEY = "brand";
-
-/** Valeurs par défaut : le fichier de marque sert uniquement de repli. */
-export const defaultBrandSettings: BrandSettings = {
-  shortName: brand.shortName,
-  name: brand.name,
-  tagline: brand.tagline,
-  url: brand.url,
-  legal: { ...brand.legal },
-  host: { ...brand.host },
-};
-
-function merge(value: unknown): BrandSettings {
-  const v = (value ?? {}) as Partial<BrandSettings>;
-  return {
-    ...defaultBrandSettings,
-    ...v,
-    legal: { ...defaultBrandSettings.legal, ...(v.legal ?? {}) },
-    host: { ...defaultBrandSettings.host, ...(v.host ?? {}) },
-  };
-}
-
-export async function fetchBrandSettings(): Promise<BrandSettings> {
+async function readSetting(key: string) {
   const { data, error } = await supabase
     .from("site_settings")
     .select("value")
-    .eq("key", BRAND_SETTINGS_KEY)
+    .eq("key", key)
     .maybeSingle();
   if (error) throw error;
-  return merge(data?.value);
+  return data?.value;
 }
 
-export async function saveBrandSettings(next: BrandSettings) {
+async function writeSetting(key: string, value: unknown) {
   const { data: userData } = await supabase.auth.getUser();
   const { error } = await supabase.from("site_settings").upsert(
     {
-      key: BRAND_SETTINGS_KEY,
-      value: next as unknown as Json,
+      key,
+      value: value as Json,
       updated_at: new Date().toISOString(),
       updated_by: userData.user?.id ?? null,
     },
@@ -72,16 +38,40 @@ export async function saveBrandSettings(next: BrandSettings) {
   if (error) throw error;
 }
 
-/** Marque effective du site : paramètres enregistrés, sinon valeurs par défaut. */
+export async function fetchBrandSettings(): Promise<BrandSettings> {
+  return normalizeBrand(await readSetting(BRAND_SETTINGS_KEY));
+}
+
+export async function saveBrandSettings(next: BrandSettings) {
+  const clean = normalizeBrand(next);
+  await writeSetting(BRAND_SETTINGS_KEY, clean);
+  setSiteConfig({ ...getSiteConfig(), brand: clean });
+}
+
+export async function fetchModuleStates(): Promise<ModuleStates> {
+  return normalizeModules(await readSetting(MODULES_SETTINGS_KEY));
+}
+
+export async function saveModuleStates(next: ModuleStates) {
+  await writeSetting(MODULES_SETTINGS_KEY, next);
+  setSiteConfig({ ...getSiteConfig(), modules: next });
+}
+
+/** Marque effective du site (lue côté serveur au chargement de la page). */
 export function useBrandSettings() {
-  const [settings, setSettings] = useState<BrandSettings>(defaultBrandSettings);
+  return { settings: getSiteConfig().brand };
+}
+
+/** Formulaire d'administration : relit la base pour éditer la dernière version enregistrée. */
+export function useEditableBrandSettings() {
+  const [settings, setSettings] = useState<BrandSettings>(() => getSiteConfig().brand);
   const [loading, setLoading] = useState(true);
 
   const reload = useCallback(() => {
     setLoading(true);
     fetchBrandSettings()
       .then(setSettings)
-      .catch(() => setSettings(defaultBrandSettings))
+      .catch(() => setSettings(getSiteConfig().brand))
       .finally(() => setLoading(false));
   }, []);
 

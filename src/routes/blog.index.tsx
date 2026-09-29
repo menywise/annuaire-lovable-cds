@@ -9,8 +9,10 @@ import { Label } from "@/components/ui/label";
 import { listPosts } from "@/lib/content.functions";
 import { readingMinutes } from "@/lib/reading";
 import { seo } from "@/lib/seo";
+import { requireFeature } from "@/config/features";
 
 export const Route = createFileRoute("/blog/")({
+  beforeLoad: () => requireFeature("blog"),
   loader: () => listPosts(),
   head: () =>
     seo({

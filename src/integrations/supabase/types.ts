@@ -1692,6 +1692,22 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_list_users: {
+        Args: never
+        Returns: {
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          is_admin: boolean
+          is_studio_admin: boolean
+          last_sign_in_at: string
+        }[]
+      }
+      admin_set_admin: {
+        Args: { _admin: boolean; _user_id: string }
+        Returns: undefined
+      }
       bootstrap_current_user: {
         Args: { _full_name?: string }
         Returns: Database["public"]["Enums"]["app_role"]
@@ -1714,12 +1730,14 @@ export type Database = {
         }
         Returns: boolean
       }
+      delete_my_account: { Args: never; Returns: undefined }
       increment_topic_views: { Args: { _topic_id: string }; Returns: undefined }
       is_conversation_participant: {
         Args: { _conversation_id: string; _user_id: string }
         Returns: boolean
       }
       member_accepts_messages: { Args: { _user_id: string }; Returns: boolean }
+      module_defaults: { Args: never; Returns: Json }
       request_directory_claim: {
         Args: { _listing_id: string }
         Returns: boolean

@@ -10,10 +10,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { listTestimonials } from "@/lib/community.functions";
-import { absoluteUrl } from "@/config/brand";
+import { absoluteUrl } from "@/lib/site-config";
 import { seo } from "@/lib/seo";
+import { requireFeature } from "@/config/features";
 
 export const Route = createFileRoute("/temoignages")({
+  beforeLoad: () => requireFeature("testimonials"),
   loader: () => listTestimonials(),
   head: ({ loaderData }) => {
     const base = seo({

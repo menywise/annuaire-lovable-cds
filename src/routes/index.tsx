@@ -3,13 +3,17 @@ import { PageShell } from "@/components/cds/SiteHeader";
 import { cds } from "@/lib/cds-tokens";
 
 import { seo } from "@/lib/seo";
+import { getSiteConfig } from "@/lib/site-config";
+import { useBrandSettings } from "@/hooks/useSiteSettings";
+import { withActiveModules } from "@/config/features";
 
 export const Route = createFileRoute("/")({
   head: () =>
     seo({
-      title: "CDS — Consensus Design System",
+      title: getSiteConfig().brand.name,
       description:
-        "Le socle complet pour les indépendants, artisans et solopreneurs : comptes, pages légales, blog, forum, avis, FAQ, tarifs et administration, déjà reliés et prêts à servir.",
+        getSiteConfig().brand.tagline ||
+        "Le socle complet pour les indépendants, artisans et solopreneurs : comptes, pages légales, contenus, communauté et administration, déjà reliés et prêts à servir.",
       path: "/",
       type: "website",
     }),
@@ -45,18 +49,29 @@ function Block({
 }
 
 const templates = [
-  { to: "/demarrer", label: "Tunnel de vente", desc: "Trois étapes, du besoin au compte créé" },
+  {
+    to: "/demarrer",
+    label: "Tunnel de vente",
+    desc: "Trois étapes, du besoin au compte créé",
+    module: "onboarding",
+  },
   { to: "/a-propos", label: "À propos", desc: "Qui édite le site et ses engagements" },
   { to: "/plan-du-site", label: "Plan du site", desc: "Toutes les pages sur une seule page" },
-  { to: "/tarifs", label: "Tarifs", desc: "Offres, mise en avant, appels à l'action" },
+  {
+    to: "/tarifs",
+    label: "Tarifs",
+    desc: "Offres, mise en avant, appels à l'action",
+    module: "pricing",
+  },
 
-  { to: "/faq", label: "FAQ", desc: "Questions structurées et balisage FAQPage" },
-  { to: "/blog", label: "Blog", desc: "Articles, commentaires modérés, partage" },
-  { to: "/forum", label: "Forum", desc: "Sujets, réponses, modération" },
+  { to: "/faq", label: "FAQ", desc: "Questions structurées et balisage FAQPage", module: "faq" },
+  { to: "/blog", label: "Blog", desc: "Articles, commentaires modérés, partage", module: "blog" },
+  { to: "/forum", label: "Forum", desc: "Sujets, réponses, modération", module: "forum" },
   {
     to: "/avis",
     label: "Avis et notations",
     desc: "Étoiles, moyenne, validation avant publication",
+    module: "reviews",
   },
   { to: "/login", label: "Connexion", desc: "E-mail + mot de passe, lien d'inscription" },
   { to: "/signup", label: "Créer un compte", desc: "Inscription avec acceptation des CGU" },
@@ -86,22 +101,33 @@ const templates = [
   { to: "/legal/cgu", label: "CGU", desc: "Conditions générales d'utilisation" },
   { to: "/legal/cgv", label: "CGV", desc: "Offres payantes, paiement, rétractation" },
   { to: "/legal/cookies", label: "Cookies", desc: "Traceurs et consentement" },
-  { to: "/contact", label: "Contact", desc: "Formulaire protégé anti-spam" },
-  { to: "/guide", label: "Guide de réutilisation", desc: "Quoi copier, quoi modifier" },
-  { to: "/composants", label: "Composants", desc: "Tableaux, onglets, fenêtres, états" },
+  { to: "/contact", label: "Contact", desc: "Formulaire protégé anti-spam", module: "contact" },
+  {
+    to: "/guide",
+    label: "Guide de réutilisation",
+    desc: "Quoi copier, quoi modifier",
+    module: "showcase",
+  },
+  {
+    to: "/composants",
+    label: "Composants",
+    desc: "Tableaux, onglets, fenêtres, états",
+    module: "showcase",
+  },
   { to: "/maintenance", label: "Maintenance", desc: "Écran d'interruption de service" },
   { to: "/merci", label: "Confirmation", desc: "Page de remerciement après envoi" },
 ] as const;
 
 function Index() {
+  const { settings } = useBrandSettings();
   return (
     <PageShell>
       <p className="text-xs font-medium uppercase tracking-wide text-primary-text">Design System</p>
-      <h1 className="mt-2 text-3xl font-bold text-foreground">Consensus Design System</h1>
+      <h1 className="mt-2 text-3xl font-bold text-foreground">{settings.name}</h1>
       <p className="mt-2 max-w-[680px] text-sm text-muted-foreground">
-        Vous voulez lancer un site sérieux sans repartir de zéro à chaque fois. CDS vous donne le
-        socle complet : fondations visuelles, comptes, pages légales, blog, forum, avis, FAQ, tarifs
-        et espace d'administration — déjà reliés et prêts à servir.
+        Vous voulez lancer un site sérieux sans repartir de zéro à chaque fois. Ce socle réunit
+        fondations visuelles, comptes, pages légales, contenus, communauté et espace
+        d'administration — déjà reliés et prêts à servir.
       </p>
 
       <Block
@@ -109,7 +135,7 @@ function Index() {
         description="Cliquez pour voir chaque écran en taille réelle."
       >
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          {templates.map((t) => (
+          {withActiveModules(templates).map((t) => (
             <Link
               key={t.to}
               to={t.to}
