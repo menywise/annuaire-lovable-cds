@@ -63,7 +63,7 @@ export const getPost = createServerFn({ method: "GET" })
     if (!post) return null;
     const { data: comments } = await client
       .from("blog_comments")
-      .select("id, author_name, content, created_at")
+      .select("id, author_name, content, created_at, moderation_note, moderated_at")
       .eq("post_id", post.id)
       .eq("approved", true)
       .order("created_at", { ascending: true });
@@ -98,7 +98,7 @@ export const listTemplateChecks = createServerFn({ method: "GET" }).handler(asyn
 export const listReviews = createServerFn({ method: "GET" }).handler(async () => {
   const { data } = await publicClient()
     .from("reviews")
-    .select("id, author_name, rating, title, content, created_at")
+    .select("id, author_name, rating, title, content, created_at, moderation_note, moderated_at")
     .eq("approved", true)
     .order("created_at", { ascending: false });
   return data ?? [];
@@ -124,7 +124,7 @@ export const getTopic = createServerFn({ method: "GET" })
     if (!topic) return null;
     const { data: replies } = await client
       .from("forum_replies")
-      .select("id, author_name, content, created_at")
+      .select("id, author_name, content, created_at, moderation_note, moderated_at")
       .eq("topic_id", topic.id)
       .order("created_at", { ascending: true });
     return { topic, replies: replies ?? [] };

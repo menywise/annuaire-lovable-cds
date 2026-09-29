@@ -68,7 +68,7 @@ export const getDirectoryListing = createServerFn({ method: "GET" })
     const [{ data: reviews }, { data: category }, { data: departement }] = await Promise.all([
       client
         .from("directory_reviews")
-        .select("id, author_name, rating, content, created_at")
+        .select("id, author_name, rating, content, created_at, moderation_note, moderated_at")
         .eq("listing_id", listing.id)
         .eq("approved", true)
         .order("created_at", { ascending: false }),

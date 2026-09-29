@@ -53,7 +53,7 @@ export const getForumOverview = createServerFn({ method: "GET" })
         client
           .from("forum_topics")
           .select(
-            "id, title, content, author_id, author_name, locked, views, category_id, created_at, last_activity_at",
+            "id, title, content, author_id, author_name, locked, views, category_id, created_at, last_activity_at, moderation_note, moderated_at",
           )
           .order("last_activity_at", { ascending: false })
           .limit(200),
@@ -146,7 +146,7 @@ export const getTopicDetail = createServerFn({ method: "GET" })
     const { data: topic } = await client
       .from("forum_topics")
       .select(
-        "id, title, content, author_id, author_name, locked, views, category_id, created_at, last_activity_at",
+        "id, title, content, author_id, author_name, locked, views, category_id, created_at, last_activity_at, moderation_note, moderated_at",
       )
       .eq("id", input.id)
       .maybeSingle();
@@ -155,7 +155,7 @@ export const getTopicDetail = createServerFn({ method: "GET" })
     const [{ data: replies }, { data: likes }, { data: category }] = await Promise.all([
       client
         .from("forum_replies")
-        .select("id, author_id, author_name, content, accepted, created_at")
+        .select("id, author_id, author_name, content, accepted, created_at, moderation_note, moderated_at")
         .eq("topic_id", topic.id)
         .order("created_at", { ascending: true }),
       client.from("forum_likes").select("id, topic_id, reply_id, user_id"),
@@ -238,7 +238,7 @@ export const listTestimonials = createServerFn({ method: "GET" }).handler(async 
   const { data } = await publicClient()
     .from("testimonials")
     .select(
-      "id, author_name, role_title, company, avatar_url, content, outcome, featured, position, created_at",
+      "id, author_name, role_title, company, avatar_url, content, outcome, featured, position, created_at, moderation_note, moderated_at",
     )
     .eq("approved", true)
     .order("featured", { ascending: false })

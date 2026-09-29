@@ -2,6 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { AdminShell } from "@/components/cds/AdminShell";
+import { ConfirmButton } from "@/components/cds/ConfirmButton";
+import { ModerationControl } from "@/components/cds/ModerationEditor";
+import { ModerationNote } from "@/components/cds/ModerationNote";
 import { ImageField, ImageListField } from "@/components/cds/MediaPicker";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -49,6 +52,7 @@ type Review = {
   rating: number;
   content: string;
   approved: boolean;
+  moderation_note: string | null;
 };
 
 const TABS = [
@@ -76,7 +80,7 @@ function AdminDirectoryPage() {
       supabase.from("directory_categories").select("id, name, slug, position").order("position"),
       supabase
         .from("directory_reviews")
-        .select("id, listing_id, author_name, rating, content, approved")
+        .select("id, listing_id, author_name, rating, content, approved, moderation_note")
         .order("created_at", { ascending: false }),
     ]);
     setListings(l.data ?? []);
@@ -277,30 +281,39 @@ function AdminDirectoryPage() {
                 {item.author_name} — {item.rating}/5
               </p>
               <p className="mt-2 text-sm text-muted-foreground">{item.content}</p>
-              <div className="mt-3 flex gap-2">
+              <ModerationNote note={item.moderation_note} />
+              <div className="mt-3 flex flex-wrap gap-2">
                 <Button
                   variant={item.approved ? "outline" : "default"}
                   title={item.approved ? "Retirer cet avis du site" : "Publier cet avis"}
                   onClick={async () => {
-                    await supabase
+                    const { error } = await supabase
                       .from("directory_reviews")
                       .update({ approved: !item.approved })
                       .eq("id", item.id);
+                    if (error) toast.error("Modification non enregistrée.");
                     void load();
                   }}
                 >
                   {item.approved ? "Dépublier" : "Publier"}
                 </Button>
-                <Button
-                  variant="destructive"
+                <ConfirmButton
+                  size="default"
                   title="Supprimer cet avis"
-                  onClick={async () => {
-                    await supabase.from("directory_reviews").delete().eq("id", item.id);
+                  question={`Supprimer l'avis de ${item.author_name} ?`}
+                  onConfirm={async () => {
+                    const { error } = await supabase.from("directory_reviews").delete().eq("id", item.id);
+                    if (error) toast.error("Avis non supprimé.");
+                    else toast.success("Avis supprimé.");
                     void load();
                   }}
-                >
-                  Supprimer
-                </Button>
+                />
+                <ModerationControl
+                  table="directory_reviews"
+                  item={item}
+                  approvable
+                  onDone={() => void load()}
+                />
               </div>
             </li>
           ))}

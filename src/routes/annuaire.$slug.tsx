@@ -3,6 +3,7 @@ import { useState } from "react";
 import { BadgeCheck, Globe, Mail, MapPin, Phone, Star } from "lucide-react";
 import { toast } from "sonner";
 import { PageShell } from "@/components/cds/SiteHeader";
+import { ModerationNote } from "@/components/cds/ModerationNote";
 import { AdSlot } from "@/components/cds/AdSlot";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -268,6 +269,7 @@ function ListingPage() {
                       {review.content ? (
                         <p className="mt-2 text-sm text-foreground">{review.content}</p>
                       ) : null}
+                      <ModerationNote note={review.moderation_note} at={review.moderated_at} />
                     </li>
                   ))}
                 </ul>

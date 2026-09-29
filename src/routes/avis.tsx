@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Star } from "lucide-react";
 import { toast } from "sonner";
 import { PageShell } from "@/components/cds/SiteHeader";
+import { ModerationNote } from "@/components/cds/ModerationNote";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -124,6 +125,7 @@ function AvisPage() {
                 <p className="mt-2 whitespace-pre-line text-sm text-muted-foreground">
                   {review.content}
                 </p>
+                <ModerationNote note={review.moderation_note} at={review.moderated_at} />
                 <p className="mt-3 text-xs text-muted-foreground">
                   {review.author_name} — {new Date(review.created_at).toLocaleDateString("fr-FR")}
                 </p>

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
+import { moveRow } from "@/lib/reorder";
 import { seo } from "@/lib/seo";
 import { requireFeature } from "@/config/features";
 
@@ -34,13 +35,15 @@ type Category = {
 function AdminForumPage() {
   const [categories, setCategories] = useState<Category[] | null>(null);
   const [busy, setBusy] = useState(false);
+  const [failed, setFailed] = useState(false);
 
   const load = useCallback(async () => {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("forum_categories")
       .select("id, slug, name, description, color, position")
       .order("position", { ascending: true });
-    setCategories(data ?? []);
+    setFailed(Boolean(error));
+    if (!error) setCategories(data ?? []);
   }, []);
 
   useEffect(() => {
@@ -61,7 +64,7 @@ function AdminForumPage() {
         .replace(/^-|-$/g, ""),
       description: String(data.get("description") ?? "").trim(),
       color: String(data.get("color") ?? "#0d6efd"),
-      position: Number(data.get("position") ?? 0),
+      position: Number(data.get("position") ?? categories?.length ?? 0),
     });
     setBusy(false);
     if (error) {
@@ -77,11 +80,19 @@ function AdminForumPage() {
 
   async function save(category: Category, changes: Partial<Category>) {
     const { error } = await supabase.from("forum_categories").update(changes).eq("id", category.id);
-    if (error) toast.error("Modification non enregistrée.");
-    else {
-      toast.success("Thématique mise à jour.");
-      void load();
+    if (error) {
+      toast.error("Modification non enregistrée.");
+      return false;
     }
+    toast.success("Thématique mise à jour.");
+    void load();
+    return true;
+  }
+
+  async function move(index: number, delta: number) {
+    if (!categories) return;
+    if (!(await moveRow("forum_categories", categories, index, delta))) toast.error("Ordre non enregistré.");
+    void load();
   }
 
   async function remove(category: Category) {
@@ -138,52 +149,131 @@ function AdminForumPage() {
 
       <section className="mt-8">
         <h2 className="text-base font-semibold text-foreground">Thématiques existantes</h2>
-        {categories === null ? (
+        {failed ? (
+          <p role="alert" className="mt-3 text-sm text-destructive">
+            Thématiques indisponibles.{" "}
+            <button type="button" className="underline" onClick={() => void load()}>
+              Réessayer
+            </button>
+          </p>
+        ) : categories === null ? (
           <p className="mt-3 text-sm text-muted-foreground">Chargement…</p>
         ) : categories.length === 0 ? (
           <p className="mt-3 text-sm text-muted-foreground">Aucune thématique pour l'instant.</p>
         ) : (
           <ul className="mt-4 space-y-3">
-            {categories.map((category) => (
-              <li key={category.id} className="rounded-xl border border-border bg-card p-4">
-                <div className="grid gap-3 sm:grid-cols-[1fr_1fr_auto] sm:items-end">
-                  <div className="space-y-1.5">
-                    <Label htmlFor={`name-${category.id}`}>Nom</Label>
-                    <Input
-                      id={`name-${category.id}`}
-                      defaultValue={category.name}
-                      onBlur={(e) =>
-                        e.target.value !== category.name && save(category, { name: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label htmlFor={`desc-${category.id}`}>Description</Label>
-                    <Input
-                      id={`desc-${category.id}`}
-                      defaultValue={category.description}
-                      onBlur={(e) =>
-                        e.target.value !== category.description &&
-                        save(category, { description: e.target.value })
-                      }
-                    />
-                  </div>
-                  <ConfirmButton
-                    size="default"
-                    title={`Supprimer la thématique ${category.name}`}
-                    question={`Supprimer la thématique « ${category.name} » ?`}
-                    detail="Les discussions de cette thématique restent en ligne, sans thématique."
-                    onConfirm={() => remove(category)}
-                  />
-                </div>
-                <p className="mt-2 text-xs text-muted-foreground">
-                  Adresse : /forum/categorie/{category.slug}
-                </p>
-              </li>
+            {categories.map((category, index) => (
+              <CategoryRow
+                key={`${category.id}-${category.name}-${category.description}-${category.color}`}
+                category={category}
+                first={index === 0}
+                last={index === categories.length - 1}
+                onSave={(changes) => save(category, changes)}
+                onMove={(delta) => void move(index, delta)}
+                onRemove={() => remove(category)}
+              />
             ))}
           </ul>
         )}
       </section>
     </AdminShell>
+  );
+}
+
+function CategoryRow({
+  category,
+  first,
+  last,
+  onSave,
+  onMove,
+  onRemove,
+}: {
+  category: Category;
+  first: boolean;
+  last: boolean;
+  onSave: (changes: Partial<Category>) => Promise<boolean>;
+  onMove: (delta: number) => void;
+  onRemove: () => Promise<void>;
+}) {
+  const [name, setName] = useState(category.name);
+  const [description, setDescription] = useState(category.description);
+  const [color, setColor] = useState(category.color);
+  const dirty = name !== category.name || description !== category.description || color !== category.color;
+  const id = (field: string) => `${field}-${category.id}`;
+
+  return (
+    <li className="rounded-xl border border-border bg-card p-4">
+      <form
+        className="grid gap-3 sm:grid-cols-[1fr_2fr_auto] sm:items-end"
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (!name.trim()) {
+            toast.error("Le nom est obligatoire.");
+            return;
+          }
+          void onSave({ name: name.trim(), description: description.trim(), color });
+        }}
+      >
+        <div className="space-y-1.5">
+          <Label htmlFor={id("name")}>Nom</Label>
+          <Input id={id("name")} value={name} onChange={(e) => setName(e.target.value)} required />
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor={id("desc")}>Description</Label>
+          <Input id={id("desc")} value={description} onChange={(e) => setDescription(e.target.value)} />
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor={id("color")}>Couleur</Label>
+          <Input
+            id={id("color")}
+            type="color"
+            value={color}
+            onChange={(e) => setColor(e.target.value)}
+            className="h-10 w-16 p-1"
+          />
+        </div>
+        <div className="flex flex-wrap items-center gap-2 sm:col-span-3">
+          <span
+            className="inline-block size-3 rounded-full"
+            style={{ backgroundColor: color }}
+            aria-hidden="true"
+          />
+          <span className="text-xs text-muted-foreground">
+            Rang {category.position + 1} · /forum/categorie/{category.slug}
+          </span>
+          <div className="ml-auto flex flex-wrap gap-2">
+            <Button type="submit" size="sm" disabled={!dirty}>
+              Enregistrer
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              disabled={first}
+              onClick={() => onMove(-1)}
+              aria-label={`Monter la thématique ${category.name}`}
+            >
+              ↑
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              disabled={last}
+              onClick={() => onMove(1)}
+              aria-label={`Descendre la thématique ${category.name}`}
+            >
+              ↓
+            </Button>
+            <ConfirmButton
+              title={`Supprimer la thématique ${category.name}`}
+              question={`Supprimer la thématique « ${category.name} » ?`}
+              detail="Les discussions de cette thématique restent en ligne, sans thématique."
+              onConfirm={onRemove}
+            />
+          </div>
+        </div>
+      </form>
+    </li>
   );
 }
