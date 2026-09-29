@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { AdminShell } from "@/components/cds/AdminShell";
+import { ImageField } from "@/components/cds/MediaPicker";
 import { ConfirmButton } from "@/components/cds/ConfirmButton";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
@@ -36,6 +37,7 @@ type Course = {
   duration_minutes: number;
   published: boolean;
   position: number;
+  cover_url: string | null;
 };
 
 type Module = { id: string; course_id: string; title: string; position: number };
@@ -56,12 +58,13 @@ function AdminCoursesPage() {
   const [people, setPeople] = useState<Record<string, string>>({});
   const [editingLesson, setEditingLesson] = useState<string | null>(null);
   const [openCourse, setOpenCourse] = useState<string | null>(null);
+  const [courseFormKey, setCourseFormKey] = useState(0);
 
   const load = useCallback(async () => {
     const [c, m, l, e] = await Promise.all([
       supabase
         .from("lms_courses")
-        .select("id, title, slug, excerpt, level, price_cents, duration_minutes, published, position")
+        .select("id, title, slug, excerpt, level, price_cents, duration_minutes, published, position, cover_url")
         .order("position"),
       supabase.from("lms_modules").select("id, course_id, title, position").order("position"),
       supabase.from("lms_lessons").select("id, module_id, title, position, free_preview").order("position"),
@@ -102,12 +105,14 @@ function AdminCoursesPage() {
       excerpt: String(data.get("excerpt") ?? ""),
       level: String(data.get("level") ?? "debutant"),
       price_cents: Math.round(Number(data.get("price") ?? 0) * 100),
+      cover_url: String(data.get("cover_url") ?? "").trim() || null,
       position: (courses ?? []).length,
     });
     if (error) toast.error("Formation non créée.");
     else {
       toast.success("Formation créée.");
       form.reset();
+      setCourseFormKey((k) => k + 1);
       void load();
     }
   }
@@ -155,6 +160,9 @@ function AdminCoursesPage() {
         <div>
           <Label htmlFor="course-price">Prix en euros (0 = gratuite)</Label>
           <Input id="course-price" name="price" type="number" min="0" step="1" defaultValue="0" className="mt-1" />
+        </div>
+        <div className="sm:col-span-2">
+          <ImageField key={courseFormKey} id="course-cover" name="cover_url" label="Image de couverture" />
         </div>
         <div className="sm:col-span-2">
           <Button type="submit" title="Créer cette formation">
@@ -218,6 +226,7 @@ function AdminCoursesPage() {
 
                   {openCourse === course.id ? (
                     <div className="mt-4 space-y-3 border-t border-border pt-4">
+                      <CourseCover course={course} onSaved={() => void load()} />
                       {courseModules.map((module) => (
                         <div key={module.id} className="rounded-lg bg-muted p-3">
                           <p className="text-sm font-medium text-foreground">{module.title}</p>
@@ -457,6 +466,34 @@ function EnrollmentsPanel({
           ))}
         </ul>
       )}
+    </div>
+  );
+}
+
+function CourseCover({ course, onSaved }: { course: Course; onSaved: () => void }) {
+  const [cover, setCover] = useState(course.cover_url ?? "");
+  const changed = cover.trim() !== (course.cover_url ?? "");
+
+  async function save() {
+    const { error } = await supabase
+      .from("lms_courses")
+      .update({ cover_url: cover.trim() || null })
+      .eq("id", course.id);
+    if (error) toast.error("Image non enregistrée.");
+    else {
+      toast.success("Image enregistrée.");
+      onSaved();
+    }
+  }
+
+  return (
+    <div className="space-y-2 rounded-lg bg-muted p-3">
+      <ImageField id={`course-cover-${course.id}`} label="Image de couverture" value={cover} onChange={setCover} />
+      {changed ? (
+        <Button type="button" size="sm" onClick={() => void save()}>
+          Enregistrer l'image
+        </Button>
+      ) : null}
     </div>
   );
 }

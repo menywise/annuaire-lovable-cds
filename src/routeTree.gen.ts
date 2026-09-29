@@ -21,16 +21,16 @@ import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as GuideRouteImport } from './routes/guide'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as MaintenanceRouteImport } from './routes/maintenance'
+import { Route as ManifestDotwebmanifestRouteImport } from './routes/manifest[.]webmanifest'
 import { Route as McpRouteImport } from './routes/mcp'
 import { Route as MerciRouteImport } from './routes/merci'
 import { Route as PlanDuSiteRouteImport } from './routes/plan-du-site'
 import { Route as PubliciteRouteImport } from './routes/publicite'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as RssDotxmlRouteImport } from './routes/rss[.]xml'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
-import { Route as ManifestDotwebmanifestRouteImport } from './routes/manifest[.]webmanifest'
-import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as TarifsRouteImport } from './routes/tarifs'
 import { Route as TemoignagesRouteImport } from './routes/temoignages'
 import { Route as VerificationEmailRouteImport } from './routes/verification-email'
@@ -63,9 +63,6 @@ import { Route as MembresMemberIdRouteImport } from './routes/membres.$memberId'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedAdminAbonnesRouteImport } from './routes/_authenticated/admin.abonnes'
-import { Route as AuthenticatedAdminMessagesRouteImport } from './routes/_authenticated/admin.messages'
-import { Route as AuthenticatedAdminUtilisateursRouteImport } from './routes/_authenticated/admin.utilisateurs'
-import { Route as AuthenticatedAdminModulesRouteImport } from './routes/_authenticated/admin.modules'
 import { Route as AuthenticatedAdminAnnuaireRouteImport } from './routes/_authenticated/admin.annuaire'
 import { Route as AuthenticatedAdminConformiteRouteImport } from './routes/_authenticated/admin.conformite'
 import { Route as AuthenticatedAdminContenusRouteImport } from './routes/_authenticated/admin.contenus'
@@ -74,10 +71,14 @@ import { Route as AuthenticatedAdminFormationsRouteImport } from './routes/_auth
 import { Route as AuthenticatedAdminForumRouteImport } from './routes/_authenticated/admin.forum'
 import { Route as AuthenticatedAdminGeographieRouteImport } from './routes/_authenticated/admin.geographie'
 import { Route as AuthenticatedAdminMarketplaceRouteImport } from './routes/_authenticated/admin.marketplace'
+import { Route as AuthenticatedAdminMediathequeRouteImport } from './routes/_authenticated/admin.mediatheque'
+import { Route as AuthenticatedAdminMessagesRouteImport } from './routes/_authenticated/admin.messages'
 import { Route as AuthenticatedAdminModerationRouteImport } from './routes/_authenticated/admin.moderation'
+import { Route as AuthenticatedAdminModulesRouteImport } from './routes/_authenticated/admin.modules'
 import { Route as AuthenticatedAdminPilotageRouteImport } from './routes/_authenticated/admin.pilotage'
 import { Route as AuthenticatedAdminRegieRouteImport } from './routes/_authenticated/admin.regie'
 import { Route as AuthenticatedAdminTemoignagesRouteImport } from './routes/_authenticated/admin.temoignages'
+import { Route as AuthenticatedAdminUtilisateursRouteImport } from './routes/_authenticated/admin.utilisateurs'
 import { Route as AuthenticatedCrmIndexRouteImport } from './routes/_authenticated/crm.index'
 import { Route as AuthenticatedCrmActionsRouteImport } from './routes/_authenticated/crm.actions'
 import { Route as AuthenticatedCrmProspectsRouteImport } from './routes/_authenticated/crm.prospects'
@@ -149,6 +150,11 @@ const MaintenanceRoute = MaintenanceRouteImport.update({
   path: '/maintenance',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ManifestDotwebmanifestRoute = ManifestDotwebmanifestRouteImport.update({
+  id: '/manifest.webmanifest',
+  path: '/manifest.webmanifest',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const McpRoute = McpRouteImport.update({
   id: '/mcp',
   path: '/mcp',
@@ -174,6 +180,11 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
   path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
+  id: '/robots.txt',
+  path: '/robots.txt',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RssDotxmlRoute = RssDotxmlRouteImport.update({
   id: '/rss.xml',
   path: '/rss.xml',
@@ -187,16 +198,6 @@ const SignupRoute = SignupRouteImport.update({
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ManifestDotwebmanifestRoute = ManifestDotwebmanifestRouteImport.update({
-  id: '/manifest.webmanifest',
-  path: '/manifest.webmanifest',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
-  id: '/robots.txt',
-  path: '/robots.txt',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TarifsRoute = TarifsRouteImport.update({
@@ -364,24 +365,6 @@ const AuthenticatedAdminAbonnesRoute =
     path: '/admin/abonnes',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedAdminMessagesRoute =
-  AuthenticatedAdminMessagesRouteImport.update({
-    id: '/admin/messages',
-    path: '/admin/messages',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedAdminUtilisateursRoute =
-  AuthenticatedAdminUtilisateursRouteImport.update({
-    id: '/admin/utilisateurs',
-    path: '/admin/utilisateurs',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedAdminModulesRoute =
-  AuthenticatedAdminModulesRouteImport.update({
-    id: '/admin/modules',
-    path: '/admin/modules',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
 const AuthenticatedAdminAnnuaireRoute =
   AuthenticatedAdminAnnuaireRouteImport.update({
     id: '/admin/annuaire',
@@ -428,10 +411,28 @@ const AuthenticatedAdminMarketplaceRoute =
     path: '/admin/marketplace',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAdminMediathequeRoute =
+  AuthenticatedAdminMediathequeRouteImport.update({
+    id: '/admin/mediatheque',
+    path: '/admin/mediatheque',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminMessagesRoute =
+  AuthenticatedAdminMessagesRouteImport.update({
+    id: '/admin/messages',
+    path: '/admin/messages',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminModerationRoute =
   AuthenticatedAdminModerationRouteImport.update({
     id: '/admin/moderation',
     path: '/admin/moderation',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminModulesRoute =
+  AuthenticatedAdminModulesRouteImport.update({
+    id: '/admin/modules',
+    path: '/admin/modules',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedAdminPilotageRoute =
@@ -449,6 +450,12 @@ const AuthenticatedAdminTemoignagesRoute =
   AuthenticatedAdminTemoignagesRouteImport.update({
     id: '/admin/temoignages',
     path: '/admin/temoignages',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminUtilisateursRoute =
+  AuthenticatedAdminUtilisateursRouteImport.update({
+    id: '/admin/utilisateurs',
+    path: '/admin/utilisateurs',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedCrmIndexRoute = AuthenticatedCrmIndexRouteImport.update({
@@ -524,16 +531,16 @@ export interface FileRoutesByFullPath {
   '/guide': typeof GuideRoute
   '/login': typeof LoginRoute
   '/maintenance': typeof MaintenanceRoute
+  '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
   '/mcp': typeof McpRoute
   '/merci': typeof MerciRoute
   '/plan-du-site': typeof PlanDuSiteRoute
   '/publicite': typeof PubliciteRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/robots.txt': typeof RobotsDottxtRoute
   '/rss.xml': typeof RssDotxmlRoute
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
-  '/robots.txt': typeof RobotsDottxtRoute
   '/tarifs': typeof TarifsRoute
   '/temoignages': typeof TemoignagesRoute
   '/verification-email': typeof VerificationEmailRoute
@@ -565,9 +572,6 @@ export interface FileRoutesByFullPath {
   '/membres/': typeof MembresIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/admin/abonnes': typeof AuthenticatedAdminAbonnesRoute
-  '/admin/messages': typeof AuthenticatedAdminMessagesRoute
-  '/admin/utilisateurs': typeof AuthenticatedAdminUtilisateursRoute
-  '/admin/modules': typeof AuthenticatedAdminModulesRoute
   '/admin/annuaire': typeof AuthenticatedAdminAnnuaireRoute
   '/admin/conformite': typeof AuthenticatedAdminConformiteRoute
   '/admin/contenus': typeof AuthenticatedAdminContenusRoute
@@ -576,10 +580,14 @@ export interface FileRoutesByFullPath {
   '/admin/forum': typeof AuthenticatedAdminForumRoute
   '/admin/geographie': typeof AuthenticatedAdminGeographieRoute
   '/admin/marketplace': typeof AuthenticatedAdminMarketplaceRoute
+  '/admin/mediatheque': typeof AuthenticatedAdminMediathequeRoute
+  '/admin/messages': typeof AuthenticatedAdminMessagesRoute
   '/admin/moderation': typeof AuthenticatedAdminModerationRoute
+  '/admin/modules': typeof AuthenticatedAdminModulesRoute
   '/admin/pilotage': typeof AuthenticatedAdminPilotageRoute
   '/admin/regie': typeof AuthenticatedAdminRegieRoute
   '/admin/temoignages': typeof AuthenticatedAdminTemoignagesRoute
+  '/admin/utilisateurs': typeof AuthenticatedAdminUtilisateursRoute
   '/crm/actions': typeof AuthenticatedCrmActionsRoute
   '/crm/prospects': typeof AuthenticatedCrmProspectsRoute
   '/messagerie/$conversationId': typeof AuthenticatedMessagerieConversationIdRoute
@@ -605,16 +613,16 @@ export interface FileRoutesByTo {
   '/guide': typeof GuideRoute
   '/login': typeof LoginRoute
   '/maintenance': typeof MaintenanceRoute
+  '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
   '/mcp': typeof McpRoute
   '/merci': typeof MerciRoute
   '/plan-du-site': typeof PlanDuSiteRoute
   '/publicite': typeof PubliciteRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/robots.txt': typeof RobotsDottxtRoute
   '/rss.xml': typeof RssDotxmlRoute
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
-  '/robots.txt': typeof RobotsDottxtRoute
   '/tarifs': typeof TarifsRoute
   '/temoignages': typeof TemoignagesRoute
   '/verification-email': typeof VerificationEmailRoute
@@ -646,9 +654,6 @@ export interface FileRoutesByTo {
   '/membres': typeof MembresIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/admin/abonnes': typeof AuthenticatedAdminAbonnesRoute
-  '/admin/messages': typeof AuthenticatedAdminMessagesRoute
-  '/admin/utilisateurs': typeof AuthenticatedAdminUtilisateursRoute
-  '/admin/modules': typeof AuthenticatedAdminModulesRoute
   '/admin/annuaire': typeof AuthenticatedAdminAnnuaireRoute
   '/admin/conformite': typeof AuthenticatedAdminConformiteRoute
   '/admin/contenus': typeof AuthenticatedAdminContenusRoute
@@ -657,10 +662,14 @@ export interface FileRoutesByTo {
   '/admin/forum': typeof AuthenticatedAdminForumRoute
   '/admin/geographie': typeof AuthenticatedAdminGeographieRoute
   '/admin/marketplace': typeof AuthenticatedAdminMarketplaceRoute
+  '/admin/mediatheque': typeof AuthenticatedAdminMediathequeRoute
+  '/admin/messages': typeof AuthenticatedAdminMessagesRoute
   '/admin/moderation': typeof AuthenticatedAdminModerationRoute
+  '/admin/modules': typeof AuthenticatedAdminModulesRoute
   '/admin/pilotage': typeof AuthenticatedAdminPilotageRoute
   '/admin/regie': typeof AuthenticatedAdminRegieRoute
   '/admin/temoignages': typeof AuthenticatedAdminTemoignagesRoute
+  '/admin/utilisateurs': typeof AuthenticatedAdminUtilisateursRoute
   '/crm/actions': typeof AuthenticatedCrmActionsRoute
   '/crm/prospects': typeof AuthenticatedCrmProspectsRoute
   '/messagerie/$conversationId': typeof AuthenticatedMessagerieConversationIdRoute
@@ -688,16 +697,16 @@ export interface FileRoutesById {
   '/guide': typeof GuideRoute
   '/login': typeof LoginRoute
   '/maintenance': typeof MaintenanceRoute
+  '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
   '/mcp': typeof McpRoute
   '/merci': typeof MerciRoute
   '/plan-du-site': typeof PlanDuSiteRoute
   '/publicite': typeof PubliciteRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/robots.txt': typeof RobotsDottxtRoute
   '/rss.xml': typeof RssDotxmlRoute
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/manifest.webmanifest': typeof ManifestDotwebmanifestRoute
-  '/robots.txt': typeof RobotsDottxtRoute
   '/tarifs': typeof TarifsRoute
   '/temoignages': typeof TemoignagesRoute
   '/verification-email': typeof VerificationEmailRoute
@@ -729,9 +738,6 @@ export interface FileRoutesById {
   '/membres/': typeof MembresIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/_authenticated/admin/abonnes': typeof AuthenticatedAdminAbonnesRoute
-  '/_authenticated/admin/messages': typeof AuthenticatedAdminMessagesRoute
-  '/_authenticated/admin/utilisateurs': typeof AuthenticatedAdminUtilisateursRoute
-  '/_authenticated/admin/modules': typeof AuthenticatedAdminModulesRoute
   '/_authenticated/admin/annuaire': typeof AuthenticatedAdminAnnuaireRoute
   '/_authenticated/admin/conformite': typeof AuthenticatedAdminConformiteRoute
   '/_authenticated/admin/contenus': typeof AuthenticatedAdminContenusRoute
@@ -740,10 +746,14 @@ export interface FileRoutesById {
   '/_authenticated/admin/forum': typeof AuthenticatedAdminForumRoute
   '/_authenticated/admin/geographie': typeof AuthenticatedAdminGeographieRoute
   '/_authenticated/admin/marketplace': typeof AuthenticatedAdminMarketplaceRoute
+  '/_authenticated/admin/mediatheque': typeof AuthenticatedAdminMediathequeRoute
+  '/_authenticated/admin/messages': typeof AuthenticatedAdminMessagesRoute
   '/_authenticated/admin/moderation': typeof AuthenticatedAdminModerationRoute
+  '/_authenticated/admin/modules': typeof AuthenticatedAdminModulesRoute
   '/_authenticated/admin/pilotage': typeof AuthenticatedAdminPilotageRoute
   '/_authenticated/admin/regie': typeof AuthenticatedAdminRegieRoute
   '/_authenticated/admin/temoignages': typeof AuthenticatedAdminTemoignagesRoute
+  '/_authenticated/admin/utilisateurs': typeof AuthenticatedAdminUtilisateursRoute
   '/_authenticated/crm/actions': typeof AuthenticatedCrmActionsRoute
   '/_authenticated/crm/prospects': typeof AuthenticatedCrmProspectsRoute
   '/_authenticated/messagerie/$conversationId': typeof AuthenticatedMessagerieConversationIdRoute
@@ -771,16 +781,16 @@ export interface FileRouteTypes {
     | '/guide'
     | '/login'
     | '/maintenance'
+    | '/manifest.webmanifest'
     | '/mcp'
     | '/merci'
     | '/plan-du-site'
     | '/publicite'
     | '/reset-password'
+    | '/robots.txt'
     | '/rss.xml'
     | '/signup'
     | '/sitemap.xml'
-    | '/manifest.webmanifest'
-    | '/robots.txt'
     | '/tarifs'
     | '/temoignages'
     | '/verification-email'
@@ -812,9 +822,6 @@ export interface FileRouteTypes {
     | '/membres/'
     | '/.lovable/oauth/consent'
     | '/admin/abonnes'
-    | '/admin/messages'
-    | '/admin/utilisateurs'
-    | '/admin/modules'
     | '/admin/annuaire'
     | '/admin/conformite'
     | '/admin/contenus'
@@ -823,10 +830,14 @@ export interface FileRouteTypes {
     | '/admin/forum'
     | '/admin/geographie'
     | '/admin/marketplace'
+    | '/admin/mediatheque'
+    | '/admin/messages'
     | '/admin/moderation'
+    | '/admin/modules'
     | '/admin/pilotage'
     | '/admin/regie'
     | '/admin/temoignages'
+    | '/admin/utilisateurs'
     | '/crm/actions'
     | '/crm/prospects'
     | '/messagerie/$conversationId'
@@ -852,16 +863,16 @@ export interface FileRouteTypes {
     | '/guide'
     | '/login'
     | '/maintenance'
+    | '/manifest.webmanifest'
     | '/mcp'
     | '/merci'
     | '/plan-du-site'
     | '/publicite'
     | '/reset-password'
+    | '/robots.txt'
     | '/rss.xml'
     | '/signup'
     | '/sitemap.xml'
-    | '/manifest.webmanifest'
-    | '/robots.txt'
     | '/tarifs'
     | '/temoignages'
     | '/verification-email'
@@ -893,9 +904,6 @@ export interface FileRouteTypes {
     | '/membres'
     | '/.lovable/oauth/consent'
     | '/admin/abonnes'
-    | '/admin/messages'
-    | '/admin/utilisateurs'
-    | '/admin/modules'
     | '/admin/annuaire'
     | '/admin/conformite'
     | '/admin/contenus'
@@ -904,10 +912,14 @@ export interface FileRouteTypes {
     | '/admin/forum'
     | '/admin/geographie'
     | '/admin/marketplace'
+    | '/admin/mediatheque'
+    | '/admin/messages'
     | '/admin/moderation'
+    | '/admin/modules'
     | '/admin/pilotage'
     | '/admin/regie'
     | '/admin/temoignages'
+    | '/admin/utilisateurs'
     | '/crm/actions'
     | '/crm/prospects'
     | '/messagerie/$conversationId'
@@ -934,16 +946,16 @@ export interface FileRouteTypes {
     | '/guide'
     | '/login'
     | '/maintenance'
+    | '/manifest.webmanifest'
     | '/mcp'
     | '/merci'
     | '/plan-du-site'
     | '/publicite'
     | '/reset-password'
+    | '/robots.txt'
     | '/rss.xml'
     | '/signup'
     | '/sitemap.xml'
-    | '/manifest.webmanifest'
-    | '/robots.txt'
     | '/tarifs'
     | '/temoignages'
     | '/verification-email'
@@ -975,9 +987,6 @@ export interface FileRouteTypes {
     | '/membres/'
     | '/.lovable/oauth/consent'
     | '/_authenticated/admin/abonnes'
-    | '/_authenticated/admin/messages'
-    | '/_authenticated/admin/utilisateurs'
-    | '/_authenticated/admin/modules'
     | '/_authenticated/admin/annuaire'
     | '/_authenticated/admin/conformite'
     | '/_authenticated/admin/contenus'
@@ -986,10 +995,14 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/forum'
     | '/_authenticated/admin/geographie'
     | '/_authenticated/admin/marketplace'
+    | '/_authenticated/admin/mediatheque'
+    | '/_authenticated/admin/messages'
     | '/_authenticated/admin/moderation'
+    | '/_authenticated/admin/modules'
     | '/_authenticated/admin/pilotage'
     | '/_authenticated/admin/regie'
     | '/_authenticated/admin/temoignages'
+    | '/_authenticated/admin/utilisateurs'
     | '/_authenticated/crm/actions'
     | '/_authenticated/crm/prospects'
     | '/_authenticated/messagerie/$conversationId'
@@ -1017,16 +1030,16 @@ export interface RootRouteChildren {
   GuideRoute: typeof GuideRoute
   LoginRoute: typeof LoginRoute
   MaintenanceRoute: typeof MaintenanceRoute
+  ManifestDotwebmanifestRoute: typeof ManifestDotwebmanifestRoute
   McpRoute: typeof McpRoute
   MerciRoute: typeof MerciRoute
   PlanDuSiteRoute: typeof PlanDuSiteRoute
   PubliciteRoute: typeof PubliciteRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  RobotsDottxtRoute: typeof RobotsDottxtRoute
   RssDotxmlRoute: typeof RssDotxmlRoute
   SignupRoute: typeof SignupRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
-  ManifestDotwebmanifestRoute: typeof ManifestDotwebmanifestRoute
-  RobotsDottxtRoute: typeof RobotsDottxtRoute
   TarifsRoute: typeof TarifsRoute
   TemoignagesRoute: typeof TemoignagesRoute
   VerificationEmailRoute: typeof VerificationEmailRoute
@@ -1144,6 +1157,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MaintenanceRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/manifest.webmanifest': {
+      id: '/manifest.webmanifest'
+      path: '/manifest.webmanifest'
+      fullPath: '/manifest.webmanifest'
+      preLoaderRoute: typeof ManifestDotwebmanifestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/mcp': {
       id: '/mcp'
       path: '/mcp'
@@ -1179,6 +1199,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/robots.txt': {
+      id: '/robots.txt'
+      path: '/robots.txt'
+      fullPath: '/robots.txt'
+      preLoaderRoute: typeof RobotsDottxtRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/rss.xml': {
       id: '/rss.xml'
       path: '/rss.xml'
@@ -1198,20 +1225,6 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/manifest.webmanifest': {
-      id: '/manifest.webmanifest'
-      path: '/manifest.webmanifest'
-      fullPath: '/manifest.webmanifest'
-      preLoaderRoute: typeof ManifestDotwebmanifestRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/robots.txt': {
-      id: '/robots.txt'
-      path: '/robots.txt'
-      fullPath: '/robots.txt'
-      preLoaderRoute: typeof RobotsDottxtRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/tarifs': {
@@ -1438,27 +1451,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminAbonnesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/admin/messages': {
-      id: '/_authenticated/admin/messages'
-      path: '/admin/messages'
-      fullPath: '/admin/messages'
-      preLoaderRoute: typeof AuthenticatedAdminMessagesRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/admin/utilisateurs': {
-      id: '/_authenticated/admin/utilisateurs'
-      path: '/admin/utilisateurs'
-      fullPath: '/admin/utilisateurs'
-      preLoaderRoute: typeof AuthenticatedAdminUtilisateursRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/admin/modules': {
-      id: '/_authenticated/admin/modules'
-      path: '/admin/modules'
-      fullPath: '/admin/modules'
-      preLoaderRoute: typeof AuthenticatedAdminModulesRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/admin/annuaire': {
       id: '/_authenticated/admin/annuaire'
       path: '/admin/annuaire'
@@ -1515,11 +1507,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminMarketplaceRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/mediatheque': {
+      id: '/_authenticated/admin/mediatheque'
+      path: '/admin/mediatheque'
+      fullPath: '/admin/mediatheque'
+      preLoaderRoute: typeof AuthenticatedAdminMediathequeRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/messages': {
+      id: '/_authenticated/admin/messages'
+      path: '/admin/messages'
+      fullPath: '/admin/messages'
+      preLoaderRoute: typeof AuthenticatedAdminMessagesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/moderation': {
       id: '/_authenticated/admin/moderation'
       path: '/admin/moderation'
       fullPath: '/admin/moderation'
       preLoaderRoute: typeof AuthenticatedAdminModerationRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/modules': {
+      id: '/_authenticated/admin/modules'
+      path: '/admin/modules'
+      fullPath: '/admin/modules'
+      preLoaderRoute: typeof AuthenticatedAdminModulesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/admin/pilotage': {
@@ -1541,6 +1554,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/temoignages'
       fullPath: '/admin/temoignages'
       preLoaderRoute: typeof AuthenticatedAdminTemoignagesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/utilisateurs': {
+      id: '/_authenticated/admin/utilisateurs'
+      path: '/admin/utilisateurs'
+      fullPath: '/admin/utilisateurs'
+      preLoaderRoute: typeof AuthenticatedAdminUtilisateursRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/crm/': {
@@ -1631,9 +1651,6 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedProfilRoute: typeof AuthenticatedProfilRoute
   AuthenticatedTableauDeBordRoute: typeof AuthenticatedTableauDeBordRoute
   AuthenticatedAdminAbonnesRoute: typeof AuthenticatedAdminAbonnesRoute
-  AuthenticatedAdminMessagesRoute: typeof AuthenticatedAdminMessagesRoute
-  AuthenticatedAdminUtilisateursRoute: typeof AuthenticatedAdminUtilisateursRoute
-  AuthenticatedAdminModulesRoute: typeof AuthenticatedAdminModulesRoute
   AuthenticatedAdminAnnuaireRoute: typeof AuthenticatedAdminAnnuaireRoute
   AuthenticatedAdminConformiteRoute: typeof AuthenticatedAdminConformiteRoute
   AuthenticatedAdminContenusRoute: typeof AuthenticatedAdminContenusRoute
@@ -1642,10 +1659,14 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminForumRoute: typeof AuthenticatedAdminForumRoute
   AuthenticatedAdminGeographieRoute: typeof AuthenticatedAdminGeographieRoute
   AuthenticatedAdminMarketplaceRoute: typeof AuthenticatedAdminMarketplaceRoute
+  AuthenticatedAdminMediathequeRoute: typeof AuthenticatedAdminMediathequeRoute
+  AuthenticatedAdminMessagesRoute: typeof AuthenticatedAdminMessagesRoute
   AuthenticatedAdminModerationRoute: typeof AuthenticatedAdminModerationRoute
+  AuthenticatedAdminModulesRoute: typeof AuthenticatedAdminModulesRoute
   AuthenticatedAdminPilotageRoute: typeof AuthenticatedAdminPilotageRoute
   AuthenticatedAdminRegieRoute: typeof AuthenticatedAdminRegieRoute
   AuthenticatedAdminTemoignagesRoute: typeof AuthenticatedAdminTemoignagesRoute
+  AuthenticatedAdminUtilisateursRoute: typeof AuthenticatedAdminUtilisateursRoute
   AuthenticatedCrmActionsRoute: typeof AuthenticatedCrmActionsRoute
   AuthenticatedCrmProspectsRoute: typeof AuthenticatedCrmProspectsRoute
   AuthenticatedMessagerieConversationIdRoute: typeof AuthenticatedMessagerieConversationIdRoute
@@ -1663,9 +1684,6 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedProfilRoute: AuthenticatedProfilRoute,
   AuthenticatedTableauDeBordRoute: AuthenticatedTableauDeBordRoute,
   AuthenticatedAdminAbonnesRoute: AuthenticatedAdminAbonnesRoute,
-  AuthenticatedAdminMessagesRoute: AuthenticatedAdminMessagesRoute,
-  AuthenticatedAdminUtilisateursRoute: AuthenticatedAdminUtilisateursRoute,
-  AuthenticatedAdminModulesRoute: AuthenticatedAdminModulesRoute,
   AuthenticatedAdminAnnuaireRoute: AuthenticatedAdminAnnuaireRoute,
   AuthenticatedAdminConformiteRoute: AuthenticatedAdminConformiteRoute,
   AuthenticatedAdminContenusRoute: AuthenticatedAdminContenusRoute,
@@ -1674,10 +1692,14 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminForumRoute: AuthenticatedAdminForumRoute,
   AuthenticatedAdminGeographieRoute: AuthenticatedAdminGeographieRoute,
   AuthenticatedAdminMarketplaceRoute: AuthenticatedAdminMarketplaceRoute,
+  AuthenticatedAdminMediathequeRoute: AuthenticatedAdminMediathequeRoute,
+  AuthenticatedAdminMessagesRoute: AuthenticatedAdminMessagesRoute,
   AuthenticatedAdminModerationRoute: AuthenticatedAdminModerationRoute,
+  AuthenticatedAdminModulesRoute: AuthenticatedAdminModulesRoute,
   AuthenticatedAdminPilotageRoute: AuthenticatedAdminPilotageRoute,
   AuthenticatedAdminRegieRoute: AuthenticatedAdminRegieRoute,
   AuthenticatedAdminTemoignagesRoute: AuthenticatedAdminTemoignagesRoute,
+  AuthenticatedAdminUtilisateursRoute: AuthenticatedAdminUtilisateursRoute,
   AuthenticatedCrmActionsRoute: AuthenticatedCrmActionsRoute,
   AuthenticatedCrmProspectsRoute: AuthenticatedCrmProspectsRoute,
   AuthenticatedMessagerieConversationIdRoute:
@@ -1705,16 +1727,16 @@ const rootRouteChildren: RootRouteChildren = {
   GuideRoute: GuideRoute,
   LoginRoute: LoginRoute,
   MaintenanceRoute: MaintenanceRoute,
+  ManifestDotwebmanifestRoute: ManifestDotwebmanifestRoute,
   McpRoute: McpRoute,
   MerciRoute: MerciRoute,
   PlanDuSiteRoute: PlanDuSiteRoute,
   PubliciteRoute: PubliciteRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  RobotsDottxtRoute: RobotsDottxtRoute,
   RssDotxmlRoute: RssDotxmlRoute,
   SignupRoute: SignupRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
-  ManifestDotwebmanifestRoute: ManifestDotwebmanifestRoute,
-  RobotsDottxtRoute: RobotsDottxtRoute,
   TarifsRoute: TarifsRoute,
   TemoignagesRoute: TemoignagesRoute,
   VerificationEmailRoute: VerificationEmailRoute,

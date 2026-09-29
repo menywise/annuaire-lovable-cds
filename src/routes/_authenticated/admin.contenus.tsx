@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { AdminShell, useIsAdmin } from "@/components/cds/AdminShell";
 import { ConfirmButton } from "@/components/cds/ConfirmButton";
+import { ImageField } from "@/components/cds/MediaPicker";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -790,16 +791,12 @@ function PostRow({ post, reload }: { post: Post; reload: Reload }) {
               onChange={(e) => setDraft({ ...draft, tags: e.target.value })}
             />
           </div>
-          <div className="space-y-1.5">
-            <Label htmlFor={id("cover")}>Image de couverture (adresse)</Label>
-            <Input
-              id={id("cover")}
-              type="url"
-              value={draft.cover_url}
-              onChange={(e) => setDraft({ ...draft, cover_url: e.target.value })}
-              placeholder="https://…"
-            />
-          </div>
+          <ImageField
+            id={id("cover")}
+            label="Image de couverture"
+            value={draft.cover_url}
+            onChange={(cover_url) => setDraft({ ...draft, cover_url })}
+          />
         </div>
         <div className="flex flex-wrap gap-2">
           <Button type="submit" size="sm">

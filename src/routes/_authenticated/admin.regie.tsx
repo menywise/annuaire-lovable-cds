@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { AdminShell } from "@/components/cds/AdminShell";
+import { ImageField } from "@/components/cds/MediaPicker";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -41,6 +42,7 @@ function AdminAdsPage() {
   const [placements, setPlacements] = useState<Placement[] | null>(null);
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [stats, setStats] = useState<Record<string, { impressions: number; clicks: number }>>({});
+  const [campaignFormKey, setCampaignFormKey] = useState(0);
 
   const load = useCallback(async () => {
     const [p, c, e] = await Promise.all([
@@ -105,6 +107,7 @@ function AdminAdsPage() {
     else {
       toast.success("Campagne créée.");
       form.reset();
+      setCampaignFormKey((k) => k + 1);
       void load();
     }
   }
@@ -205,9 +208,8 @@ function AdminAdsPage() {
               <Label htmlFor="ca-link">Lien de destination</Label>
               <Input id="ca-link" name="link_url" type="url" required className="mt-1" placeholder="https://" />
             </div>
-            <div>
-              <Label htmlFor="ca-image">Visuel (adresse de l'image)</Label>
-              <Input id="ca-image" name="image_url" type="url" className="mt-1" placeholder="https://" />
+            <div className="sm:col-span-2">
+              <ImageField key={campaignFormKey} id="ca-image" name="image_url" label="Visuel" />
             </div>
             <div className="sm:col-span-2">
               <Button type="submit" title="Créer cette campagne">

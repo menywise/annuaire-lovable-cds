@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { AdminShell } from "@/components/cds/AdminShell";
+import { ImageField, ImageListField } from "@/components/cds/MediaPicker";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -35,6 +36,9 @@ type Listing = {
   claimed_by: string | null;
   claim_requested_by: string | null;
   created_at: string;
+  logo_url: string | null;
+  cover_url: string | null;
+  photos: string[];
 };
 
 type Category = { id: string; name: string; slug: string; position: number };
@@ -59,13 +63,14 @@ function AdminDirectoryPage() {
   const [listings, setListings] = useState<Listing[] | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
+  const [openImages, setOpenImages] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     const [l, c, r] = await Promise.all([
       supabase
         .from("directory_listings")
         .select(
-          "id, name, slug, city, status, plan, featured, verified, claimed_by, claim_requested_by, created_at",
+          "id, name, slug, city, status, plan, featured, verified, claimed_by, claim_requested_by, created_at, logo_url, cover_url, photos",
         )
         .order("created_at", { ascending: false }),
       supabase.from("directory_categories").select("id, name, slug, position").order("position"),
@@ -218,7 +223,20 @@ function AdminDirectoryPage() {
                 >
                   {item.featured ? "Ne plus mettre en avant" : "Mettre en avant"}
                 </Button>
+                <Button
+                  variant="outline"
+                  title="Modifier le logo, la couverture et les photos"
+                  onClick={() => setOpenImages(openImages === item.id ? null : item.id)}
+                >
+                  {openImages === item.id ? "Masquer les images" : "Images"}
+                </Button>
               </div>
+              {openImages === item.id ? (
+                <ListingImages
+                  item={item}
+                  onSave={(changes) => updateListing(item.id, changes)}
+                />
+              ) : null}
             </li>
           ))}
         </ul>
@@ -319,5 +337,36 @@ function AdminDirectoryPage() {
         </ul>
       )}
     </AdminShell>
+  );
+}
+
+function ListingImages({
+  item,
+  onSave,
+}: {
+  item: Listing;
+  onSave: (changes: Partial<Listing>) => Promise<void>;
+}) {
+  const [logo, setLogo] = useState(item.logo_url ?? "");
+  const [cover, setCover] = useState(item.cover_url ?? "");
+  const [photos, setPhotos] = useState<string[]>(item.photos ?? []);
+
+  return (
+    <form
+      className="mt-4 space-y-4 border-t border-border pt-4"
+      onSubmit={(event) => {
+        event.preventDefault();
+        void onSave({ logo_url: logo.trim() || null, cover_url: cover.trim() || null, photos });
+      }}
+    >
+      <div className="grid gap-4 sm:grid-cols-2">
+        <ImageField id={`dir-logo-${item.id}`} label="Logo" value={logo} onChange={setLogo} />
+        <ImageField id={`dir-cover-${item.id}`} label="Image de couverture" value={cover} onChange={setCover} />
+      </div>
+      <ImageListField id={`dir-photos-${item.id}`} label="Photos" value={photos} onChange={setPhotos} max={10} />
+      <Button type="submit" size="sm">
+        Enregistrer les images
+      </Button>
+    </form>
   );
 }

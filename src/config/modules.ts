@@ -1,5 +1,5 @@
 /**
- * CDS — Liste des 19 modules (V0.md §2), dépendances et état par défaut.
+ * CDS — Liste des modules (V0.md §2 et §3), dépendances et état par défaut.
  * Fichier sans dépendance : partagé par le serveur, le navigateur et l'admin.
  * L'état par défaut est identique à `public.module_defaults()` en base.
  */
@@ -23,6 +23,7 @@ export const MODULES = [
   { key: "adNetwork", label: "Régie publicitaire", requires: [], defaultOn: false },
   { key: "studio", label: "Pilotage, conformité, MCP", requires: [], defaultOn: true },
   { key: "showcase", label: "Composants et guide", requires: [], defaultOn: true },
+  { key: "media", label: "Médiathèque (envoi d'images et de fichiers)", requires: [], defaultOn: true },
 ] as const satisfies ReadonlyArray<{
   key: string;
   label: string;
