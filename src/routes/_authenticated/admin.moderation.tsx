@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
+import { ConfirmButton } from "@/components/cds/ConfirmButton";
 import { AdminShell, useIsAdmin } from "@/components/cds/AdminShell";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -188,19 +189,13 @@ function AdminModerationPage() {
                 >
                   {review.approved ? "Retirer" : "Publier"}
                 </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={async () =>
-                    done(
-                      (await supabase.from("reviews").delete().eq("id", review.id)).error,
-                      "Avis supprimé.",
-                    )
-                  }
+                <ConfirmButton
                   title="Supprimer définitivement cet avis"
-                >
-                  Supprimer
-                </Button>
+                  question="Supprimer cet avis ?"
+                  onConfirm={async () =>
+                    done((await supabase.from("reviews").delete().eq("id", review.id)).error, "Avis supprimé.")
+                  }
+                />
               </div>
             </div>
           ))}
@@ -241,19 +236,16 @@ function AdminModerationPage() {
                 >
                   {comment.approved ? "Retirer" : "Publier"}
                 </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={async () =>
+                <ConfirmButton
+                  title="Supprimer définitivement ce commentaire"
+                  question="Supprimer ce commentaire ?"
+                  onConfirm={async () =>
                     done(
                       (await supabase.from("blog_comments").delete().eq("id", comment.id)).error,
                       "Commentaire supprimé.",
                     )
                   }
-                  title="Supprimer définitivement ce commentaire"
-                >
-                  Supprimer
-                </Button>
+                />
               </div>
             </div>
           ))}
@@ -294,25 +286,17 @@ function AdminModerationPage() {
                 >
                   {topic.locked ? "Rouvrir" : "Clore"}
                 </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={async () => {
-                    if (
-                      !window.confirm(
-                        `Supprimer la discussion « ${topic.title} » et ses réponses ?`,
-                      )
-                    )
-                      return;
+                <ConfirmButton
+                  title="Supprimer définitivement cette discussion"
+                  question={`Supprimer la discussion « ${topic.title} » ?`}
+                  detail="La discussion et toutes ses réponses sont supprimées définitivement."
+                  onConfirm={async () =>
                     done(
                       (await supabase.from("forum_topics").delete().eq("id", topic.id)).error,
                       "Discussion supprimée.",
-                    );
-                  }}
-                  title="Supprimer définitivement cette discussion"
-                >
-                  Supprimer
-                </Button>
+                    )
+                  }
+                />
               </div>
             </div>
           ))}
@@ -343,20 +327,16 @@ function AdminModerationPage() {
                     Voir
                   </Link>
                 </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={async () => {
-                    if (!window.confirm("Supprimer définitivement cette réponse ?")) return;
+                <ConfirmButton
+                  title="Supprimer définitivement cette réponse"
+                  question="Supprimer cette réponse ?"
+                  onConfirm={async () =>
                     done(
                       (await supabase.from("forum_replies").delete().eq("id", reply.id)).error,
                       "Réponse supprimée.",
-                    );
-                  }}
-                  title="Supprimer définitivement cette réponse"
-                >
-                  Supprimer
-                </Button>
+                    )
+                  }
+                />
               </div>
             </div>
           ))}

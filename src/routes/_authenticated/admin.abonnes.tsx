@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
+import { ConfirmButton } from "@/components/cds/ConfirmButton";
 import { AdminShell, useIsAdmin } from "@/components/cds/AdminShell";
 import { Button } from "@/components/ui/button";
 import {
@@ -79,8 +80,6 @@ function AdminAbonnesPage() {
   }
 
   async function remove(row: Subscriber) {
-    if (!window.confirm(`Supprimer définitivement ${row.email} ? Cette action est irréversible.`))
-      return;
     setBusyId(row.id);
     const { error } = await supabase.from("newsletter_subscribers").delete().eq("id", row.id);
     setBusyId(null);
@@ -185,15 +184,12 @@ function AdminAbonnesPage() {
                       >
                         {row.unsubscribed_at ? "Réinscrire" : "Désinscrire"}
                       </Button>
-                      <Button
-                        size="sm"
-                        variant="destructive"
-                        disabled={busyId === row.id}
-                        onClick={() => void remove(row)}
+                      <ConfirmButton
                         title="Supprimer définitivement cet abonné"
-                      >
-                        Supprimer
-                      </Button>
+                        question={`Supprimer ${row.email} de la liste ?`}
+                        detail="Pour arrêter les envois sans effacer la trace de l'inscription, désinscrivez-le plutôt."
+                        onConfirm={() => remove(row)}
+                      />
                     </div>
                   </TableCell>
                 </TableRow>

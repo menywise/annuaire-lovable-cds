@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { PageShell } from "@/components/cds/SiteHeader";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { bootstrapCurrentUser, useAuth } from "@/hooks/useAuth";
 import { seo } from "@/lib/seo";
@@ -21,20 +20,12 @@ export const Route = createFileRoute("/_authenticated/compte")({
   component: ComptePage,
 });
 
-type ContactMessage = {
-  id: string;
-  name: string;
-  email: string;
-  subject: string;
-  message: string;
-  created_at: string;
-};
 
 function ComptePage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [role, setRole] = useState<"admin" | "user" | null>(null);
-  const [messages, setMessages] = useState<ContactMessage[]>([]);
+  const [newMessages, setNewMessages] = useState<number | null>(null);
 
   useEffect(() => {
     if (!user) return;
@@ -45,12 +36,11 @@ function ComptePage() {
         if (cancelled) return;
         setRole(nextRole);
         if (nextRole === "admin") {
-          const { data } = await supabase
+          const { count } = await supabase
             .from("contact_messages")
-            .select("id, name, email, subject, message, created_at")
-            .order("created_at", { ascending: false })
-            .limit(50);
-          if (!cancelled && data) setMessages(data as ContactMessage[]);
+            .select("id", { count: "exact", head: true })
+            .eq("status", "nouveau");
+          if (!cancelled) setNewMessages(count ?? 0);
         }
       } catch {
         if (!cancelled) setRole("user");
@@ -93,31 +83,22 @@ function ComptePage() {
       </div>
 
       {role === "admin" && isFeatureOn("contact") && (
-        <section className="mt-10">
+        <section className="mt-10 rounded-xl border border-border bg-card p-5">
           <h2 className="text-lg font-semibold text-foreground">Messages reçus</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Messages envoyés depuis le formulaire de contact du site.
+            {newMessages === null
+              ? "Messages envoyés depuis le formulaire de contact du site."
+              : newMessages === 0
+                ? "Aucun nouveau message : tout est traité."
+                : `${newMessages} nouveau${newMessages > 1 ? "x" : ""} message${newMessages > 1 ? "s" : ""} à traiter.`}
           </p>
-          <div className="mt-4 space-y-3">
-            {messages.length === 0 && (
-              <p className="rounded-lg border border-border bg-card p-4 text-sm text-muted-foreground">
-                Aucun message pour le moment.
-              </p>
-            )}
-            {messages.map((m) => (
-              <Card key={m.id}>
-                <CardHeader>
-                  <CardTitle className="text-base">{m.subject}</CardTitle>
-                  <CardDescription>
-                    {m.name} — {m.email} — {new Date(m.created_at).toLocaleString("fr-FR")}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="whitespace-pre-line text-sm text-muted-foreground">
-                  {m.message}
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+          <Link
+            to="/admin/messages"
+            title="Ouvrir la boîte de réception"
+            className="mt-4 inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+          >
+            Ouvrir la boîte de réception
+          </Link>
         </section>
       )}
     </PageShell>
