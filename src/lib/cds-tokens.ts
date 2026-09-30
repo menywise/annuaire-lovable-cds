@@ -50,6 +50,8 @@ export const cds = {
     default: "0.375rem",
     md: "0.375rem",
     lg: "0.75rem",
+    /** = lg : classe rounded-xl des cartes */
+    xl: "0.75rem",
     full: "50%",
   },
   shadow: {

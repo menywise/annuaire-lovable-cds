@@ -11,7 +11,7 @@
   --radius-sm: 0.25rem;
   --radius-md: var(--radius); /* rounded-md = boutons, champs, badges : 6 px */
   --radius-lg: 0.75rem;
-  --radius-xl: calc(var(--radius) + 4px);
+  --radius-xl: var(--radius-lg); /* rounded-xl = cartes : 12 px (le relief cible .rounded-xl) */
   --radius-2xl: calc(var(--radius) + 8px);
 
   --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;

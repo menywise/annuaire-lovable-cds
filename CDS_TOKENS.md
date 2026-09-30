@@ -68,6 +68,7 @@ Il n'existe **aucun** `tailwind.config.ts` ni `src/index.css` : en Tailwind v4 l
 | `--radius-sm` | `0.25rem`         | Petits éléments             |
 | `--radius-md` | `0.375rem` (6 px) | = `--radius` : classe `rounded-md` des contrôles |
 | `--radius-lg` | `0.75rem` (12 px) | **Cartes**, notifications, encarts |
+| `--radius-xl` | `0.75rem` (12 px) | = `--radius-lg` : classe `rounded-xl` des cartes (ciblée par le relief) |
 | plein         | `50%`             | Pastilles rondes            |
 
 ## Ombres
