@@ -129,7 +129,7 @@ function TestimonialsPage() {
                 <ModerationNote note={item.moderation_note} at={item.moderated_at} />
                 <ReportButton contentType="temoignage" contentId={item.id} />
                 {item.outcome ? (
-                  <p className="mt-3 rounded-md bg-muted px-3 py-2 text-xs font-medium text-success-text">
+                  <p className="mt-3 rounded-lg bg-muted px-3 py-2 text-xs font-medium text-success-text">
                     Résultat : {item.outcome}
                   </p>
                 ) : null}

@@ -197,7 +197,7 @@ function ReportItem({
         {row.handled_at ? ` · traité le ${new Date(row.handled_at).toLocaleString("fr-FR")}` : ""}
       </p>
       {row.details ? (
-        <p className="mt-3 whitespace-pre-line rounded-md bg-muted px-3 py-2 text-sm text-foreground">
+        <p className="mt-3 whitespace-pre-line rounded-lg bg-muted px-3 py-2 text-sm text-foreground">
           {row.details}
         </p>
       ) : null}

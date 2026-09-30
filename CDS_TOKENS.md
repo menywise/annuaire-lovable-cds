@@ -72,6 +72,8 @@ Il n'existe **aucun** `tailwind.config.ts` ni `src/index.css` : en Tailwind v4 l
 | `--radius-xl` | `0.75rem` (12 px) | = `--radius-lg` : classe `rounded-xl` des cartes (ciblée par le relief) |
 | plein         | `50%`             | Pastilles rondes            |
 
+Images et vignettes : `rounded-md` (12 px arrondirait trop une vignette de 44 px). Squelettes de chargement : forme de l'élément qu'ils remplacent (`rounded-md` par défaut, `rounded-xl` pour une carte).
+
 ## Ombres
 
 | Nom  | Valeur                                                  |

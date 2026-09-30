@@ -158,7 +158,7 @@ function AdminRecettePage() {
                 {fails.map((r) => (
                   <li
                     key={`${r.viewport}-${r.role}-${r.url}`}
-                    className="rounded-md border border-destructive/40 p-3 text-sm"
+                    className="rounded-lg border border-destructive/40 p-3 text-sm"
                   >
                     <p className="font-medium text-foreground">
                       {r.label} — <code>{r.url}</code>
@@ -190,7 +190,7 @@ function AdminRecettePage() {
                 </p>
                 <ul className="mt-2 space-y-2">
                   {texts.map((r) => (
-                    <li key={r.url} className="rounded-md border border-border p-3 text-sm">
+                    <li key={r.url} className="rounded-lg border border-border p-3 text-sm">
                       <details>
                         <summary className="cursor-pointer text-foreground">
                           <span
@@ -234,7 +234,7 @@ function AdminRecettePage() {
                 </h3>
                 <ul className="mt-2 space-y-2">
                   {[...remarks].map(([code, lines]) => (
-                    <li key={code} className="rounded-md border border-border p-3 text-sm">
+                    <li key={code} className="rounded-lg border border-border p-3 text-sm">
                       <details>
                         <summary className="cursor-pointer text-foreground">
                           <span className="font-medium">
@@ -291,7 +291,7 @@ function AdminRecettePage() {
                 {section.items.map((item) => (
                   <li
                     key={item.id}
-                    className="flex items-start gap-3 rounded-md border border-border p-3"
+                    className="flex items-start gap-3 rounded-lg border border-border p-3"
                   >
                     <input
                       type="checkbox"
