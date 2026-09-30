@@ -135,6 +135,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
    * En cas d'échec, la dernière configuration connue (ou le repli neutre) reste en place.
    */
   beforeLoad: async ({ location }) => {
+    if (location.pathname.startsWith("/lovable/")) return;
     const onServer = typeof window === "undefined";
     if (onServer || !window.__CDS_SITE__) {
       try {

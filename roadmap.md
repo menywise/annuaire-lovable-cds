@@ -32,7 +32,7 @@
 ## En attente (décision du 29/09 : « beaucoup à faire avant de lancer les paiements »)
 
 - Paiement Stripe : code prêt et éteint. Avant activation : SQL du lot 7 b (double paiement), secrets `STRIPE_SECRET_KEY` et `STRIPE_WEBHOOK_SECRET`, webhook, parcours test 4242
-- E-mails transactionnels (module B) : domaine d'envoi des projets à configurer
+- E-mails (module B) : envoi installé sur notify.manuelrohaut.fr (e-mails de compte + base des e-mails du site) ; en attente de la validation du domaine chez le registraire
 - Purge planifiée des messages de contact : pg_cron absent, planifier `/api/cron/purge-contact` dans les tâches Lovable ; en attendant, bouton « Purger maintenant »
 - Paiement des offres de la page Tarifs (abonnements)
 
@@ -55,3 +55,4 @@ Premier projet à dupliquer et mettre en conformité : **l'annuaire des sites fr
 - Vulnérabilités js-yaml héritées de @tanstack/react-start : aucun correctif amont, à re-vérifier
 - Test au lecteur d'écran : manuel, reste à faire (lot 8)
 - Temps de réponse serveur du blog entre 800 et 1 400 ms (30/09) : à surveiller avec le robot (p5)
+- [x] Modèles d'e-mails de compte à l'identité CDS (français, Inter, bleu de marque, thème clair) : inscription, invitation, lien magique, mot de passe oublié, changement d'adresse, code de vérification
