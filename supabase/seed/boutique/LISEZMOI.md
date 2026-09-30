@@ -9,3 +9,6 @@ Le bloc 11 est un contrôle : **6 lignes** attendues (4 tables, 5 fonctions, 1 e
 
 Le module reste **éteint** après ces blocs. Pour l'essayer : écran Modules → Boutique, avec les
 secrets Stripe en mode test (`STRIPE_SECRET_KEY` = `sk_test_…`, `STRIPE_WEBHOOK_SECRET`).
+
+Règle de l'éditeur de Lovable (constatée le 30/09) : il coupe le script à chaque **ligne vide**.
+Aucun bloc ne contient donc de ligne vide à l'intérieur d'une fonction (`$$ … $$`).

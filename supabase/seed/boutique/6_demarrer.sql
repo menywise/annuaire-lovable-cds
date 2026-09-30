@@ -36,7 +36,6 @@ BEGIN
     RAISE EXCEPTION 'Vingt produits différents au plus par commande' USING ERRCODE = '22023';
   END IF;
   PERFORM pg_advisory_xact_lock(hashtextextended('shop:' || _user_id::text, 0));
-
   FOR _item IN SELECT value FROM jsonb_array_elements(_items) LOOP
     IF jsonb_typeof(_item) <> 'object' OR coalesce(_item ->> 'product_id', '')
        !~ '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$' THEN
@@ -82,12 +81,10 @@ BEGIN
     _rows := _rows || jsonb_build_object('product_id', _p.id, 'title', left(_p.title, 200),
                                          'kind', _p.kind, 'unit', _p.price_cents, 'qty', _qty);
   END LOOP;
-
   IF _digital AND _waiver IS NOT TRUE THEN
     RAISE EXCEPTION 'Renonciation au droit de rétractation requise pour les fichiers numériques'
       USING ERRCODE = '23514';
   END IF;
-
   SELECT value INTO _settings FROM public.site_settings WHERE key = 'shop';
   _settings := coalesce(_settings, '{}'::jsonb);
   IF _physical THEN
@@ -112,7 +109,6 @@ BEGIN
   IF _subtotal + _shipping > 10000000 THEN
     RAISE EXCEPTION 'Montant trop élevé pour un paiement en ligne' USING ERRCODE = '22023';
   END IF;
-
   WITH old_orders AS (
     UPDATE public.shop_orders o SET status = 'expired'
     WHERE o.user_id = _user_id AND o.status = 'pending'
@@ -124,27 +120,22 @@ BEGIN
   )
   SELECT coalesce(array_agg(stripe_session_id) FILTER (WHERE stripe_session_id IS NOT NULL), '{}')
   INTO _old FROM old;
-
   INSERT INTO public.shop_orders (user_id, has_physical, has_digital, subtotal_cents, shipping_cents,
                                   total_cents, waiver_accepted_at)
   VALUES (_user_id, _physical, _digital, _subtotal, _shipping, _subtotal + _shipping,
           CASE WHEN _digital THEN now() END)
   RETURNING shop_orders.id, shop_orders.number INTO _order, _number;
-
   INSERT INTO public.shop_order_items (order_id, product_id, title, kind, unit_price_cents, quantity)
   SELECT _order, (r ->> 'product_id')::uuid, r ->> 'title', r ->> 'kind', (r ->> 'unit')::integer,
          (r ->> 'qty')::integer
   FROM jsonb_array_elements(_rows) AS r;
-
   IF _shipping > 0 THEN
     _lines := _lines || jsonb_build_object('name', 'Livraison', 'unit_amount', _shipping, 'quantity', 1);
   END IF;
-
   INSERT INTO public.payments (user_id, order_id, product_label, amount_cents, currency, waiver_accepted_at)
   VALUES (_user_id, _order, 'Commande n° ' || _number, _subtotal + _shipping, 'eur',
           CASE WHEN _digital THEN now() END)
   RETURNING payments.id INTO _payment;
-
   RETURN QUERY SELECT _order, _number, _payment, _lines, _shipping, _subtotal + _shipping,
                       'eur'::text, _countries, _old;
 END;

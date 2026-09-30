@@ -12,7 +12,6 @@ BEGIN
      AND NOT EXISTS (SELECT 1 FROM public.user_roles WHERE role = 'admin' AND user_id <> _uid) THEN
     RAISE EXCEPTION 'Vous êtes le dernier administrateur : nommez-en un autre avant de partir' USING ERRCODE = '42501';
   END IF;
-
   UPDATE public.forum_topics SET author_id = _ghost, author_name = _name WHERE author_id = _uid;
   UPDATE public.forum_replies SET author_id = _ghost, author_name = _name WHERE author_id = _uid;
   UPDATE public.blog_comments SET author_id = _ghost, author_name = _name WHERE author_id = _uid;
@@ -28,7 +27,6 @@ BEGIN
   UPDATE public.shop_orders SET user_id = _ghost WHERE user_id = _uid;
   UPDATE public.reports SET reporter_id = _ghost WHERE reporter_id = _uid;
   UPDATE public.reports SET handled_by = NULL WHERE handled_by = _uid;
-
   DELETE FROM public.forum_likes WHERE user_id = _uid;
   DELETE FROM public.forum_follows WHERE user_id = _uid;
   DELETE FROM public.conversations WHERE user_a = _uid OR user_b = _uid;
