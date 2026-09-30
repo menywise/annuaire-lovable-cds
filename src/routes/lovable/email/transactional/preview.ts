@@ -50,14 +50,15 @@ export const Route = createFileRoute("/lovable/email/transactional/preview")({
             continue
           }
 
+          const tpl = entry
           try {
             const html = await render(
-              React.createElement(entry.component, entry.previewData)
+              React.createElement(tpl.component, tpl.previewData)
             )
             const resolvedSubject =
-              typeof entry.subject === 'function'
-                ? entry.subject(entry.previewData)
-                : entry.subject
+              typeof tpl.subject === 'function'
+                ? tpl.subject(tpl.previewData)
+                : tpl.subject
 
             results.push({
               templateName: name,
