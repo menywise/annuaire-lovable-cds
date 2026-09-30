@@ -55,11 +55,11 @@ export const Route = createFileRoute("/lovable/email/transactional/preview")({
           const previewData = entry.previewData
           try {
             const html = await render(
-              React.createElement(tpl.component, tpl.previewData)
+              React.createElement(tpl.component, previewData)
             )
             const resolvedSubject =
               typeof tpl.subject === 'function'
-                ? tpl.subject(tpl.previewData)
+                ? tpl.subject(previewData)
                 : tpl.subject
 
             results.push({
