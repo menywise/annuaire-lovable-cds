@@ -9,7 +9,7 @@
 
 @theme inline {
   --radius-sm: 0.25rem;
-  --radius-md: 0.5rem;
+  --radius-md: var(--radius); /* rounded-md = boutons, champs, badges : 6 px */
   --radius-lg: 0.75rem;
   --radius-xl: calc(var(--radius) + 4px);
   --radius-2xl: calc(var(--radius) + 8px);

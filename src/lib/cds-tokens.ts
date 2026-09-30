@@ -48,7 +48,7 @@ export const cds = {
   radius: {
     sm: "0.25rem",
     default: "0.375rem",
-    md: "0.5rem",
+    md: "0.375rem",
     lg: "0.75rem",
     full: "50%",
   },

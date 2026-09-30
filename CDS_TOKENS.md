@@ -66,8 +66,8 @@ Il n'existe **aucun** `tailwind.config.ts` ni `src/index.css` : en Tailwind v4 l
 | ------------- | ----------------- | --------------------------- |
 | `--radius`    | `0.375rem` (6 px) | **Boutons**, champs, badges |
 | `--radius-sm` | `0.25rem`         | Petits éléments             |
-| `--radius-md` | `0.5rem`          | Encarts                     |
-| `--radius-lg` | `0.75rem` (12 px) | **Cartes**, notifications   |
+| `--radius-md` | `0.375rem` (6 px) | = `--radius` : classe `rounded-md` des contrôles |
+| `--radius-lg` | `0.75rem` (12 px) | **Cartes**, notifications, encarts |
 | plein         | `50%`             | Pastilles rondes            |
 
 ## Ombres
