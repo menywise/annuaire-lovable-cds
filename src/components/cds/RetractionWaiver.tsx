@@ -8,9 +8,12 @@ import { Link } from "@tanstack/react-router";
 export function RetractionWaiver({
   checked,
   onChange,
+  subject = "cette formation",
 }: {
   checked: boolean;
   onChange: (value: boolean) => void;
+  /** Ce qui est livré immédiatement : « cette formation », « ces fichiers »… */
+  subject?: string;
 }) {
   return (
     <label className="mt-4 flex min-h-11 cursor-pointer items-start gap-3 rounded-lg border border-border bg-muted/40 p-3 text-xs leading-relaxed text-muted-foreground">
@@ -21,8 +24,8 @@ export function RetractionWaiver({
         className="mt-0.5 size-4 shrink-0 accent-primary"
       />
       <span>
-        Je demande l'accès immédiat à cette formation et je renonce à mon droit de rétractation de
-        14 jours dès que l'accès est ouvert (article L221-28 13° du Code de la consommation) —{" "}
+        Je demande l'accès immédiat à {subject} et je renonce à mon droit de rétractation de 14
+        jours dès que l'accès est ouvert (article L221-28 13° du Code de la consommation) —{" "}
         <Link to="/legal/cgv" title="Lire les conditions générales de vente" className="underline">
           voir les CGV
         </Link>

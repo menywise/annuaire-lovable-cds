@@ -1622,6 +1622,7 @@ export type Database = {
           created_at: string
           currency: string
           id: string
+          order_id: string | null
           paid_at: string | null
           product_label: string
           refunded_at: string | null
@@ -1629,7 +1630,7 @@ export type Database = {
           stripe_payment_intent: string | null
           stripe_session_id: string | null
           user_id: string
-          waiver_accepted_at: string
+          waiver_accepted_at: string | null
         }
         Insert: {
           amount_cents: number
@@ -1637,6 +1638,7 @@ export type Database = {
           created_at?: string
           currency: string
           id?: string
+          order_id?: string | null
           paid_at?: string | null
           product_label: string
           refunded_at?: string | null
@@ -1644,7 +1646,7 @@ export type Database = {
           stripe_payment_intent?: string | null
           stripe_session_id?: string | null
           user_id: string
-          waiver_accepted_at: string
+          waiver_accepted_at?: string | null
         }
         Update: {
           amount_cents?: number
@@ -1652,6 +1654,7 @@ export type Database = {
           created_at?: string
           currency?: string
           id?: string
+          order_id?: string | null
           paid_at?: string | null
           product_label?: string
           refunded_at?: string | null
@@ -1659,7 +1662,7 @@ export type Database = {
           stripe_payment_intent?: string | null
           stripe_session_id?: string | null
           user_id?: string
-          waiver_accepted_at?: string
+          waiver_accepted_at?: string | null
         }
         Relationships: [
           {
@@ -1667,6 +1670,13 @@ export type Database = {
             columns: ["course_id"]
             isOneToOne: false
             referencedRelation: "lms_courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payments_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "shop_orders"
             referencedColumns: ["id"]
           },
         ]
@@ -1861,6 +1871,212 @@ export type Database = {
           priority?: string
           public_visible?: boolean
           status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      shop_order_items: {
+        Row: {
+          downloads: number
+          id: string
+          kind: string
+          order_id: string
+          product_id: string | null
+          quantity: number
+          title: string
+          unit_price_cents: number
+        }
+        Insert: {
+          downloads?: number
+          id?: string
+          kind: string
+          order_id: string
+          product_id?: string | null
+          quantity: number
+          title: string
+          unit_price_cents: number
+        }
+        Update: {
+          downloads?: number
+          id?: string
+          kind?: string
+          order_id?: string
+          product_id?: string | null
+          quantity?: number
+          title?: string
+          unit_price_cents?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shop_order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "shop_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shop_order_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "shop_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shop_orders: {
+        Row: {
+          admin_note: string | null
+          carrier: string | null
+          created_at: string
+          currency: string
+          delivered_at: string | null
+          email: string | null
+          has_digital: boolean
+          has_physical: boolean
+          id: string
+          number: number
+          paid_at: string | null
+          refunded_at: string | null
+          shipped_at: string | null
+          shipping_address: Json | null
+          shipping_cents: number
+          shipping_name: string | null
+          status: string
+          subtotal_cents: number
+          total_cents: number
+          tracking_number: string | null
+          user_id: string
+          waiver_accepted_at: string | null
+        }
+        Insert: {
+          admin_note?: string | null
+          carrier?: string | null
+          created_at?: string
+          currency?: string
+          delivered_at?: string | null
+          email?: string | null
+          has_digital?: boolean
+          has_physical?: boolean
+          id?: string
+          number?: number
+          paid_at?: string | null
+          refunded_at?: string | null
+          shipped_at?: string | null
+          shipping_address?: Json | null
+          shipping_cents?: number
+          shipping_name?: string | null
+          status?: string
+          subtotal_cents: number
+          total_cents: number
+          tracking_number?: string | null
+          user_id: string
+          waiver_accepted_at?: string | null
+        }
+        Update: {
+          admin_note?: string | null
+          carrier?: string | null
+          created_at?: string
+          currency?: string
+          delivered_at?: string | null
+          email?: string | null
+          has_digital?: boolean
+          has_physical?: boolean
+          id?: string
+          number?: number
+          paid_at?: string | null
+          refunded_at?: string | null
+          shipped_at?: string | null
+          shipping_address?: Json | null
+          shipping_cents?: number
+          shipping_name?: string | null
+          status?: string
+          subtotal_cents?: number
+          total_cents?: number
+          tracking_number?: string | null
+          user_id?: string
+          waiver_accepted_at?: string | null
+        }
+        Relationships: []
+      }
+      shop_product_files: {
+        Row: {
+          file_name: string
+          path: string
+          product_id: string
+          size_bytes: number | null
+          updated_at: string
+        }
+        Insert: {
+          file_name: string
+          path: string
+          product_id: string
+          size_bytes?: number | null
+          updated_at?: string
+        }
+        Update: {
+          file_name?: string
+          path?: string
+          product_id?: string
+          size_bytes?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shop_product_files_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: true
+            referencedRelation: "shop_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shop_products: {
+        Row: {
+          created_at: string
+          currency: string
+          description: string
+          id: string
+          image_url: string | null
+          kind: string
+          position: number
+          price_cents: number
+          published: boolean
+          slug: string
+          stock: number | null
+          summary: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          currency?: string
+          description?: string
+          id?: string
+          image_url?: string | null
+          kind?: string
+          position?: number
+          price_cents?: number
+          published?: boolean
+          slug: string
+          stock?: number | null
+          summary?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          currency?: string
+          description?: string
+          id?: string
+          image_url?: string | null
+          kind?: string
+          position?: number
+          price_cents?: number
+          published?: boolean
+          slug?: string
+          stock?: number | null
+          summary?: string
           title?: string
           updated_at?: string
         }
@@ -2158,6 +2374,32 @@ export type Database = {
         }[]
       }
       search_tags: { Args: { _tags: string[] }; Returns: string }
+      shop_download: {
+        Args: { _item_id: string; _user_id: string }
+        Returns: {
+          downloads: number
+          file_name: string
+          path: string
+        }[]
+      }
+      shop_set_customer: {
+        Args: { _address: Json; _email: string; _name: string; _session_id: string }
+        Returns: boolean
+      }
+      shop_start_checkout: {
+        Args: { _items: Json; _user_id: string; _waiver: boolean }
+        Returns: {
+          countries: string[]
+          currency: string
+          lines: Json
+          order_id: string
+          order_number: number
+          payment_id: string
+          shipping_cents: number
+          superseded_sessions: string[]
+          total_cents: number
+        }[]
+      }
       valid_page_data: { Args: { _data: Json }; Returns: boolean }
     }
     Enums: {

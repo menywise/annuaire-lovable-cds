@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { listPosts, listPublicPages, listTopics } from "@/lib/content.functions";
 import { isModuleOn, onlyActive, type FeatureKey } from "@/config/modules";
 import { loadSiteConfig } from "@/lib/site-config.functions";
+import { getShopCatalog } from "@/lib/shop.functions";
 import { fallbackSiteConfig } from "@/lib/site-config";
 
 type SitemapPage = { path: string; priority: string; changefreq: string; module?: FeatureKey };
@@ -35,6 +36,7 @@ const pages: SitemapPage[] = [
   { path: "/annuaire/soumettre", priority: "0.6", changefreq: "monthly", module: "directory" },
   { path: "/annuaire/departements", priority: "0.8", changefreq: "weekly", module: "geo" },
   { path: "/formations", priority: "0.9", changefreq: "weekly", module: "lms" },
+  { path: "/boutique", priority: "0.9", changefreq: "weekly", module: "shop" },
   { path: "/marketplace", priority: "0.9", changefreq: "daily", module: "marketplace" },
   { path: "/marketplace/publier", priority: "0.6", changefreq: "monthly", module: "marketplace" },
   { path: "/publicite", priority: "0.6", changefreq: "monthly", module: "adNetwork" },
@@ -48,11 +50,19 @@ export const Route = createFileRoute("/sitemap.xml")({
         const lastmod = new Date().toISOString().slice(0, 10);
         const dynamic: SitemapPage[] = [];
         try {
-          const [posts, topics, freePages] = await Promise.all([
+          const [posts, topics, freePages, shop] = await Promise.all([
             isModuleOn(site.modules, "blog") ? listPosts() : Promise.resolve([]),
             isModuleOn(site.modules, "forum") ? listTopics() : Promise.resolve([]),
             isModuleOn(site.modules, "pages") ? listPublicPages() : Promise.resolve([]),
+            isModuleOn(site.modules, "shop") ? getShopCatalog() : Promise.resolve(null),
           ]);
+          for (const product of shop?.products ?? []) {
+            dynamic.push({
+              path: `/boutique/${product.slug}`,
+              priority: "0.7",
+              changefreq: "weekly",
+            });
+          }
           for (const page of freePages) {
             if (page.is_home) continue; // l'accueil est déjà « / »
             dynamic.push({ path: `/pages/${page.slug}`, priority: "0.7", changefreq: "monthly" });

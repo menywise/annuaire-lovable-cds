@@ -54,8 +54,7 @@ export const startCourseCheckout = createServerFn({ method: "POST" })
     const email = typeof context.claims.email === "string" ? context.claims.email : null;
     const session = await createCheckoutSession({
       paymentId: payment.id,
-      label: payment.product_label,
-      amountCents: payment.amount_cents,
+      lines: [{ name: payment.product_label, unitAmount: payment.amount_cents, quantity: 1 }],
       currency: payment.currency,
       email,
       successUrl: `${back}?paiement=reussi`,

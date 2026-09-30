@@ -1,5 +1,6 @@
 import { Link, useNavigate, type LinkProps } from "@tanstack/react-router";
-import { Menu, Search, X } from "lucide-react";
+import { Menu, Search, ShoppingBag, X } from "lucide-react";
+import { useCart } from "@/hooks/useCart";
 import { useEffect, useState } from "react";
 import { useBrandSettings } from "@/hooks/useSiteSettings";
 import { useAuth } from "@/hooks/useAuth";
@@ -43,6 +44,12 @@ function buildPublicNav(): NavItem[] {
       label: "Formations",
       title: "Se former à son rythme, leçon par leçon",
       module: "lms",
+    },
+    {
+      to: "/boutique",
+      label: "Boutique",
+      title: "Objets, guides PDF et livres numériques",
+      module: "shop",
     },
     {
       to: "/marketplace",
@@ -106,6 +113,12 @@ function buildMemberNav(): NavItem[] {
       module: "lms",
     },
     {
+      to: "/mes-achats",
+      label: "Mes achats",
+      title: "Vos commandes et vos fichiers à télécharger",
+      module: "shop",
+    },
+    {
       to: "/mes-annonces",
       label: "Mes annonces",
       title: "Gérer vos annonces publiées",
@@ -139,6 +152,12 @@ function buildFooterColumns(): Array<{ title: string; links: NavItem[] }> {
           label: "Formations",
           title: "Le catalogue des formations",
           module: "lms",
+        },
+        {
+          to: "/boutique",
+          label: "Boutique",
+          title: "Objets, guides PDF et livres numériques",
+          module: "shop",
         },
         {
           to: "/composants",
@@ -348,16 +367,21 @@ export function SiteHeader() {
           ))}
         </nav>
 
-        {isFeatureOn("search") ? (
-          <Link
-            to="/recherche"
-            title="Rechercher dans tout le site"
-            aria-label="Rechercher"
-            className="ml-auto grid size-11 place-items-center rounded-md text-foreground hover:bg-accent"
-            activeProps={{ className: "bg-accent" }}
-          >
-            <Search className="size-5" aria-hidden="true" />
-          </Link>
+        {isFeatureOn("search") || isFeatureOn("shop") ? (
+          <div className="ml-auto flex items-center">
+            {isFeatureOn("search") ? (
+              <Link
+                to="/recherche"
+                title="Rechercher dans tout le site"
+                aria-label="Rechercher"
+                className="grid size-11 place-items-center rounded-md text-foreground hover:bg-accent"
+                activeProps={{ className: "bg-accent" }}
+              >
+                <Search className="size-5" aria-hidden="true" />
+              </Link>
+            ) : null}
+            {isFeatureOn("shop") ? <CartLink /> : null}
+          </div>
         ) : null}
 
         <div className="ml-auto hidden items-center gap-2 text-sm lg:flex">
@@ -467,5 +491,30 @@ export function PageShell({ children }: { children: React.ReactNode }) {
       <SiteFooter />
       <CookieBanner />
     </div>
+  );
+}
+
+/** Panier de la boutique dans l'en-tête, avec le nombre d'articles. */
+function CartLink() {
+  const { count } = useCart();
+  const label = count ? `Mon panier (${count} article${count > 1 ? "s" : ""})` : "Mon panier";
+  return (
+    <Link
+      to="/boutique/panier"
+      title={label}
+      aria-label={label}
+      className="relative grid size-11 place-items-center rounded-md text-foreground hover:bg-accent"
+      activeProps={{ className: "bg-accent" }}
+    >
+      <ShoppingBag className="size-5" aria-hidden="true" />
+      {count ? (
+        <span
+          aria-hidden="true"
+          className="absolute right-1 top-1 grid min-w-4 place-items-center rounded-full bg-primary px-1 text-[10px] font-semibold leading-4 text-primary-foreground"
+        >
+          {count > 9 ? "9+" : count}
+        </span>
+      ) : null}
+    </Link>
   );
 }

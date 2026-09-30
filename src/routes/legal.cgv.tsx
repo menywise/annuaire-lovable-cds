@@ -89,6 +89,42 @@ function CgvPage() {
           </ul>
         </Section>
       ) : null}
+      {isFeatureOn("shop") ? (
+        <Section title="Boutique">
+          <ul>
+            <li>
+              Les prix sont affichés en euros, toutes taxes comprises. Les frais de livraison et le
+              total sont indiqués dans le panier avant tout paiement. Le paiement se fait par carte
+              bancaire sur la page sécurisée de notre prestataire Stripe ; nous ne recevons jamais
+              vos coordonnées bancaires.
+            </li>
+            <li>
+              Objets : livrés à l'adresse saisie sur la page de paiement, dans les pays proposés à
+              cette étape, au plus tard trente jours après la commande (article L216-1 du Code de la
+              consommation). Le numéro de suivi apparaît dans « Mes achats » dès l'expédition.
+            </li>
+            <li>
+              Objets : vous disposez de quatorze jours après réception pour vous rétracter, sans
+              avoir à vous justifier (article L221-18). Écrivez-nous, puis renvoyez l'objet dans les
+              quatorze jours ; les frais de retour restent à votre charge. Le remboursement
+              intervient dans les quatorze jours, et au plus tard à la réception de l'objet.
+            </li>
+            <li>
+              Fichiers numériques (PDF, livres numériques) : téléchargeables depuis « Mes achats »
+              dès la confirmation du paiement. Avant de payer, vous demandez expressément leur
+              fourniture immédiate et renoncez à votre droit de rétractation (article L221-28 13°).
+              La date de cet accord est conservée avec la commande. Chaque achat se télécharge vingt
+              fois au plus ; écrivez-nous au-delà.
+            </li>
+            <li>
+              Les objets bénéficient de la garantie légale de conformité (deux ans, articles L217-3
+              et suivants) et de la garantie des vices cachés (articles 1641 et suivants du Code
+              civil). Un remboursement ferme le téléchargement des fichiers concernés. Les commandes
+              sont conservées dix ans, comme l'exige la loi pour les pièces comptables.
+            </li>
+          </ul>
+        </Section>
+      ) : null}
       <Section title="Garanties et responsabilité">
         <p>
           {editor} s'engage à mettre en œuvre les moyens nécessaires au bon fonctionnement du

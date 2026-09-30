@@ -26,30 +26,39 @@ export function stripeMode(): "absent" | "test" | "live" {
   return key.startsWith("sk_live_") || key.startsWith("rk_live_") ? "live" : "test";
 }
 
+export type CheckoutLine = { name: string; unitAmount: number; quantity: number };
+
 export type CheckoutInput = {
   paymentId: string;
-  label: string;
-  amountCents: number;
+  /** Lignes lues en base (formation, produits, livraison) : jamais envoyées par le navigateur. */
+  lines: ReadonlyArray<CheckoutLine>;
   currency: string;
   email: string | null;
   successUrl: string;
   cancelUrl: string;
+  /** Codes pays (FR, BE…) : Stripe demande alors l'adresse de livraison. */
+  shippingCountries?: ReadonlyArray<string>;
 };
 
-/** Crée une session Stripe Checkout (paiement unique). Le montant vient de la base. */
+/** Crée une session Stripe Checkout (paiement unique). Les montants viennent de la base. */
 export async function createCheckoutSession(input: CheckoutInput) {
   const params = new URLSearchParams({
     mode: "payment",
     locale: "fr",
-    "line_items[0][quantity]": "1",
-    "line_items[0][price_data][currency]": input.currency,
-    "line_items[0][price_data][unit_amount]": String(input.amountCents),
-    "line_items[0][price_data][product_data][name]": input.label,
     success_url: input.successUrl,
     cancel_url: input.cancelUrl,
     client_reference_id: input.paymentId,
     "metadata[payment_id]": input.paymentId,
     "payment_intent_data[metadata][payment_id]": input.paymentId,
+  });
+  input.lines.forEach((line, i) => {
+    params.set(`line_items[${i}][quantity]`, String(line.quantity));
+    params.set(`line_items[${i}][price_data][currency]`, input.currency);
+    params.set(`line_items[${i}][price_data][unit_amount]`, String(line.unitAmount));
+    params.set(`line_items[${i}][price_data][product_data][name]`, line.name);
+  });
+  (input.shippingCountries ?? []).forEach((country, i) => {
+    params.set(`shipping_address_collection[allowed_countries][${i}]`, country);
   });
   if (input.email) params.set("customer_email", input.email);
 

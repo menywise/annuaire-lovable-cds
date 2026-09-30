@@ -150,6 +150,18 @@ const modulesLinks: PlanLink[] = [
     module: "lms",
   },
   {
+    to: "/boutique",
+    label: "Boutique",
+    title: "Objets, guides PDF et livres numériques",
+    module: "shop",
+  },
+  {
+    to: "/mes-achats",
+    label: "Mes achats",
+    title: "Vos commandes et vos fichiers à télécharger",
+    module: "shop",
+  },
+  {
     to: "/marketplace",
     label: "Annonces",
     title: "Petites annonces entre membres",

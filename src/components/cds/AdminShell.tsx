@@ -87,6 +87,12 @@ function buildAdminNav(): AdminNavItem[] {
       module: "payments",
     },
     {
+      to: "/admin/boutique",
+      label: "Boutique",
+      title: "Produits, commandes à expédier et livraison",
+      module: "shop",
+    },
+    {
       to: "/admin/marketplace",
       label: "Annonces",
       title: "Modérer les annonces et les catégories",
