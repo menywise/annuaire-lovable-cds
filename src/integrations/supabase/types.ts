@@ -223,39 +223,39 @@ export type Database = {
       }
       blog_comments: {
         Row: {
-          moderated_at: string | null
-          moderated_by: string | null
-          moderation_note: string | null
           approved: boolean
           author_id: string
           author_name: string
           content: string
           created_at: string
           id: string
+          moderated_at: string | null
+          moderated_by: string | null
+          moderation_note: string | null
           post_id: string
         }
         Insert: {
-          moderated_at?: string | null
-          moderated_by?: string | null
-          moderation_note?: string | null
           approved?: boolean
           author_id: string
           author_name?: string
           content: string
           created_at?: string
           id?: string
-          post_id: string
-        }
-        Update: {
           moderated_at?: string | null
           moderated_by?: string | null
           moderation_note?: string | null
+          post_id: string
+        }
+        Update: {
           approved?: boolean
           author_id?: string
           author_name?: string
           content?: string
           created_at?: string
           id?: string
+          moderated_at?: string | null
+          moderated_by?: string | null
+          moderation_note?: string | null
           post_id?: string
         }
         Relationships: [
@@ -278,6 +278,7 @@ export type Database = {
           id: string
           published: boolean
           published_at: string | null
+          search_doc: unknown
           slug: string
           tags: string[]
           title: string
@@ -292,6 +293,7 @@ export type Database = {
           id?: string
           published?: boolean
           published_at?: string | null
+          search_doc?: unknown
           slug: string
           tags?: string[]
           title: string
@@ -306,6 +308,7 @@ export type Database = {
           id?: string
           published?: boolean
           published_at?: string | null
+          search_doc?: unknown
           slug?: string
           tags?: string[]
           title?: string
@@ -557,6 +560,7 @@ export type Database = {
           photos: string[]
           plan: string
           postal_code: string
+          search_doc: unknown
           slug: string
           status: string
           tags: string[]
@@ -590,6 +594,7 @@ export type Database = {
           photos?: string[]
           plan?: string
           postal_code?: string
+          search_doc?: unknown
           slug: string
           status?: string
           tags?: string[]
@@ -623,6 +628,7 @@ export type Database = {
           photos?: string[]
           plan?: string
           postal_code?: string
+          search_doc?: unknown
           slug?: string
           status?: string
           tags?: string[]
@@ -649,9 +655,6 @@ export type Database = {
       }
       directory_reviews: {
         Row: {
-          moderated_at: string | null
-          moderated_by: string | null
-          moderation_note: string | null
           approved: boolean
           author_id: string
           author_name: string
@@ -659,12 +662,12 @@ export type Database = {
           created_at: string
           id: string
           listing_id: string
+          moderated_at: string | null
+          moderated_by: string | null
+          moderation_note: string | null
           rating: number
         }
         Insert: {
-          moderated_at?: string | null
-          moderated_by?: string | null
-          moderation_note?: string | null
           approved?: boolean
           author_id: string
           author_name?: string
@@ -672,12 +675,12 @@ export type Database = {
           created_at?: string
           id?: string
           listing_id: string
-          rating: number
-        }
-        Update: {
           moderated_at?: string | null
           moderated_by?: string | null
           moderation_note?: string | null
+          rating: number
+        }
+        Update: {
           approved?: boolean
           author_id?: string
           author_name?: string
@@ -685,6 +688,9 @@ export type Database = {
           created_at?: string
           id?: string
           listing_id?: string
+          moderated_at?: string | null
+          moderated_by?: string | null
+          moderation_note?: string | null
           rating?: number
         }
         Relationships: [
@@ -706,6 +712,7 @@ export type Database = {
           position: number
           published: boolean
           question: string
+          search_doc: unknown
           updated_at: string
         }
         Insert: {
@@ -716,6 +723,7 @@ export type Database = {
           position?: number
           published?: boolean
           question: string
+          search_doc?: unknown
           updated_at?: string
         }
         Update: {
@@ -726,6 +734,7 @@ export type Database = {
           position?: number
           published?: boolean
           question?: string
+          search_doc?: unknown
           updated_at?: string
         }
         Relationships: []
@@ -833,39 +842,39 @@ export type Database = {
       }
       forum_replies: {
         Row: {
-          moderated_at: string | null
-          moderated_by: string | null
-          moderation_note: string | null
           accepted: boolean
           author_id: string
           author_name: string
           content: string
           created_at: string
           id: string
+          moderated_at: string | null
+          moderated_by: string | null
+          moderation_note: string | null
           topic_id: string
         }
         Insert: {
-          moderated_at?: string | null
-          moderated_by?: string | null
-          moderation_note?: string | null
           accepted?: boolean
           author_id: string
           author_name?: string
           content: string
           created_at?: string
           id?: string
-          topic_id: string
-        }
-        Update: {
           moderated_at?: string | null
           moderated_by?: string | null
           moderation_note?: string | null
+          topic_id: string
+        }
+        Update: {
           accepted?: boolean
           author_id?: string
           author_name?: string
           content?: string
           created_at?: string
           id?: string
+          moderated_at?: string | null
+          moderated_by?: string | null
+          moderation_note?: string | null
           topic_id?: string
         }
         Relationships: [
@@ -880,9 +889,6 @@ export type Database = {
       }
       forum_topics: {
         Row: {
-          moderated_at: string | null
-          moderated_by: string | null
-          moderation_note: string | null
           author_id: string
           author_name: string
           category_id: string | null
@@ -891,14 +897,15 @@ export type Database = {
           id: string
           last_activity_at: string
           locked: boolean
+          moderated_at: string | null
+          moderated_by: string | null
+          moderation_note: string | null
+          search_doc: unknown
           title: string
           updated_at: string
           views: number
         }
         Insert: {
-          moderated_at?: string | null
-          moderated_by?: string | null
-          moderation_note?: string | null
           author_id: string
           author_name?: string
           category_id?: string | null
@@ -907,14 +914,15 @@ export type Database = {
           id?: string
           last_activity_at?: string
           locked?: boolean
+          moderated_at?: string | null
+          moderated_by?: string | null
+          moderation_note?: string | null
+          search_doc?: unknown
           title: string
           updated_at?: string
           views?: number
         }
         Update: {
-          moderated_at?: string | null
-          moderated_by?: string | null
-          moderation_note?: string | null
           author_id?: string
           author_name?: string
           category_id?: string | null
@@ -923,6 +931,10 @@ export type Database = {
           id?: string
           last_activity_at?: string
           locked?: boolean
+          moderated_at?: string | null
+          moderated_by?: string | null
+          moderation_note?: string | null
+          search_doc?: unknown
           title?: string
           updated_at?: string
           views?: number
@@ -1021,6 +1033,7 @@ export type Database = {
           position: number
           price_cents: number
           published: boolean
+          search_doc: unknown
           slug: string
           title: string
           updated_at: string
@@ -1037,6 +1050,7 @@ export type Database = {
           position?: number
           price_cents?: number
           published?: boolean
+          search_doc?: unknown
           slug: string
           title: string
           updated_at?: string
@@ -1053,6 +1067,7 @@ export type Database = {
           position?: number
           price_cents?: number
           published?: boolean
+          search_doc?: unknown
           slug?: string
           title?: string
           updated_at?: string
@@ -1063,22 +1078,22 @@ export type Database = {
         Row: {
           course_id: string
           enrolled_at: string
-          paid_at: string | null
           id: string
+          paid_at: string | null
           user_id: string
         }
         Insert: {
           course_id: string
           enrolled_at?: string
-          paid_at?: string | null
           id?: string
+          paid_at?: string | null
           user_id: string
         }
         Update: {
           course_id?: string
           enrolled_at?: string
-          paid_at?: string | null
           id?: string
+          paid_at?: string | null
           user_id?: string
         }
         Relationships: [
@@ -1245,6 +1260,7 @@ export type Database = {
           negotiable: boolean
           photos: string[]
           price_cents: number
+          search_doc: unknown
           seller_id: string
           seller_name: string
           slug: string
@@ -1266,6 +1282,7 @@ export type Database = {
           negotiable?: boolean
           photos?: string[]
           price_cents?: number
+          search_doc?: unknown
           seller_id: string
           seller_name?: string
           slug: string
@@ -1287,6 +1304,7 @@ export type Database = {
           negotiable?: boolean
           photos?: string[]
           price_cents?: number
+          search_doc?: unknown
           seller_id?: string
           seller_name?: string
           slug?: string
@@ -1382,99 +1400,6 @@ export type Database = {
         }
         Relationships: []
       }
-      payments: {
-        Row: {
-          amount_cents: number
-          course_id: string | null
-          created_at: string
-          currency: string
-          id: string
-          paid_at: string | null
-          product_label: string
-          refunded_at: string | null
-          status: string
-          stripe_payment_intent: string | null
-          stripe_session_id: string | null
-          user_id: string
-          waiver_accepted_at: string
-        }
-        Insert: {
-          amount_cents: number
-          course_id?: string | null
-          created_at?: string
-          currency: string
-          id?: string
-          paid_at?: string | null
-          product_label: string
-          refunded_at?: string | null
-          status?: string
-          stripe_payment_intent?: string | null
-          stripe_session_id?: string | null
-          user_id: string
-          waiver_accepted_at: string
-        }
-        Update: {
-          amount_cents?: number
-          course_id?: string | null
-          created_at?: string
-          currency?: string
-          id?: string
-          paid_at?: string | null
-          product_label?: string
-          refunded_at?: string | null
-          status?: string
-          stripe_payment_intent?: string | null
-          stripe_session_id?: string | null
-          user_id?: string
-          waiver_accepted_at?: string
-        }
-        Relationships: []
-      }
-      reports: {
-        Row: {
-          admin_note: string | null
-          content_id: string | null
-          content_type: string
-          created_at: string
-          details: string | null
-          handled_at: string | null
-          handled_by: string | null
-          id: string
-          reason: string
-          reported_url: string | null
-          reporter_id: string
-          status: string
-        }
-        Insert: {
-          admin_note?: string | null
-          content_id?: string | null
-          content_type: string
-          created_at?: string
-          details?: string | null
-          handled_at?: string | null
-          handled_by?: string | null
-          id?: string
-          reason: string
-          reported_url?: string | null
-          reporter_id: string
-          status?: string
-        }
-        Update: {
-          admin_note?: string | null
-          content_id?: string | null
-          content_type?: string
-          created_at?: string
-          details?: string | null
-          handled_at?: string | null
-          handled_by?: string | null
-          id?: string
-          reason?: string
-          reported_url?: string | null
-          reporter_id?: string
-          status?: string
-        }
-        Relationships: []
-      }
       member_profiles: {
         Row: {
           accepts_messages: boolean
@@ -1484,6 +1409,7 @@ export type Database = {
           display_name: string
           job_title: string
           listed: boolean
+          search_doc: unknown
           updated_at: string
           user_id: string
           website: string | null
@@ -1496,6 +1422,7 @@ export type Database = {
           display_name?: string
           job_title?: string
           listed?: boolean
+          search_doc?: unknown
           updated_at?: string
           user_id: string
           website?: string | null
@@ -1508,6 +1435,7 @@ export type Database = {
           display_name?: string
           job_title?: string
           listed?: boolean
+          search_doc?: unknown
           updated_at?: string
           user_id?: string
           website?: string | null
@@ -1588,6 +1516,7 @@ export type Database = {
           is_home: boolean
           published: boolean
           published_at: string | null
+          search_doc: unknown
           slug: string
           title: string
           updated_at: string
@@ -1601,6 +1530,7 @@ export type Database = {
           is_home?: boolean
           published?: boolean
           published_at?: string | null
+          search_doc?: unknown
           slug: string
           title: string
           updated_at?: string
@@ -1614,12 +1544,69 @@ export type Database = {
           is_home?: boolean
           published?: boolean
           published_at?: string | null
+          search_doc?: unknown
           slug?: string
           title?: string
           updated_at?: string
           updated_by?: string | null
         }
         Relationships: []
+      }
+      payments: {
+        Row: {
+          amount_cents: number
+          course_id: string | null
+          created_at: string
+          currency: string
+          id: string
+          paid_at: string | null
+          product_label: string
+          refunded_at: string | null
+          status: string
+          stripe_payment_intent: string | null
+          stripe_session_id: string | null
+          user_id: string
+          waiver_accepted_at: string
+        }
+        Insert: {
+          amount_cents: number
+          course_id?: string | null
+          created_at?: string
+          currency: string
+          id?: string
+          paid_at?: string | null
+          product_label: string
+          refunded_at?: string | null
+          status?: string
+          stripe_payment_intent?: string | null
+          stripe_session_id?: string | null
+          user_id: string
+          waiver_accepted_at: string
+        }
+        Update: {
+          amount_cents?: number
+          course_id?: string | null
+          created_at?: string
+          currency?: string
+          id?: string
+          paid_at?: string | null
+          product_label?: string
+          refunded_at?: string | null
+          status?: string
+          stripe_payment_intent?: string | null
+          stripe_session_id?: string | null
+          user_id?: string
+          waiver_accepted_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "lms_courses"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       pricing_plans: {
         Row: {
@@ -1690,43 +1677,88 @@ export type Database = {
         }
         Relationships: []
       }
+      reports: {
+        Row: {
+          admin_note: string | null
+          content_id: string | null
+          content_type: string
+          created_at: string
+          details: string | null
+          handled_at: string | null
+          handled_by: string | null
+          id: string
+          reason: string
+          reported_url: string | null
+          reporter_id: string
+          status: string
+        }
+        Insert: {
+          admin_note?: string | null
+          content_id?: string | null
+          content_type: string
+          created_at?: string
+          details?: string | null
+          handled_at?: string | null
+          handled_by?: string | null
+          id?: string
+          reason: string
+          reported_url?: string | null
+          reporter_id: string
+          status?: string
+        }
+        Update: {
+          admin_note?: string | null
+          content_id?: string | null
+          content_type?: string
+          created_at?: string
+          details?: string | null
+          handled_at?: string | null
+          handled_by?: string | null
+          id?: string
+          reason?: string
+          reported_url?: string | null
+          reporter_id?: string
+          status?: string
+        }
+        Relationships: []
+      }
       reviews: {
         Row: {
-          moderated_at: string | null
-          moderated_by: string | null
-          moderation_note: string | null
           approved: boolean
           author_id: string
           author_name: string
           content: string
           created_at: string
           id: string
+          moderated_at: string | null
+          moderated_by: string | null
+          moderation_note: string | null
           rating: number
           title: string
         }
         Insert: {
-          moderated_at?: string | null
-          moderated_by?: string | null
-          moderation_note?: string | null
           approved?: boolean
           author_id: string
           author_name?: string
           content: string
           created_at?: string
           id?: string
+          moderated_at?: string | null
+          moderated_by?: string | null
+          moderation_note?: string | null
           rating: number
           title?: string
         }
         Update: {
-          moderated_at?: string | null
-          moderated_by?: string | null
-          moderation_note?: string | null
           approved?: boolean
           author_id?: string
           author_name?: string
           content?: string
           created_at?: string
           id?: string
+          moderated_at?: string | null
+          moderated_by?: string | null
+          moderation_note?: string | null
           rating?: number
           title?: string
         }
@@ -1851,9 +1883,6 @@ export type Database = {
       }
       testimonials: {
         Row: {
-          moderated_at: string | null
-          moderated_by: string | null
-          moderation_note: string | null
           approved: boolean
           author_id: string | null
           author_name: string
@@ -1863,15 +1892,15 @@ export type Database = {
           created_at: string
           featured: boolean
           id: string
+          moderated_at: string | null
+          moderated_by: string | null
+          moderation_note: string | null
           outcome: string
           position: number
           role_title: string
           updated_at: string
         }
         Insert: {
-          moderated_at?: string | null
-          moderated_by?: string | null
-          moderation_note?: string | null
           approved?: boolean
           author_id?: string | null
           author_name: string
@@ -1881,15 +1910,15 @@ export type Database = {
           created_at?: string
           featured?: boolean
           id?: string
+          moderated_at?: string | null
+          moderated_by?: string | null
+          moderation_note?: string | null
           outcome?: string
           position?: number
           role_title?: string
           updated_at?: string
         }
         Update: {
-          moderated_at?: string | null
-          moderated_by?: string | null
-          moderation_note?: string | null
           approved?: boolean
           author_id?: string | null
           author_name?: string
@@ -1899,6 +1928,9 @@ export type Database = {
           created_at?: string
           featured?: boolean
           id?: string
+          moderated_at?: string | null
+          moderated_by?: string | null
+          moderation_note?: string | null
           outcome?: string
           position?: number
           role_title?: string
@@ -1952,6 +1984,11 @@ export type Database = {
         Args: { _full_name?: string }
         Returns: Database["public"]["Enums"]["app_role"]
       }
+      can_access_lesson: {
+        Args: { _lesson_id: string; _user_id: string }
+        Returns: boolean
+      }
+      delete_my_account: { Args: never; Returns: undefined }
       forum_top_members: {
         Args: { _since?: string }
         Returns: {
@@ -1970,11 +2007,6 @@ export type Database = {
         }
         Returns: boolean
       }
-      can_access_lesson: {
-        Args: { _lesson_id: string; _user_id: string }
-        Returns: boolean
-      }
-      delete_my_account: { Args: never; Returns: undefined }
       increment_listing_views: {
         Args: { _listing_id: string }
         Returns: undefined
@@ -1994,45 +2026,56 @@ export type Database = {
       member_accepts_messages: { Args: { _user_id: string }; Returns: boolean }
       module_defaults: { Args: never; Returns: Json }
       module_enabled: { Args: { _key: string }; Returns: boolean }
-      purge_contact_messages: { Args: never; Returns: number }
-      recette_purge: { Args: { _membre?: string | null }; Returns: Json }
-      search_site: {
-        Args: { _q: string; _limit?: number }
-        Returns: {
-          kind: string
-          title: string
-          excerpt: string
-          url: string
-          rank: number
-          updated_at: string | null
-        }[]
-      }
-      payment_start_course: {
-        Args: { _user_id: string; _course_id: string; _waiver: boolean }
-        Returns: {
-          id: string
-          amount_cents: number
-          currency: string
-          product_label: string
-          course_slug: string
-          superseded_sessions: string[]
-        }[]
-      }
       payment_attach_session: {
         Args: { _payment_id: string; _session_id: string }
         Returns: undefined
       }
       payment_mark_paid: {
-        Args: { _session_id: string; _intent: string; _amount: number; _currency: string }
+        Args: {
+          _amount: number
+          _currency: string
+          _intent: string
+          _session_id: string
+        }
         Returns: boolean
       }
-      payment_mark_status: { Args: { _session_id: string; _status: string }; Returns: boolean }
       payment_mark_refunded: { Args: { _intent: string }; Returns: boolean }
-      valid_page_data: { Args: { _data: Json }; Returns: boolean }
+      payment_mark_status: {
+        Args: { _session_id: string; _status: string }
+        Returns: boolean
+      }
+      payment_start_course: {
+        Args: { _course_id: string; _user_id: string; _waiver: boolean }
+        Returns: {
+          amount_cents: number
+          course_slug: string
+          currency: string
+          id: string
+          product_label: string
+          superseded_sessions: string[]
+        }[]
+      }
+      purge_contact_messages: { Args: never; Returns: number }
+      recette_purge: { Args: { _membre?: string }; Returns: Json }
       request_directory_claim: {
         Args: { _listing_id: string }
         Returns: boolean
       }
+      search_excerpt: { Args: { _t: string }; Returns: string }
+      search_query: { Args: { _q: string }; Returns: unknown }
+      search_site: {
+        Args: { _limit?: number; _q: string }
+        Returns: {
+          excerpt: string
+          kind: string
+          rank: number
+          title: string
+          updated_at: string
+          url: string
+        }[]
+      }
+      search_tags: { Args: { _tags: string[] }; Returns: string }
+      valid_page_data: { Args: { _data: Json }; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "user"
