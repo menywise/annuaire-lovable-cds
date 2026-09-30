@@ -28,7 +28,7 @@ export const Route = createFileRoute("/lovable/email/auth/webhook")({
           sendUrl: process.env['LOVABLE_SEND_URL'],
           emails: {
             signup: {
-              subject: 'Confirm your email',
+              subject: 'Confirmez votre adresse e-mail',
               render: (data) =>
                 React.createElement(SignupEmail, {
                   siteName: SITE_NAME,
@@ -38,7 +38,7 @@ export const Route = createFileRoute("/lovable/email/auth/webhook")({
                 }),
             },
             invite: {
-              subject: "You've been invited",
+              subject: 'Vous êtes invité à nous rejoindre',
               render: (data) =>
                 React.createElement(InviteEmail, {
                   siteName: SITE_NAME,
@@ -47,26 +47,29 @@ export const Route = createFileRoute("/lovable/email/auth/webhook")({
                 }),
             },
             magiclink: {
-              subject: 'Your login link',
+              subject: 'Votre lien de connexion',
               render: (data) =>
                 React.createElement(MagicLinkEmail, {
                   siteName: SITE_NAME,
+                  siteUrl: SITE_URL,
                   confirmationUrl: data.url,
                 }),
             },
             recovery: {
-              subject: 'Reset your password',
+              subject: 'Réinitialisation de votre mot de passe',
               render: (data) =>
                 React.createElement(RecoveryEmail, {
                   siteName: SITE_NAME,
+                  siteUrl: SITE_URL,
                   confirmationUrl: data.url,
                 }),
             },
             email_change: {
-              subject: 'Confirm your new email',
+              subject: 'Confirmez votre nouvelle adresse e-mail',
               render: (data) =>
                 React.createElement(EmailChangeEmail, {
                   siteName: SITE_NAME,
+                  siteUrl: SITE_URL,
                   oldEmail: data.old_email ?? '',
                   email: data.email,
                   newEmail: data.new_email ?? '',
@@ -74,9 +77,13 @@ export const Route = createFileRoute("/lovable/email/auth/webhook")({
                 }),
             },
             reauthentication: {
-              subject: 'Your verification code',
+              subject: 'Votre code de vérification',
               render: (data) =>
-                React.createElement(ReauthenticationEmail, { token: data.token ?? '' }),
+                React.createElement(ReauthenticationEmail, {
+                  siteName: SITE_NAME,
+                  siteUrl: SITE_URL,
+                  token: data.token ?? '',
+                }),
             },
           },
         })
