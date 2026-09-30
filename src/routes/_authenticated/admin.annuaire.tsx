@@ -185,10 +185,11 @@ function AdminDirectoryPage() {
       {listings === null ? (
         <p className="mt-6 text-sm text-muted-foreground">Chargement…</p>
       ) : tab === "fiches" ? (
-        <ul className="mt-6 space-y-3">
+        <>
           {listings.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Aucune fiche pour l'instant.</p>
+            <p className="mt-6 text-sm text-muted-foreground">Aucune fiche pour l'instant.</p>
           ) : null}
+        <ul className="mt-6 space-y-3">
           {listings.map((item) => (
             <li key={item.id} className="rounded-xl border border-border bg-card p-5">
               <div className="flex flex-wrap items-center gap-2">
@@ -335,15 +336,17 @@ function AdminDirectoryPage() {
             </li>
           ))}
         </ul>
+        </>
       ) : tab === "categories" ? (
         <div className="mt-6">
           <CategoryManager table="directory_categories" withDescription placeholder="Plombiers" usage="fiches" />
         </div>
       ) : tab === "avis" ? (
-        <ul className="mt-6 space-y-3">
+        <>
           {reviews.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Aucun avis reçu.</p>
+            <p className="mt-6 text-sm text-muted-foreground">Aucun avis reçu.</p>
           ) : null}
+        <ul className="mt-6 space-y-3">
           {reviews.map((item) => (
             <li key={item.id} className="rounded-xl border border-border bg-card p-5">
               <p className="text-sm font-semibold text-foreground">
@@ -387,13 +390,15 @@ function AdminDirectoryPage() {
             </li>
           ))}
         </ul>
+        </>
       ) : (
-        <ul className="mt-6 space-y-3">
+        <>
           {pendingClaims.length === 0 ? (
-            <p className="text-sm text-muted-foreground">
+            <p className="mt-6 text-sm text-muted-foreground">
               Aucune demande de revendication en attente.
             </p>
           ) : null}
+        <ul className="mt-6 space-y-3">
           {pendingClaims.map((item) => (
             <li key={item.id} className="rounded-xl border border-border bg-card p-5">
               <p className="text-sm font-semibold text-foreground">{item.name}</p>
@@ -420,6 +425,7 @@ function AdminDirectoryPage() {
             </li>
           ))}
         </ul>
+        </>
       )}
     </AdminShell>
   );

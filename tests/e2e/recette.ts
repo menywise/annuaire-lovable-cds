@@ -673,10 +673,14 @@ async function warmUp(browser: Browser, pages: typeof QA_PAGES) {
   if (!/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(BASE)) return;
   const context = await browser.newContext();
   const page = await context.newPage();
+  // Pages dynamiques comprises (formation, fiche…) : elles chargent leurs propres dépendances.
+  const resolved = new Map<string, string>();
   for (const qa of pages) {
-    if (qa.discover || qa.raw) continue;
+    if (qa.raw) continue;
+    const url = qa.discover ? await discover(page, qa, resolved).catch(() => null) : qa.path;
+    if (!url) continue;
     await page
-      .goto(`${BASE}${qa.path}`, { waitUntil: "load", timeout: 30_000 })
+      .goto(`${BASE}${url}`, { waitUntil: "load", timeout: 30_000 })
       .then(() => page.waitForLoadState("networkidle", { timeout: 5_000 }))
       .catch(() => undefined);
   }
