@@ -29,6 +29,7 @@ export const MODULES = [
   { key: "reports", label: "Signalements de contenus", requires: [], defaultOn: true },
   { key: "search", label: "Recherche globale", requires: [], defaultOn: true },
   { key: "shop", label: "Boutique (objets, PDF, e-books)", requires: [], defaultOn: false },
+  { key: "watch", label: "Veille de sites (technologies)", requires: [], defaultOn: false },
 ] as const satisfies ReadonlyArray<{
   key: string;
   label: string;
@@ -116,12 +117,14 @@ export const PROTECTED_PATH_MODULES: ReadonlyArray<{ prefix: string; anyOf: read
   { prefix: "/admin/regie", anyOf: ["adNetwork"] },
   { prefix: "/admin/signalements", anyOf: ["reports"] },
   { prefix: "/admin/temoignages", anyOf: ["testimonials"] },
+  { prefix: "/admin/veille", anyOf: ["watch"] },
   { prefix: "/crm", anyOf: ["crm"] },
   { prefix: "/decouvrir", anyOf: ["onboarding"] },
   { prefix: "/mes-achats", anyOf: ["shop"] },
   { prefix: "/mes-annonces", anyOf: ["marketplace"] },
   { prefix: "/mes-formations", anyOf: ["lms"] },
   { prefix: "/messagerie", anyOf: ["messaging"] },
+  { prefix: "/proposer-un-site", anyOf: ["watch"] },
 ];
 
 /** Vrai si l'adresse appartient à un module entièrement éteint. */

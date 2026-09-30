@@ -42,6 +42,7 @@ import { Route as AuthenticatedMesAchatsRouteImport } from './routes/_authentica
 import { Route as AuthenticatedMesAnnoncesRouteImport } from './routes/_authenticated/mes-annonces'
 import { Route as AuthenticatedMesFormationsRouteImport } from './routes/_authenticated/mes-formations'
 import { Route as AuthenticatedProfilRouteImport } from './routes/_authenticated/profil'
+import { Route as AuthenticatedProposerUnSiteRouteImport } from './routes/_authenticated/proposer-un-site'
 import { Route as AuthenticatedTableauDeBordRouteImport } from './routes/_authenticated/tableau-de-bord'
 import { Route as AnnuaireIndexRouteImport } from './routes/annuaire.index'
 import { Route as AnnuaireSlugRouteImport } from './routes/annuaire.$slug'
@@ -91,6 +92,7 @@ import { Route as AuthenticatedAdminRegieRouteImport } from './routes/_authentic
 import { Route as AuthenticatedAdminSignalementsRouteImport } from './routes/_authenticated/admin.signalements'
 import { Route as AuthenticatedAdminTemoignagesRouteImport } from './routes/_authenticated/admin.temoignages'
 import { Route as AuthenticatedAdminUtilisateursRouteImport } from './routes/_authenticated/admin.utilisateurs'
+import { Route as AuthenticatedAdminVeilleRouteImport } from './routes/_authenticated/admin.veille'
 import { Route as AuthenticatedCrmIndexRouteImport } from './routes/_authenticated/crm.index'
 import { Route as AuthenticatedCrmActionsRouteImport } from './routes/_authenticated/crm.actions'
 import { Route as AuthenticatedCrmProspectsRouteImport } from './routes/_authenticated/crm.prospects'
@@ -100,6 +102,8 @@ import { Route as AnnuaireCategorieSlugRouteImport } from './routes/annuaire.cat
 import { Route as AnnuaireCommuneCodeRouteImport } from './routes/annuaire.commune.$code'
 import { Route as AnnuaireDepartementSlugRouteImport } from './routes/annuaire.departement.$slug'
 import { Route as ApiCronPurgeContactRouteImport } from './routes/api.cron.purge-contact'
+import { Route as ApiCronVeilleRouteImport } from './routes/api.cron.veille'
+import { Route as ApiHooksVeilleRouteImport } from './routes/api.hooks.veille'
 import { Route as FormationSlugIndexRouteImport } from './routes/formation.$slug.index'
 import { Route as ForumCategorieSlugRouteImport } from './routes/forum.categorie.$slug'
 import { Route as AuthenticatedCrmProspectProspectIdRouteImport } from './routes/_authenticated/crm.prospect.$prospectId'
@@ -275,6 +279,12 @@ const AuthenticatedProfilRoute = AuthenticatedProfilRouteImport.update({
   path: '/profil',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedProposerUnSiteRoute =
+  AuthenticatedProposerUnSiteRouteImport.update({
+    id: '/proposer-un-site',
+    path: '/proposer-un-site',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedTableauDeBordRoute =
   AuthenticatedTableauDeBordRouteImport.update({
     id: '/tableau-de-bord',
@@ -539,6 +549,12 @@ const AuthenticatedAdminUtilisateursRoute =
     path: '/admin/utilisateurs',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAdminVeilleRoute =
+  AuthenticatedAdminVeilleRouteImport.update({
+    id: '/admin/veille',
+    path: '/admin/veille',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedCrmIndexRoute = AuthenticatedCrmIndexRouteImport.update({
   id: '/crm/',
   path: '/crm/',
@@ -585,6 +601,16 @@ const AnnuaireDepartementSlugRoute = AnnuaireDepartementSlugRouteImport.update({
 const ApiCronPurgeContactRoute = ApiCronPurgeContactRouteImport.update({
   id: '/api/cron/purge-contact',
   path: '/api/cron/purge-contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiCronVeilleRoute = ApiCronVeilleRouteImport.update({
+  id: '/api/cron/veille',
+  path: '/api/cron/veille',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiHooksVeilleRoute = ApiHooksVeilleRouteImport.update({
+  id: '/api/hooks/veille',
+  path: '/api/hooks/veille',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FormationSlugIndexRoute = FormationSlugIndexRouteImport.update({
@@ -659,6 +685,7 @@ export interface FileRoutesByFullPath {
   '/mes-annonces': typeof AuthenticatedMesAnnoncesRoute
   '/mes-formations': typeof AuthenticatedMesFormationsRoute
   '/profil': typeof AuthenticatedProfilRoute
+  '/proposer-un-site': typeof AuthenticatedProposerUnSiteRoute
   '/tableau-de-bord': typeof AuthenticatedTableauDeBordRoute
   '/annuaire/$slug': typeof AnnuaireSlugRoute
   '/annuaire/departements': typeof AnnuaireDepartementsRoute
@@ -707,6 +734,7 @@ export interface FileRoutesByFullPath {
   '/admin/signalements': typeof AuthenticatedAdminSignalementsRoute
   '/admin/temoignages': typeof AuthenticatedAdminTemoignagesRoute
   '/admin/utilisateurs': typeof AuthenticatedAdminUtilisateursRoute
+  '/admin/veille': typeof AuthenticatedAdminVeilleRoute
   '/crm/actions': typeof AuthenticatedCrmActionsRoute
   '/crm/prospects': typeof AuthenticatedCrmProspectsRoute
   '/messagerie/$conversationId': typeof AuthenticatedMessagerieConversationIdRoute
@@ -714,6 +742,8 @@ export interface FileRoutesByFullPath {
   '/annuaire/commune/$code': typeof AnnuaireCommuneCodeRoute
   '/annuaire/departement/$slug': typeof AnnuaireDepartementSlugRoute
   '/api/cron/purge-contact': typeof ApiCronPurgeContactRoute
+  '/api/cron/veille': typeof ApiCronVeilleRoute
+  '/api/hooks/veille': typeof ApiHooksVeilleRoute
   '/forum/categorie/$slug': typeof ForumCategorieSlugRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/crm/': typeof AuthenticatedCrmIndexRoute
@@ -758,6 +788,7 @@ export interface FileRoutesByTo {
   '/mes-annonces': typeof AuthenticatedMesAnnoncesRoute
   '/mes-formations': typeof AuthenticatedMesFormationsRoute
   '/profil': typeof AuthenticatedProfilRoute
+  '/proposer-un-site': typeof AuthenticatedProposerUnSiteRoute
   '/tableau-de-bord': typeof AuthenticatedTableauDeBordRoute
   '/annuaire/$slug': typeof AnnuaireSlugRoute
   '/annuaire/departements': typeof AnnuaireDepartementsRoute
@@ -806,6 +837,7 @@ export interface FileRoutesByTo {
   '/admin/signalements': typeof AuthenticatedAdminSignalementsRoute
   '/admin/temoignages': typeof AuthenticatedAdminTemoignagesRoute
   '/admin/utilisateurs': typeof AuthenticatedAdminUtilisateursRoute
+  '/admin/veille': typeof AuthenticatedAdminVeilleRoute
   '/crm/actions': typeof AuthenticatedCrmActionsRoute
   '/crm/prospects': typeof AuthenticatedCrmProspectsRoute
   '/messagerie/$conversationId': typeof AuthenticatedMessagerieConversationIdRoute
@@ -813,6 +845,8 @@ export interface FileRoutesByTo {
   '/annuaire/commune/$code': typeof AnnuaireCommuneCodeRoute
   '/annuaire/departement/$slug': typeof AnnuaireDepartementSlugRoute
   '/api/cron/purge-contact': typeof ApiCronPurgeContactRoute
+  '/api/cron/veille': typeof ApiCronVeilleRoute
+  '/api/hooks/veille': typeof ApiHooksVeilleRoute
   '/forum/categorie/$slug': typeof ForumCategorieSlugRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/crm': typeof AuthenticatedCrmIndexRoute
@@ -859,6 +893,7 @@ export interface FileRoutesById {
   '/_authenticated/mes-annonces': typeof AuthenticatedMesAnnoncesRoute
   '/_authenticated/mes-formations': typeof AuthenticatedMesFormationsRoute
   '/_authenticated/profil': typeof AuthenticatedProfilRoute
+  '/_authenticated/proposer-un-site': typeof AuthenticatedProposerUnSiteRoute
   '/_authenticated/tableau-de-bord': typeof AuthenticatedTableauDeBordRoute
   '/annuaire/$slug': typeof AnnuaireSlugRoute
   '/annuaire/departements': typeof AnnuaireDepartementsRoute
@@ -907,6 +942,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/signalements': typeof AuthenticatedAdminSignalementsRoute
   '/_authenticated/admin/temoignages': typeof AuthenticatedAdminTemoignagesRoute
   '/_authenticated/admin/utilisateurs': typeof AuthenticatedAdminUtilisateursRoute
+  '/_authenticated/admin/veille': typeof AuthenticatedAdminVeilleRoute
   '/_authenticated/crm/actions': typeof AuthenticatedCrmActionsRoute
   '/_authenticated/crm/prospects': typeof AuthenticatedCrmProspectsRoute
   '/_authenticated/messagerie/$conversationId': typeof AuthenticatedMessagerieConversationIdRoute
@@ -914,6 +950,8 @@ export interface FileRoutesById {
   '/annuaire/commune/$code': typeof AnnuaireCommuneCodeRoute
   '/annuaire/departement/$slug': typeof AnnuaireDepartementSlugRoute
   '/api/cron/purge-contact': typeof ApiCronPurgeContactRoute
+  '/api/cron/veille': typeof ApiCronVeilleRoute
+  '/api/hooks/veille': typeof ApiHooksVeilleRoute
   '/forum/categorie/$slug': typeof ForumCategorieSlugRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/crm/': typeof AuthenticatedCrmIndexRoute
@@ -960,6 +998,7 @@ export interface FileRouteTypes {
     | '/mes-annonces'
     | '/mes-formations'
     | '/profil'
+    | '/proposer-un-site'
     | '/tableau-de-bord'
     | '/annuaire/$slug'
     | '/annuaire/departements'
@@ -1008,6 +1047,7 @@ export interface FileRouteTypes {
     | '/admin/signalements'
     | '/admin/temoignages'
     | '/admin/utilisateurs'
+    | '/admin/veille'
     | '/crm/actions'
     | '/crm/prospects'
     | '/messagerie/$conversationId'
@@ -1015,6 +1055,8 @@ export interface FileRouteTypes {
     | '/annuaire/commune/$code'
     | '/annuaire/departement/$slug'
     | '/api/cron/purge-contact'
+    | '/api/cron/veille'
+    | '/api/hooks/veille'
     | '/forum/categorie/$slug'
     | '/admin/'
     | '/crm/'
@@ -1059,6 +1101,7 @@ export interface FileRouteTypes {
     | '/mes-annonces'
     | '/mes-formations'
     | '/profil'
+    | '/proposer-un-site'
     | '/tableau-de-bord'
     | '/annuaire/$slug'
     | '/annuaire/departements'
@@ -1107,6 +1150,7 @@ export interface FileRouteTypes {
     | '/admin/signalements'
     | '/admin/temoignages'
     | '/admin/utilisateurs'
+    | '/admin/veille'
     | '/crm/actions'
     | '/crm/prospects'
     | '/messagerie/$conversationId'
@@ -1114,6 +1158,8 @@ export interface FileRouteTypes {
     | '/annuaire/commune/$code'
     | '/annuaire/departement/$slug'
     | '/api/cron/purge-contact'
+    | '/api/cron/veille'
+    | '/api/hooks/veille'
     | '/forum/categorie/$slug'
     | '/admin'
     | '/crm'
@@ -1159,6 +1205,7 @@ export interface FileRouteTypes {
     | '/_authenticated/mes-annonces'
     | '/_authenticated/mes-formations'
     | '/_authenticated/profil'
+    | '/_authenticated/proposer-un-site'
     | '/_authenticated/tableau-de-bord'
     | '/annuaire/$slug'
     | '/annuaire/departements'
@@ -1207,6 +1254,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/signalements'
     | '/_authenticated/admin/temoignages'
     | '/_authenticated/admin/utilisateurs'
+    | '/_authenticated/admin/veille'
     | '/_authenticated/crm/actions'
     | '/_authenticated/crm/prospects'
     | '/_authenticated/messagerie/$conversationId'
@@ -1214,6 +1262,8 @@ export interface FileRouteTypes {
     | '/annuaire/commune/$code'
     | '/annuaire/departement/$slug'
     | '/api/cron/purge-contact'
+    | '/api/cron/veille'
+    | '/api/hooks/veille'
     | '/forum/categorie/$slug'
     | '/_authenticated/admin/'
     | '/_authenticated/crm/'
@@ -1283,6 +1333,8 @@ export interface RootRouteChildren {
   AnnuaireCommuneCodeRoute: typeof AnnuaireCommuneCodeRoute
   AnnuaireDepartementSlugRoute: typeof AnnuaireDepartementSlugRoute
   ApiCronPurgeContactRoute: typeof ApiCronPurgeContactRoute
+  ApiCronVeilleRoute: typeof ApiCronVeilleRoute
+  ApiHooksVeilleRoute: typeof ApiHooksVeilleRoute
   ForumCategorieSlugRoute: typeof ForumCategorieSlugRoute
   FormationSlugIndexRoute: typeof FormationSlugIndexRoute
   FormationSlugLeconLessonIdRoute: typeof FormationSlugLeconLessonIdRoute
@@ -1522,6 +1574,13 @@ declare module '@tanstack/react-router' {
       path: '/profil'
       fullPath: '/profil'
       preLoaderRoute: typeof AuthenticatedProfilRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/proposer-un-site': {
+      id: '/_authenticated/proposer-un-site'
+      path: '/proposer-un-site'
+      fullPath: '/proposer-un-site'
+      preLoaderRoute: typeof AuthenticatedProposerUnSiteRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/tableau-de-bord': {
@@ -1867,6 +1926,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminUtilisateursRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/veille': {
+      id: '/_authenticated/admin/veille'
+      path: '/admin/veille'
+      fullPath: '/admin/veille'
+      preLoaderRoute: typeof AuthenticatedAdminVeilleRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/crm/': {
       id: '/_authenticated/crm/'
       path: '/crm'
@@ -1930,6 +1996,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiCronPurgeContactRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/cron/veille': {
+      id: '/api/cron/veille'
+      path: '/api/cron/veille'
+      fullPath: '/api/cron/veille'
+      preLoaderRoute: typeof ApiCronVeilleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/hooks/veille': {
+      id: '/api/hooks/veille'
+      path: '/api/hooks/veille'
+      fullPath: '/api/hooks/veille'
+      preLoaderRoute: typeof ApiHooksVeilleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/formation/$slug/': {
       id: '/formation/$slug/'
       path: '/formation/$slug'
@@ -1989,6 +2069,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedMesAnnoncesRoute: typeof AuthenticatedMesAnnoncesRoute
   AuthenticatedMesFormationsRoute: typeof AuthenticatedMesFormationsRoute
   AuthenticatedProfilRoute: typeof AuthenticatedProfilRoute
+  AuthenticatedProposerUnSiteRoute: typeof AuthenticatedProposerUnSiteRoute
   AuthenticatedTableauDeBordRoute: typeof AuthenticatedTableauDeBordRoute
   AuthenticatedAdminAbonnesRoute: typeof AuthenticatedAdminAbonnesRoute
   AuthenticatedAdminAnnuaireRoute: typeof AuthenticatedAdminAnnuaireRoute
@@ -2012,6 +2093,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminSignalementsRoute: typeof AuthenticatedAdminSignalementsRoute
   AuthenticatedAdminTemoignagesRoute: typeof AuthenticatedAdminTemoignagesRoute
   AuthenticatedAdminUtilisateursRoute: typeof AuthenticatedAdminUtilisateursRoute
+  AuthenticatedAdminVeilleRoute: typeof AuthenticatedAdminVeilleRoute
   AuthenticatedCrmActionsRoute: typeof AuthenticatedCrmActionsRoute
   AuthenticatedCrmProspectsRoute: typeof AuthenticatedCrmProspectsRoute
   AuthenticatedMessagerieConversationIdRoute: typeof AuthenticatedMessagerieConversationIdRoute
@@ -2028,6 +2110,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedMesAnnoncesRoute: AuthenticatedMesAnnoncesRoute,
   AuthenticatedMesFormationsRoute: AuthenticatedMesFormationsRoute,
   AuthenticatedProfilRoute: AuthenticatedProfilRoute,
+  AuthenticatedProposerUnSiteRoute: AuthenticatedProposerUnSiteRoute,
   AuthenticatedTableauDeBordRoute: AuthenticatedTableauDeBordRoute,
   AuthenticatedAdminAbonnesRoute: AuthenticatedAdminAbonnesRoute,
   AuthenticatedAdminAnnuaireRoute: AuthenticatedAdminAnnuaireRoute,
@@ -2051,6 +2134,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminSignalementsRoute: AuthenticatedAdminSignalementsRoute,
   AuthenticatedAdminTemoignagesRoute: AuthenticatedAdminTemoignagesRoute,
   AuthenticatedAdminUtilisateursRoute: AuthenticatedAdminUtilisateursRoute,
+  AuthenticatedAdminVeilleRoute: AuthenticatedAdminVeilleRoute,
   AuthenticatedCrmActionsRoute: AuthenticatedCrmActionsRoute,
   AuthenticatedCrmProspectsRoute: AuthenticatedCrmProspectsRoute,
   AuthenticatedMessagerieConversationIdRoute:
@@ -2123,6 +2207,8 @@ const rootRouteChildren: RootRouteChildren = {
   AnnuaireCommuneCodeRoute: AnnuaireCommuneCodeRoute,
   AnnuaireDepartementSlugRoute: AnnuaireDepartementSlugRoute,
   ApiCronPurgeContactRoute: ApiCronPurgeContactRoute,
+  ApiCronVeilleRoute: ApiCronVeilleRoute,
+  ApiHooksVeilleRoute: ApiHooksVeilleRoute,
   ForumCategorieSlugRoute: ForumCategorieSlugRoute,
   FormationSlugIndexRoute: FormationSlugIndexRoute,
   FormationSlugLeconLessonIdRoute: FormationSlugLeconLessonIdRoute,

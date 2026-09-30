@@ -162,6 +162,12 @@ const modulesLinks: PlanLink[] = [
     module: "shop",
   },
   {
+    to: "/proposer-un-site",
+    label: "Proposer un site",
+    title: "Signaler un site à la veille",
+    module: "watch",
+  },
+  {
     to: "/marketplace",
     label: "Annonces",
     title: "Petites annonces entre membres",

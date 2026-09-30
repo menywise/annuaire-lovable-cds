@@ -211,6 +211,7 @@ export const QA_PAGES: QaPage[] = [
   { path: "/mes-annonces", label: "Mes annonces", role: "membre", module: "marketplace" },
   { path: "/mes-formations", label: "Mes formations", role: "membre", module: "lms" },
   { path: "/mes-achats", label: "Mes achats", role: "membre", module: "shop" },
+  { path: "/proposer-un-site", label: "Proposer un site", role: "membre", module: "watch" },
   { path: "/crm", label: "Suivi de contacts", role: "membre", module: "crm" },
   { path: "/crm/prospects", label: "Contacts", role: "membre", module: "crm" },
   { path: "/crm/actions", label: "Actions", role: "membre", module: "crm" },
@@ -232,6 +233,7 @@ export const QA_PAGES: QaPage[] = [
   { path: "/admin/formations", label: "Formations", role: "admin", module: "lms" },
   { path: "/admin/paiements", label: "Paiements", role: "admin", module: "payments" },
   { path: "/admin/boutique", label: "Boutique", role: "admin", module: "shop" },
+  { path: "/admin/veille", label: "Veille de sites", role: "admin", module: "watch" },
   { path: "/admin/marketplace", label: "Annonces", role: "admin", module: "marketplace" },
   { path: "/admin/regie", label: "Régie", role: "admin", module: "adNetwork" },
   { path: "/admin/pilotage", label: "Pilotage", role: "admin", module: "studio" },
@@ -441,6 +443,42 @@ export const QA_CHECKLIST: QaSection[] = [
         id: "shop-rembourse",
         label: "Remboursement total dans Stripe : commande « Remboursée », téléchargement refusé",
         path: "/admin/boutique",
+        role: "admin",
+        severity: "majeur",
+      },
+    ],
+  },
+  {
+    id: "veille",
+    zone: "Veille de sites",
+    objectif:
+      "Un site proposé, cherché ou soumis par un agent est analysé, classé et suivi ; rien n'entre dans l'annuaire sans l'admin.",
+    items: [
+      {
+        id: "veille-analyse",
+        label: "Analyser une adresse : technologies reconnues, site retenu ou refus motivé",
+        path: "/admin/veille",
+        role: "admin",
+        severity: "bloquant",
+      },
+      {
+        id: "veille-proposition",
+        label: "Membre : proposer un site, sixième proposition du jour refusée, statut visible",
+        path: "/proposer-un-site",
+        role: "membre",
+        severity: "majeur",
+      },
+      {
+        id: "veille-agent",
+        label:
+          "Agent : /api/hooks/veille refuse sans x-hook-secret (401) et répond avec (catalogue)",
+        role: "admin",
+        severity: "bloquant",
+      },
+      {
+        id: "veille-publier",
+        label: "« Publier dans l'annuaire » crée une fiche en brouillon, jamais publiée d'office",
+        path: "/admin/veille",
         role: "admin",
         severity: "majeur",
       },

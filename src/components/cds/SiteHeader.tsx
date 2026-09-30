@@ -119,6 +119,12 @@ function buildMemberNav(): NavItem[] {
       module: "shop",
     },
     {
+      to: "/proposer-un-site",
+      label: "Proposer un site",
+      title: "Signaler un site à la veille",
+      module: "watch",
+    },
+    {
       to: "/mes-annonces",
       label: "Mes annonces",
       title: "Gérer vos annonces publiées",
