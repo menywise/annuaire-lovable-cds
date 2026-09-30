@@ -82,7 +82,7 @@ function AdminCrmPage() {
       intro="Les chiffres consolidés de tous les membres. Le détail de chaque fiche reste privé à son propriétaire."
     >
       {failed ? (
-        <p role="alert" className="mb-4 rounded-lg border border-destructive/40 p-4 text-sm text-destructive">
+        <p role="alert" className="mb-4 rounded-lg border border-destructive/40 p-4 text-sm text-destructive-text">
           Une partie des chiffres n'a pas pu être chargée. Rechargez la page.
         </p>
       ) : null}

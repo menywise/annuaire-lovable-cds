@@ -64,7 +64,7 @@ export function GoogleSignInButton({
         </svg>
         {busy ? "Ouverture de Google…" : label}
       </Button>
-      {error && <p className="text-center text-xs text-destructive">{error}</p>}
+      {error && <p className="text-center text-xs text-destructive-text">{error}</p>}
     </div>
   );
 }

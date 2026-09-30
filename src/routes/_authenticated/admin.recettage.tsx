@@ -166,7 +166,7 @@ function AdminRecettePage() {
                     <p className="text-xs text-muted-foreground">
                       {r.viewport} · {r.role}
                     </p>
-                    <ul className="mt-1 list-disc pl-5 text-xs text-destructive">
+                    <ul className="mt-1 list-disc pl-5 text-xs text-destructive-text">
                       {r.problems.map((p) => (
                         <li key={p}>{p}</li>
                       ))}
@@ -199,7 +199,7 @@ function AdminRecettePage() {
                                 ? "text-success-text"
                                 : r.texte!.score >= 50
                                   ? "text-warning-text"
-                                  : "text-destructive"
+                                  : "text-destructive-text"
                             }`}
                           >
                             {r.texte!.score}/100

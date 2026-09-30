@@ -175,7 +175,7 @@ function AdminDirectoryPage() {
       </div>
 
       {failed ? (
-        <p role="alert" className="mt-6 rounded-lg border border-destructive/40 p-4 text-sm text-destructive">
+        <p role="alert" className="mt-6 rounded-lg border border-destructive/40 p-4 text-sm text-destructive-text">
           Une partie de l'annuaire n'a pas pu être chargée.{" "}
           <button type="button" className="underline" onClick={() => void load()}>
             Réessayer

@@ -40,6 +40,7 @@
   --color-warning-text: var(--warning-text);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
+  --color-destructive-text: var(--destructive-text);
   --color-info: var(--info);
   --color-info-text: var(--info-text);
   --color-cds-purple: var(--cds-purple);
@@ -77,6 +78,7 @@
   --warning-text: #b45200; /* texte / icônes : contraste AA sur fond clair */
   --destructive: #dc3545;
   --destructive-foreground: #ffffff;
+  --destructive-text: #cf1919; /* texte / icônes d'erreur : contraste AA sur fond clair */
   --info: #0dcaf0;
   --info-text: #0891b2;
   --cds-purple: #7c3aed;

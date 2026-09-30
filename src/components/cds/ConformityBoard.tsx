@@ -19,7 +19,7 @@ export const checkStatusLabel: Record<string, string> = {
 
 const statusClass: Record<string, string> = {
   conforme: "border-success-text text-success-text",
-  a_corriger: "border-destructive text-destructive",
+  a_corriger: "border-destructive text-destructive-text",
   a_verifier: "border-warning-text text-warning-text",
   non_applicable: "border-border text-muted-foreground",
 };

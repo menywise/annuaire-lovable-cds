@@ -134,7 +134,7 @@ export function MediaLibrary({
       {failed ? (
         <p
           role="alert"
-          className="rounded-lg border border-destructive/40 bg-card p-4 text-sm text-destructive"
+          className="rounded-lg border border-destructive/40 bg-card p-4 text-sm text-destructive-text"
         >
           Médiathèque indisponible.{" "}
           <button type="button" className="underline" onClick={() => void load()}>

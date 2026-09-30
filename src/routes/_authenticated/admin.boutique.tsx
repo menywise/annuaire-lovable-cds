@@ -373,7 +373,7 @@ function ProductsTab() {
       {failed ? (
         <p
           role="alert"
-          className="mt-6 rounded-lg border border-destructive/40 p-4 text-sm text-destructive"
+          className="mt-6 rounded-lg border border-destructive/40 p-4 text-sm text-destructive-text"
         >
           Le catalogue n'a pas pu être chargé.{" "}
           <button type="button" className="underline" onClick={() => void load()}>
@@ -447,7 +447,7 @@ function ProductsTab() {
                             : ""}
                         </span>
                       ) : (
-                        <span className="font-medium text-destructive">
+                        <span className="font-medium text-destructive-text">
                           Aucun fichier : le produit ne peut pas être publié.
                         </span>
                       )}
@@ -671,7 +671,7 @@ function OrdersTab() {
       {failed ? (
         <p
           role="alert"
-          className="mt-6 rounded-lg border border-destructive/40 p-4 text-sm text-destructive"
+          className="mt-6 rounded-lg border border-destructive/40 p-4 text-sm text-destructive-text"
         >
           Les commandes n'ont pas pu être chargées.{" "}
           <button type="button" className="underline" onClick={() => void load()}>

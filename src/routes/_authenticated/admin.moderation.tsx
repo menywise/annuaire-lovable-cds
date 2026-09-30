@@ -165,7 +165,7 @@ function AdminModerationPage() {
       intro="Vous gardez la main sur ce qui apparaît publiquement : rien n'est publié tant que vous ne l'avez pas validé. « Modérer » corrige le texte (lien, insulte) et affiche une note de l'équipe."
     >
       {loadError && (
-        <div className="mb-6 rounded-lg border border-destructive/40 p-4 text-sm text-destructive">
+        <div className="mb-6 rounded-lg border border-destructive/40 p-4 text-sm text-destructive-text">
           Une partie des contenus n'a pas pu être chargée.{" "}
           <button
             type="button"

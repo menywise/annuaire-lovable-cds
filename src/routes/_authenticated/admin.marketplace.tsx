@@ -106,7 +106,7 @@ function AdminMarketplacePage() {
       </details>
 
       {failed ? (
-        <p role="alert" className="mt-6 rounded-lg border border-destructive/40 p-4 text-sm text-destructive">
+        <p role="alert" className="mt-6 rounded-lg border border-destructive/40 p-4 text-sm text-destructive-text">
           Les annonces n'ont pas pu être chargées.{" "}
           <button type="button" className="underline" onClick={() => void load()}>
             Réessayer
