@@ -937,47 +937,42 @@ export type Database = {
           },
         ]
       }
-      geo_communes: {
+      geo_adjacency: {
         Row: {
-          code_insee: string
-          code_postal: string
           created_at: string
-          departement: string
-          latitude: number | null
-          longitude: number | null
-          nom: string
-          population: number
-          slug: string
+          distance_km: number | null
+          id: string
+          neighbor_id: string
+          place_id: string
         }
         Insert: {
-          code_insee: string
-          code_postal?: string
           created_at?: string
-          departement: string
-          latitude?: number | null
-          longitude?: number | null
-          nom: string
-          population?: number
-          slug: string
+          distance_km?: number | null
+          id?: string
+          neighbor_id: string
+          place_id: string
         }
         Update: {
-          code_insee?: string
-          code_postal?: string
           created_at?: string
-          departement?: string
-          latitude?: number | null
-          longitude?: number | null
-          nom?: string
-          population?: number
-          slug?: string
+          distance_km?: number | null
+          id?: string
+          neighbor_id?: string
+          place_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "geo_communes_departement_fkey"
-            columns: ["departement"]
+            foreignKeyName: "geo_adjacency_place_id_fkey"
+            columns: ["place_id"]
             isOneToOne: false
-            referencedRelation: "geo_departements"
-            referencedColumns: ["code"]
+            referencedRelation: "geo_places"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "geo_adjacency_neighbor_id_fkey"
+            columns: ["neighbor_id"]
+            isOneToOne: false
+            referencedRelation: "geo_places"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -1007,6 +1002,74 @@ export type Database = {
           slug?: string
         }
         Relationships: []
+      }
+      geo_places: {
+        Row: {
+          attributes: Json
+          code: string
+          country_code: string
+          created_at: string
+          epci_code: string | null
+          id: string
+          kind: string
+          latitude: number | null
+          longitude: number | null
+          name: string
+          parent_code: string | null
+          parent_id: string | null
+          population: number | null
+          postal_codes: string[]
+          slug: string
+          source: string
+          updated_at: string
+        }
+        Insert: {
+          attributes?: Json
+          code: string
+          country_code?: string
+          created_at?: string
+          epci_code?: string | null
+          id?: string
+          kind: string
+          latitude?: number | null
+          longitude?: number | null
+          name: string
+          parent_code?: string | null
+          parent_id?: string | null
+          population?: number | null
+          postal_codes?: string[]
+          slug: string
+          source?: string
+          updated_at?: string
+        }
+        Update: {
+          attributes?: Json
+          code?: string
+          country_code?: string
+          created_at?: string
+          epci_code?: string | null
+          id?: string
+          kind?: string
+          latitude?: number | null
+          longitude?: number | null
+          name?: string
+          parent_code?: string | null
+          parent_id?: string | null
+          population?: number | null
+          postal_codes?: string[]
+          slug?: string
+          source?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "geo_places_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "geo_places"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       lms_courses: {
         Row: {
@@ -1993,6 +2056,26 @@ export type Database = {
       }
       member_accepts_messages: { Args: { _user_id: string }; Returns: boolean }
       module_defaults: { Args: never; Returns: Json }
+      geo_compute_neighbours: {
+        Args: { _departement?: string | null; _rayon_km?: number; _max?: number; _limit?: number }
+        Returns: number
+      }
+      geo_neighbours: {
+        Args: { _code: string; _limit?: number }
+        Returns: { code: string; name: string; population: number | null; distance_km: number | null }[]
+      }
+      geo_status: { Args: never; Returns: Json }
+      geo_search: {
+        Args: { _q: string; _kinds?: string[] | null; _limit?: number }
+        Returns: {
+          kind: string
+          code: string
+          name: string
+          parent_code: string | null
+          postal_codes: string[]
+          population: number | null
+        }[]
+      }
       module_enabled: { Args: { _key: string }; Returns: boolean }
       purge_contact_messages: { Args: never; Returns: number }
       recette_purge: { Args: { _membre?: string | null }; Returns: Json }

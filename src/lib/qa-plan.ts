@@ -140,6 +140,13 @@ export const QA_PAGES: QaPage[] = [
     module: "geo",
     discover: { from: "/annuaire/departements", match: "^/annuaire/departement/[^/?#]+$" },
   },
+  {
+    path: "/annuaire/commune/:code",
+    label: "Commune",
+    role: "visiteur",
+    module: "geo",
+    discover: { from: "/annuaire/departement/:slug", match: "^/annuaire/commune/[0-9AB]{5}$" },
+  },
   { path: "/formations", label: "Formations", role: "visiteur", module: "lms" },
   {
     path: "/formation/:slug",

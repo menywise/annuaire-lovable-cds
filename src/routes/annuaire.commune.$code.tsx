@@ -1,37 +1,43 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { BadgeCheck, MapPin } from "lucide-react";
 import { PageShell } from "@/components/cds/SiteHeader";
-import { AdSlot } from "@/components/cds/AdSlot";
 import { requireFeature } from "@/config/features";
-import { getDepartement } from "@/lib/directory.functions";
+import { getCommune } from "@/lib/directory.functions";
 import { breadcrumbJsonLd, seo } from "@/lib/seo";
 
-export const Route = createFileRoute("/annuaire/departement/$slug")({
+const formatNumber = (n: number) => new Intl.NumberFormat("fr-FR").format(n);
+
+export const Route = createFileRoute("/annuaire/commune/$code")({
   beforeLoad: () => requireFeature("geo"),
   loader: async ({ params }) => {
-    const data = await getDepartement({ data: { slug: params.slug } });
+    const data = await getCommune({ data: { code: params.code } });
     if (!data) throw notFound();
     return data;
   },
   head: ({ loaderData }) => {
     if (!loaderData) {
-      return {
-        meta: [{ title: "Département introuvable" }, { name: "robots", content: "noindex" }],
-      };
+      return { meta: [{ title: "Commune introuvable" }, { name: "robots", content: "noindex" }] };
     }
-    const { departement, listings } = loaderData;
+    const { commune, departement, listings } = loaderData;
+    const cp = commune.postal_codes[0] ? ` (${commune.postal_codes[0]})` : "";
     const base = seo({
-      title: `Professionnels en ${departement.nom} (${departement.code})`,
-      description: `Trouvez les professionnels référencés en ${departement.nom}. ${listings.length} fiche${listings.length > 1 ? "s" : ""} disponible${listings.length > 1 ? "s" : ""}.`,
-      path: `/annuaire/departement/${departement.slug}`,
+      title: `Professionnels à ${commune.name}${cp}`,
+      description: `Trouvez les professionnels référencés à ${commune.name}${
+        departement ? `, ${departement.nom}` : ""
+      }. ${listings.length} fiche${listings.length > 1 ? "s" : ""}, communes voisines.`,
+      path: `/annuaire/commune/${commune.code}`,
+      // Commune sans fiche : page utile à la navigation, pas à l'index des moteurs.
+      noindex: listings.length === 0,
     });
     return {
       ...base,
       scripts: [
         breadcrumbJsonLd([
           { name: "Annuaire", path: "/annuaire" },
-          { name: "Départements", path: "/annuaire/departements" },
-          { name: departement.nom, path: `/annuaire/departement/${departement.slug}` },
+          ...(departement
+            ? [{ name: departement.nom, path: `/annuaire/departement/${departement.slug}` }]
+            : []),
+          { name: commune.name, path: `/annuaire/commune/${commune.code}` },
         ]),
       ],
     };
@@ -44,18 +50,18 @@ export const Route = createFileRoute("/annuaire/departement/$slug")({
   notFoundComponent: () => (
     <PageShell>
       <p className="text-sm text-muted-foreground">
-        Ce département n'existe pas.{" "}
+        Cette commune n'existe pas.{" "}
         <Link to="/annuaire/departements" title="Voir tous les départements" className="underline">
           Voir tous les départements
         </Link>
       </p>
     </PageShell>
   ),
-  component: DepartementPage,
+  component: CommunePage,
 });
 
-function DepartementPage() {
-  const { departement, listings, neighbours, communes } = Route.useLoaderData();
+function CommunePage() {
+  const { commune, departement, epci, neighbours, listings } = Route.useLoaderData();
 
   return (
     <PageShell>
@@ -63,38 +69,44 @@ function DepartementPage() {
         <nav aria-label="Fil d'Ariane" className="text-xs text-muted-foreground">
           <Link to="/annuaire" title="Revenir à l'annuaire" className="hover:underline">
             Annuaire
-          </Link>{" "}
-          /{" "}
-          <Link
-            to="/annuaire/departements"
-            title="Voir tous les départements"
-            className="hover:underline"
-          >
-            Départements
-          </Link>{" "}
-          / {departement.nom}
+          </Link>
+          {departement ? (
+            <>
+              {" / "}
+              <Link
+                to="/annuaire/departement/$slug"
+                params={{ slug: departement.slug }}
+                title={`Voir les professionnels en ${departement.nom}`}
+                className="hover:underline"
+              >
+                {departement.nom}
+              </Link>
+            </>
+          ) : null}
+          {" / "}
+          {commune.name}
         </nav>
         <h1 className="mt-2 text-3xl font-bold text-foreground">
-          Les professionnels en {departement.nom} ({departement.code})
+          Les professionnels à {commune.name}
         </h1>
         <p className="mt-2 max-w-[70ch] text-sm text-muted-foreground">
-          {listings.length} fiche{listings.length > 1 ? "s" : ""} en {departement.nom}, région{" "}
-          {departement.region}. Chacune indique la ville, l'activité et le moyen de contact.
+          {commune.postal_codes.length ? `Code postal ${commune.postal_codes.join(", ")}. ` : ""}
+          {commune.population ? `${formatNumber(commune.population)} habitants. ` : ""}
+          {epci ? `${epci.name}. ` : ""}
+          {departement ? `${departement.nom}, ${departement.region}.` : ""}
         </p>
-
-        <AdSlot placement="annuaire" className="mt-6" />
 
         {listings.length === 0 ? (
           <div className="mt-8 rounded-lg border border-dashed border-border p-10 text-center">
             <p className="text-sm text-muted-foreground">
-              Aucune fiche pour l'instant en {departement.nom}. La première place est libre.
+              Aucune fiche pour l'instant à {commune.name}. La première place est libre.
             </p>
             <Link
               to="/annuaire/soumettre"
-              title={`Ajouter votre fiche en ${departement.nom}`}
+              title={`Ajouter votre fiche à ${commune.name}`}
               className="mt-4 inline-flex min-h-11 items-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground hover:opacity-90"
             >
-              Ajouter votre fiche en {departement.nom}
+              Ajouter votre fiche à {commune.name}
             </Link>
           </div>
         ) : (
@@ -138,43 +150,22 @@ function DepartementPage() {
           </ul>
         )}
 
-        {communes.length > 0 ? (
-          <section className="mt-12">
-            <h2 className="text-base font-semibold text-foreground">
-              Les principales communes en {departement.nom}
-            </h2>
-            <ul className="mt-3 flex flex-wrap gap-2">
-              {communes.map((c) => (
-                <li key={c.code}>
-                  <Link
-                    to="/annuaire/commune/$code"
-                    params={{ code: c.code }}
-                    title={`Voir les professionnels à ${c.name}`}
-                    className="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-sm text-muted-foreground hover:bg-accent hover:text-foreground"
-                  >
-                    {c.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </section>
-        ) : null}
-
         {neighbours.length > 0 ? (
           <section className="mt-12">
             <h2 className="text-base font-semibold text-foreground">
-              Les départements voisins en {departement.region}
+              Les communes voisines de {commune.name}
             </h2>
             <ul className="mt-3 flex flex-wrap gap-2">
-              {neighbours.map((dep) => (
-                <li key={dep.code}>
+              {neighbours.map((n) => (
+                <li key={n.code}>
                   <Link
-                    to="/annuaire/departement/$slug"
-                    params={{ slug: dep.slug }}
-                    title={`Voir les professionnels en ${dep.nom}`}
+                    to="/annuaire/commune/$code"
+                    params={{ code: n.code }}
+                    title={`Voir les professionnels à ${n.name}`}
                     className="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-sm text-muted-foreground hover:bg-accent hover:text-foreground"
                   >
-                    {dep.code} — {dep.nom}
+                    {n.name}
+                    {n.distance_km !== null ? ` · ${Math.round(Number(n.distance_km))} km` : ""}
                   </Link>
                 </li>
               ))}
