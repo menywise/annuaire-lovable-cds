@@ -38,6 +38,7 @@ import { Route as VerificationEmailRouteImport } from './routes/verification-ema
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as AuthenticatedCompteRouteImport } from './routes/_authenticated/compte'
 import { Route as AuthenticatedDecouvrirRouteImport } from './routes/_authenticated/decouvrir'
+import { Route as AuthenticatedMesAchatsRouteImport } from './routes/_authenticated/mes-achats'
 import { Route as AuthenticatedMesAnnoncesRouteImport } from './routes/_authenticated/mes-annonces'
 import { Route as AuthenticatedMesFormationsRouteImport } from './routes/_authenticated/mes-formations'
 import { Route as AuthenticatedProfilRouteImport } from './routes/_authenticated/profil'
@@ -49,6 +50,9 @@ import { Route as AnnuaireSoumettreRouteImport } from './routes/annuaire.soumett
 import { Route as ApiStripeWebhookRouteImport } from './routes/api.stripe-webhook'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
+import { Route as BoutiqueIndexRouteImport } from './routes/boutique.index'
+import { Route as BoutiqueSlugRouteImport } from './routes/boutique.$slug'
+import { Route as BoutiquePanierRouteImport } from './routes/boutique.panier'
 import { Route as FormationsIndexRouteImport } from './routes/formations.index'
 import { Route as ForumIndexRouteImport } from './routes/forum.index'
 import { Route as ForumTopicIdRouteImport } from './routes/forum.$topicId'
@@ -67,6 +71,7 @@ import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedAdminAbonnesRouteImport } from './routes/_authenticated/admin.abonnes'
 import { Route as AuthenticatedAdminAnnuaireRouteImport } from './routes/_authenticated/admin.annuaire'
+import { Route as AuthenticatedAdminBoutiqueRouteImport } from './routes/_authenticated/admin.boutique'
 import { Route as AuthenticatedAdminConformiteRouteImport } from './routes/_authenticated/admin.conformite'
 import { Route as AuthenticatedAdminContenusRouteImport } from './routes/_authenticated/admin.contenus'
 import { Route as AuthenticatedAdminCrmRouteImport } from './routes/_authenticated/admin.crm'
@@ -248,6 +253,11 @@ const AuthenticatedDecouvrirRoute = AuthenticatedDecouvrirRouteImport.update({
   path: '/decouvrir',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedMesAchatsRoute = AuthenticatedMesAchatsRouteImport.update({
+  id: '/mes-achats',
+  path: '/mes-achats',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedMesAnnoncesRoute =
   AuthenticatedMesAnnoncesRouteImport.update({
     id: '/mes-annonces',
@@ -304,6 +314,21 @@ const BlogIndexRoute = BlogIndexRouteImport.update({
 const BlogSlugRoute = BlogSlugRouteImport.update({
   id: '/blog/$slug',
   path: '/blog/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BoutiqueIndexRoute = BoutiqueIndexRouteImport.update({
+  id: '/boutique/',
+  path: '/boutique/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BoutiqueSlugRoute = BoutiqueSlugRouteImport.update({
+  id: '/boutique/$slug',
+  path: '/boutique/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BoutiquePanierRoute = BoutiquePanierRouteImport.update({
+  id: '/boutique/panier',
+  path: '/boutique/panier',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FormationsIndexRoute = FormationsIndexRouteImport.update({
@@ -396,6 +421,12 @@ const AuthenticatedAdminAnnuaireRoute =
   AuthenticatedAdminAnnuaireRouteImport.update({
     id: '/admin/annuaire',
     path: '/admin/annuaire',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminBoutiqueRoute =
+  AuthenticatedAdminBoutiqueRouteImport.update({
+    id: '/admin/boutique',
+    path: '/admin/boutique',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedAdminConformiteRoute =
@@ -624,6 +655,7 @@ export interface FileRoutesByFullPath {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/compte': typeof AuthenticatedCompteRoute
   '/decouvrir': typeof AuthenticatedDecouvrirRoute
+  '/mes-achats': typeof AuthenticatedMesAchatsRoute
   '/mes-annonces': typeof AuthenticatedMesAnnoncesRoute
   '/mes-formations': typeof AuthenticatedMesFormationsRoute
   '/profil': typeof AuthenticatedProfilRoute
@@ -633,6 +665,8 @@ export interface FileRoutesByFullPath {
   '/annuaire/soumettre': typeof AnnuaireSoumettreRoute
   '/api/stripe-webhook': typeof ApiStripeWebhookRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/boutique/$slug': typeof BoutiqueSlugRoute
+  '/boutique/panier': typeof BoutiquePanierRoute
   '/forum/$topicId': typeof ForumTopicIdRoute
   '/legal/cgu': typeof LegalCguRoute
   '/legal/cgv': typeof LegalCgvRoute
@@ -645,6 +679,7 @@ export interface FileRoutesByFullPath {
   '/pages/$slug': typeof PagesSlugRoute
   '/annuaire/': typeof AnnuaireIndexRoute
   '/blog/': typeof BlogIndexRoute
+  '/boutique/': typeof BoutiqueIndexRoute
   '/formations/': typeof FormationsIndexRoute
   '/forum/': typeof ForumIndexRoute
   '/marketplace/': typeof MarketplaceIndexRoute
@@ -652,6 +687,7 @@ export interface FileRoutesByFullPath {
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/admin/abonnes': typeof AuthenticatedAdminAbonnesRoute
   '/admin/annuaire': typeof AuthenticatedAdminAnnuaireRoute
+  '/admin/boutique': typeof AuthenticatedAdminBoutiqueRoute
   '/admin/conformite': typeof AuthenticatedAdminConformiteRoute
   '/admin/contenus': typeof AuthenticatedAdminContenusRoute
   '/admin/crm': typeof AuthenticatedAdminCrmRoute
@@ -718,6 +754,7 @@ export interface FileRoutesByTo {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/compte': typeof AuthenticatedCompteRoute
   '/decouvrir': typeof AuthenticatedDecouvrirRoute
+  '/mes-achats': typeof AuthenticatedMesAchatsRoute
   '/mes-annonces': typeof AuthenticatedMesAnnoncesRoute
   '/mes-formations': typeof AuthenticatedMesFormationsRoute
   '/profil': typeof AuthenticatedProfilRoute
@@ -727,6 +764,8 @@ export interface FileRoutesByTo {
   '/annuaire/soumettre': typeof AnnuaireSoumettreRoute
   '/api/stripe-webhook': typeof ApiStripeWebhookRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/boutique/$slug': typeof BoutiqueSlugRoute
+  '/boutique/panier': typeof BoutiquePanierRoute
   '/forum/$topicId': typeof ForumTopicIdRoute
   '/legal/cgu': typeof LegalCguRoute
   '/legal/cgv': typeof LegalCgvRoute
@@ -739,6 +778,7 @@ export interface FileRoutesByTo {
   '/pages/$slug': typeof PagesSlugRoute
   '/annuaire': typeof AnnuaireIndexRoute
   '/blog': typeof BlogIndexRoute
+  '/boutique': typeof BoutiqueIndexRoute
   '/formations': typeof FormationsIndexRoute
   '/forum': typeof ForumIndexRoute
   '/marketplace': typeof MarketplaceIndexRoute
@@ -746,6 +786,7 @@ export interface FileRoutesByTo {
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/admin/abonnes': typeof AuthenticatedAdminAbonnesRoute
   '/admin/annuaire': typeof AuthenticatedAdminAnnuaireRoute
+  '/admin/boutique': typeof AuthenticatedAdminBoutiqueRoute
   '/admin/conformite': typeof AuthenticatedAdminConformiteRoute
   '/admin/contenus': typeof AuthenticatedAdminContenusRoute
   '/admin/crm': typeof AuthenticatedAdminCrmRoute
@@ -814,6 +855,7 @@ export interface FileRoutesById {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/_authenticated/compte': typeof AuthenticatedCompteRoute
   '/_authenticated/decouvrir': typeof AuthenticatedDecouvrirRoute
+  '/_authenticated/mes-achats': typeof AuthenticatedMesAchatsRoute
   '/_authenticated/mes-annonces': typeof AuthenticatedMesAnnoncesRoute
   '/_authenticated/mes-formations': typeof AuthenticatedMesFormationsRoute
   '/_authenticated/profil': typeof AuthenticatedProfilRoute
@@ -823,6 +865,8 @@ export interface FileRoutesById {
   '/annuaire/soumettre': typeof AnnuaireSoumettreRoute
   '/api/stripe-webhook': typeof ApiStripeWebhookRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/boutique/$slug': typeof BoutiqueSlugRoute
+  '/boutique/panier': typeof BoutiquePanierRoute
   '/forum/$topicId': typeof ForumTopicIdRoute
   '/legal/cgu': typeof LegalCguRoute
   '/legal/cgv': typeof LegalCgvRoute
@@ -835,6 +879,7 @@ export interface FileRoutesById {
   '/pages/$slug': typeof PagesSlugRoute
   '/annuaire/': typeof AnnuaireIndexRoute
   '/blog/': typeof BlogIndexRoute
+  '/boutique/': typeof BoutiqueIndexRoute
   '/formations/': typeof FormationsIndexRoute
   '/forum/': typeof ForumIndexRoute
   '/marketplace/': typeof MarketplaceIndexRoute
@@ -842,6 +887,7 @@ export interface FileRoutesById {
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/_authenticated/admin/abonnes': typeof AuthenticatedAdminAbonnesRoute
   '/_authenticated/admin/annuaire': typeof AuthenticatedAdminAnnuaireRoute
+  '/_authenticated/admin/boutique': typeof AuthenticatedAdminBoutiqueRoute
   '/_authenticated/admin/conformite': typeof AuthenticatedAdminConformiteRoute
   '/_authenticated/admin/contenus': typeof AuthenticatedAdminContenusRoute
   '/_authenticated/admin/crm': typeof AuthenticatedAdminCrmRoute
@@ -910,6 +956,7 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/compte'
     | '/decouvrir'
+    | '/mes-achats'
     | '/mes-annonces'
     | '/mes-formations'
     | '/profil'
@@ -919,6 +966,8 @@ export interface FileRouteTypes {
     | '/annuaire/soumettre'
     | '/api/stripe-webhook'
     | '/blog/$slug'
+    | '/boutique/$slug'
+    | '/boutique/panier'
     | '/forum/$topicId'
     | '/legal/cgu'
     | '/legal/cgv'
@@ -931,6 +980,7 @@ export interface FileRouteTypes {
     | '/pages/$slug'
     | '/annuaire/'
     | '/blog/'
+    | '/boutique/'
     | '/formations/'
     | '/forum/'
     | '/marketplace/'
@@ -938,6 +988,7 @@ export interface FileRouteTypes {
     | '/.lovable/oauth/consent'
     | '/admin/abonnes'
     | '/admin/annuaire'
+    | '/admin/boutique'
     | '/admin/conformite'
     | '/admin/contenus'
     | '/admin/crm'
@@ -1004,6 +1055,7 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/compte'
     | '/decouvrir'
+    | '/mes-achats'
     | '/mes-annonces'
     | '/mes-formations'
     | '/profil'
@@ -1013,6 +1065,8 @@ export interface FileRouteTypes {
     | '/annuaire/soumettre'
     | '/api/stripe-webhook'
     | '/blog/$slug'
+    | '/boutique/$slug'
+    | '/boutique/panier'
     | '/forum/$topicId'
     | '/legal/cgu'
     | '/legal/cgv'
@@ -1025,6 +1079,7 @@ export interface FileRouteTypes {
     | '/pages/$slug'
     | '/annuaire'
     | '/blog'
+    | '/boutique'
     | '/formations'
     | '/forum'
     | '/marketplace'
@@ -1032,6 +1087,7 @@ export interface FileRouteTypes {
     | '/.lovable/oauth/consent'
     | '/admin/abonnes'
     | '/admin/annuaire'
+    | '/admin/boutique'
     | '/admin/conformite'
     | '/admin/contenus'
     | '/admin/crm'
@@ -1099,6 +1155,7 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/_authenticated/compte'
     | '/_authenticated/decouvrir'
+    | '/_authenticated/mes-achats'
     | '/_authenticated/mes-annonces'
     | '/_authenticated/mes-formations'
     | '/_authenticated/profil'
@@ -1108,6 +1165,8 @@ export interface FileRouteTypes {
     | '/annuaire/soumettre'
     | '/api/stripe-webhook'
     | '/blog/$slug'
+    | '/boutique/$slug'
+    | '/boutique/panier'
     | '/forum/$topicId'
     | '/legal/cgu'
     | '/legal/cgv'
@@ -1120,6 +1179,7 @@ export interface FileRouteTypes {
     | '/pages/$slug'
     | '/annuaire/'
     | '/blog/'
+    | '/boutique/'
     | '/formations/'
     | '/forum/'
     | '/marketplace/'
@@ -1127,6 +1187,7 @@ export interface FileRouteTypes {
     | '/.lovable/oauth/consent'
     | '/_authenticated/admin/abonnes'
     | '/_authenticated/admin/annuaire'
+    | '/_authenticated/admin/boutique'
     | '/_authenticated/admin/conformite'
     | '/_authenticated/admin/contenus'
     | '/_authenticated/admin/crm'
@@ -1198,6 +1259,8 @@ export interface RootRouteChildren {
   AnnuaireSoumettreRoute: typeof AnnuaireSoumettreRoute
   ApiStripeWebhookRoute: typeof ApiStripeWebhookRoute
   BlogSlugRoute: typeof BlogSlugRoute
+  BoutiqueSlugRoute: typeof BoutiqueSlugRoute
+  BoutiquePanierRoute: typeof BoutiquePanierRoute
   ForumTopicIdRoute: typeof ForumTopicIdRoute
   LegalCguRoute: typeof LegalCguRoute
   LegalCgvRoute: typeof LegalCgvRoute
@@ -1210,6 +1273,7 @@ export interface RootRouteChildren {
   PagesSlugRoute: typeof PagesSlugRoute
   AnnuaireIndexRoute: typeof AnnuaireIndexRoute
   BlogIndexRoute: typeof BlogIndexRoute
+  BoutiqueIndexRoute: typeof BoutiqueIndexRoute
   FormationsIndexRoute: typeof FormationsIndexRoute
   ForumIndexRoute: typeof ForumIndexRoute
   MarketplaceIndexRoute: typeof MarketplaceIndexRoute
@@ -1432,6 +1496,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDecouvrirRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/mes-achats': {
+      id: '/_authenticated/mes-achats'
+      path: '/mes-achats'
+      fullPath: '/mes-achats'
+      preLoaderRoute: typeof AuthenticatedMesAchatsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/mes-annonces': {
       id: '/_authenticated/mes-annonces'
       path: '/mes-annonces'
@@ -1507,6 +1578,27 @@ declare module '@tanstack/react-router' {
       path: '/blog/$slug'
       fullPath: '/blog/$slug'
       preLoaderRoute: typeof BlogSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/boutique/': {
+      id: '/boutique/'
+      path: '/boutique'
+      fullPath: '/boutique/'
+      preLoaderRoute: typeof BoutiqueIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/boutique/$slug': {
+      id: '/boutique/$slug'
+      path: '/boutique/$slug'
+      fullPath: '/boutique/$slug'
+      preLoaderRoute: typeof BoutiqueSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/boutique/panier': {
+      id: '/boutique/panier'
+      path: '/boutique/panier'
+      fullPath: '/boutique/panier'
+      preLoaderRoute: typeof BoutiquePanierRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/formations/': {
@@ -1633,6 +1725,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/annuaire'
       fullPath: '/admin/annuaire'
       preLoaderRoute: typeof AuthenticatedAdminAnnuaireRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/boutique': {
+      id: '/_authenticated/admin/boutique'
+      path: '/admin/boutique'
+      fullPath: '/admin/boutique'
+      preLoaderRoute: typeof AuthenticatedAdminBoutiqueRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/admin/conformite': {
@@ -1886,12 +1985,14 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedCompteRoute: typeof AuthenticatedCompteRoute
   AuthenticatedDecouvrirRoute: typeof AuthenticatedDecouvrirRoute
+  AuthenticatedMesAchatsRoute: typeof AuthenticatedMesAchatsRoute
   AuthenticatedMesAnnoncesRoute: typeof AuthenticatedMesAnnoncesRoute
   AuthenticatedMesFormationsRoute: typeof AuthenticatedMesFormationsRoute
   AuthenticatedProfilRoute: typeof AuthenticatedProfilRoute
   AuthenticatedTableauDeBordRoute: typeof AuthenticatedTableauDeBordRoute
   AuthenticatedAdminAbonnesRoute: typeof AuthenticatedAdminAbonnesRoute
   AuthenticatedAdminAnnuaireRoute: typeof AuthenticatedAdminAnnuaireRoute
+  AuthenticatedAdminBoutiqueRoute: typeof AuthenticatedAdminBoutiqueRoute
   AuthenticatedAdminConformiteRoute: typeof AuthenticatedAdminConformiteRoute
   AuthenticatedAdminContenusRoute: typeof AuthenticatedAdminContenusRoute
   AuthenticatedAdminCrmRoute: typeof AuthenticatedAdminCrmRoute
@@ -1923,12 +2024,14 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCompteRoute: AuthenticatedCompteRoute,
   AuthenticatedDecouvrirRoute: AuthenticatedDecouvrirRoute,
+  AuthenticatedMesAchatsRoute: AuthenticatedMesAchatsRoute,
   AuthenticatedMesAnnoncesRoute: AuthenticatedMesAnnoncesRoute,
   AuthenticatedMesFormationsRoute: AuthenticatedMesFormationsRoute,
   AuthenticatedProfilRoute: AuthenticatedProfilRoute,
   AuthenticatedTableauDeBordRoute: AuthenticatedTableauDeBordRoute,
   AuthenticatedAdminAbonnesRoute: AuthenticatedAdminAbonnesRoute,
   AuthenticatedAdminAnnuaireRoute: AuthenticatedAdminAnnuaireRoute,
+  AuthenticatedAdminBoutiqueRoute: AuthenticatedAdminBoutiqueRoute,
   AuthenticatedAdminConformiteRoute: AuthenticatedAdminConformiteRoute,
   AuthenticatedAdminContenusRoute: AuthenticatedAdminContenusRoute,
   AuthenticatedAdminCrmRoute: AuthenticatedAdminCrmRoute,
@@ -1996,6 +2099,8 @@ const rootRouteChildren: RootRouteChildren = {
   AnnuaireSoumettreRoute: AnnuaireSoumettreRoute,
   ApiStripeWebhookRoute: ApiStripeWebhookRoute,
   BlogSlugRoute: BlogSlugRoute,
+  BoutiqueSlugRoute: BoutiqueSlugRoute,
+  BoutiquePanierRoute: BoutiquePanierRoute,
   ForumTopicIdRoute: ForumTopicIdRoute,
   LegalCguRoute: LegalCguRoute,
   LegalCgvRoute: LegalCgvRoute,
@@ -2008,6 +2113,7 @@ const rootRouteChildren: RootRouteChildren = {
   PagesSlugRoute: PagesSlugRoute,
   AnnuaireIndexRoute: AnnuaireIndexRoute,
   BlogIndexRoute: BlogIndexRoute,
+  BoutiqueIndexRoute: BoutiqueIndexRoute,
   FormationsIndexRoute: FormationsIndexRoute,
   ForumIndexRoute: ForumIndexRoute,
   MarketplaceIndexRoute: MarketplaceIndexRoute,

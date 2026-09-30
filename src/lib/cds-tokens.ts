@@ -1,7 +1,7 @@
 /**
  * CDS — Consensus Design System — Tokens TypeScript
- * VERSION  : 1.1.0
- * DATE     : 2026-09-17
+ * VERSION  : 1.2.0
+ * DATE     : 2026-09-30
  * SOURCE   : CDS_TOKENS.md (source de vérité unique)
  * USAGE    : import { cds } from '@/lib/cds-tokens'
  *
@@ -19,6 +19,7 @@ export const cds = {
     warning: "#ffc107",
     warningText: "#b45200",
     danger: "#dc3545",
+    dangerText: "#cf1919",
     info: "#0dcaf0",
     infoText: "#0891b2",
     secondary: "#6c757d",
@@ -48,8 +49,10 @@ export const cds = {
   radius: {
     sm: "0.25rem",
     default: "0.375rem",
-    md: "0.5rem",
+    md: "0.375rem",
     lg: "0.75rem",
+    /** = lg : classe rounded-xl des cartes */
+    xl: "0.75rem",
     full: "50%",
   },
   shadow: {

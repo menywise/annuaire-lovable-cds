@@ -138,7 +138,7 @@ function AdminPaymentsPage() {
             <li>
               Clé Stripe :{" "}
               {config.mode === "absent" ? (
-                <span className="font-medium text-destructive">absente</span>
+                <span className="font-medium text-destructive-text">absente</span>
               ) : (
                 <span className="font-medium text-foreground">
                   configurée, mode {config.mode === "live" ? "réel" : "test"}
@@ -150,7 +150,7 @@ function AdminPaymentsPage() {
               {config.webhook ? (
                 <span className="font-medium text-foreground">configuré</span>
               ) : (
-                <span className="font-medium text-destructive">absent</span>
+                <span className="font-medium text-destructive-text">absent</span>
               )}
             </li>
             <li>
@@ -196,7 +196,7 @@ function AdminPaymentsPage() {
         <Skeleton className="mt-6 h-40 w-full rounded-xl" />
       ) : loadError ? (
         <div className="mt-6 rounded-lg border border-destructive/40 p-6 text-sm">
-          <p className="text-destructive">Les paiements n'ont pas pu être chargés.</p>
+          <p className="text-destructive-text">Les paiements n'ont pas pu être chargés.</p>
           <Button className="mt-3" variant="outline" onClick={() => void load()} title="Recharger">
             Réessayer
           </Button>

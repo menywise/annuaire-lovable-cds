@@ -1,6 +1,6 @@
 # CDS — Consensus Design System · Source de vérité des tokens
 
-**Version** : 1.1.0 — **Date** : 17 septembre 2026
+**Version** : 1.2.0 — **Date** : 30 septembre 2026
 
 Ce fichier est la **référence unique**. Deux fichiers seulement l'appliquent :
 
@@ -38,7 +38,8 @@ Il n'existe **aucun** `tailwind.config.ts` ni `src/index.css` : en Tailwind v4 l
 | `--success-text` | `#15803d` | Texte et icônes de succès   | 4,79:1                      |
 | `--warning`      | `#ffc107` | Fonds et bordures d'alerte  | 1,56:1 (surface uniquement) |
 | `--warning-text` | `#b45200` | Texte, icônes et étoiles    | 4,84:1                      |
-| `--destructive`  | `#dc3545` | Erreurs                     | blanc dessus : 4,53:1       |
+| `--destructive`  | `#dc3545` | Fonds et bordures d'erreur  | blanc dessus : 4,53:1 (texte : 4,33:1, non conforme) |
+| `--destructive-text` | `#cf1919` | Texte et icônes d'erreur | 5,27:1 (5,52:1 sur blanc, 5,01:1 sur `--accent`) |
 | `--info`         | `#0dcaf0` | Fonds d'information         | surface uniquement          |
 | `--info-text`    | `#0891b2` | Texte d'information         | 4,5:1                       |
 
@@ -66,9 +67,12 @@ Il n'existe **aucun** `tailwind.config.ts` ni `src/index.css` : en Tailwind v4 l
 | ------------- | ----------------- | --------------------------- |
 | `--radius`    | `0.375rem` (6 px) | **Boutons**, champs, badges |
 | `--radius-sm` | `0.25rem`         | Petits éléments             |
-| `--radius-md` | `0.5rem`          | Encarts                     |
-| `--radius-lg` | `0.75rem` (12 px) | **Cartes**, notifications   |
+| `--radius-md` | `0.375rem` (6 px) | = `--radius` : classe `rounded-md` des contrôles |
+| `--radius-lg` | `0.75rem` (12 px) | **Cartes**, notifications, encarts |
+| `--radius-xl` | `0.75rem` (12 px) | = `--radius-lg` : classe `rounded-xl` des cartes (ciblée par le relief) |
 | plein         | `50%`             | Pastilles rondes            |
+
+Images et vignettes : `rounded-md` (12 px arrondirait trop une vignette de 44 px). Squelettes de chargement : forme de l'élément qu'ils remplacent (`rounded-md` par défaut, `rounded-xl` pour une carte).
 
 ## Ombres
 

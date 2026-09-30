@@ -162,6 +162,15 @@ export const QA_PAGES: QaPage[] = [
     module: "lms",
     discover: { from: "/formation/:slug", match: "^/formation/[^/?#]+/lecon/[^/?#]+$" },
   },
+  { path: "/boutique", label: "Boutique", role: "visiteur", module: "shop" },
+  {
+    path: "/boutique/:slug",
+    label: "Produit",
+    role: "visiteur",
+    module: "shop",
+    discover: { from: "/boutique", match: "^/boutique/(?!panier)[^/?#]+$" },
+  },
+  { path: "/boutique/panier", label: "Panier", role: "visiteur", module: "shop" },
   { path: "/marketplace", label: "Petites annonces", role: "visiteur", module: "marketplace" },
   {
     path: "/marketplace/:slug",
@@ -201,6 +210,7 @@ export const QA_PAGES: QaPage[] = [
   { path: "/messagerie", label: "Messagerie", role: "membre", module: "messaging" },
   { path: "/mes-annonces", label: "Mes annonces", role: "membre", module: "marketplace" },
   { path: "/mes-formations", label: "Mes formations", role: "membre", module: "lms" },
+  { path: "/mes-achats", label: "Mes achats", role: "membre", module: "shop" },
   { path: "/crm", label: "Suivi de contacts", role: "membre", module: "crm" },
   { path: "/crm/prospects", label: "Contacts", role: "membre", module: "crm" },
   { path: "/crm/actions", label: "Actions", role: "membre", module: "crm" },
@@ -221,6 +231,7 @@ export const QA_PAGES: QaPage[] = [
   { path: "/admin/crm", label: "Contacts (vue admin)", role: "admin", module: "crm" },
   { path: "/admin/formations", label: "Formations", role: "admin", module: "lms" },
   { path: "/admin/paiements", label: "Paiements", role: "admin", module: "payments" },
+  { path: "/admin/boutique", label: "Boutique", role: "admin", module: "shop" },
   { path: "/admin/marketplace", label: "Annonces", role: "admin", module: "marketplace" },
   { path: "/admin/regie", label: "Régie", role: "admin", module: "adNetwork" },
   { path: "/admin/pilotage", label: "Pilotage", role: "admin", module: "studio" },
@@ -385,6 +396,51 @@ export const QA_CHECKLIST: QaSection[] = [
         id: "pay-rembourse",
         label: "Remboursement total dans Stripe : accès refermé, statut « Remboursé »",
         path: "/admin/paiements",
+        role: "admin",
+        severity: "majeur",
+      },
+    ],
+  },
+  {
+    id: "boutique",
+    zone: "Boutique (Stripe, mode test)",
+    objectif:
+      "Un objet se commande avec l'adresse de livraison, un fichier se télécharge dès le paiement, un remboursement ferme le téléchargement.",
+    items: [
+      {
+        id: "shop-fichier",
+        label: "Produit PDF : envoi du fichier, puis publication (impossible sans fichier)",
+        path: "/admin/boutique",
+        role: "admin",
+        severity: "bloquant",
+      },
+      {
+        id: "shop-objet",
+        label:
+          "Objet + carte 4242 : adresse demandée par Stripe, commande « Payée » dans Mes achats, stock décompté",
+        path: "/boutique",
+        role: "membre",
+        severity: "bloquant",
+      },
+      {
+        id: "shop-pdf",
+        label:
+          "PDF + carte 4242 : case de renonciation obligatoire, « Télécharger » ouvre le fichier",
+        path: "/mes-achats",
+        role: "membre",
+        severity: "bloquant",
+      },
+      {
+        id: "shop-expedition",
+        label: "Admin : « Marquer expédiée » avec numéro de suivi, visible par l'acheteur",
+        path: "/admin/boutique",
+        role: "admin",
+        severity: "majeur",
+      },
+      {
+        id: "shop-rembourse",
+        label: "Remboursement total dans Stripe : commande « Remboursée », téléchargement refusé",
+        path: "/admin/boutique",
         role: "admin",
         severity: "majeur",
       },

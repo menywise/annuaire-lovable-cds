@@ -122,7 +122,7 @@ function AdminReportsPage() {
         <Skeleton className="mt-6 h-40 w-full rounded-xl" />
       ) : loadError ? (
         <div className="mt-6 rounded-lg border border-destructive/40 p-6 text-sm">
-          <p className="text-destructive">Les signalements n'ont pas pu être chargés.</p>
+          <p className="text-destructive-text">Les signalements n'ont pas pu être chargés.</p>
           <Button className="mt-3" variant="outline" onClick={() => void load()} title="Recharger">
             Réessayer
           </Button>
@@ -197,7 +197,7 @@ function ReportItem({
         {row.handled_at ? ` · traité le ${new Date(row.handled_at).toLocaleString("fr-FR")}` : ""}
       </p>
       {row.details ? (
-        <p className="mt-3 whitespace-pre-line rounded-md bg-muted px-3 py-2 text-sm text-foreground">
+        <p className="mt-3 whitespace-pre-line rounded-lg bg-muted px-3 py-2 text-sm text-foreground">
           {row.details}
         </p>
       ) : null}

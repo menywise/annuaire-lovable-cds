@@ -108,7 +108,7 @@ export function CategoryManager({
       </form>
 
       {failed ? (
-        <p role="alert" className="text-sm text-destructive">
+        <p role="alert" className="text-sm text-destructive-text">
           Catégories indisponibles.{" "}
           <button type="button" className="underline" onClick={() => void load()}>
             Réessayer
@@ -191,7 +191,7 @@ function CategoryRow({
           <Label htmlFor={id("slug")}>Adresse</Label>
           <Input id={id("slug")} value={slug} onChange={(e) => setSlug(e.target.value)} />
           {slugify(slug) !== item.slug ? (
-            <p className="text-xs text-destructive">
+            <p className="text-xs text-destructive-text">
               Changer l'adresse casse les liens déjà partagés.
             </p>
           ) : null}

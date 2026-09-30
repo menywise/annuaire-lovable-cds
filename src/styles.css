@@ -9,9 +9,9 @@
 
 @theme inline {
   --radius-sm: 0.25rem;
-  --radius-md: 0.5rem;
+  --radius-md: var(--radius); /* rounded-md = boutons, champs, badges : 6 px */
   --radius-lg: 0.75rem;
-  --radius-xl: calc(var(--radius) + 4px);
+  --radius-xl: var(--radius-lg); /* rounded-xl = cartes : 12 px (le relief cible .rounded-xl) */
   --radius-2xl: calc(var(--radius) + 8px);
 
   --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -40,6 +40,7 @@
   --color-warning-text: var(--warning-text);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
+  --color-destructive-text: var(--destructive-text);
   --color-info: var(--info);
   --color-info-text: var(--info-text);
   --color-cds-purple: var(--cds-purple);
@@ -77,6 +78,7 @@
   --warning-text: #b45200; /* texte / icônes : contraste AA sur fond clair */
   --destructive: #dc3545;
   --destructive-foreground: #ffffff;
+  --destructive-text: #cf1919; /* texte / icônes d'erreur : contraste AA sur fond clair */
   --info: #0dcaf0;
   --info-text: #0891b2;
   --cds-purple: #7c3aed;

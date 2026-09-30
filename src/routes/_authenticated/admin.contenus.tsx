@@ -140,7 +140,7 @@ function AdminContenusPage() {
       intro="Vos pages publiques se remplissent ici : questions fréquentes, offres et articles. Tout se crée, se modifie et se supprime sans toucher au code."
     >
       {loadError ? (
-        <div className="mb-6 flex flex-wrap items-center gap-3 rounded-lg border border-destructive/40 p-4 text-sm text-destructive">
+        <div className="mb-6 flex flex-wrap items-center gap-3 rounded-lg border border-destructive/40 p-4 text-sm text-destructive-text">
           Une partie des contenus n'a pas pu être chargée.
           <button
             type="button"
@@ -756,7 +756,7 @@ function PostRow({ post, reload }: { post: Post; reload: Reload }) {
               onChange={(e) => setDraft({ ...draft, slug: e.target.value })}
             />
             {post.published && slugify(draft.slug) !== post.slug ? (
-              <p className="text-xs text-destructive">
+              <p className="text-xs text-destructive-text">
                 Article publié : changer l'adresse casse les liens déjà partagés.
               </p>
             ) : null}

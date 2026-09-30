@@ -209,7 +209,7 @@ function DashboardPage() {
           {followed === null ? (
             <Skeleton className="mt-4 h-16 w-full rounded-xl" />
           ) : followedError ? (
-            <p className="mt-4 text-sm text-destructive">
+            <p className="mt-4 text-sm text-destructive-text">
               Impossible de charger vos discussions suivies. Rechargez la page.
             </p>
           ) : followed.length === 0 ? (

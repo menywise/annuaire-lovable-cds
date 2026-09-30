@@ -140,7 +140,7 @@ function AdminMessagesPage() {
       intro="Les messages envoyés par le formulaire de contact. Répondez par e-mail, puis marquez le message comme traité ; archivez ce qui n'appelle pas de réponse."
     >
       {loadError ? (
-        <div className="mb-6 flex flex-wrap items-center gap-3 rounded-lg border border-destructive/40 p-4 text-sm text-destructive">
+        <div className="mb-6 flex flex-wrap items-center gap-3 rounded-lg border border-destructive/40 p-4 text-sm text-destructive-text">
           Les messages n'ont pas pu être chargés.
           <button
             type="button"

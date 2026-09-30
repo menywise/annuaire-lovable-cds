@@ -113,7 +113,7 @@ function AdminModulesPage() {
       intro="Chaque module s'allume ou s'éteint ici. Éteint, il ne laisse aucune trace : ses pages renvoient à l'accueil et ses liens disparaissent des menus, du pied de page, du sitemap et de l'administration."
     >
       {loadError ? (
-        <p className="rounded-lg border border-destructive/40 p-4 text-sm text-destructive">
+        <p className="rounded-lg border border-destructive/40 p-4 text-sm text-destructive-text">
           Les réglages n'ont pas pu être chargés. Rechargez la page.
         </p>
       ) : draft === null ? (

@@ -85,7 +85,7 @@ function AdminPagesPage() {
       ) : failed ? (
         <p
           role="alert"
-          className="rounded-lg border border-destructive/40 bg-card p-4 text-sm text-destructive"
+          className="rounded-lg border border-destructive/40 bg-card p-4 text-sm text-destructive-text"
         >
           Pages indisponibles.{" "}
           <button type="button" className="underline" onClick={() => void load()}>
@@ -398,7 +398,7 @@ function PageEditor({
                     /pages/{slugify(slug || title) || "…"}
                   </p>
                   {page.published && slugify(slug) !== page.slug ? (
-                    <p className="text-xs text-destructive">
+                    <p className="text-xs text-destructive-text">
                       Page publiée : changer l'adresse casse les liens déjà partagés.
                     </p>
                   ) : null}

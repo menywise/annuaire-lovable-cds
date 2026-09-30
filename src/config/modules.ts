@@ -28,6 +28,7 @@ export const MODULES = [
   { key: "payments", label: "Paiement en ligne (Stripe) des formations", requires: ["lms"], defaultOn: false },
   { key: "reports", label: "Signalements de contenus", requires: [], defaultOn: true },
   { key: "search", label: "Recherche globale", requires: [], defaultOn: true },
+  { key: "shop", label: "Boutique (objets, PDF, e-books)", requires: [], defaultOn: false },
 ] as const satisfies ReadonlyArray<{
   key: string;
   label: string;
@@ -97,6 +98,7 @@ export function onlyActive<T extends object>(states: ModuleStates, items: readon
 export const PROTECTED_PATH_MODULES: ReadonlyArray<{ prefix: string; anyOf: readonly FeatureKey[] }> = [
   { prefix: "/admin/abonnes", anyOf: ["newsletter"] },
   { prefix: "/admin/annuaire", anyOf: ["directory"] },
+  { prefix: "/admin/boutique", anyOf: ["shop"] },
   { prefix: "/admin/conformite", anyOf: ["studio"] },
   { prefix: "/admin/contenus", anyOf: ["faq", "pricing", "blog"] },
   { prefix: "/admin/crm", anyOf: ["crm"] },
@@ -116,6 +118,7 @@ export const PROTECTED_PATH_MODULES: ReadonlyArray<{ prefix: string; anyOf: read
   { prefix: "/admin/temoignages", anyOf: ["testimonials"] },
   { prefix: "/crm", anyOf: ["crm"] },
   { prefix: "/decouvrir", anyOf: ["onboarding"] },
+  { prefix: "/mes-achats", anyOf: ["shop"] },
   { prefix: "/mes-annonces", anyOf: ["marketplace"] },
   { prefix: "/mes-formations", anyOf: ["lms"] },
   { prefix: "/messagerie", anyOf: ["messaging"] },

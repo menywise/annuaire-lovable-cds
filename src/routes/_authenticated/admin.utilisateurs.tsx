@@ -141,7 +141,7 @@ function AdminUsersPage() {
       intro="Tous les comptes inscrits. Nommez ou retirez un administrateur. Les adresses des admins du studio sont administratrices d'office, à chaque connexion."
     >
       {loadError ? (
-        <div className="mb-6 flex flex-wrap items-center gap-3 rounded-lg border border-destructive/40 p-4 text-sm text-destructive">
+        <div className="mb-6 flex flex-wrap items-center gap-3 rounded-lg border border-destructive/40 p-4 text-sm text-destructive-text">
           La liste n'a pas pu être chargée.
           <button
             type="button"

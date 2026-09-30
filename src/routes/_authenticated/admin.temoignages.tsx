@@ -162,7 +162,7 @@ function AdminTestimonialsPage() {
       {failed ? (
         <p
           role="alert"
-          className="rounded-lg border border-destructive/40 p-4 text-sm text-destructive"
+          className="rounded-lg border border-destructive/40 p-4 text-sm text-destructive-text"
         >
           Témoignages indisponibles.{" "}
           <button type="button" className="underline" onClick={() => void load()}>

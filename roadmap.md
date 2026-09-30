@@ -27,6 +27,7 @@
 - V0 · lot 9 : parcours cliqués (inscription, contact, forum, signalement, formation offerte) avec données « [recette] » purgées ; actifs en écriture réelle dès que les comptes de test sont fournis
 - V0 · lot 10 : recherche globale (module F) en français sans accents sur tous les contenus publics, règles de visibilité du site respectées, loupe dans l'en-tête
 - V0 · lot 11 : géographie complète au modèle de l'annuaire (régions, départements, intercommunalités, communes, codes postaux, coordonnées, voisinages) importée depuis geo.api.gouv.fr, pages communes
+- Module K « Boutique » (30/09) : objets, PDF et livres numériques payés par Stripe, panier, stock, livraison forfaitaire (offerte au-delà d'un seuil), téléchargements réservés à l'acheteur, expédition et suivi en admin, CGV complétées ; éteint par défaut, SQL en 10 blocs + contrôle
 - Thème tactile léger : surfaces hiérarchisées, cartes mieux détachées, champs creusés et états actifs renforcés
 
 ## En attente (décision du 29/09 : « beaucoup à faire avant de lancer les paiements »)
@@ -45,6 +46,15 @@ Premier projet à dupliquer et mettre en conformité : **l'annuaire des sites fr
 3. **Lot 14 · Briques externes** — Umami (audience sans cookie), zone Revive dans l'emplacement Régie, Ghost en cohabitation.
 4. **Lot 15 · Pages libres v2** — éditeur de menu, historique des versions ; Puck quand la dépendance pourra être validée côté Lovable.
 5. **Ensuite** — E Notifications (sur le site d'abord), H Événements, I Réalisations, G Rendez-vous, dans l'ordre des besoins des projets. Rôle Modérateur (reporté le 29/09).
+
+## Décisions du 30/09 (soir)
+
+- **Ordre** : correctifs de sécurité des projets Lovable (fait : kairognosia, skiagnosia, goldwing ; annuaire en attente des appelants Letta/Cowork) → lot 12 veille de sites → lot 13 a kit de démarrage → lot 13 b annuaire, puis manuelrohaut.fr, puis VDI → lot 14 Coolify + Umami.
+- **Kit (13 a)** : nom du site, adresse et domaine d'envoi des e-mails lus dans les réglages, plus en dur dans `src/routes/lovable/email/auth/webhook.ts`.
+- **manuelrohaut.fr** : devient la vitrine du studio (parcours, projets, CDS), sur une duplication CDS hébergée chez Lovable pour l'instant ; Bootstrap sur VPS plus tard. Refondation : ni redirections 301 ni reprise des anciens articles (réécrits par un agent). S'appuie sur la Boutique.
+- **VDI et Beautysané** : sites de niche sur sous-domaines. **BDB** : migration ensuite. Les sites WordPress migrent vers des duplications CDS ; le socle vit hors projet.
+- **E-mails** : chaque site à domaine propre gère ses e-mails ; les sites Lovable du studio peuvent rester sur notify.manuelrohaut.fr.
+- **VPS** : feu vert au début du lot 14 (d'ici là, mutualisé OVH).
 
 ## Points de vigilance
 

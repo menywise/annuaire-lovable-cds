@@ -130,7 +130,7 @@ function AdminAbonnesPage() {
         <Skeleton className="mt-6 h-40 w-full rounded-xl" />
       ) : loadError ? (
         <div className="mt-6 rounded-lg border border-destructive/40 p-6 text-sm">
-          <p className="text-destructive">La liste des abonnés n'a pas pu être chargée.</p>
+          <p className="text-destructive-text">La liste des abonnés n'a pas pu être chargée.</p>
           <Button
             className="mt-3"
             variant="outline"

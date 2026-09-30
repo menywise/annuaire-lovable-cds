@@ -13,7 +13,7 @@ export function ModerationNote({
   if (!note) return null;
   return (
     <p
-      className={`mt-2 inline-flex items-start gap-1.5 rounded-md border border-border bg-muted px-2.5 py-1.5 text-xs text-muted-foreground ${className}`}
+      className={`mt-2 inline-flex items-start gap-1.5 rounded-lg border border-border bg-muted px-2.5 py-1.5 text-xs text-muted-foreground ${className}`}
     >
       <ShieldCheck className="mt-px size-3.5 shrink-0" aria-hidden="true" />
       <span>

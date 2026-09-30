@@ -150,7 +150,7 @@ function AdminForumPage() {
       <section className="mt-8">
         <h2 className="text-base font-semibold text-foreground">Thématiques existantes</h2>
         {failed ? (
-          <p role="alert" className="mt-3 text-sm text-destructive">
+          <p role="alert" className="mt-3 text-sm text-destructive-text">
             Thématiques indisponibles.{" "}
             <button type="button" className="underline" onClick={() => void load()}>
               Réessayer
