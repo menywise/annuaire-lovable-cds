@@ -134,7 +134,7 @@ BEGIN
   FOR _c IN
     SELECT id, latitude, longitude FROM public.geo_places
     WHERE kind = 'commune' AND latitude IS NOT NULL AND longitude IS NOT NULL
-      AND NOT (attributes ? 'voisins')
+      AND (attributes->>'voisins') IS NULL
       AND (_departement IS NULL OR parent_code = _departement)
     ORDER BY code
     LIMIT least(greatest(coalesce(_limit, 200), 1), 2000)
@@ -216,7 +216,7 @@ RETURNS jsonb LANGUAGE sql STABLE SET search_path = public AS $$
       WHERE d.kind = 'departement' AND NOT EXISTS (
         SELECT 1 FROM public.geo_places c WHERE c.kind = 'commune' AND c.parent_code = d.code)), '[]'::jsonb),
     'voisins_a_calculer', (SELECT count(*) FROM public.geo_places
-      WHERE kind = 'commune' AND latitude IS NOT NULL AND NOT (attributes ? 'voisins')),
+      WHERE kind = 'commune' AND latitude IS NOT NULL AND (attributes->>'voisins') IS NULL),
     'voisinages', (SELECT count(*) FROM public.geo_adjacency)
   )
 $$;
