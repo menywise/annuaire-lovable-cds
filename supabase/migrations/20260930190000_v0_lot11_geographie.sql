@@ -185,15 +185,17 @@ CREATE OR REPLACE FUNCTION public.geo_search(_q text, _kinds text[] DEFAULT NULL
 RETURNS TABLE (kind text, code text, name text, parent_code text, postal_codes text[], population integer)
 LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS $$
   WITH q AS (
-    SELECT lower(extensions.unaccent(btrim(left(coalesce(_q, ''), 80)))) AS t
+    -- Jokers de LIKE et barre oblique retirés de la saisie (chr(92) : aucun antislash dans ce
+    -- fichier, que certains éditeurs SQL lisent comme un guillemet échappé).
+    SELECT translate(lower(extensions.unaccent(btrim(left(coalesce(_q, ''), 80)))), '%_' || chr(92), '') AS t
   )
   SELECT p.kind, p.code, p.name, p.parent_code, p.postal_codes, p.population
   FROM public.geo_places p, q
   WHERE length(q.t) >= 2
     AND (_kinds IS NULL OR p.kind = ANY (_kinds))
     AND (
-      lower(extensions.unaccent(p.name)) LIKE replace(replace(replace(q.t, '\', '\\'), '%', '\%'), '_', '\_') || '%'
-      OR lower(extensions.unaccent(p.name)) LIKE '%-' || replace(replace(replace(q.t, '\', '\\'), '%', '\%'), '_', '\_') || '%'
+      lower(extensions.unaccent(p.name)) LIKE q.t || '%'
+      OR lower(extensions.unaccent(p.name)) LIKE '%-' || q.t || '%'
       OR (q.t ~ '^[0-9]{2,5}$' AND EXISTS (SELECT 1 FROM unnest(p.postal_codes) cp WHERE cp LIKE q.t || '%'))
       OR (q.t ~ '^[0-9ab]{2,9}$' AND p.code = upper(q.t))
     )
