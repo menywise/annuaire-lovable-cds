@@ -92,6 +92,7 @@ import { Route as AuthenticatedCrmProspectsRouteImport } from './routes/_authent
 import { Route as AuthenticatedMessagerieIndexRouteImport } from './routes/_authenticated/messagerie.index'
 import { Route as AuthenticatedMessagerieConversationIdRouteImport } from './routes/_authenticated/messagerie.$conversationId'
 import { Route as AnnuaireCategorieSlugRouteImport } from './routes/annuaire.categorie.$slug'
+import { Route as AnnuaireCommuneCodeRouteImport } from './routes/annuaire.commune.$code'
 import { Route as AnnuaireDepartementSlugRouteImport } from './routes/annuaire.departement.$slug'
 import { Route as ApiCronPurgeContactRouteImport } from './routes/api.cron.purge-contact'
 import { Route as FormationSlugIndexRouteImport } from './routes/formation.$slug.index'
@@ -540,6 +541,11 @@ const AnnuaireCategorieSlugRoute = AnnuaireCategorieSlugRouteImport.update({
   path: '/annuaire/categorie/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AnnuaireCommuneCodeRoute = AnnuaireCommuneCodeRouteImport.update({
+  id: '/annuaire/commune/$code',
+  path: '/annuaire/commune/$code',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AnnuaireDepartementSlugRoute = AnnuaireDepartementSlugRouteImport.update({
   id: '/annuaire/departement/$slug',
   path: '/annuaire/departement/$slug',
@@ -669,6 +675,7 @@ export interface FileRoutesByFullPath {
   '/crm/prospects': typeof AuthenticatedCrmProspectsRoute
   '/messagerie/$conversationId': typeof AuthenticatedMessagerieConversationIdRoute
   '/annuaire/categorie/$slug': typeof AnnuaireCategorieSlugRoute
+  '/annuaire/commune/$code': typeof AnnuaireCommuneCodeRoute
   '/annuaire/departement/$slug': typeof AnnuaireDepartementSlugRoute
   '/api/cron/purge-contact': typeof ApiCronPurgeContactRoute
   '/forum/categorie/$slug': typeof ForumCategorieSlugRoute
@@ -762,6 +769,7 @@ export interface FileRoutesByTo {
   '/crm/prospects': typeof AuthenticatedCrmProspectsRoute
   '/messagerie/$conversationId': typeof AuthenticatedMessagerieConversationIdRoute
   '/annuaire/categorie/$slug': typeof AnnuaireCategorieSlugRoute
+  '/annuaire/commune/$code': typeof AnnuaireCommuneCodeRoute
   '/annuaire/departement/$slug': typeof AnnuaireDepartementSlugRoute
   '/api/cron/purge-contact': typeof ApiCronPurgeContactRoute
   '/forum/categorie/$slug': typeof ForumCategorieSlugRoute
@@ -857,6 +865,7 @@ export interface FileRoutesById {
   '/_authenticated/crm/prospects': typeof AuthenticatedCrmProspectsRoute
   '/_authenticated/messagerie/$conversationId': typeof AuthenticatedMessagerieConversationIdRoute
   '/annuaire/categorie/$slug': typeof AnnuaireCategorieSlugRoute
+  '/annuaire/commune/$code': typeof AnnuaireCommuneCodeRoute
   '/annuaire/departement/$slug': typeof AnnuaireDepartementSlugRoute
   '/api/cron/purge-contact': typeof ApiCronPurgeContactRoute
   '/forum/categorie/$slug': typeof ForumCategorieSlugRoute
@@ -952,6 +961,7 @@ export interface FileRouteTypes {
     | '/crm/prospects'
     | '/messagerie/$conversationId'
     | '/annuaire/categorie/$slug'
+    | '/annuaire/commune/$code'
     | '/annuaire/departement/$slug'
     | '/api/cron/purge-contact'
     | '/forum/categorie/$slug'
@@ -1045,6 +1055,7 @@ export interface FileRouteTypes {
     | '/crm/prospects'
     | '/messagerie/$conversationId'
     | '/annuaire/categorie/$slug'
+    | '/annuaire/commune/$code'
     | '/annuaire/departement/$slug'
     | '/api/cron/purge-contact'
     | '/forum/categorie/$slug'
@@ -1139,6 +1150,7 @@ export interface FileRouteTypes {
     | '/_authenticated/crm/prospects'
     | '/_authenticated/messagerie/$conversationId'
     | '/annuaire/categorie/$slug'
+    | '/annuaire/commune/$code'
     | '/annuaire/departement/$slug'
     | '/api/cron/purge-contact'
     | '/forum/categorie/$slug'
@@ -1204,6 +1216,7 @@ export interface RootRouteChildren {
   MembresIndexRoute: typeof MembresIndexRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   AnnuaireCategorieSlugRoute: typeof AnnuaireCategorieSlugRoute
+  AnnuaireCommuneCodeRoute: typeof AnnuaireCommuneCodeRoute
   AnnuaireDepartementSlugRoute: typeof AnnuaireDepartementSlugRoute
   ApiCronPurgeContactRoute: typeof ApiCronPurgeContactRoute
   ForumCategorieSlugRoute: typeof ForumCategorieSlugRoute
@@ -1797,6 +1810,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AnnuaireCategorieSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/annuaire/commune/$code': {
+      id: '/annuaire/commune/$code'
+      path: '/annuaire/commune/$code'
+      fullPath: '/annuaire/commune/$code'
+      preLoaderRoute: typeof AnnuaireCommuneCodeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/annuaire/departement/$slug': {
       id: '/annuaire/departement/$slug'
       path: '/annuaire/departement/$slug'
@@ -1994,6 +2014,7 @@ const rootRouteChildren: RootRouteChildren = {
   MembresIndexRoute: MembresIndexRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   AnnuaireCategorieSlugRoute: AnnuaireCategorieSlugRoute,
+  AnnuaireCommuneCodeRoute: AnnuaireCommuneCodeRoute,
   AnnuaireDepartementSlugRoute: AnnuaireDepartementSlugRoute,
   ApiCronPurgeContactRoute: ApiCronPurgeContactRoute,
   ForumCategorieSlugRoute: ForumCategorieSlugRoute,

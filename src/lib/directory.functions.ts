@@ -132,7 +132,7 @@ export const getDepartement = createServerFn({ method: "GET" })
       .eq("slug", input.slug)
       .maybeSingle();
     if (!departement) return null;
-    const [{ data: listings }, { data: neighbours }] = await Promise.all([
+    const [{ data: listings }, { data: neighbours }, { data: communes }] = await Promise.all([
       client
         .from("directory_listings")
         .select("id, name, slug, excerpt, city, plan, verified, featured, category_id")
@@ -146,6 +146,72 @@ export const getDepartement = createServerFn({ method: "GET" })
         .eq("region", departement.region)
         .neq("code", departement.code)
         .order("code"),
+      // Principales communes (référentiel géographique, lot 11).
+      client
+        .from("geo_places")
+        .select("code, name, population")
+        .eq("kind", "commune")
+        .eq("parent_code", departement.code)
+        .order("population", { ascending: false, nullsFirst: false })
+        .limit(48),
     ]);
-    return { departement, listings: listings ?? [], neighbours: neighbours ?? [] };
+    return {
+      departement,
+      listings: listings ?? [],
+      neighbours: neighbours ?? [],
+      communes: communes ?? [],
+    };
+  });
+
+const INSEE = /^[0-9][0-9AB][0-9]{3}$/;
+
+/** Page d'une commune : fiches de la commune (code postal ou nom), communes voisines. */
+export const getCommune = createServerFn({ method: "GET" })
+  .inputValidator((input: { code: string }) => ({ code: String(input?.code ?? "").toUpperCase() }))
+  .handler(async ({ data: input }) => {
+    if (!INSEE.test(input.code)) return null;
+    const client = publicClient();
+    const { data: commune } = await client
+      .from("geo_places")
+      .select("code, name, parent_code, epci_code, postal_codes, population, latitude, longitude")
+      .eq("kind", "commune")
+      .eq("code", input.code)
+      .maybeSingle();
+    if (!commune) return null;
+    const fields = "id, name, slug, excerpt, city, plan, verified, featured, category_id";
+    const [{ data: departement }, { data: epci }, { data: neighbours }, byPostal, byName] =
+      await Promise.all([
+        client
+          .from("geo_departements")
+          .select("code, nom, slug, region")
+          .eq("code", commune.parent_code ?? "")
+          .maybeSingle(),
+        commune.epci_code
+          ? client
+              .from("geo_places")
+              .select("code, name")
+              .eq("kind", "epci")
+              .eq("code", commune.epci_code)
+              .maybeSingle()
+          : Promise.resolve({ data: null }),
+        client.rpc("geo_neighbours", { _code: commune.code, _limit: 12 }),
+        commune.postal_codes.length
+          ? client
+              .from("directory_listings")
+              .select(fields)
+              .eq("status", "published")
+              .in("postal_code", commune.postal_codes)
+          : Promise.resolve({ data: [] }),
+        client
+          .from("directory_listings")
+          .select(fields)
+          .eq("status", "published")
+          .eq("departement", commune.parent_code ?? "")
+          .ilike("city", commune.name.replace(/[%_\\]/g, "")),
+      ]);
+    const seen = new Set<string>();
+    const listings = [...(byPostal.data ?? []), ...(byName.data ?? [])]
+      .filter((l) => !seen.has(l.id) && seen.add(l.id))
+      .sort((a, b) => Number(b.featured) - Number(a.featured) || a.name.localeCompare(b.name));
+    return { commune, departement, epci, neighbours: neighbours ?? [], listings };
   });

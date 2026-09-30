@@ -16,7 +16,7 @@ export const MODULES = [
   { key: "pricing", label: "Tarifs", requires: [], defaultOn: true },
   { key: "onboarding", label: "Parcours « Démarrer »", requires: [], defaultOn: true },
   { key: "directory", label: "Annuaire métier", requires: [], defaultOn: false },
-  { key: "geo", label: "Géographie (départements, communes)", requires: ["directory"], defaultOn: false },
+  { key: "geo", label: "Géographie (régions, départements, intercommunalités, communes)", requires: ["directory"], defaultOn: false },
   { key: "crm", label: "Suivi de contacts (CRM)", requires: [], defaultOn: false },
   { key: "lms", label: "Formations", requires: [], defaultOn: false },
   { key: "marketplace", label: "Petites annonces", requires: ["messaging"], defaultOn: false },
