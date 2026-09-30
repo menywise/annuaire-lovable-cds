@@ -55,3 +55,4 @@ Premier projet à dupliquer et mettre en conformité : **l'annuaire des sites fr
 - Vulnérabilités js-yaml héritées de @tanstack/react-start : aucun correctif amont, à re-vérifier
 - Test au lecteur d'écran : manuel, reste à faire (lot 8)
 - Temps de réponse serveur du blog entre 800 et 1 400 ms (30/09) : à surveiller avec le robot (p5)
+- [x] Modèles d'e-mails de compte à l'identité CDS (français, Inter, bleu de marque, thème clair) : inscription, invitation, lien magique, mot de passe oublié, changement d'adresse, code de vérification
