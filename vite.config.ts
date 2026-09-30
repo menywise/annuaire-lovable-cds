@@ -10,7 +10,7 @@ import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 import { mcpPlugin } from "@lovable.dev/mcp-js/stacks/tanstack/vite";
 
 // Variables serveur (sans préfixe VITE_) pour les routes serveur uniquement, jamais exposées au client.
-Object.assign(process.env, loadEnv(process.env.NODE_ENV ?? "development", process.cwd(), ""));
+Object.assign(process.env, loadEnv(process.env["NODE_ENV"] ?? "development", process.cwd(), ""));
 
 export default defineConfig({
   tanstackStart: {
