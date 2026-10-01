@@ -28,8 +28,6 @@
 - V0 · lot 10 : recherche globale (module F) en français sans accents sur tous les contenus publics, règles de visibilité du site respectées, loupe dans l'en-tête
 - V0 · lot 11 : géographie complète au modèle de l'annuaire (régions, départements, intercommunalités, communes, codes postaux, coordonnées, voisinages) importée depuis geo.api.gouv.fr, pages communes
 - Module K « Boutique » (30/09) : objets, PDF et livres numériques payés par Stripe, panier, stock, livraison forfaitaire (offerte au-delà d'un seuil), téléchargements réservés à l'acheteur, expédition et suivi en admin, CGV complétées ; éteint par défaut, SQL en 10 blocs + contrôle
-- V0 · lot 12 : module L « Veille de sites » (découverte par recherche web, agents et propositions des membres ; technologies reconnues par des règles en base ; disponibilité suivie ; publication en brouillon dans l'annuaire), SQL en 9 blocs + contrôle
-- Design system CDS 1.2.0 (30/09) : rayons des contrôles à 6 px, cartes et encarts à 12 px, ombre tactile de Card, texte d'erreur conforme AA (`--destructive-text`)
 - Thème tactile léger : surfaces hiérarchisées, cartes mieux détachées, champs creusés et états actifs renforcés
 
 ## En attente (décision du 29/09 : « beaucoup à faire avant de lancer les paiements »)
@@ -43,7 +41,7 @@
 
 Premier projet à dupliquer et mettre en conformité : **l'annuaire des sites français** (`annuaire-mac97000`). Il fixe l'ordre des lots 10 à 13.
 
-1. ~~Lot 12 · Veille de sites~~ ✅ (30/09). Reste : fiche d'audit qualité des sites (grille de l'annuaire), profilage par IA (nom, mission, catégorie), capture d'écran copiée dans la médiathèque (les liens Firecrawl expirent).
+1. **Lot 12 · Veille de sites** — module propre à l'annuaire : découverte de sites (Firecrawl, clé en secret), détection des technologies, contrôles réguliers d'état.
 2. **Lot 13 · Duplication : annuaire** — kit de démarrage d'un projet (marque, réglages, modules, nettoyage de la démo), annuaire reconstruit sur le socle, données reprises. Sortie de la V0 : grille de conformité à 100 %, robot vert, chaque module « fini » (8 critères de V0.md).
 3. **Lot 14 · Briques externes** — Umami (audience sans cookie), zone Revive dans l'emplacement Régie, Ghost en cohabitation.
 4. **Lot 15 · Pages libres v2** — éditeur de menu, historique des versions ; Puck quand la dépendance pourra être validée côté Lovable.

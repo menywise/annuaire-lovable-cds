@@ -87,12 +87,6 @@ function buildAdminNav(): AdminNavItem[] {
       module: "payments",
     },
     {
-      to: "/admin/veille",
-      label: "Veille de sites",
-      title: "Découverte de sites, technologies et disponibilité",
-      module: "watch",
-    },
-    {
       to: "/admin/boutique",
       label: "Boutique",
       title: "Produits, commandes à expédier et livraison",
