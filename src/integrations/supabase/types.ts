@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.5"
+    PostgrestVersion: "14.18"
   }
   public: {
     Tables: {
@@ -973,15 +973,15 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "geo_adjacency_place_id_fkey"
-            columns: ["place_id"]
+            foreignKeyName: "geo_adjacency_neighbor_id_fkey"
+            columns: ["neighbor_id"]
             isOneToOne: false
             referencedRelation: "geo_places"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "geo_adjacency_neighbor_id_fkey"
-            columns: ["neighbor_id"]
+            foreignKeyName: "geo_adjacency_place_id_fkey"
+            columns: ["place_id"]
             isOneToOne: false
             referencedRelation: "geo_places"
             referencedColumns: ["id"]
@@ -2279,6 +2279,40 @@ export type Database = {
           user_id: string
         }[]
       }
+      geo_compute_neighbours: {
+        Args: {
+          _departement?: string
+          _limit?: number
+          _max?: number
+          _rayon_km?: number
+        }
+        Returns: number
+      }
+      geo_distance_km: {
+        Args: { _lat1: number; _lat2: number; _lon1: number; _lon2: number }
+        Returns: number
+      }
+      geo_neighbours: {
+        Args: { _code: string; _limit?: number }
+        Returns: {
+          code: string
+          distance_km: number
+          name: string
+          population: number
+        }[]
+      }
+      geo_search: {
+        Args: { _kinds?: string[]; _limit?: number; _q: string }
+        Returns: {
+          code: string
+          kind: string
+          name: string
+          parent_code: string
+          population: number
+          postal_codes: string[]
+        }[]
+      }
+      geo_status: { Args: never; Returns: Json }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -2304,26 +2338,6 @@ export type Database = {
       }
       member_accepts_messages: { Args: { _user_id: string }; Returns: boolean }
       module_defaults: { Args: never; Returns: Json }
-      geo_compute_neighbours: {
-        Args: { _departement?: string | null; _rayon_km?: number; _max?: number; _limit?: number }
-        Returns: number
-      }
-      geo_neighbours: {
-        Args: { _code: string; _limit?: number }
-        Returns: { code: string; name: string; population: number | null; distance_km: number | null }[]
-      }
-      geo_status: { Args: never; Returns: Json }
-      geo_search: {
-        Args: { _q: string; _kinds?: string[] | null; _limit?: number }
-        Returns: {
-          kind: string
-          code: string
-          name: string
-          parent_code: string | null
-          postal_codes: string[]
-          population: number | null
-        }[]
-      }
       module_enabled: { Args: { _key: string }; Returns: boolean }
       payment_attach_session: {
         Args: { _payment_id: string; _session_id: string }
@@ -2383,7 +2397,12 @@ export type Database = {
         }[]
       }
       shop_set_customer: {
-        Args: { _address: Json; _email: string; _name: string; _session_id: string }
+        Args: {
+          _address: Json
+          _email: string
+          _name: string
+          _session_id: string
+        }
         Returns: boolean
       }
       shop_start_checkout: {
@@ -2401,7 +2420,6 @@ export type Database = {
         }[]
       }
       starter_reset_demo: { Args: { _scope: string }; Returns: Json }
-      starter_status: { Args: never; Returns: Json }
       valid_page_data: { Args: { _data: Json }; Returns: boolean }
     }
     Enums: {
