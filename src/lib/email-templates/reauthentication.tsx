@@ -15,8 +15,8 @@ interface ReauthenticationEmailProps {
 }
 
 export const ReauthenticationEmail = ({
-  siteName = 'CDS Framework',
-  siteUrl = 'https://manuelrohaut.fr',
+  siteName = 'Votre site',
+  siteUrl = 'https://example.com',
   token,
 }: ReauthenticationEmailProps) => (
   <CdsEmailLayout

@@ -8,23 +8,30 @@ import { RecoveryEmail } from '@/lib/email-templates/recovery'
 import { EmailChangeEmail } from '@/lib/email-templates/email-change'
 import { ReauthenticationEmail } from '@/lib/email-templates/reauthentication'
 
-// Configuration
-const SITE_NAME = "CDS Framework"
-const SENDER_DOMAIN = "notify.manuelrohaut.fr"
-const ROOT_DOMAIN = "manuelrohaut.fr"
-const FROM_DOMAIN = "manuelrohaut.fr"
-const SITE_URL = `https://${ROOT_DOMAIN}`
-
+// Identité d'envoi : lue dans les réglages du site (CDS, lot 13 a), jamais écrite en dur.
 // The SDK handler owns verification, dispatch, and retry semantics; this file
 // owns only the email decisions: subjects, templates, and per-type props.
 export const Route = createFileRoute("/lovable/email/auth/webhook")({
   server: {
     handlers: {
-      POST: ({ request }) => {
+      POST: async ({ request }) => {
+        const { emailIdentity } = await import('@/lib/email-identity.server')
+        let identity
+        try {
+          identity = await emailIdentity(request)
+        } catch (error) {
+          console.error(error)
+          return Response.json(
+            { error: error instanceof Error ? error.message : 'Configuration des e-mails absente' },
+            { status: 500 }
+          )
+        }
+        const SITE_NAME = identity.siteName
+        const SITE_URL = identity.siteUrl
         const handler = createAuthEmailHandler({
           apiKey: process.env['LOVABLE_API_KEY']!,
-          from: `${SITE_NAME} <noreply@${FROM_DOMAIN}>`,
-          senderDomain: SENDER_DOMAIN,
+          from: `${SITE_NAME} <noreply@${identity.fromDomain}>`,
+          senderDomain: identity.senderDomain,
           sendUrl: process.env['LOVABLE_SEND_URL'],
           emails: {
             signup: {

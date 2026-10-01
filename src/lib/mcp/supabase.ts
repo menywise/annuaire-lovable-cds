@@ -66,9 +66,14 @@ export function supabaseForUser(ctx: ToolContext) {
   });
 }
 
-export function siteBaseUrl(override?: string): string {
-  const base =
-    override?.trim() || configuredEnv(["SITE_URL"]) || "https://cds-mac97000.lovable.app";
+/** Adresse du site audité : paramètre de l'outil, sinon SITE_URL, sinon l'adresse réglée en admin. */
+export async function siteBaseUrl(override?: string): Promise<string> {
+  let base = override?.trim() || configuredEnv(["SITE_URL"]) || "";
+  if (!base) {
+    const { loadSiteConfig } = await import("@/lib/site-config.functions");
+    base = (await loadSiteConfig().catch(() => null))?.brand.url ?? "";
+  }
+  if (!base) throw new Error("Adresse du site inconnue : indiquez base_url ou réglez-la en admin.");
   return base.replace(/\/+$/, "");
 }
 

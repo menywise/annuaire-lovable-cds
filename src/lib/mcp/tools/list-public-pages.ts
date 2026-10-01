@@ -16,7 +16,8 @@ export default defineTool({
   },
   annotations: { readOnlyHint: true, openWorldHint: true },
   handler: async ({ base_url }, ctx) => {
-    const base = siteBaseUrl(base_url);
+    const base = await siteBaseUrl(base_url).catch(() => null);
+    if (!base) return errorResult("Adresse du site inconnue : indiquez base_url.");
     try {
       const res = await fetch(`${base}/sitemap.xml`, { signal: ctx.signal });
       if (!res.ok) return errorResult(`Plan du site inaccessible (${res.status}).`);

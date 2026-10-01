@@ -75,6 +75,7 @@ import { Route as AuthenticatedAdminBoutiqueRouteImport } from './routes/_authen
 import { Route as AuthenticatedAdminConformiteRouteImport } from './routes/_authenticated/admin.conformite'
 import { Route as AuthenticatedAdminContenusRouteImport } from './routes/_authenticated/admin.contenus'
 import { Route as AuthenticatedAdminCrmRouteImport } from './routes/_authenticated/admin.crm'
+import { Route as AuthenticatedAdminDemarrageRouteImport } from './routes/_authenticated/admin.demarrage'
 import { Route as AuthenticatedAdminFormationsRouteImport } from './routes/_authenticated/admin.formations'
 import { Route as AuthenticatedAdminForumRouteImport } from './routes/_authenticated/admin.forum'
 import { Route as AuthenticatedAdminGeographieRouteImport } from './routes/_authenticated/admin.geographie'
@@ -446,6 +447,12 @@ const AuthenticatedAdminCrmRoute = AuthenticatedAdminCrmRouteImport.update({
   path: '/admin/crm',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAdminDemarrageRoute =
+  AuthenticatedAdminDemarrageRouteImport.update({
+    id: '/admin/demarrage',
+    path: '/admin/demarrage',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminFormationsRoute =
   AuthenticatedAdminFormationsRouteImport.update({
     id: '/admin/formations',
@@ -691,6 +698,7 @@ export interface FileRoutesByFullPath {
   '/admin/conformite': typeof AuthenticatedAdminConformiteRoute
   '/admin/contenus': typeof AuthenticatedAdminContenusRoute
   '/admin/crm': typeof AuthenticatedAdminCrmRoute
+  '/admin/demarrage': typeof AuthenticatedAdminDemarrageRoute
   '/admin/formations': typeof AuthenticatedAdminFormationsRoute
   '/admin/forum': typeof AuthenticatedAdminForumRoute
   '/admin/geographie': typeof AuthenticatedAdminGeographieRoute
@@ -790,6 +798,7 @@ export interface FileRoutesByTo {
   '/admin/conformite': typeof AuthenticatedAdminConformiteRoute
   '/admin/contenus': typeof AuthenticatedAdminContenusRoute
   '/admin/crm': typeof AuthenticatedAdminCrmRoute
+  '/admin/demarrage': typeof AuthenticatedAdminDemarrageRoute
   '/admin/formations': typeof AuthenticatedAdminFormationsRoute
   '/admin/forum': typeof AuthenticatedAdminForumRoute
   '/admin/geographie': typeof AuthenticatedAdminGeographieRoute
@@ -891,6 +900,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/conformite': typeof AuthenticatedAdminConformiteRoute
   '/_authenticated/admin/contenus': typeof AuthenticatedAdminContenusRoute
   '/_authenticated/admin/crm': typeof AuthenticatedAdminCrmRoute
+  '/_authenticated/admin/demarrage': typeof AuthenticatedAdminDemarrageRoute
   '/_authenticated/admin/formations': typeof AuthenticatedAdminFormationsRoute
   '/_authenticated/admin/forum': typeof AuthenticatedAdminForumRoute
   '/_authenticated/admin/geographie': typeof AuthenticatedAdminGeographieRoute
@@ -992,6 +1002,7 @@ export interface FileRouteTypes {
     | '/admin/conformite'
     | '/admin/contenus'
     | '/admin/crm'
+    | '/admin/demarrage'
     | '/admin/formations'
     | '/admin/forum'
     | '/admin/geographie'
@@ -1091,6 +1102,7 @@ export interface FileRouteTypes {
     | '/admin/conformite'
     | '/admin/contenus'
     | '/admin/crm'
+    | '/admin/demarrage'
     | '/admin/formations'
     | '/admin/forum'
     | '/admin/geographie'
@@ -1191,6 +1203,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/conformite'
     | '/_authenticated/admin/contenus'
     | '/_authenticated/admin/crm'
+    | '/_authenticated/admin/demarrage'
     | '/_authenticated/admin/formations'
     | '/_authenticated/admin/forum'
     | '/_authenticated/admin/geographie'
@@ -1755,6 +1768,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminCrmRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/demarrage': {
+      id: '/_authenticated/admin/demarrage'
+      path: '/admin/demarrage'
+      fullPath: '/admin/demarrage'
+      preLoaderRoute: typeof AuthenticatedAdminDemarrageRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/formations': {
       id: '/_authenticated/admin/formations'
       path: '/admin/formations'
@@ -1996,6 +2016,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminConformiteRoute: typeof AuthenticatedAdminConformiteRoute
   AuthenticatedAdminContenusRoute: typeof AuthenticatedAdminContenusRoute
   AuthenticatedAdminCrmRoute: typeof AuthenticatedAdminCrmRoute
+  AuthenticatedAdminDemarrageRoute: typeof AuthenticatedAdminDemarrageRoute
   AuthenticatedAdminFormationsRoute: typeof AuthenticatedAdminFormationsRoute
   AuthenticatedAdminForumRoute: typeof AuthenticatedAdminForumRoute
   AuthenticatedAdminGeographieRoute: typeof AuthenticatedAdminGeographieRoute
@@ -2035,6 +2056,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminConformiteRoute: AuthenticatedAdminConformiteRoute,
   AuthenticatedAdminContenusRoute: AuthenticatedAdminContenusRoute,
   AuthenticatedAdminCrmRoute: AuthenticatedAdminCrmRoute,
+  AuthenticatedAdminDemarrageRoute: AuthenticatedAdminDemarrageRoute,
   AuthenticatedAdminFormationsRoute: AuthenticatedAdminFormationsRoute,
   AuthenticatedAdminForumRoute: AuthenticatedAdminForumRoute,
   AuthenticatedAdminGeographieRoute: AuthenticatedAdminGeographieRoute,

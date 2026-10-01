@@ -216,6 +216,7 @@ export const QA_PAGES: QaPage[] = [
   { path: "/crm/actions", label: "Actions", role: "membre", module: "crm" },
 
   // Administration
+  { path: "/admin/demarrage", label: "Démarrage", role: "admin" },
   { path: "/admin", label: "Paramètres", role: "admin" },
   { path: "/admin/modules", label: "Modules", role: "admin" },
   { path: "/admin/utilisateurs", label: "Utilisateurs", role: "admin" },

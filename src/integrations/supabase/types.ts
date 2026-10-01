@@ -2400,6 +2400,8 @@ export type Database = {
           total_cents: number
         }[]
       }
+      starter_reset_demo: { Args: { _scope: string }; Returns: Json }
+      starter_status: { Args: never; Returns: Json }
       valid_page_data: { Args: { _data: Json }; Returns: boolean }
     }
     Enums: {

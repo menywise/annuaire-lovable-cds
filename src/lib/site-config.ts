@@ -36,6 +36,10 @@ export type BrandSettings = {
     address: string;
     phone: string;
   };
+  email: {
+    senderDomain: string;
+    fromDomain: string;
+  };
 };
 
 export type SiteConfig = {
@@ -50,6 +54,7 @@ export const defaultBrandSettings: BrandSettings = {
   ...brandFallback,
   legal: { ...brandFallback.legal },
   host: { ...brandFallback.host },
+  email: { ...brandFallback.email },
 };
 
 /** Fusionne une valeur lue en base avec les valeurs de repli (champs manquants ou mal typés ignorés). */
@@ -77,7 +82,21 @@ export function normalizeBrand(value: unknown): BrandSettings {
     url: top.url.trim().replace(/\/+$/, ""),
     legal: pick(defaultBrandSettings.legal, v["legal"]),
     host: pick(defaultBrandSettings.host, v["host"]),
+    email: cleanEmailDomains(pick(defaultBrandSettings.email, v["email"])),
   };
+}
+
+/** Nom de domaine simple (« notify.exemple.fr ») : minuscules, au moins un point, sans schéma. */
+export function isDomainName(value: string) {
+  return /^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)+$/.test(value);
+}
+
+function cleanEmailDomains(email: BrandSettings["email"]): BrandSettings["email"] {
+  const clean = (d: string) => {
+    const v = d.trim().toLowerCase().replace(/^https?:\/\//, "").replace(/\/.*$/, "");
+    return isDomainName(v) ? v : "";
+  };
+  return { senderDomain: clean(email.senderDomain), fromDomain: clean(email.fromDomain) };
 }
 
 export function buildSiteConfig(rows: Array<{ key: string; value: unknown }>): SiteConfig {

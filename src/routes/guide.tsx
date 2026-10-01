@@ -18,24 +18,24 @@ export const Route = createFileRoute("/guide")({
 
 const steps = [
   {
-    title: "1. Copier le socle",
-    body: "Reprendre src/styles.css (tokens de couleur, typographie, rayons), src/lib/cds-tokens.ts, src/lib/seo.ts et le dossier src/components/cds.",
+    title: "1. Cloner le socle",
+    body: "Chaque projet est un clone du socle : dans Lovable, « Remix » du projet CDS, puis connexion à un dépôt GitHub qui lui est propre. Le socle ne contient jamais rien de propre à un projet.",
   },
   {
-    title: "2. Régler la marque depuis l'administration",
-    body: "Aucun fichier à modifier : l'espace Administration (réservé aux comptes administrateurs) permet de changer le nom du site, l'adresse publique, les coordonnées légales et l'hébergeur. Ces paramètres sont lus par le serveur : titres, adresse canonique, sitemap, flux RSS, pages légales et aperçus de partage les reprennent.",
+    title: "2. Passer le SQL et les secrets",
+    body: "Les migrations du socle se passent dans l'éditeur SQL du clone, dans l'ordre. Les clés (paiement, tâches planifiées) se rangent dans les secrets du projet, jamais dans le code ni en base.",
   },
   {
-    title: "3. Reprendre les pages fournies",
-    body: "Connexion, création de compte, vérification de l'adresse e-mail, mot de passe oublié, nouveau mot de passe, profil, tableau de bord, contact protégé anti-spam, mentions légales, confidentialité, CGU, cookies, page introuvable et page de maintenance.",
+    title: "3. Régler l'identité depuis l'administration",
+    body: "Aucun fichier à modifier : nom du site, adresse publique, mentions légales, hébergeur et domaine d'envoi des e-mails se règlent dans Administration → Paramètres. Titres, adresse canonique, plan du site, flux RSS, pages légales, aperçus de partage et e-mails les reprennent.",
   },
   {
-    title: "4. Activer les modules utiles au projet",
-    body: "Administration → Modules : chaque module s'allume ou s'éteint, dépendances comprises. Un module éteint ne laisse aucune trace (pages, menus, pied de page, sitemap, administration). Le contenu se remplit et se modère ensuite depuis Contenus, Modération, Abonnés.",
+    title: "4. Allumer les modules utiles au projet",
+    body: "Administration → Modules : chaque module s'allume ou s'éteint, dépendances comprises. Un module éteint ne laisse aucune trace (pages, menus, pied de page, plan du site, administration).",
   },
   {
-    title: "5. Vérifier le référencement",
-    body: "Chaque page appelle seo() : titre unique, description, adresse canonique et aperçu de partage. Les articles et discussions entrent automatiquement dans le plan du site, et la FAQ est balisée pour les moteurs de recherche.",
+    title: "5. Retirer la démonstration",
+    body: "Administration → Démarrage liste ce qui reste à régler et retire en deux gestes les exemples de la recette et les contenus de démarrage, sans toucher à ce que le projet a déjà modifié.",
   },
   {
     title: "6. Garder les règles CDS",

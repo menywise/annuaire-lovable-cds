@@ -8,11 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 /**
  * Liste blanche finale stricte des hostnames autorisés pour les redirections OAuth absolues.
  */
-const ALLOWED_REDIRECT_HOSTNAMES = new Set([
-  "cds-mac97000.lovable.app",
-  "lovable.dev",
-  "lovable.app",
-]);
+const ALLOWED_REDIRECT_HOSTNAMES = new Set(["lovable.dev", "lovable.app"]);
 
 /**
  * Valide et assainit une URL de redirection pour prévenir les attaques Open Redirect.
@@ -62,10 +58,13 @@ export function getSafeRedirectUrl(
       return fallback;
     }
 
-    // Vérification de la liste blanche
-    const isAllowed = Array.from(ALLOWED_REDIRECT_HOSTNAMES).some(
-      (domain) => hostname === domain || hostname.endsWith("." + domain),
-    );
+    // Vérification de la liste blanche (plus le site lui-même, quel que soit son domaine)
+    const sameSite = typeof window !== "undefined" && hostname === window.location.hostname;
+    const isAllowed =
+      sameSite ||
+      Array.from(ALLOWED_REDIRECT_HOSTNAMES).some(
+        (domain) => hostname === domain || hostname.endsWith("." + domain),
+      );
 
     if (isAllowed) {
       return parsed.toString();

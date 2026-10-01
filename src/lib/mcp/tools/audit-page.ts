@@ -27,7 +27,9 @@ export default defineTool({
   },
   annotations: { readOnlyHint: true, openWorldHint: true },
   handler: async ({ path, base_url }, ctx) => {
-    const url = `${siteBaseUrl(base_url)}${path.startsWith("/") ? path : `/${path}`}`;
+    const base = await siteBaseUrl(base_url).catch(() => null);
+    if (!base) return errorResult("Adresse du site inconnue : indiquez base_url.");
+    const url = `${base}${path.startsWith("/") ? path : `/${path}`}`;
     try {
       const res = await fetch(url, { signal: ctx.signal, redirect: "follow" });
       const html = await res.text();

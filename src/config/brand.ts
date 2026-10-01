@@ -31,6 +31,15 @@ export const brandFallback = {
     address: "",
     phone: "",
   },
+  /**
+   * Envoi des e-mails (inscription, mot de passe oublié…) par le service de Lovable.
+   * senderDomain : sous-domaine délégué à Lovable (ex. « notify.exemple.fr ») ;
+   * fromDomain : domaine affiché dans l'expéditeur (ex. « exemple.fr »).
+   */
+  email: {
+    senderDomain: "",
+    fromDomain: "",
+  },
 };
 
 /** Langue du document (multilingue hors périmètre). */
