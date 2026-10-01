@@ -41,15 +41,17 @@
 
 Premier projet à dupliquer et mettre en conformité : **l'annuaire des sites français** (`annuaire-mac97000`). Il fixe l'ordre des lots 10 à 13.
 
-1. **Lot 12 · Veille de sites** — module propre à l'annuaire : découverte de sites (Firecrawl, clé en secret), détection des technologies, contrôles réguliers d'état.
-2. **Lot 13 · Duplication : annuaire** — kit de démarrage d'un projet (marque, réglages, modules, nettoyage de la démo), annuaire reconstruit sur le socle, données reprises. Sortie de la V0 : grille de conformité à 100 %, robot vert, chaque module « fini » (8 critères de V0.md).
+1. **Lot 13 a · Kit de démarrage** (dans le socle) — marque, réglages, modules, nettoyage de la démo : ce qu'il faut pour cloner CDS proprement.
+2. **Lot 13 b · Premier clone : l'annuaire des sites** (hors socle) — l'annuaire est un clone de CDS, pas une partie du socle. Il reçoit la veille de sites (code prêt : commit `b37f902`, PR #16 fermée sans merge le 01/10), ses données reprises. Sortie de la V0 : grille de conformité à 100 %, robot vert, chaque module « fini » (8 critères de V0.md).
 3. **Lot 14 · Briques externes** — Umami (audience sans cookie), zone Revive dans l'emplacement Régie, Ghost en cohabitation.
 4. **Lot 15 · Pages libres v2** — éditeur de menu, historique des versions ; Puck quand la dépendance pourra être validée côté Lovable.
 5. **Ensuite** — E Notifications (sur le site d'abord), H Événements, I Réalisations, G Rendez-vous, dans l'ordre des besoins des projets. Rôle Modérateur (reporté le 29/09).
 
 ## Décisions du 30/09 (soir)
 
-- **Ordre** : correctifs de sécurité des projets Lovable (fait : kairognosia, skiagnosia, goldwing ; annuaire en attente des appelants Letta/Cowork) → lot 12 veille de sites → lot 13 a kit de démarrage → lot 13 b annuaire, puis manuelrohaut.fr, puis VDI → lot 14 Coolify + Umami.
+- **01/10 — Le socle ne contient rien de propre à un projet** : la veille de sites (ex-lot 12) part dans le clone de l'annuaire. Chaque projet est un clone du socle.
+
+- **Ordre** : correctifs de sécurité des projets Lovable (faits : kairognosia, skiagnosia, goldwing, annuaire) → lot 13 a kit de démarrage (socle) → lot 13 b clone annuaire avec sa veille de sites (hors socle), puis manuelrohaut.fr, puis VDI → lot 14 Coolify + Umami.
 - **Kit (13 a)** : nom du site, adresse et domaine d'envoi des e-mails lus dans les réglages, plus en dur dans `src/routes/lovable/email/auth/webhook.ts`.
 - **manuelrohaut.fr** : devient la vitrine du studio (parcours, projets, CDS), sur une duplication CDS hébergée chez Lovable pour l'instant ; Bootstrap sur VPS plus tard. Refondation : ni redirections 301 ni reprise des anciens articles (réécrits par un agent). S'appuie sur la Boutique.
 - **VDI et Beautysané** : sites de niche sur sous-domaines. **BDB** : migration ensuite. Les sites WordPress migrent vers des duplications CDS ; le socle vit hors projet.
