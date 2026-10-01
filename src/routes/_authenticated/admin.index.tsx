@@ -198,6 +198,29 @@ function AdminPage() {
             </div>
           </section>
 
+          <section className="rounded-xl border border-border bg-card p-6">
+            <h2 className="text-base font-semibold text-foreground">Envoi des e-mails</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Utilisé par les e-mails de compte (inscription, mot de passe oublié…). Le sous-domaine
+              d'envoi est celui délégué au service de Lovable (Cloud → Emails). Laissez vide tant
+              que le domaine n'est pas validé.
+            </p>
+            <div className="mt-4 grid gap-4 sm:grid-cols-2">
+              <Field
+                id="emailSenderDomain"
+                label="Sous-domaine d'envoi (ex. notify.exemple.fr)"
+                value={settings.email.senderDomain}
+                onChange={(v) => patch({ email: { ...settings.email, senderDomain: v } })}
+              />
+              <Field
+                id="emailFromDomain"
+                label="Domaine de l'expéditeur (ex. exemple.fr)"
+                value={settings.email.fromDomain}
+                onChange={(v) => patch({ email: { ...settings.email, fromDomain: v } })}
+              />
+            </div>
+          </section>
+
           <Button type="submit" disabled={saving} title="Enregistrer les paramètres du site">
             {saving ? "Enregistrement…" : "Enregistrer"}
           </Button>

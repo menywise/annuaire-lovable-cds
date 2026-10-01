@@ -17,50 +17,27 @@ const EMAIL_TEMPLATES: Record<string, React.ComponentType<any>> = {
   reauthentication: ReauthenticationEmail,
 }
 
-// Configuration
-const SITE_NAME = "CDS Framework"
-const ROOT_DOMAIN = "manuelrohaut.fr"
-
-// Sample data for preview mode ONLY (not used in actual email sending).
-// URLs are baked in at scaffold time from the project's real data.
-// The sample email uses a fixed placeholder (RFC 6761 .test TLD) so the Go backend
-// can always find-and-replace it with the actual recipient when sending test emails,
-// even if the project's domain has changed since the template was scaffolded.
-const SAMPLE_PROJECT_URL = "https://cds-mac97000.lovable.app"
+// Aperçu seulement (jamais utilisé pour un envoi réel) : nom et adresse lus dans les réglages
+// du site (CDS, lot 13 a). L'adresse d'exemple garde le domaine réservé .test, que le service
+// de Lovable remplace par le vrai destinataire lors d'un e-mail de test.
 const SAMPLE_EMAIL = "user@example.test"
-const SAMPLE_DATA: Record<string, object> = {
-  signup: {
-    siteName: SITE_NAME,
-    siteUrl: SAMPLE_PROJECT_URL,
-    recipient: SAMPLE_EMAIL,
-    confirmationUrl: SAMPLE_PROJECT_URL,
-  },
-  magiclink: {
-    siteName: SITE_NAME,
-    siteUrl: SAMPLE_PROJECT_URL,
-    confirmationUrl: SAMPLE_PROJECT_URL,
-  },
-  recovery: {
-    siteName: SITE_NAME,
-    siteUrl: SAMPLE_PROJECT_URL,
-    confirmationUrl: SAMPLE_PROJECT_URL,
-  },
-  invite: {
-    siteName: SITE_NAME,
-    siteUrl: SAMPLE_PROJECT_URL,
-    confirmationUrl: SAMPLE_PROJECT_URL,
-  },
-  email_change: {
-    siteName: SITE_NAME,
-    siteUrl: SAMPLE_PROJECT_URL,
-    oldEmail: SAMPLE_EMAIL,
-    email: SAMPLE_EMAIL,
-    newEmail: SAMPLE_EMAIL,
-    confirmationUrl: SAMPLE_PROJECT_URL,
-  },
-  reauthentication: {
-    token: '123456',
-  },
+
+function sampleData(siteName: string, siteUrl: string): Record<string, object> {
+  return {
+    signup: { siteName, siteUrl, recipient: SAMPLE_EMAIL, confirmationUrl: siteUrl },
+    magiclink: { siteName, siteUrl, confirmationUrl: siteUrl },
+    recovery: { siteName, siteUrl, confirmationUrl: siteUrl },
+    invite: { siteName, siteUrl, confirmationUrl: siteUrl },
+    email_change: {
+      siteName,
+      siteUrl,
+      oldEmail: SAMPLE_EMAIL,
+      email: SAMPLE_EMAIL,
+      newEmail: SAMPLE_EMAIL,
+      confirmationUrl: siteUrl,
+    },
+    reauthentication: { siteName, siteUrl, token: '123456' },
+  }
 }
 
 export const Route = createFileRoute("/lovable/email/auth/preview")({
@@ -102,8 +79,11 @@ export const Route = createFileRoute("/lovable/email/auth/preview")({
           )
         }
 
-        const sampleData = SAMPLE_DATA[type] || {}
-        const html = await render(React.createElement(EmailTemplate, sampleData))
+        const { loadSiteConfig } = await import('@/lib/site-config.functions')
+        const site = await loadSiteConfig().catch(() => null)
+        const siteUrl = site?.brand.url || new URL(request.url).origin
+        const data = sampleData(site?.brand.name ?? 'Votre site', siteUrl)[type] || {}
+        const html = await render(React.createElement(EmailTemplate, data))
 
         return new Response(html, {
           status: 200,

@@ -17,6 +17,7 @@ type AdminNavItem = {
 
 function buildAdminNav(): AdminNavItem[] {
   return withActiveModules<AdminNavItem>([
+    { to: "/admin/demarrage", label: "Démarrage", title: "Ce qui reste à régler pour lancer le site" },
     { to: "/admin", label: "Paramètres", title: "Identité du site, mentions légales et hébergeur" },
     { to: "/admin/modules", label: "Modules", title: "Allumer ou éteindre les modules du site" },
     {

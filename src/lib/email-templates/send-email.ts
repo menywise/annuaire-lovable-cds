@@ -5,14 +5,7 @@ import { TEMPLATES } from './registry'
 
 // Server-only: reads LOVABLE_API_KEY. Never import from client components.
 
-// Configuration baked in at scaffold time
-const SITE_NAME = "CDS Framework"
-// SENDER_DOMAIN is the verified sender subdomain FQDN (e.g., "notify.example.com").
-// It MUST match the subdomain delegated to Lovable's nameservers. NEVER use the root domain.
-const SENDER_DOMAIN = "notify.manuelrohaut.fr"
-// FROM_DOMAIN is the domain shown in the From: header (e.g., "example.com").
-// Can be the root domain when display_from_root is enabled — this is cosmetic only.
-const FROM_DOMAIN = "manuelrohaut.fr"
+// Identité d'envoi : lue dans les réglages du site (CDS, lot 13 a), jamais écrite en dur.
 
 export type SendTemplateEmailResult =
   | { sent: true }
@@ -42,6 +35,9 @@ export async function sendTemplateEmail(
     throw new Error('LOVABLE_API_KEY is not configured')
   }
 
+  const { emailIdentity } = await import('@/lib/email-identity.server')
+  const identity = await emailIdentity()
+
   const template = TEMPLATES[templateName]
   if (!template) {
     throw new Error(
@@ -69,8 +65,8 @@ export async function sendTemplateEmail(
     await sendLovableEmail(
       {
         to: recipient,
-        from: `${SITE_NAME} <noreply@${FROM_DOMAIN}>`,
-        sender_domain: SENDER_DOMAIN,
+        from: `${identity.siteName} <noreply@${identity.fromDomain}>`,
+        sender_domain: identity.senderDomain,
         subject,
         html,
         text,
