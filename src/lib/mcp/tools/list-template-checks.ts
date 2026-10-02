@@ -7,7 +7,7 @@ export default defineTool({
   name: "list_template_checks",
   title: "Grille de conformité",
   description:
-    "Liste les points de contrôle du modèle CDS (domaine, exigence, état, gravité, constat) et calcule le score de conformité.",
+    "Liste les points de contrôle du socle (domaine, exigence, état, gravité, constat) et calcule le score de conformité.",
   inputSchema: {
     area: z.string().optional().describe("Filtrer sur un domaine (NAV, CNT, SEO, DES...)."),
     status: z

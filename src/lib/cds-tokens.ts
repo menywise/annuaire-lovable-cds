@@ -1,7 +1,7 @@
 /**
  * CDS — Consensus Design System — Tokens TypeScript
- * VERSION  : 1.2.0
- * DATE     : 2026-09-30
+ * VERSION  : 1.3.0
+ * DATE     : 2026-10-02
  * SOURCE   : CDS_TOKENS.md (source de vérité unique)
  * USAGE    : import { cds } from '@/lib/cds-tokens'
  *
@@ -11,9 +11,9 @@
 
 export const cds = {
   colors: {
-    primary: "#0d6efd",
-    primaryHover: "#0a58ca",
-    primaryText: "#0a58ca",
+    primary: "#334155",
+    primaryHover: "#1e293b",
+    primaryText: "#334155",
     success: "#198754",
     successText: "#15803d",
     warning: "#ffc107",

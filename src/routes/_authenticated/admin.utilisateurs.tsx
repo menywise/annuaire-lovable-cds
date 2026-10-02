@@ -24,7 +24,7 @@ export const Route = createFileRoute("/_authenticated/admin/utilisateurs")({
   head: () =>
     seo({
       title: "Utilisateurs et rôles",
-      description: "Comptes inscrits, administrateurs et adresses des admins du studio.",
+      description: "Comptes inscrits, administrateurs et adresses nommées d'avance.",
       path: "/admin/utilisateurs",
       noindex: true,
     }),
@@ -138,7 +138,7 @@ function AdminUsersPage() {
   return (
     <AdminShell
       title="Utilisateurs et rôles"
-      intro="Tous les comptes inscrits. Nommez ou retirez un administrateur. Les adresses des admins du studio sont administratrices d'office, à chaque connexion."
+      intro="Tous les comptes inscrits. Nommez ou retirez un administrateur. Le site garde toujours au moins un administrateur : le dernier ne peut ni se retirer ni supprimer son compte."
     >
       {loadError ? (
         <div className="mb-6 flex flex-wrap items-center gap-3 rounded-lg border border-destructive/40 p-4 text-sm text-destructive-text">
@@ -155,9 +155,10 @@ function AdminUsersPage() {
       ) : null}
 
       <section className="rounded-xl border border-border bg-card p-5 sm:p-6">
-        <h2 className="text-base font-semibold text-foreground">Admins du studio</h2>
+        <h2 className="text-base font-semibold text-foreground">Administrateurs nommés d'avance</h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          Ces adresses reçoivent le rôle administrateur d'office. La liste ne peut pas être vide.
+          Ces adresses reçoivent le rôle administrateur à l'inscription ou à la prochaine
+          connexion. La liste peut rester vide : nommer un compte déjà inscrit se fait plus bas.
         </p>
         {studio === null ? (
           <Skeleton className="mt-4 h-16 w-full" />
@@ -166,14 +167,8 @@ function AdminUsersPage() {
             {studio.map((row) => (
               <li key={row.email} className="flex flex-wrap items-center gap-3 px-4 py-2 text-sm">
                 <span className="min-w-0 flex-1 break-all text-foreground">{row.email}</span>
-                {busy === row.email || studio.length <= 1 ? (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    disabled
-                    title="Il faut au moins une adresse d'admin du studio"
-                  >
+                {busy === row.email ? (
+                  <Button type="button" variant="outline" size="sm" disabled title="Retrait en cours">
                     Retirer
                   </Button>
                 ) : (
@@ -181,7 +176,7 @@ function AdminUsersPage() {
                     label="Retirer"
                     confirmLabel="Retirer"
                     title={`Retirer ${row.email} de la liste`}
-                    question={`Retirer ${row.email} des admins du studio ?`}
+                    question={`Retirer ${row.email} des administrateurs nommés d'avance ?`}
                     detail="Le compte reste administrateur tant que vous ne le rétrogradez pas, mais il n'est plus protégé contre la rétrogradation."
                     onConfirm={() => removeStudioAdmin(row)}
                   />
@@ -278,7 +273,7 @@ function AdminUsersPage() {
                               title={
                                 isSelf
                                   ? "Vous ne pouvez pas retirer votre propre rôle"
-                                  : "Retirez d'abord l'adresse de la liste des admins du studio"
+                                  : "Retirez d'abord l'adresse de la liste des administrateurs nommés d'avance"
                               }
                             >
                               Rétrograder

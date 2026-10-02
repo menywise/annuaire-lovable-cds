@@ -5,10 +5,10 @@ BEGIN;
 -- département, EPCI, commune), voisinages calculés, recherche par nom ou code postal,
 -- référentiel public en lecture, écrit par l'admin ou le serveur seulement.
 INSERT INTO auth.users (id, email) VALUES
-  ('00000000-0000-0000-0000-0000000000a1', 'manuel.rohaut@gmail.com'),
+  ('00000000-0000-0000-0000-0000000000a1', 'admin@test.fr'),
   ('00000000-0000-0000-0000-0000000000a2', 'membre@test.fr');
-SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'manuel.rohaut@gmail.com');
-SELECT public.bootstrap_current_user('Manu');
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'admin@test.fr');
+SELECT public.bootstrap_current_user('Administrateur');
 SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a2', 'membre@test.fr');
 SELECT public.bootstrap_current_user('Membre');
 RESET ROLE;
@@ -64,7 +64,7 @@ DO $$ BEGIN
   UPDATE public.geo_places SET name = 'Piraté' WHERE code = '69123';
   IF EXISTS (SELECT 1 FROM public.geo_places WHERE name = 'Piraté') THEN RAISE EXCEPTION 'membre a modifié le référentiel'; END IF;
 END $$;
-SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'manuel.rohaut@gmail.com');
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'admin@test.fr');
 DO $$
 DECLARE _n int;
 BEGIN

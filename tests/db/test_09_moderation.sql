@@ -3,10 +3,10 @@
 BEGIN;
 -- a1 : admin du studio · a2 : membre
 INSERT INTO auth.users (id, email) VALUES
-  ('00000000-0000-0000-0000-0000000000a1', 'manuel.rohaut@gmail.com'),
+  ('00000000-0000-0000-0000-0000000000a1', 'admin@test.fr'),
   ('00000000-0000-0000-0000-0000000000a2', 'membre@test.fr');
-SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'manuel.rohaut@gmail.com');
-SELECT public.bootstrap_current_user('Manu');
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'admin@test.fr');
+SELECT public.bootstrap_current_user('Administrateur');
 INSERT INTO public.blog_posts (id, slug, title, published) VALUES ('00000000-0000-0000-0000-0000000000b1', 'article', 'Article', true);
 SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a2', 'membre@test.fr');
 SELECT public.bootstrap_current_user('Membre');
@@ -31,7 +31,7 @@ DO $$ BEGIN
 END $$;
 
 -- 2. L'admin corrige le texte, valide et signe la note ; la base date et signe -----------------
-SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'manuel.rohaut@gmail.com');
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'admin@test.fr');
 UPDATE public.blog_comments
   SET content = 'Visitez [lien retiré]', approved = true, moderation_note = 'Lien et insulte retirés.'
   WHERE id = '00000000-0000-0000-0000-0000000000c1';
@@ -63,7 +63,7 @@ DO $$ BEGIN
 END $$;
 
 -- 5. Note vide = pas de note ; longueur limitée ; toutes les tables modérées ont les colonnes ----
-SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'manuel.rohaut@gmail.com');
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'admin@test.fr');
 UPDATE public.blog_comments SET moderation_note = '   ' WHERE id = '00000000-0000-0000-0000-0000000000c1';
 SELECT pg_temp.expect_error($$UPDATE public.blog_comments SET moderation_note = repeat('x', 501) WHERE id = '00000000-0000-0000-0000-0000000000c1'$$, 'note trop longue');
 RESET ROLE;
@@ -77,7 +77,7 @@ DO $$ DECLARE _t text; BEGIN
   END LOOP;
 END $$;
 -- 6. L'admin saisit un témoignage reçu par e-mail (sans compte), le corrige et le range ---------
-SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'manuel.rohaut@gmail.com');
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'admin@test.fr');
 INSERT INTO public.testimonials (id, author_name, content, position)
   VALUES ('00000000-0000-0000-0000-0000000000d1', 'Client', 'Très bien', 3);
 UPDATE public.testimonials SET position = 0, content = 'Très bien !' WHERE id = '00000000-0000-0000-0000-0000000000d1';

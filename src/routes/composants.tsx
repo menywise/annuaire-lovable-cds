@@ -55,7 +55,7 @@ export const Route = createFileRoute("/composants")({
     seo({
       title: "Composants",
       description:
-        "Composants du Consensus Design System : boutons, champs, tableaux, badges, alertes, onglets, pagination, fenêtres modales et chargement.",
+        "Composants du socle : boutons, champs, tableaux, badges, alertes, onglets, pagination, fenêtres modales et chargement.",
       path: "/composants",
       type: "website",
     }),
@@ -92,7 +92,7 @@ function ComposantsPage() {
     <PageShell>
       <h1 className="text-3xl font-bold text-foreground">Composants</h1>
       <p className="mt-2 text-sm text-muted-foreground">
-        Composants shadcn/ui rendus avec les tokens CDS.
+        Composants shadcn/ui rendus avec les jetons du socle.
       </p>
 
       <Block title="Boutons">

@@ -5,6 +5,8 @@ import { AdminShell } from "@/components/cds/AdminShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { ImageField } from "@/components/cds/MediaPicker";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   type BrandSettings,
@@ -12,6 +14,7 @@ import {
   useEditableBrandSettings,
 } from "@/hooks/useSiteSettings";
 import { seo } from "@/lib/seo";
+import { normaliserCouleur } from "@/lib/couleurs";
 
 export const Route = createFileRoute("/_authenticated/admin/")({
   head: () =>
@@ -43,6 +46,42 @@ function Field({
       <Label htmlFor={id}>{label}</Label>
       <Input id={id} value={value} onChange={(e) => onChange(e.target.value)} />
       {hint ? <p className="text-xs text-muted-foreground">{hint}</p> : null}
+    </div>
+  );
+}
+
+/** Couleur : nuancier et saisie libre « #rrggbb ». Une valeur invalide est ignorée à l'enregistrement. */
+function ColorField({
+  id,
+  label,
+  value,
+  onChange,
+  hint,
+}: {
+  id: string;
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  hint: string;
+}) {
+  const valide = normaliserCouleur(value);
+  return (
+    <div className="space-y-1.5">
+      <Label htmlFor={id}>{label}</Label>
+      <div className="flex items-center gap-2">
+        <input
+          type="color"
+          aria-label={`${label} : nuancier`}
+          title={`${label} : choisir dans le nuancier`}
+          value={valide || "#334155"}
+          onChange={(e) => onChange(e.target.value)}
+          className="h-9 w-12 shrink-0 cursor-pointer rounded-md border border-input bg-card p-1"
+        />
+        <Input id={id} value={value} placeholder="#334155" onChange={(e) => onChange(e.target.value)} />
+      </div>
+      <p className="text-xs text-muted-foreground">
+        {value.trim() && !valide ? "Format attendu : #rrggbb. Valeur ignorée à l'enregistrement." : hint}
+      </p>
     </div>
   );
 }
@@ -218,6 +257,84 @@ function AdminPage() {
                 value={settings.email.fromDomain}
                 onChange={(v) => patch({ email: { ...settings.email, fromDomain: v } })}
               />
+            </div>
+          </section>
+
+          <section className="rounded-xl border border-border bg-card p-6">
+            <h2 className="text-base font-semibold text-foreground">Apparence</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Couleurs, logo et icônes du site. Laissez vide pour garder l'habillage neutre du socle.
+              Les images se choisissent dans la médiathèque ou se collent sous forme d'adresse
+              https.
+            </p>
+            <div className="mt-4 grid gap-4 sm:grid-cols-2">
+              <ColorField
+                id="couleurPrincipale"
+                label="Couleur principale"
+                value={settings.apparence.couleurPrincipale}
+                onChange={(v) => patch({ apparence: { ...settings.apparence, couleurPrincipale: v } })}
+                hint="Boutons, liens et focus. Les teintes de texte sont ajustées pour rester lisibles."
+              />
+              <ColorField
+                id="couleurNavigateur"
+                label="Couleur de la barre du navigateur"
+                value={settings.apparence.couleurNavigateur}
+                onChange={(v) => patch({ apparence: { ...settings.apparence, couleurNavigateur: v } })}
+                hint="Barre d'adresse sur téléphone. Vide : fond clair du site."
+              />
+              <ImageField
+                id="logo"
+                label="Logo (en-tête)"
+                value={settings.apparence.logo}
+                onChange={(v) => patch({ apparence: { ...settings.apparence, logo: v } })}
+              />
+              <ImageField
+                id="favicon"
+                label="Icône d'onglet (PNG carré, 64 px ou plus)"
+                value={settings.apparence.favicon}
+                onChange={(v) => patch({ apparence: { ...settings.apparence, favicon: v } })}
+              />
+              <ImageField
+                id="icone"
+                label="Icône d'application (PNG carré, 512 px)"
+                value={settings.apparence.icone}
+                onChange={(v) => patch({ apparence: { ...settings.apparence, icone: v } })}
+              />
+              <ImageField
+                id="imagePartage"
+                label="Image de partage (1200 × 630)"
+                value={settings.apparence.imagePartage}
+                onChange={(v) => patch({ apparence: { ...settings.apparence, imagePartage: v } })}
+              />
+            </div>
+          </section>
+
+          <section className="rounded-xl border border-border bg-card p-6">
+            <h2 className="text-base font-semibold text-foreground">Page d'accueil</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Accueil affiché tant qu'aucune page d'accueil n'est publiée avec le module « Pages ».
+            </p>
+            <div className="mt-4 grid gap-4">
+              <Field
+                id="accueilTitre"
+                label="Titre"
+                value={settings.accueil.titre}
+                onChange={(v) => patch({ accueil: { ...settings.accueil, titre: v } })}
+                hint="Vide : nom complet du site."
+              />
+              <div className="space-y-1.5">
+                <Label htmlFor="accueilTexte">Texte de présentation</Label>
+                <Textarea
+                  id="accueilTexte"
+                  rows={4}
+                  value={settings.accueil.texte}
+                  onChange={(e) => patch({ accueil: { ...settings.accueil, texte: e.target.value } })}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Vide : signature du pied de page. Sert aussi de description pour les moteurs de
+                  recherche.
+                </p>
+              </div>
             </div>
           </section>
 

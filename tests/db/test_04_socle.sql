@@ -1,14 +1,14 @@
 \set ON_ERROR_STOP 1
 \i tests/db/_helpers.sql
 BEGIN;
--- a1 : admin du studio · a2 : membre · a3 : membre qui supprime son compte · a4 : futur admin du studio
+-- a1 : premier compte (administrateur) · a2 : membre · a3 : membre qui supprime son compte · a4 : futur admin du studio
 INSERT INTO auth.users (id, email) VALUES
-  ('00000000-0000-0000-0000-0000000000a1', 'manuel.rohaut@gmail.com'),
+  ('00000000-0000-0000-0000-0000000000a1', 'admin@test.fr'),
   ('00000000-0000-0000-0000-0000000000a2', 'membre@test.fr'),
   ('00000000-0000-0000-0000-0000000000a3', 'partant@test.fr'),
   ('00000000-0000-0000-0000-0000000000a4', 'associe@test.fr');
-SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'manuel.rohaut@gmail.com');
-SELECT public.bootstrap_current_user('Manu');
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'admin@test.fr');
+SELECT public.bootstrap_current_user('Administrateur');
 SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a2', 'membre@test.fr');
 SELECT public.bootstrap_current_user('Membre');
 SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a3', 'partant@test.fr');
@@ -39,7 +39,7 @@ DO $$ BEGIN
 END $$;
 
 -- L'admin allume un module ; la base refuse une dépendance manquante et une valeur non booléenne.
-SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'manuel.rohaut@gmail.com');
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'admin@test.fr');
 UPDATE public.site_settings SET value = value || '{"directory": true}' WHERE key = 'modules';
 UPDATE public.site_settings SET value = value || '{"geo": true}' WHERE key = 'modules';
 SELECT pg_temp.expect_error($$UPDATE public.site_settings SET value = value || '{"directory": false}' WHERE key = 'modules'$$, 'geo sans directory');
@@ -67,10 +67,11 @@ SELECT pg_temp.expect_error($$SELECT * FROM public.admin_list_users()$$, 'visite
 RESET ROLE;
 
 -- L'admin liste, promeut puis rétrograde un membre.
-SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'manuel.rohaut@gmail.com');
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'admin@test.fr');
 DO $$ BEGIN
   IF (SELECT count(*) FROM public.admin_list_users()) <> 4 THEN RAISE EXCEPTION 'liste incomplète'; END IF;
-  IF NOT (SELECT is_studio_admin FROM public.admin_list_users() WHERE id = '00000000-0000-0000-0000-0000000000a1') THEN RAISE EXCEPTION 'admin du studio non signalé'; END IF;
+  IF (SELECT is_studio_admin FROM public.admin_list_users() WHERE id = '00000000-0000-0000-0000-0000000000a1') THEN RAISE EXCEPTION 'premier compte signalé comme nommé d''avance'; END IF;
+  IF NOT public.has_role('00000000-0000-0000-0000-0000000000a1', 'admin') THEN RAISE EXCEPTION 'premier compte non administrateur'; END IF;
   IF (SELECT full_name FROM public.admin_list_users() WHERE id = '00000000-0000-0000-0000-0000000000a2') <> 'Membre' THEN RAISE EXCEPTION 'nom absent'; END IF;
 END $$;
 SELECT public.admin_set_admin('00000000-0000-0000-0000-0000000000a2', true);
@@ -93,8 +94,8 @@ SELECT pg_temp.expect_error($$SELECT public.admin_set_admin('00000000-0000-0000-
 -- Après retrait de la liste, la rétrogradation redevient possible.
 DELETE FROM public.studio_admins WHERE email = 'associe@test.fr';
 SELECT public.admin_set_admin('00000000-0000-0000-0000-0000000000a4', false);
--- On ne vide pas la liste des admins du studio.
-SELECT pg_temp.expect_error($$DELETE FROM public.studio_admins$$, 'liste des admins du studio vidée');
+-- La liste des adresses nommées d'avance peut être vide : la garantie porte sur les rôles.
+DELETE FROM public.studio_admins;
 RESET ROLE;
 
 -- 3. Suppression de son compte -------------------------------------------------------------
@@ -149,7 +150,7 @@ DO $$ BEGIN
 END $$;
 
 -- Le dernier admin ne peut pas supprimer son compte.
-SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'manuel.rohaut@gmail.com');
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'admin@test.fr');
 SELECT pg_temp.expect_error($$SELECT public.delete_my_account()$$, 'dernier admin supprime son compte');
 RESET ROLE;
 ROLLBACK;

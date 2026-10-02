@@ -3,10 +3,10 @@
 BEGIN;
 -- Lot 6 : l'admin modifie, ordonne et supprime tout ce que l'administration affiche ; le membre non.
 INSERT INTO auth.users (id, email) VALUES
-  ('00000000-0000-0000-0000-0000000000a1', 'manuel.rohaut@gmail.com'),
+  ('00000000-0000-0000-0000-0000000000a1', 'admin@test.fr'),
   ('00000000-0000-0000-0000-0000000000a2', 'membre@test.fr');
-SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'manuel.rohaut@gmail.com');
-SELECT public.bootstrap_current_user('Manu');
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'admin@test.fr');
+SELECT public.bootstrap_current_user('Administrateur');
 SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a2', 'membre@test.fr');
 SELECT public.bootstrap_current_user('Membre');
 
@@ -22,7 +22,7 @@ SELECT pg_temp.expect_error($$INSERT INTO public.lms_courses (title, slug) VALUE
 SELECT pg_temp.expect_error($$INSERT INTO public.ad_placements (name, slug) VALUES ('X', 'x')$$, 'membre crée un emplacement');
 
 -- L'admin : catégories (créer, renommer, ordonner, supprimer).
-SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'manuel.rohaut@gmail.com');
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'admin@test.fr');
 INSERT INTO public.directory_categories (id, name, slug, position) VALUES
   ('00000000-0000-0000-0000-0000000000c1', 'Plombiers', 'plombiers', 0),
   ('00000000-0000-0000-0000-0000000000c2', 'Maçons', 'macons', 1);

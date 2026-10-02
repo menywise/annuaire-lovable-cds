@@ -63,8 +63,9 @@
   --surface-sunken: #f1f5f9;
   --popover: #ffffff;
   --popover-foreground: #1e293b;
-  --primary: #0d6efd;
-  --primary-hover: #0a58ca;
+  /* Couleur principale neutre : chaque projet règle la sienne (Paramètres → Apparence). */
+  --primary: #334155;
+  --primary-hover: #1e293b;
   --primary-foreground: #ffffff;
   --secondary: #6c757d;
   --secondary-foreground: #ffffff;
@@ -82,12 +83,12 @@
   --info: #0dcaf0;
   --info-text: #0891b2;
   --cds-purple: #7c3aed;
-  --primary-text: #0a58ca; /* bleu CDS en texte : contraste AA sur fond clair */
+  --primary-text: #334155; /* couleur principale en texte : contraste AA sur fond clair */
   --text-light: #5b6472;
   --border: #e5e7eb;
   --border-strong: #cbd5e1;
   --input: #e5e7eb;
-  --ring: #0d6efd;
+  --ring: #334155;
 
   /* CDS relief tactile */
   --shadow-field-inset: inset 0 1px 2px rgba(15, 23, 42, 0.06);

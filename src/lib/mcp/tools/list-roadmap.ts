@@ -7,7 +7,7 @@ export default defineTool({
   name: "list_roadmap",
   title: "Feuille de route et plan directeur",
   description:
-    "Retourne la feuille de route (lots, statuts, priorités) et les sections du plan directeur du modèle CDS.",
+    "Retourne la feuille de route (lots, statuts, priorités) et les sections du plan directeur du socle.",
   inputSchema: {
     status: z.enum(["a_faire", "en_cours", "fait"]).optional().describe("Filtrer sur un statut."),
   },
