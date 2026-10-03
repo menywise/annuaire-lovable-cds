@@ -35,7 +35,6 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TarifsRouteImport } from './routes/tarifs'
 import { Route as TemoignagesRouteImport } from './routes/temoignages'
 import { Route as VerificationEmailRouteImport } from './routes/verification-email'
-import { Route as greffeEssaiGreffeRouteImport } from './routes/(greffe)/essai-greffe'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as AuthenticatedCompteRouteImport } from './routes/_authenticated/compte'
 import { Route as AuthenticatedDecouvrirRouteImport } from './routes/_authenticated/decouvrir'
@@ -237,11 +236,6 @@ const TemoignagesRoute = TemoignagesRouteImport.update({
 const VerificationEmailRoute = VerificationEmailRouteImport.update({
   id: '/verification-email',
   path: '/verification-email',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const greffeEssaiGreffeRoute = greffeEssaiGreffeRouteImport.update({
-  id: '/(greffe)/essai-greffe',
-  path: '/essai-greffe',
   getParentRoute: () => rootRouteImport,
 } as any)
 const Char91DotwellKnownChar93OauthProtectedResourceRoute =
@@ -665,7 +659,6 @@ export interface FileRoutesByFullPath {
   '/tarifs': typeof TarifsRoute
   '/temoignages': typeof TemoignagesRoute
   '/verification-email': typeof VerificationEmailRoute
-  '/essai-greffe': typeof greffeEssaiGreffeRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/compte': typeof AuthenticatedCompteRoute
   '/decouvrir': typeof AuthenticatedDecouvrirRoute
@@ -766,7 +759,6 @@ export interface FileRoutesByTo {
   '/tarifs': typeof TarifsRoute
   '/temoignages': typeof TemoignagesRoute
   '/verification-email': typeof VerificationEmailRoute
-  '/essai-greffe': typeof greffeEssaiGreffeRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/compte': typeof AuthenticatedCompteRoute
   '/decouvrir': typeof AuthenticatedDecouvrirRoute
@@ -869,7 +861,6 @@ export interface FileRoutesById {
   '/tarifs': typeof TarifsRoute
   '/temoignages': typeof TemoignagesRoute
   '/verification-email': typeof VerificationEmailRoute
-  '/(greffe)/essai-greffe': typeof greffeEssaiGreffeRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/_authenticated/compte': typeof AuthenticatedCompteRoute
   '/_authenticated/decouvrir': typeof AuthenticatedDecouvrirRoute
@@ -972,7 +963,6 @@ export interface FileRouteTypes {
     | '/tarifs'
     | '/temoignages'
     | '/verification-email'
-    | '/essai-greffe'
     | '/.well-known/oauth-protected-resource'
     | '/compte'
     | '/decouvrir'
@@ -1073,7 +1063,6 @@ export interface FileRouteTypes {
     | '/tarifs'
     | '/temoignages'
     | '/verification-email'
-    | '/essai-greffe'
     | '/.well-known/oauth-protected-resource'
     | '/compte'
     | '/decouvrir'
@@ -1175,7 +1164,6 @@ export interface FileRouteTypes {
     | '/tarifs'
     | '/temoignages'
     | '/verification-email'
-    | '/(greffe)/essai-greffe'
     | '/.well-known/oauth-protected-resource'
     | '/_authenticated/compte'
     | '/_authenticated/decouvrir'
@@ -1278,7 +1266,6 @@ export interface RootRouteChildren {
   TarifsRoute: typeof TarifsRoute
   TemoignagesRoute: typeof TemoignagesRoute
   VerificationEmailRoute: typeof VerificationEmailRoute
-  greffeEssaiGreffeRoute: typeof greffeEssaiGreffeRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   AnnuaireSlugRoute: typeof AnnuaireSlugRoute
   AnnuaireDepartementsRoute: typeof AnnuaireDepartementsRoute
@@ -1499,13 +1486,6 @@ declare module '@tanstack/react-router' {
       path: '/verification-email'
       fullPath: '/verification-email'
       preLoaderRoute: typeof VerificationEmailRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/(greffe)/essai-greffe': {
-      id: '/(greffe)/essai-greffe'
-      path: '/essai-greffe'
-      fullPath: '/essai-greffe'
-      preLoaderRoute: typeof greffeEssaiGreffeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/.well-known/oauth-protected-resource': {
@@ -2134,7 +2114,6 @@ const rootRouteChildren: RootRouteChildren = {
   TarifsRoute: TarifsRoute,
   TemoignagesRoute: TemoignagesRoute,
   VerificationEmailRoute: VerificationEmailRoute,
-  greffeEssaiGreffeRoute: greffeEssaiGreffeRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
   AnnuaireSlugRoute: AnnuaireSlugRoute,
@@ -2176,7 +2155,6 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
 
 import type { getRouter } from './router.tsx'
 import type { startInstance } from './start.ts'
