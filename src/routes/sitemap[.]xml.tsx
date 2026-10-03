@@ -45,8 +45,10 @@ const pages: SitemapPage[] = [
 export const Route = createFileRoute("/sitemap.xml")({
   server: {
     handlers: {
-      GET: async () => {
+      GET: async ({ request }) => {
         const site = await loadSiteConfig().catch(() => fallbackSiteConfig);
+        // Adresses absolues exigées : sans URL réglée en admin, celle de la requête.
+        const base = /^https?:\/\//.test(site.brand.url) ? site.brand.url : new URL(request.url).origin;
         const lastmod = new Date().toISOString().slice(0, 10);
         const dynamic: SitemapPage[] = [];
         try {
@@ -81,7 +83,7 @@ export const Route = createFileRoute("/sitemap.xml")({
 ${[...onlyActive(site.modules, pages), ...dynamic]
   .map(
     (page) =>
-      `  <url>\n    <loc>${site.brand.url}${page.path === "/" ? "/" : page.path}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>${page.changefreq}</changefreq>\n    <priority>${page.priority}</priority>\n  </url>`,
+      `  <url>\n    <loc>${base}${page.path === "/" ? "/" : page.path}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>${page.changefreq}</changefreq>\n    <priority>${page.priority}</priority>\n  </url>`,
   )
   .join("\n")}
 </urlset>
