@@ -45,7 +45,23 @@ Premier projet à dupliquer et mettre en conformité : **l'annuaire des sites fr
 2. **Lot 13 b · Premier clone : l'annuaire des sites** (hors socle) — l'annuaire est un clone de CDS, pas une partie du socle. Il reçoit la veille de sites (code prêt : commit `b37f902`, PR #16 fermée sans merge le 01/10), ses données reprises. Sortie de la V0 : grille de conformité à 100 %, robot vert, chaque module « fini » (8 critères de V0.md).
 3. **Lot 14 · Briques externes** — Umami (audience sans cookie), zone Revive dans l'emplacement Régie, Ghost en cohabitation.
 4. **Lot 15 · Pages libres v2** — éditeur de menu, historique des versions ; Puck quand la dépendance pourra être validée côté Lovable.
-5. **Ensuite** — E Notifications (sur le site d'abord), H Événements, I Réalisations, G Rendez-vous, dans l'ordre des besoins des projets. Rôle Modérateur (reporté le 29/09).
+5. **Lot 16 · Tri des douze fonctionnalités concurrentes** (03/10) — douze fonctionnalités observées chez un concurrent, triées par une règle unique : une fonctionnalité qui a besoin de savoir qui est le membre connecté s'écrit dans le socle ; une fonctionnalité qui n'en a pas besoin se branche sur un logiciel séparé, comme Umami, Revive Adserver, Shlink et Meilisearch (sinon ce logiciel tiendrait ses propres comptes, une seconde liste de membres à côté de celle du socle).
+   - **Branchées sur un logiciel séparé, hors du socle :**
+     - *Générateur de QR codes* — version simple : bibliothèque de génération d'image, rien à stocker ; version qui compte les scans : Shlink, déjà retenu au lot 14.
+     - *Publication sur les réseaux sociaux* — le socle envoie un texte, une image et une date, et reçoit « publié » ou « échoué » ; aucun membre concerné.
+     - *Devis* et *Factures* — une seule et même décision : même moteur de document, même numérotation. Le client d'une facture est une entité comptable à conserver dix ans, incompatible avec l'anonymisation à la suppression du compte imposée par le socle.
+     - *Signature électronique* — le logiciel reçoit un document et une adresse, il renvoie une preuve. Un système qui fabrique et conserve lui-même sa preuve n'est pas un tiers de confiance.
+   - **Écrites dans le socle :**
+     - *Tunnels de vente* — le parcours finit par un paiement rattaché à un compte ; seule la mesure de fréquentation part chez Umami.
+     - *Agenda de prise de rendez-vous* — c'est le module G Rendez-vous déjà déclaré dans V0.md, pas un nouveau module. Un rendez-vous appartient à un membre.
+     - *Relances et rappels automatiques* — c'est le module E Notifications déjà déclaré dans V0.md, pas un nouveau module. Le scénario lit l'état d'un prospect ou d'un membre en base ; seul l'envoi du courriel part chez un service d'envoi, par le module B E-mails transactionnels.
+     - *Sondages et quiz* — un score appartient à un élève et complète le suivi de progression du module Formations.
+     - *Formations enrichies* — il manque trois choses au module Formations existant : le certificat, l'expiration des accès, le calcul d'un pourcentage d'avancement.
+   - **Coupées en deux :**
+     - *Gestion de contrats* — le document se branche à l'extérieur ; les échéances, préavis et reconductions s'écrivent dans le socle, puisque ce sont des relances (module E Notifications).
+     - *Assistant IA de rédaction* — rien à brancher, rien à construire. Le sujet réel est l'ouverture de la liste des outils que Claude peut appeler sur le site, aujourd'hui fermée dans le code : rattaché aux accroches manquantes de l'audit du 02/10 (`AUDIT_LOI_QUATRE_INTERDITS.md`), pas à une fonctionnalité.
+   - **Deux préalables communs** aux cinq fonctionnalités écrites dans le socle (*Tunnels de vente*, *Agenda de prise de rendez-vous*, *Relances et rappels automatiques*, *Sondages et quiz*, *Formations enrichies*) : (1) le module B E-mails transactionnels, non livré ; (2) un déclencheur automatique à heure fixe, absent de la base de production (pas de pg_cron ; seule existe la route `/api/cron/purge-contact`, protégée par `LOVABLE_CRON_SECRET`). Aucune de ces cinq fonctionnalités ne se planifie avant que ces deux pièces existent.
+6. **Ensuite** — E Notifications (sur le site d'abord), H Événements, I Réalisations, G Rendez-vous, dans l'ordre des besoins des projets. Rôle Modérateur (reporté le 29/09).
 
 ## Décisions du 30/09 (soir)
 
