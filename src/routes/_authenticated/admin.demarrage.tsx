@@ -15,7 +15,7 @@ export const Route = createFileRoute("/_authenticated/admin/demarrage")({
   head: () =>
     seo({
       title: "Démarrage",
-      description: "Ce qui reste à régler pour lancer ce site, à partir du socle CDS.",
+      description: "Ce qui reste à régler pour lancer ce site, à partir du socle.",
       path: "/admin/demarrage",
       noindex: true,
     }),
@@ -142,7 +142,7 @@ function StarterPage() {
   return (
     <AdminShell
       title="Démarrage"
-      intro="Ce site est un clone du socle CDS. Cette page dit ce qui reste à régler avant de l'ouvrir au public : identité, mentions légales, e-mails, paiement, comptes, et retrait des contenus de démonstration."
+      intro="Ce site est un clone du socle. Cette page dit ce qui reste à régler avant de l'ouvrir au public : identité, mentions légales, e-mails, paiement, comptes, et retrait des contenus de démonstration."
     >
       <p className="text-sm text-muted-foreground" aria-live="polite">
         {remaining === 0

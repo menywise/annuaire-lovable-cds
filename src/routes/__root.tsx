@@ -14,7 +14,8 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Toaster } from "@/components/ui/sonner";
 import { siteLocale } from "@/config/brand";
-import { getSiteConfig, setSiteConfig, siteConfigScript } from "@/lib/site-config";
+import { absoluteUrl, getSiteConfig, setSiteConfig, siteConfigScript } from "@/lib/site-config";
+import { cssCouleurPrincipale } from "@/lib/couleurs";
 import { loadSiteConfig } from "@/lib/site-config.functions";
 import { isFeatureOn } from "@/config/features";
 import { isPathOff } from "@/config/modules";
@@ -106,6 +107,7 @@ function organizationJsonLd() {
       ? { legalName: `${brand.legal.company} — ${brand.legal.form}` }
       : {}),
     ...(brand.url ? { url: brand.url } : {}),
+    ...(brand.apparence.logo ? { logo: absoluteUrl(brand.apparence.logo) } : {}),
     ...(brand.legal.address
       ? {
           address: {
@@ -153,7 +155,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       meta: [
         { charSet: "utf-8" },
         { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
-        { name: "theme-color", content: "#f8fafc" },
+        { name: "theme-color", content: brand.apparence.couleurNavigateur || "#f8fafc" },
         { name: "mobile-web-app-capable", content: "yes" },
         { name: "apple-mobile-web-app-capable", content: "yes" },
         { name: "apple-mobile-web-app-title", content: brand.shortName },
@@ -173,8 +175,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           rel: "stylesheet",
           href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap",
         },
-        { rel: "icon", type: "image/png", href: "/favicon.png" },
-        { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
+        // Icônes réglées en admin (Paramètres → Apparence), sinon icônes neutres de public/.
+        { rel: "icon", href: brand.apparence.favicon || "/favicon.png" },
+        { rel: "apple-touch-icon", href: brand.apparence.icone || "/apple-touch-icon.png" },
         { rel: "manifest", href: "/manifest.webmanifest" },
       ],
       scripts: [
@@ -194,10 +197,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 });
 
 function RootShell({ children }: { children: ReactNode }) {
+  // Couleur principale réglée en admin : remplace les jetons après la feuille de styles.
+  const couleur = cssCouleurPrincipale(getSiteConfig().brand.apparence.couleurPrincipale);
   return (
     <html lang={siteLocale.lang}>
       <head>
         <HeadContent />
+        {couleur ? <style dangerouslySetInnerHTML={{ __html: couleur }} /> : null}
       </head>
       <body>
         {children}

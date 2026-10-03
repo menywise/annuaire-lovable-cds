@@ -2,11 +2,18 @@
 \i tests/db/_helpers.sql
 BEGIN;
 INSERT INTO auth.users (id, email) VALUES
-  ('00000000-0000-0000-0000-0000000000a1', 'manuel.rohaut@gmail.com'),
+  ('00000000-0000-0000-0000-0000000000a1', 'admin@test.fr'),
   ('00000000-0000-0000-0000-0000000000a2', 'client@test.fr');
 INSERT INTO public.newsletter_subscribers (id, email) VALUES ('00000000-0000-0000-0000-0000000000d1', 'abonne@test.fr');
 
--- Un client inscrit reste simple membre et ne gère pas les abonnés.
+-- Premier compte d'une base sans administrateur : il devient administrateur.
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'admin@test.fr');
+DO $$ BEGIN
+  IF public.bootstrap_current_user() <> 'admin' THEN RAISE EXCEPTION 'premier compte non promu'; END IF;
+END $$;
+RESET ROLE;
+
+-- Un client inscrit ensuite reste simple membre et ne gère pas les abonnés.
 SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a2', 'client@test.fr');
 DO $$ BEGIN
   IF public.bootstrap_current_user('Client') <> 'user' THEN RAISE EXCEPTION 'client promu admin'; END IF;
@@ -21,10 +28,10 @@ DO $$ BEGIN
   IF (SELECT full_name FROM public.profiles WHERE id = '00000000-0000-0000-0000-0000000000a2') <> 'Client' THEN RAISE EXCEPTION 'nom non enregistré'; END IF;
 END $$;
 
--- Admin du studio : administrateur d'office, gère les abonnés.
-SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'manuel.rohaut@gmail.com');
+-- L'administrateur le reste à la connexion suivante et gère les abonnés.
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'admin@test.fr');
 DO $$ BEGIN
-  IF public.bootstrap_current_user() <> 'admin' THEN RAISE EXCEPTION 'admin du studio non promu'; END IF;
+  IF public.bootstrap_current_user() <> 'admin' THEN RAISE EXCEPTION 'administrateur perdu'; END IF;
 END $$;
 UPDATE public.newsletter_subscribers SET unsubscribed_at = now();
 DELETE FROM public.newsletter_subscribers;

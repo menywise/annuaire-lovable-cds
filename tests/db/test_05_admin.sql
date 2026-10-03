@@ -3,11 +3,11 @@
 BEGIN;
 -- a1 : admin du studio · a2 : membre · a3 : autre membre
 INSERT INTO auth.users (id, email) VALUES
-  ('00000000-0000-0000-0000-0000000000a1', 'manuel.rohaut@gmail.com'),
+  ('00000000-0000-0000-0000-0000000000a1', 'admin@test.fr'),
   ('00000000-0000-0000-0000-0000000000a2', 'membre@test.fr'),
   ('00000000-0000-0000-0000-0000000000a3', 'autre@test.fr');
-SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'manuel.rohaut@gmail.com');
-SELECT public.bootstrap_current_user('Manu');
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'admin@test.fr');
+SELECT public.bootstrap_current_user('Administrateur');
 SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a2', 'membre@test.fr');
 SELECT public.bootstrap_current_user('Membre');
 RESET ROLE;
@@ -59,7 +59,7 @@ DO $$ BEGIN
 END $$;
 
 -- L'admin traite, archive puis supprime ; la date de traitement est posée par la base.
-SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'manuel.rohaut@gmail.com');
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'admin@test.fr');
 UPDATE public.contact_messages SET status = 'traite' WHERE id = '00000000-0000-0000-0000-0000000000c1';
 DO $$ BEGIN
   IF (SELECT handled_at FROM public.contact_messages WHERE id = '00000000-0000-0000-0000-0000000000c1') IS NULL
@@ -75,7 +75,7 @@ DO $$ BEGIN
 END $$;
 
 -- 4. Offres : l'admin crée, modifie et supprime --------------------------------------------
-SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'manuel.rohaut@gmail.com');
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'admin@test.fr');
 INSERT INTO public.pricing_plans (id, name, features) VALUES ('00000000-0000-0000-0000-0000000000e1', 'Essai', '["A", "B"]');
 UPDATE public.pricing_plans SET period = 'an', cta_label = 'Essayer' WHERE id = '00000000-0000-0000-0000-0000000000e1';
 DELETE FROM public.pricing_plans WHERE id = '00000000-0000-0000-0000-0000000000e1';

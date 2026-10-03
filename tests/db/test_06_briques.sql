@@ -3,11 +3,11 @@
 BEGIN;
 -- a1 : admin du studio · a2 : membre · a3 : autre membre
 INSERT INTO auth.users (id, email) VALUES
-  ('00000000-0000-0000-0000-0000000000a1', 'manuel.rohaut@gmail.com'),
+  ('00000000-0000-0000-0000-0000000000a1', 'admin@test.fr'),
   ('00000000-0000-0000-0000-0000000000a2', 'membre@test.fr'),
   ('00000000-0000-0000-0000-0000000000a3', 'autre@test.fr');
-SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'manuel.rohaut@gmail.com');
-SELECT public.bootstrap_current_user('Manu');
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'admin@test.fr');
+SELECT public.bootstrap_current_user('Administrateur');
 SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a2', 'membre@test.fr');
 SELECT public.bootstrap_current_user('Membre');
 RESET ROLE;
@@ -24,7 +24,7 @@ SELECT pg_temp.expect_error($$UPDATE public.marketplace_listings SET views = 999
 UPDATE public.marketplace_listings SET status = 'sold' WHERE id = '00000000-0000-0000-0000-0000000000d1';
 UPDATE public.marketplace_listings SET status = 'active' WHERE id = '00000000-0000-0000-0000-0000000000d1';
 -- L'admin valide.
-SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'manuel.rohaut@gmail.com');
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'admin@test.fr');
 UPDATE public.marketplace_listings SET approved = true WHERE id = '00000000-0000-0000-0000-0000000000d1';
 -- Une annonce validée puis modifiée par le vendeur repasse en attente de validation.
 SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a2', 'membre@test.fr');
@@ -65,7 +65,7 @@ SELECT pg_temp.expect_error($$UPDATE public.directory_listings SET claimed_by = 
 -- L'auteur corrige le contenu de sa fiche.
 UPDATE public.directory_listings SET description = 'Réparations toutes marques' WHERE id = '00000000-0000-0000-0000-0000000000f1';
 -- L'admin publie.
-SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'manuel.rohaut@gmail.com');
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'admin@test.fr');
 UPDATE public.directory_listings SET status = 'published', verified = true WHERE id = '00000000-0000-0000-0000-0000000000f1';
 
 -- Avis sur une fiche : jamais auto-validé.
@@ -75,7 +75,7 @@ SELECT pg_temp.expect_error($$INSERT INTO public.directory_reviews (listing_id, 
 INSERT INTO public.directory_reviews (id, listing_id, author_id, rating, content)
   VALUES ('00000000-0000-0000-0000-0000000000e1', '00000000-0000-0000-0000-0000000000f1', '00000000-0000-0000-0000-0000000000a3', 5, 'Bien');
 SELECT pg_temp.expect_error($$UPDATE public.directory_reviews SET approved = true WHERE id = '00000000-0000-0000-0000-0000000000e1'$$, 'auteur valide son avis');
-SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'manuel.rohaut@gmail.com');
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'admin@test.fr');
 UPDATE public.directory_reviews SET approved = true WHERE id = '00000000-0000-0000-0000-0000000000e1';
 -- Un avis validé puis modifié par son auteur repasse en attente.
 SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a3', 'autre@test.fr');
@@ -142,7 +142,7 @@ SELECT pg_temp.expect_error($$INSERT INTO public.lms_progress (user_id, lesson_i
   VALUES ('00000000-0000-0000-0000-0000000000a2', '00000000-0000-0000-0000-000000000021', now())$$, 'progression sur une leçon payée non réglée');
 
 -- L'admin enregistre le paiement : l'accès s'ouvre.
-SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'manuel.rohaut@gmail.com');
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'admin@test.fr');
 UPDATE public.lms_enrollments SET paid_at = now()
   WHERE user_id = '00000000-0000-0000-0000-0000000000a2' AND course_id = '00000000-0000-0000-0000-0000000000c2';
 -- L'admin lit et écrit le contenu brut des leçons.

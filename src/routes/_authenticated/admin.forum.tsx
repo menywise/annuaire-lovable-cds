@@ -63,7 +63,7 @@ function AdminForumPage() {
         .replace(/[^a-z0-9]+/g, "-")
         .replace(/^-|-$/g, ""),
       description: String(data.get("description") ?? "").trim(),
-      color: String(data.get("color") ?? "#0d6efd"),
+      color: String(data.get("color") ?? "#334155"),
       position: Number(data.get("position") ?? categories?.length ?? 0),
     });
     setBusy(false);
@@ -133,7 +133,7 @@ function AdminForumPage() {
               id="c-color"
               name="color"
               type="color"
-              defaultValue="#0d6efd"
+              defaultValue="#334155"
               className="h-11 w-24 p-1"
             />
           </div>

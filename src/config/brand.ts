@@ -40,6 +40,29 @@ export const brandFallback = {
     senderDomain: "",
     fromDomain: "",
   },
+  /**
+   * Habillage du site. Vide = neutre : jetons de `src/styles.css`, initiale du nom court en guise de
+   * logo, icônes et image de partage neutres de `public/`.
+   * Images : adresse https (médiathèque) ou chemin commençant par « / ».
+   */
+  apparence: {
+    /** Couleur principale (#rrggbb) : boutons, liens, focus. */
+    couleurPrincipale: "",
+    /** Couleur de la barre du navigateur sur mobile (#rrggbb). */
+    couleurNavigateur: "",
+    logo: "",
+    /** Petite icône d'onglet (PNG carré, 64 px ou plus). */
+    favicon: "",
+    /** Icône d'application (PNG carré, 512 px) : écran d'accueil du téléphone. */
+    icone: "",
+    /** Image de partage sur les réseaux (1200 × 630). */
+    imagePartage: "",
+  },
+  /** Accueil par défaut (tant qu'aucune page d'accueil n'est publiée par le module « pages »). */
+  accueil: {
+    titre: "",
+    texte: "",
+  },
 };
 
 /** Langue du document (multilingue hors périmètre). */

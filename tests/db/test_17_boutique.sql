@@ -5,11 +5,11 @@ BEGIN;
 -- stock, téléchargements réservés à l'acheteur, expédition par l'admin, remboursement.
 -- a1 : admin du studio · a2 : membre acheteur · a3 : autre membre
 INSERT INTO auth.users (id, email) VALUES
-  ('00000000-0000-0000-0000-0000000000a1', 'manuel.rohaut@gmail.com'),
+  ('00000000-0000-0000-0000-0000000000a1', 'admin@test.fr'),
   ('00000000-0000-0000-0000-0000000000a2', 'membre@test.fr'),
   ('00000000-0000-0000-0000-0000000000a3', 'autre@test.fr');
-SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'manuel.rohaut@gmail.com');
-SELECT public.bootstrap_current_user('Manu');
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'admin@test.fr');
+SELECT public.bootstrap_current_user('Administrateur');
 SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a2', 'membre@test.fr');
 SELECT public.bootstrap_current_user('Membre');
 SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a3', 'autre@test.fr');
@@ -23,7 +23,7 @@ DO $$ BEGIN
     RAISE EXCEPTION 'réglages de la boutique absents'; END IF;
 END $$;
 
-SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'manuel.rohaut@gmail.com');
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'admin@test.fr');
 INSERT INTO public.shop_products (id, slug, title, kind, price_cents, stock, published) VALUES
   ('00000000-0000-0000-0000-0000000000b1', 'mug', 'Mug du studio', 'physique', 1500, 3, true),
   ('00000000-0000-0000-0000-0000000000b2', 'guide-pdf', 'Guide PDF', 'pdf', 900, 50, true),
@@ -162,7 +162,7 @@ DO $$ BEGIN
   IF (SELECT status FROM public.shop_orders WHERE id = (SELECT order_id FROM c2)) <> 'paid' THEN
     RAISE EXCEPTION 'le membre expédie sa commande'; END IF;
 END $$;
-SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'manuel.rohaut@gmail.com');
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'admin@test.fr');
 -- L'admin ne touche ni aux montants ni aux lignes : seulement l'expédition et sa note.
 UPDATE public.shop_orders SET status = 'shipped', carrier = ' Colissimo ', tracking_number = '6A123',
   total_cents = 1, shipping_address = '{}' WHERE id = (SELECT order_id FROM c2);

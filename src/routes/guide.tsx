@@ -9,7 +9,7 @@ export const Route = createFileRoute("/guide")({
     seo({
       title: "Guide de réutilisation",
       description:
-        "Réutiliser le Consensus Design System sur un nouveau site : fichiers à copier, marque à configurer, pages fournies (connexion, légal, contact).",
+        "Réutiliser le socle sur un nouveau site : fichiers à copier, marque à configurer, pages fournies (connexion, légal, contact).",
       path: "/guide",
       type: "article",
     }),
@@ -19,7 +19,7 @@ export const Route = createFileRoute("/guide")({
 const steps = [
   {
     title: "1. Cloner le socle",
-    body: "Chaque projet est un clone du socle : dans Lovable, « Remix » du projet CDS, puis connexion à un dépôt GitHub qui lui est propre. Le socle ne contient jamais rien de propre à un projet.",
+    body: "Chaque projet est un clone du socle : dans Lovable, « Remix » du projet socle, puis connexion à un dépôt GitHub qui lui est propre. Le socle ne contient jamais rien de propre à un projet.",
   },
   {
     title: "2. Passer le SQL et les secrets",
@@ -38,8 +38,8 @@ const steps = [
     body: "Administration → Démarrage liste ce qui reste à régler et retire en deux gestes les exemples de la recette et les contenus de démarrage, sans toucher à ce que le projet a déjà modifié.",
   },
   {
-    title: "6. Garder les règles CDS",
-    body: "Thème clair uniquement, police Inter, fond #f8fafc, texte #1e293b, bleu #0d6efd, rayon 6 px pour les boutons et 12 px pour les cartes. Un ton orienté bénéfices, jamais générique.",
+    title: "6. Garder les règles du socle",
+    body: "Thème clair uniquement, police Inter, fond #f8fafc, texte #1e293b, couleur principale réglée dans les paramètres, rayon 6 px pour les boutons et 12 px pour les cartes. Un ton orienté bénéfices, jamais générique.",
   },
 ];
 
@@ -104,10 +104,10 @@ function GuidePage() {
           Documentation
         </p>
         <h1 className="mt-2 text-3xl font-bold text-foreground">
-          Réutiliser CDS sur un nouveau projet
+          Réutiliser le socle sur un nouveau projet
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          CDS est un modèle complet : fondations visuelles, composants, pages de compte et pages
+          Le socle est un modèle complet : fondations visuelles, composants, pages de compte et pages
           légales prêtes à l'emploi. Voici la marche à suivre.
         </p>
 

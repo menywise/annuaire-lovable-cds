@@ -1,6 +1,6 @@
 # CDS — Consensus Design System · Source de vérité des tokens
 
-**Version** : 1.2.0 — **Date** : 30 septembre 2026
+**Version** : 1.3.0 — **Date** : 2 octobre 2026
 
 Ce fichier est la **référence unique**. Deux fichiers seulement l'appliquent :
 
@@ -19,13 +19,15 @@ Il n'existe **aucun** `tailwind.config.ts` ni `src/index.css` : en Tailwind v4 l
 - Contraste minimum **WCAG AA** (4,5:1 pour le texte, 3:1 pour les éléments graphiques).
 - Aucun texte en anglais sur les pages publiques.
 
-## Couleurs de marque
+## Couleur principale
+
+Valeurs **neutres** du socle. Chaque projet règle sa couleur dans Administration → Paramètres → Apparence : le site recalcule alors `--primary`, `--primary-hover`, `--primary-text`, `--primary-foreground` et `--ring` au contraste AA (`src/lib/couleurs.ts`). Aucune couleur de marque n'est écrite dans le code.
 
 | Token                  | Valeur    | Usage                                                         |
 | ---------------------- | --------- | ------------------------------------------------------------- |
-| `--primary`            | `#0d6efd` | Fonds de boutons et surfaces primaires (blanc dessus : 4,5:1) |
-| `--primary-hover`      | `#0a58ca` | Survol des surfaces primaires                                 |
-| `--primary-text`       | `#0a58ca` | **Bleu en texte et en liens** (6,15:1 sur `#f8fafc`)          |
+| `--primary`            | `#334155` | Fonds de boutons et surfaces primaires (blanc dessus : 10,35:1) |
+| `--primary-hover`      | `#1e293b` | Survol des surfaces primaires                                 |
+| `--primary-text`       | `#334155` | **Couleur principale en texte et en liens** (9,9:1 sur `#f8fafc`) |
 | `--primary-foreground` | `#ffffff` | Texte posé sur `--primary`                                    |
 | `--secondary`          | `#6c757d` | Surfaces secondaires (blanc dessus : 4,69:1)                  |
 | `--cds-purple`         | `#7c3aed` | Accent ponctuel                                               |
@@ -59,7 +61,7 @@ Il n'existe **aucun** `tailwind.config.ts` ni `src/index.css` : en Tailwind v4 l
 | `--border-strong`      | `#cbd5e1` | Bordure renforcée au survol ou sur une sélection | —                       |
 | `--surface-raised`     | `#ffffff` | Cartes détachées du fond                         | —                       |
 | `--surface-sunken`     | `#f1f5f9` | Champs et zones légèrement creusées              | —                       |
-| `--ring`               | `#0d6efd` | Anneau de focus                                  | —                       |
+| `--ring`               | `#334155` | Anneau de focus                                  | —                       |
 
 ## Rayons
 

@@ -23,7 +23,7 @@ function buildAdminNav(): AdminNavItem[] {
     {
       to: "/admin/utilisateurs",
       label: "Utilisateurs",
-      title: "Comptes, rôles et admins du studio",
+      title: "Comptes, rôles et administrateurs",
     },
     {
       to: "/admin/contenus",

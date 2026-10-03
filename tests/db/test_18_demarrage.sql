@@ -4,10 +4,10 @@ BEGIN;
 -- Lot 13 a : kit de démarrage d'un clone. État du démarrage et retrait des contenus de
 -- démonstration, réservés à l'admin ; un contenu modifié par le projet n'est jamais retiré.
 INSERT INTO auth.users (id, email) VALUES
-  ('00000000-0000-0000-0000-0000000000a1', 'manuel.rohaut@gmail.com'),
+  ('00000000-0000-0000-0000-0000000000a1', 'admin@test.fr'),
   ('00000000-0000-0000-0000-0000000000a2', 'membre@test.fr');
-SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'manuel.rohaut@gmail.com');
-SELECT public.bootstrap_current_user('Manu');
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'admin@test.fr');
+SELECT public.bootstrap_current_user('Administrateur');
 SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a2', 'membre@test.fr');
 SELECT public.bootstrap_current_user('Membre');
 RESET ROLE;
@@ -22,7 +22,7 @@ SELECT pg_temp.as_anon();
 SELECT pg_temp.expect_error($$SELECT public.starter_reset_demo('demarrage')$$, 'visiteur vide la démonstration');
 
 -- 2. État : exemples de la recette et contenus de démarrage comptés ------------------------------------
-SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'manuel.rohaut@gmail.com');
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'admin@test.fr');
 DO $$
 DECLARE _s jsonb := public.starter_status();
 BEGIN
@@ -48,7 +48,7 @@ END $$;
 
 -- 4. Retrait du démarrage : un contenu modifié par le projet reste --------------------------------------
 UPDATE public.pricing_plans SET tagline = 'Notre offre d''entrée, adaptée à mon projet.' WHERE name = 'Découverte';
-SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'manuel.rohaut@gmail.com');
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'admin@test.fr');
 DO $$
 DECLARE _r jsonb := public.starter_reset_demo('demarrage');
 BEGIN

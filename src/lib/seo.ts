@@ -25,9 +25,11 @@ export function seo({
   path,
   type = "website",
   noindex,
-  image = absoluteUrl("/og-cds.jpg"),
+  image,
 }: SeoInput) {
   const { brand } = getSiteConfig();
+  // Image réglée en admin (Paramètres → Apparence), sinon image neutre de public/.
+  image ??= absoluteUrl(brand.apparence.imagePartage || "/image-partage.png");
   // Garde-fou pour les textes saisis en admin (devise, extrait d'article) : 160 caractères au plus.
   description = clampText(description, 160);
   const fullTitle = !brand.shortName || title.includes(brand.shortName) ? title : `${title} — ${brand.shortName}`;

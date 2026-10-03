@@ -5,11 +5,11 @@ BEGIN;
 -- recette_purge(). Rien d'autre ne doit disparaître.
 -- a1 : admin du studio · a2 : membre de test · a3 : membre réel
 INSERT INTO auth.users (id, email) VALUES
-  ('00000000-0000-0000-0000-0000000000a1', 'manuel.rohaut@gmail.com'),
+  ('00000000-0000-0000-0000-0000000000a1', 'admin@test.fr'),
   ('00000000-0000-0000-0000-0000000000a2', 'membre@test.fr'),
   ('00000000-0000-0000-0000-0000000000a3', 'autre@test.fr');
-SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'manuel.rohaut@gmail.com');
-SELECT public.bootstrap_current_user('Manu');
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'admin@test.fr');
+SELECT public.bootstrap_current_user('Administrateur');
 SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a2', 'membre@test.fr');
 SELECT public.bootstrap_current_user('Membre');
 SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a3', 'autre@test.fr');
@@ -50,7 +50,7 @@ SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a2', 'membre@test.fr')
 SELECT pg_temp.expect_error($$SELECT public.recette_purge('00000000-0000-0000-0000-0000000000a2')$$, 'membre purge');
 
 -- 2. L'admin purge : les données marquées partent, le reste reste ----------------------------
-SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'manuel.rohaut@gmail.com');
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'admin@test.fr');
 DO $$
 DECLARE _r jsonb;
 BEGIN
@@ -78,7 +78,7 @@ DO $$ BEGIN
 END $$;
 
 -- 3. Sans membre indiqué : seules les données marquées partent --------------------------------
-SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'manuel.rohaut@gmail.com');
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'admin@test.fr');
 DO $$ BEGIN
   IF (public.recette_purge(NULL)->>'inscriptions')::int <> 0 THEN RAISE EXCEPTION 'inscriptions purgées sans membre'; END IF;
 END $$;
@@ -88,7 +88,7 @@ INSERT INTO public.lms_courses (id, title, slug, published, price_cents) VALUES
   ('00000000-0000-0000-0000-0000000000c1', 'Vraie', 'vraie', true, 0);
 INSERT INTO public.lms_enrollments (user_id, course_id) VALUES
   ('00000000-0000-0000-0000-0000000000a2', '00000000-0000-0000-0000-0000000000c1');
-SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'manuel.rohaut@gmail.com');
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'admin@test.fr');
 SELECT public.recette_purge('00000000-0000-0000-0000-0000000000a2');
 RESET ROLE;
 DO $$ BEGIN

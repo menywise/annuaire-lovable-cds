@@ -15,7 +15,7 @@ import {
 } from '@react-email/components'
 
 // Identité visuelle CDS pour les e-mails : thème clair uniquement,
-// Inter (repli système), bleu de marque #0d6efd, cartes 12 px, boutons 6 px.
+// Inter (repli système), couleur principale neutre du socle, cartes 12 px, boutons 6 px.
 
 export const CDS_COLORS = {
   background: '#f8fafc',
@@ -23,8 +23,8 @@ export const CDS_COLORS = {
   text: '#1e293b',
   textLight: '#5b6472',
   border: '#e5e7eb',
-  primary: '#0d6efd',
-  primaryText: '#0a58ca',
+  primary: '#334155',
+  primaryText: '#334155',
 } as const
 
 interface CdsEmailLayoutProps {
