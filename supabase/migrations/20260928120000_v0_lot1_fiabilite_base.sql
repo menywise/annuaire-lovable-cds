@@ -153,8 +153,6 @@ ALTER TABLE public.studio_admins ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Admins gerent les admins du studio" ON public.studio_admins;
 CREATE POLICY "Admins gerent les admins du studio" ON public.studio_admins FOR ALL TO authenticated
   USING (public.has_role(auth.uid(), 'admin')) WITH CHECK (public.has_role(auth.uid(), 'admin'));
-INSERT INTO public.studio_admins (email) VALUES ('manuel.rohaut@gmail.com'), ('ac.rohaut@gmail.com')
-  ON CONFLICT (email) DO NOTHING;
 
 -- Création du compte : rôle lu dans studio_admins, nom repris de l'inscription.
 CREATE OR REPLACE FUNCTION public.bootstrap_current_user(_full_name text DEFAULT NULL)
