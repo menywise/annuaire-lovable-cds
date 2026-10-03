@@ -17,13 +17,6 @@ const REPO = join(import.meta.dirname, "..", "..");
 const MESSAGERIES =
   /[a-z0-9._%+-]+@(gmail|googlemail|yahoo|hotmail|outlook|live|msn|icloud|me|aol|gmx|proton|protonmail|orange|wanadoo|free|sfr|neuf|laposte|bbox|numericable)\.[a-z.]+/i;
 
-// Migrations déjà jouées en production : elles ne se réécrivent pas. Les adresses qu'elles
-// contenaient sont retirées des données par 20261002090000_v0_identite_neutre.sql.
-const HISTORIQUE = new Set([
-  "supabase/migrations/20260917193743_242c525c-7a4f-4e1c-ad00-d0cfb2e6adcc.sql",
-  "supabase/migrations/20260928120000_v0_lot1_fiabilite_base.sql",
-]);
-
 const TEXTE = /\.(ts|tsx|js|mjs|json|sql|md|toml|yml|yaml|css|html|txt|sh)$/;
 
 function fichiersSuivis(): string[] {
@@ -35,7 +28,6 @@ function fichiersSuivis(): string[] {
 test("aucune adresse e-mail personnelle dans le dépôt", () => {
   const trouvees: string[] = [];
   for (const fichier of fichiersSuivis()) {
-    if (HISTORIQUE.has(fichier)) continue;
     const lignes = readFileSync(join(REPO, fichier), "utf8").split("\n");
     lignes.forEach((ligne, i) => {
       if (MESSAGERIES.test(ligne)) trouvees.push(`${fichier}:${i + 1}`);
