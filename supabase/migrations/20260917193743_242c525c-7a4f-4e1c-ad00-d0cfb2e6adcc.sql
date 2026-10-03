@@ -74,12 +74,6 @@ BEGIN
     SET email = EXCLUDED.email,
         full_name = COALESCE(EXCLUDED.full_name, public.profiles.full_name);
 
-  IF _email IN ('manuel.rohaut@gmail.com', 'ac.rohaut@gmail.com') THEN
-    _role := 'admin';
-  ELSE
-    _role := 'user';
-  END IF;
-
   INSERT INTO public.user_roles (user_id, role)
   VALUES (_uid, _role)
   ON CONFLICT (user_id, role) DO NOTHING;
