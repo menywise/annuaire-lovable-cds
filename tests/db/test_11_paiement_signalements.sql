@@ -14,16 +14,16 @@ SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a3', 'autre@test.fr');
 SELECT public.bootstrap_current_user('Autre');
 RESET ROLE;
 
--- 1. Modules : « payments » éteint par défaut et dépend des formations, « reports » allumé -----
+-- 1. Modules : « payments » et « reports » éteints par défaut (socle 1.2.0), le paiement dépend des formations
 DO $$ BEGIN
   IF NOT public.module_defaults() ? 'payments' THEN RAISE EXCEPTION 'module payments absent'; END IF;
   IF NOT public.module_defaults() ? 'reports' THEN RAISE EXCEPTION 'module reports absent'; END IF;
   IF public.module_enabled('payments') THEN RAISE EXCEPTION 'payments devrait être éteint'; END IF;
-  IF NOT public.module_enabled('reports') THEN RAISE EXCEPTION 'reports devrait être allumé'; END IF;
+  IF public.module_enabled('reports') THEN RAISE EXCEPTION 'reports devrait être éteint'; END IF;
 END $$;
 SELECT pg_temp.expect_error($$UPDATE public.site_settings SET value = value || '{"payments": true, "lms": false}' WHERE key = 'modules'$$,
   'paiement sans formations');
-UPDATE public.site_settings SET value = value || '{"payments": true, "lms": true}' WHERE key = 'modules';
+UPDATE public.site_settings SET value = value || '{"payments": true, "lms": true, "reports": true}' WHERE key = 'modules';
 
 -- 2. Paiement d'une formation -----------------------------------------------------------------
 INSERT INTO public.lms_courses (id, title, slug, published, price_cents, currency) VALUES

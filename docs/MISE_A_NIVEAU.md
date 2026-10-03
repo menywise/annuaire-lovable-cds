@@ -2,13 +2,13 @@
 
 Une installation est un projet né d'un Remix du socle CDS (exemple : l'annuaire). Ce document dit
 comment l'amener à la version courante du socle, puis applique la méthode à l'annuaire
-(0.0.0 → 1.1.0).
+(0.0.0 → 1.2.0).
 
 ## Ce qu'il faut savoir avant
 
 - **La référence d'une version est une migration du dépôt du socle**, jamais le journal de
-  migrations de la plateforme. Version courante : **1.1.0**, migration
-  `20261003120000_v1_1_0_versions_installation`.
+  migrations de la plateforme. Version courante : **1.2.0**, migration
+  `20261003150000_v1_2_0_modules_facultatifs`.
 - **Chaque base dit ce qu'elle embarque.** `socle_versions` liste les versions publiées du socle.
   `socle_installation` trace la vie de cette base (vide dans le socle). Le réglage « socle » de
   `site_settings` donne la version en un coup d'œil.
@@ -38,32 +38,40 @@ comment l'amener à la version courante du socle, puis applique la méthode à l
    force-push : le projet est relié à Lovable.
 4. **Contrôler.** Rejouer le bloc de contrôle, ouvrir l'aperçu Lovable, vérifier `/admin/demarrage`.
 
-## Cas de l'annuaire : 0.0.0 → 1.1.0
+## Cas de l'annuaire : 0.0.0 → 1.2.0
 
-La cible est directement la 1.1.0 : elle contient la 1.0.0.
+La cible est directement la 1.2.0 : on passe les blocs de la 1.1.0 puis ceux de la 1.2.0.
 
 ### État mesuré le 03/10/2026, après nettoyage de l'essai
 
 - Base : 54 tables (les 53 communes + `socle_installation`), 57 fonctions (les 56 communes +
   `starter_status`), 154 politiques sur les tables, 8 sur les fichiers. Réglage « socle » 0.0.0,
   « non mesure ». Une ligne 0.0.0 « anterieur » dans `socle_installation`.
-- Manquent par rapport au socle 1.1.0 : la table `socle_versions` et sa politique, l'historique des
-  versions, la tâche pg_cron `cds_purge_contact_messages`.
+- Manquent par rapport au socle 1.2.0 : la table `socle_versions` et sa politique, l'historique des
+  versions, la tâche pg_cron `cds_purge_contact_messages`, les modules facultatifs éteints par
+  défaut et le choix daté des modules. Pas de réglage « modules » : après la mise à niveau, seuls
+  les outils d'administration sont allumés, jusqu'au choix fait dans l'écran Démarrage.
+- Grille de conformité recopiée le 03/10 (42 lignes « à vérifier »).
 - Dépôt : identique au socle, sauf les fichiers propres à l'installation et les 25 migrations
   retirées par le Remix.
 
 ### Étapes
 
-1. **Base de l'annuaire** — éditeur SQL du projet Annuaire Lovable CDS, blocs de
-   `supabase/seed/v1_1_0/` : 1, 2, 3, 4, **5 et 6**, puis le contrôle 7. Les blocs 5 et 6 sont
-   réservés aux installations.
+1. **Base de l'annuaire** — éditeur SQL du projet Annuaire Lovable CDS :
+   - blocs de `supabase/seed/v1_1_0/` : 1 à 6, puis le contrôle 7 ;
+   - blocs de `supabase/seed/v1_2_0/` : 1 à 8, puis le contrôle 9.
+   Les blocs 5 et 6 de la 1.1.0 et le bloc 8 de la 1.2.0 sont réservés aux installations.
 2. **Code** — branche de l'annuaire, fusion de `main` du socle, PR, fusion.
-   Simulation faite le 03/10 : **aucun conflit** ; arrivent seulement la migration 1.1.0, ses blocs,
-   son test et la documentation ; aucun fichier propre à l'annuaire touché.
-3. **Contrôle** — le bloc 7 doit renvoyer : versions publiees `1.0.0 1.1.0` ; reglage socle
-   `1.1.0` ; registre installation `0.0.0 anterieur, 1.1.0 mise_a_niveau` ; politiques de lecture
-   `2` ; starter_status présente ; purge nocturne `1`. Puis : 55 tables, 57 fonctions,
-   155 politiques sur les tables, comme le socle.
+   Simulation faite le 03/10 : **aucun conflit** ; arrivent seulement les migrations 1.1.0 et 1.2.0,
+   leurs blocs, leurs tests, le code des modules et la documentation ; aucun fichier propre à
+   l'annuaire touché.
+3. **Contrôle** — le bloc 9 de la 1.2.0 doit renvoyer : version du socle `1.2.0` ; 22 modules
+   éteints par défaut ; outils `media search studio` ; modules allumés `aucun` ; choix
+   `pas encore`. Le bloc 7 de la 1.1.0 : registre installation
+   `0.0.0 anterieur, 1.1.0 mise_a_niveau, 1.2.0 mise_a_niveau` ; purge nocturne `1`.
+   Puis : 55 tables, 59 fonctions, 155 politiques sur les tables, comme le socle.
+4. **Modules** — Administration → Modules : allumer les briques de l'annuaire, enregistrer.
+   L'écran Démarrage passe l'étape « Modules » à « fait ».
 
 ### Décisions du 03/10
 
@@ -76,12 +84,11 @@ La cible est directement la 1.1.0 : elle contient la 1.0.0.
 - **La purge nocturne par pg_cron : gardée.** La politique de confidentialité promet
   l'effacement après 3 ans ; le bloc 5 la replanifie dans chaque installation.
 
-### Décision ouverte
+- **Les modules : socle 1.2.0.** Les 22 modules facultatifs sont éteints par défaut et se
+  choisissent au lancement, dans l'écran Démarrage. Pilotage, médiathèque et recherche sont des
+  outils d'administration toujours allumés.
 
-- **Les modules allumés par défaut.** `module_defaults()` allume 16 modules sur 25 (blog, FAQ,
-  contact, lettre, forum, membres, messagerie, témoignages, avis, tarifs, démarrage, pilotage,
-  composants, médiathèque, signalements, recherche). L'annuaire n'a pas de réglage « modules » :
-  ces 16 y sont allumés. Passer à « tout éteint par défaut » serait une nouvelle version du socle,
-  à trancher avec le plan d'action des briques et modules.
+### À savoir
+
 - **Réglage « brand » absent de l'annuaire.** Ce n'est pas un défaut : c'est le parcours normal d'un
   clone, qui règle sa marque dans Administration → Démarrage. Ne pas recopier celle du socle.

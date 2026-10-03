@@ -30,6 +30,7 @@
 - Module K « Boutique » (30/09) : objets, PDF et livres numériques payés par Stripe, panier, stock, livraison forfaitaire (offerte au-delà d'un seuil), téléchargements réservés à l'acheteur, expédition et suivi en admin, CGV complétées ; éteint par défaut, SQL en 10 blocs + contrôle
 - Thème tactile léger : surfaces hiérarchisées, cartes mieux détachées, champs creusés et états actifs renforcés
 - Socle 1.1.0 (03/10) : registres des versions (`socle_versions` inscrite au dépôt, `socle_installation` ajoutée, réglage « socle » jamais revu à la baisse), migration `20261003120000_v1_1_0_versions_installation.sql`, test `test_20_versions_socle.sql` ; mode d'emploi de mise à niveau `docs/MISE_A_NIVEAU.md`
+- Socle 1.2.0 (03/10) : les 22 modules facultatifs éteints par défaut, choisis au lancement dans l'écran Démarrage (choix daté en base) ; pilotage, médiathèque et recherche deviennent des outils d'administration toujours allumés. Migration `20261003150000_v1_2_0_modules_facultatifs.sql`, test `test_21_modules_facultatifs.sql`
 
 ## En attente (décision du 29/09 : « beaucoup à faire avant de lancer les paiements »)
 

@@ -15,7 +15,7 @@ SELECT public.bootstrap_current_user('Membre');
 SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a3', 'autre@test.fr');
 SELECT public.bootstrap_current_user('Autre');
 RESET ROLE;
-UPDATE public.site_settings SET value = value || '{"lms": true}' WHERE key = 'modules';
+UPDATE public.site_settings SET value = value || '{"lms": true, "reports": true}' WHERE key = 'modules';
 \i supabase/seed/recette_seed.sql
 
 -- Données des parcours (membre de test) et données réelles à garder.
