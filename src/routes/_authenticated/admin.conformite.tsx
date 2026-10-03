@@ -25,7 +25,7 @@ export const Route = createFileRoute("/_authenticated/admin/conformite")({
     seo({
       title: "Conformité du modèle",
       description:
-        "Grille de contrôle du modèle CDS : ce qui est conforme, à corriger ou à vérifier.",
+        "Grille de contrôle du socle : ce qui est conforme, à corriger ou à vérifier.",
       path: "/admin/conformite",
       noindex: true,
     }),

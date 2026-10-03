@@ -3,10 +3,10 @@
 BEGIN;
 -- a1 : admin du studio · a2 : membre
 INSERT INTO auth.users (id, email) VALUES
-  ('00000000-0000-0000-0000-0000000000a1', 'manuel.rohaut@gmail.com'),
+  ('00000000-0000-0000-0000-0000000000a1', 'admin@test.fr'),
   ('00000000-0000-0000-0000-0000000000a2', 'membre@test.fr');
-SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'manuel.rohaut@gmail.com');
-SELECT public.bootstrap_current_user('Manu');
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'admin@test.fr');
+SELECT public.bootstrap_current_user('Administrateur');
 SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a2', 'membre@test.fr');
 SELECT public.bootstrap_current_user('Membre');
 RESET ROLE;
@@ -38,7 +38,7 @@ SELECT pg_temp.expect_error($$INSERT INTO public.media_files (path, name, mime_t
 DO $$ BEGIN
   IF (SELECT count(*) FROM storage.objects) <> 0 THEN RAISE EXCEPTION 'membre liste les fichiers'; END IF;
 END $$;
-SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'manuel.rohaut@gmail.com');
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'admin@test.fr');
 INSERT INTO storage.objects (bucket_id, name) VALUES ('media', '2026/09/logo.png');
 INSERT INTO public.media_files (path, name, mime_type, size_bytes) VALUES ('2026/09/logo.png', 'logo.png', 'image/png', 1200);
 UPDATE public.media_files SET alt = 'Logo du studio' WHERE path = '2026/09/logo.png';
@@ -68,7 +68,7 @@ END $$;
 
 -- 5. Module éteint : plus aucun dépôt, même pour l'admin ; les fichiers restent lisibles --
 UPDATE public.site_settings SET value = value || '{"media": false}'::jsonb WHERE key = 'modules';
-SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'manuel.rohaut@gmail.com');
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'admin@test.fr');
 SELECT pg_temp.expect_error($$INSERT INTO storage.objects (bucket_id, name) VALUES ('media', '2026/09/eteint.png')$$, 'dépôt module éteint');
 SELECT pg_temp.expect_error($$INSERT INTO public.media_files (path, name, mime_type) VALUES ('2026/09/eteint.png', 'x', 'image/png')$$, 'inscription module éteint');
 -- L'admin peut toujours faire le ménage.

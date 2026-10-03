@@ -23,16 +23,27 @@ blocs (`supabase/seed/<lot>/`), passer les blocs à la place de la migration, un
 Règles de l'éditeur de Lovable : il coupe le script à chaque ligne vide et refuse l'antislash et
 l'opérateur « ? ». Les blocs du socle les respectent déjà.
 
-## 3. Régler l'identité (Administration → Paramètres)
+## 3. Devenir administrateur
+
+Créer son compte sur la prévisualisation du clone **avant de publier** : sur une base sans
+administrateur, le premier compte qui se connecte devient administrateur, une seule fois. Les
+suivants sont de simples membres ; un administrateur en nomme d'autres dans Administration →
+Utilisateurs. Le dernier administrateur ne peut ni se retirer ni supprimer son compte.
+
+## 4. Régler l'identité (Administration → Paramètres)
 
 - Nom complet, nom court, signature.
 - **Adresse publique** (`https://…`) : liens canoniques, plan du site, e-mails.
 - Mentions légales (société, adresse, directeur de la publication) et hébergeur.
+- **Apparence** : couleur principale, couleur de la barre du navigateur, logo, icône d'onglet,
+  icône d'application et image de partage (déposées dans la médiathèque). Vide : habillage neutre.
+- **Page d'accueil** : titre et texte de l'accueil par défaut, en attendant une page d'accueil du
+  module « Pages ».
 - **Envoi des e-mails** : sous-domaine délégué au service de Lovable (Cloud → Emails, par exemple
   `notify.exemple.fr`) et domaine de l'expéditeur (`exemple.fr`). Chaque site à domaine propre gère
   ses e-mails ; un site du studio sans domaine propre peut garder `notify.manuelrohaut.fr`.
 
-## 4. Secrets d'environnement (Lovable → Cloud → Secrets)
+## 5. Secrets d'environnement (Lovable → Cloud → Secrets)
 
 | Secret | Quand | Rôle |
 | --- | --- | --- |
@@ -43,24 +54,24 @@ l'opérateur « ? ». Les blocs du socle les respectent déjà.
 
 Les clés ne vont jamais dans le code ni en base.
 
-## 5. Allumer les modules (Administration → Modules)
+## 6. Allumer les modules (Administration → Modules)
 
 Chaque module s'allume ou s'éteint, dépendances comprises. Un module éteint ne laisse aucune trace
 (pages, menus, plan du site, administration).
 
-## 6. Retirer la démonstration (Administration → Démarrage)
+## 7. Retirer la démonstration (Administration → Démarrage)
 
 L'écran **Démarrage** liste ce qui reste à régler et retire, en deux gestes :
 
 - les **exemples de la recette** (contenus « Exemple — » et leur membre fictif) ;
 - les **contenus de démarrage** (FAQ, offres, article d'origine), sauf ceux déjà modifiés.
 
-## 7. Ajouter ce qui est propre au projet
+## 8. Ajouter ce qui est propre au projet
 
 Dans le dépôt du clone uniquement : nouvelles pages, nouvelles tables (migrations datées après
 celles du socle), modules métier (par exemple la veille de sites pour l'annuaire).
 
-## 8. Recevoir les améliorations du socle
+## 9. Recevoir les améliorations du socle
 
 Le socle évolue (nouveaux modules, correctifs). Pour les reporter dans un clone : ajouter le dépôt du
 socle comme source distante, fusionner sa branche `main` dans le clone (jamais de réécriture

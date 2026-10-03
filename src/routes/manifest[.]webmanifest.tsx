@@ -19,13 +19,19 @@ export const Route = createFileRoute("/manifest.webmanifest")({
           display: "standalone",
           orientation: "portrait",
           background_color: "#f8fafc",
-          theme_color: "#f8fafc",
-          icons: [
-            { src: "/favicon.png", sizes: "64x64", type: "image/png" },
-            { src: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
-            { src: "/icon-512.png", sizes: "512x512", type: "image/png", purpose: "any" },
-            { src: "/icon-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
-          ],
+          theme_color: brand.apparence.couleurNavigateur || "#f8fafc",
+          // Icône d'application réglée en admin (Paramètres → Apparence), sinon icônes neutres.
+          icons: brand.apparence.icone
+            ? [
+                { src: brand.apparence.icone, sizes: "512x512", purpose: "any" },
+                { src: brand.apparence.icone, sizes: "512x512", purpose: "maskable" },
+              ]
+            : [
+                { src: "/favicon.png", sizes: "64x64", type: "image/png" },
+                { src: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+                { src: "/icon-512.png", sizes: "512x512", type: "image/png", purpose: "any" },
+                { src: "/icon-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
+              ],
         };
         return new Response(JSON.stringify(manifest, null, 2), {
           headers: {

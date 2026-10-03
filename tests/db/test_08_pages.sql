@@ -3,10 +3,10 @@
 BEGIN;
 -- a1 : admin du studio · a2 : membre
 INSERT INTO auth.users (id, email) VALUES
-  ('00000000-0000-0000-0000-0000000000a1', 'manuel.rohaut@gmail.com'),
+  ('00000000-0000-0000-0000-0000000000a1', 'admin@test.fr'),
   ('00000000-0000-0000-0000-0000000000a2', 'membre@test.fr');
-SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'manuel.rohaut@gmail.com');
-SELECT public.bootstrap_current_user('Manu');
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'admin@test.fr');
+SELECT public.bootstrap_current_user('Administrateur');
 SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a2', 'membre@test.fr');
 SELECT public.bootstrap_current_user('Membre');
 RESET ROLE;
@@ -22,7 +22,7 @@ SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a2', 'membre@test.fr')
 SELECT pg_temp.expect_error($$INSERT INTO public.pages (slug, title) VALUES ('pirate', 'Pirate')$$, 'membre crée une page');
 SELECT pg_temp.as_anon();
 SELECT pg_temp.expect_error($$INSERT INTO public.pages (slug, title) VALUES ('pirate', 'Pirate')$$, 'visiteur crée une page');
-SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'manuel.rohaut@gmail.com');
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'admin@test.fr');
 INSERT INTO public.pages (id, slug, title, is_home, data) VALUES
   ('00000000-0000-0000-0000-0000000000e1', 'accueil', 'Accueil', true,
    '{"root":{"props":{}},"content":[{"type":"Hero","props":{"id":"Hero-1","title":"Bienvenue"}}]}');
@@ -69,7 +69,7 @@ DO $$ BEGIN
   IF (SELECT count(*) FROM public.pages) <> 1 THEN RAISE EXCEPTION 'membre : 1 page publiée attendue'; END IF;
 END $$;
 -- L'admin voit tout, même les brouillons.
-SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'manuel.rohaut@gmail.com');
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'admin@test.fr');
 DO $$ BEGIN
   IF (SELECT count(*) FROM public.pages) <> 2 THEN RAISE EXCEPTION 'admin : 2 pages attendues'; END IF;
 END $$;

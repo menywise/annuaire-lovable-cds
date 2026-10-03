@@ -344,9 +344,17 @@ export function SiteHeader() {
           title={`${settings.name} — accueil`}
           className="flex items-center gap-2 font-semibold text-foreground"
         >
-          <span className="grid size-7 place-items-center rounded bg-primary text-xs font-bold text-primary-foreground">
-            {settings.shortName.slice(0, 1).toUpperCase()}
-          </span>
+          {settings.apparence.logo ? (
+            <img
+              src={settings.apparence.logo}
+              alt=""
+              className="h-7 w-auto max-w-32 object-contain"
+            />
+          ) : (
+            <span className="grid size-7 place-items-center rounded bg-primary text-xs font-bold text-primary-foreground">
+              {settings.shortName.slice(0, 1).toUpperCase()}
+            </span>
+          )}
           {settings.shortName}
         </Link>
 

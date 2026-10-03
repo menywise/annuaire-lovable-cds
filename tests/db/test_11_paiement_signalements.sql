@@ -3,11 +3,11 @@
 BEGIN;
 -- a1 : admin du studio · a2 : membre · a3 : autre membre
 INSERT INTO auth.users (id, email) VALUES
-  ('00000000-0000-0000-0000-0000000000a1', 'manuel.rohaut@gmail.com'),
+  ('00000000-0000-0000-0000-0000000000a1', 'admin@test.fr'),
   ('00000000-0000-0000-0000-0000000000a2', 'membre@test.fr'),
   ('00000000-0000-0000-0000-0000000000a3', 'autre@test.fr');
-SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'manuel.rohaut@gmail.com');
-SELECT public.bootstrap_current_user('Manu');
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'admin@test.fr');
+SELECT public.bootstrap_current_user('Administrateur');
 SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a2', 'membre@test.fr');
 SELECT public.bootstrap_current_user('Membre');
 SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a3', 'autre@test.fr');
@@ -89,7 +89,7 @@ SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a3', 'autre@test.fr');
 DO $$ BEGIN
   IF (SELECT count(*) FROM public.payments) <> 0 THEN RAISE EXCEPTION 'paiement visible par un tiers'; END IF;
 END $$;
-SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'manuel.rohaut@gmail.com');
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'admin@test.fr');
 DO $$ BEGIN
   IF (SELECT count(*) FROM public.payments) <> 1 THEN RAISE EXCEPTION 'admin ne voit pas le paiement'; END IF;
 END $$;
@@ -157,7 +157,7 @@ DO $$ BEGIN
   IF EXISTS (SELECT 1 FROM public.reports WHERE status <> 'en_attente') THEN RAISE EXCEPTION 'le membre traite un signalement'; END IF;
 END $$;
 -- Un autre membre ne voit rien (le signaleur reste confidentiel).
-SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'manuel.rohaut@gmail.com');
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'admin@test.fr');
 DO $$ BEGIN
   IF (SELECT count(*) FROM public.reports) <> 10 THEN RAISE EXCEPTION 'admin ne voit pas les signalements'; END IF;
 END $$;
@@ -186,7 +186,7 @@ INSERT INTO public.contact_messages (name, email, subject, message, created_at, 
   ('Récent', 'n@test.fr', 'S', 'M', now() - interval '2 years', NULL, 'nouveau');
 SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a3', 'autre@test.fr');
 SELECT pg_temp.expect_error($$SELECT public.purge_contact_messages()$$, 'membre lance la purge');
-SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'manuel.rohaut@gmail.com');
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'admin@test.fr');
 DO $$ BEGIN
   IF public.purge_contact_messages() <> 2 THEN RAISE EXCEPTION 'purge : nombre supprimé'; END IF;
 END $$;

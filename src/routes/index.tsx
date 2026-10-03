@@ -28,10 +28,8 @@ export const Route = createFileRoute("/")({
       };
     }
     return seo({
-      title: brand.name,
-      description:
-        brand.tagline ||
-        "Le socle complet pour les indépendants, artisans et solopreneurs : comptes, pages légales, contenus, communauté et administration, déjà reliés et prêts à servir.",
+      title: brand.accueil.titre || brand.name,
+      description: brand.accueil.texte || brand.tagline || brand.name,
       path: "/",
       type: "website",
     });
@@ -147,18 +145,47 @@ const templates = [
   { to: "/merci", label: "Confirmation", desc: "Page de remerciement après envoi" },
 ] as const;
 
+/**
+ * Accueil par défaut : titre et texte réglés en admin (Paramètres → Page d'accueil), sinon nom et
+ * signature du site. Un projet le remplace par une page d'accueil du module « pages ».
+ * La démonstration du socle (gabarits, couleurs, typographie) n'apparaît qu'avec le module
+ * « Composants et guide ».
+ */
 function Index() {
   const { settings } = useBrandSettings();
+  const texte = settings.accueil.texte || settings.tagline;
   return (
     <PageShell>
-      <p className="text-xs font-medium uppercase tracking-wide text-primary-text">Design System</p>
-      <h1 className="mt-2 text-3xl font-bold text-foreground">{settings.name}</h1>
-      <p className="mt-2 max-w-[680px] text-sm text-muted-foreground">
-        Vous voulez lancer un site sérieux sans repartir de zéro à chaque fois. Ce socle réunit
-        fondations visuelles, comptes, pages légales, contenus, communauté et espace
-        d'administration — déjà reliés et prêts à servir.
-      </p>
+      <h1 className="text-3xl font-bold text-foreground">{settings.accueil.titre || settings.name}</h1>
+      {texte ? (
+        <p className="mt-3 max-w-[680px] whitespace-pre-line text-sm text-muted-foreground">{texte}</p>
+      ) : null}
+      <div className="mt-6 flex flex-wrap gap-2">
+        {isFeatureOn("contact") ? (
+          <Link
+            to="/contact"
+            title="Écrire au site"
+            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary-hover"
+          >
+            Nous contacter
+          </Link>
+        ) : null}
+        <Link
+          to="/signup"
+          title="Créer un compte sur le site"
+          className="inline-flex items-center justify-center rounded-md border border-input bg-card px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
+        >
+          Créer un compte
+        </Link>
+      </div>
+      {isFeatureOn("showcase") ? <Demonstration /> : null}
+    </PageShell>
+  );
+}
 
+function Demonstration() {
+  return (
+    <>
       <Block
         title="Gabarits de pages"
         description="Cliquez pour voir chaque écran en taille réelle."
@@ -224,6 +251,6 @@ function Index() {
           ))}
         </div>
       </Block>
-    </PageShell>
+    </>
   );
 }

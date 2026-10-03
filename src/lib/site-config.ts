@@ -1,5 +1,6 @@
 import { brandFallback } from "@/config/brand";
 import { defaultModuleStates, normalizeModules, type ModuleStates } from "@/config/modules";
+import { normaliserCouleur } from "@/lib/couleurs";
 
 /**
  * CDS — Configuration du site : source unique = table `site_settings`.
@@ -40,6 +41,18 @@ export type BrandSettings = {
     senderDomain: string;
     fromDomain: string;
   };
+  apparence: {
+    couleurPrincipale: string;
+    couleurNavigateur: string;
+    logo: string;
+    favicon: string;
+    icone: string;
+    imagePartage: string;
+  };
+  accueil: {
+    titre: string;
+    texte: string;
+  };
 };
 
 export type SiteConfig = {
@@ -55,6 +68,8 @@ export const defaultBrandSettings: BrandSettings = {
   legal: { ...brandFallback.legal },
   host: { ...brandFallback.host },
   email: { ...brandFallback.email },
+  apparence: { ...brandFallback.apparence },
+  accueil: { ...brandFallback.accueil },
 };
 
 /** Fusionne une valeur lue en base avec les valeurs de repli (champs manquants ou mal typés ignorés). */
@@ -83,6 +98,27 @@ export function normalizeBrand(value: unknown): BrandSettings {
     legal: pick(defaultBrandSettings.legal, v["legal"]),
     host: pick(defaultBrandSettings.host, v["host"]),
     email: cleanEmailDomains(pick(defaultBrandSettings.email, v["email"])),
+    apparence: nettoyerApparence(pick(defaultBrandSettings.apparence, v["apparence"])),
+    accueil: pick(defaultBrandSettings.accueil, v["accueil"]),
+  };
+}
+
+/** Image réglée en admin : adresse https ou chemin du site (« /… »), sinon vide. */
+export function adresseImage(valeur: string) {
+  const v = valeur.trim();
+  if (/^https:\/\/[^\s"'<>()]+$/.test(v)) return v;
+  if (/^\/[^/\s"'<>()][^\s"'<>()]*$/.test(v)) return v;
+  return "";
+}
+
+function nettoyerApparence(a: BrandSettings["apparence"]): BrandSettings["apparence"] {
+  return {
+    couleurPrincipale: normaliserCouleur(a.couleurPrincipale),
+    couleurNavigateur: normaliserCouleur(a.couleurNavigateur),
+    logo: adresseImage(a.logo),
+    favicon: adresseImage(a.favicon),
+    icone: adresseImage(a.icone),
+    imagePartage: adresseImage(a.imagePartage),
   };
 }
 
@@ -144,5 +180,6 @@ export function siteConfigScript(config: SiteConfig = current) {
 
 /** Construit une URL absolue à partir d'un chemin interne (relative tant que l'URL n'est pas saisie). */
 export function absoluteUrl(path: string) {
+  if (/^https:\/\//.test(path)) return path;
   return `${current.brand.url}${path.startsWith("/") ? path : `/${path}`}`;
 }
