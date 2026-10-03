@@ -65,15 +65,19 @@ La cible est directement la 1.1.0 : elle contient la 1.0.0.
    `2` ; starter_status présente ; purge nocturne `1`. Puis : 55 tables, 57 fonctions,
    155 politiques sur les tables, comme le socle.
 
-### Décisions ouvertes (avant la mise à niveau)
+### Décisions du 03/10
 
-- **Les 25 migrations retirées par le Remix.** Recommandation : les remettre dans le dépôt de
-  l'annuaire, pour qu'il reste identique au socle (premier des Quatre Interdits) et que la
-  vérification automatique (`tests/db/run.sh`) puisse reconstruire la base ; sans elles, elle
-  échoue forcément. Inconnue : la réaction de Lovable à des fichiers de migration plus anciens
-  que son journal. À tester sur une branche avant de fusionner.
-- **La grille de conformité.** Le socle en compte 42 lignes, l'annuaire 1 (le Remix ne copie pas
-  les données). À recopier, statuts remis « à vérifier », au plus tard à la reprise du lot 13 b.
+- **Les 25 migrations retirées par le Remix : remises** dans le dépôt de l'annuaire, à
+  l'identique du socle (PR menywise/annuaire-lovable-cds#1). La vérification automatique
+  reconstruit de nouveau la base. Inconnue restante : la réaction de Lovable à des fichiers de
+  migration plus anciens que son journal ; après la fusion, contrôler que la base n'a pas bougé.
+- **La grille de conformité : recopiée** dans l'annuaire le 03/10, 42 lignes, toutes
+  « à vérifier ».
+- **La purge nocturne par pg_cron : gardée.** La politique de confidentialité promet
+  l'effacement après 3 ans ; le bloc 5 la replanifie dans chaque installation.
+
+### Décision ouverte
+
 - **Les modules allumés par défaut.** `module_defaults()` allume 16 modules sur 25 (blog, FAQ,
   contact, lettre, forum, membres, messagerie, témoignages, avis, tarifs, démarrage, pilotage,
   composants, médiathèque, signalements, recherche). L'annuaire n'a pas de réglage « modules » :
