@@ -77,3 +77,4 @@ Le socle évolue (nouveaux modules, correctifs). Pour les reporter dans un clone
 socle comme source distante, fusionner sa branche `main` dans le clone (jamais de réécriture
 d'historique), puis passer dans la base du clone les nouvelles migrations du socle. Garder les
 ajouts du clone dans des fichiers à part limite les conflits.
+Mode d'emploi détaillé, ordre des étapes et exemple de l'annuaire : `docs/MISE_A_NIVEAU.md`.
