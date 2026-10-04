@@ -72,7 +72,7 @@ Premier projet à dupliquer et mettre en conformité : **l'annuaire des sites fr
 - **Ordre** : correctifs de sécurité des projets Lovable (faits : kairognosia, skiagnosia, goldwing, annuaire) → lot 13 a kit de démarrage (socle) → lot 13 b clone annuaire avec sa veille de sites (hors socle), puis manuelrohaut.fr, puis VDI → lot 14 Coolify + Umami.
 - **Kit (13 a)** ✅ : nom du site, adresse et domaine d'envoi des e-mails lus dans les réglages.
 - **manuelrohaut.fr** : devient la vitrine du studio (parcours, projets, CDS), sur une duplication CDS hébergée chez Lovable pour l'instant ; Bootstrap sur VPS plus tard. Refondation : ni redirections 301 ni reprise des anciens articles (réécrits par un agent). S'appuie sur la Boutique.
-- **VDI et Beautysané** : sites de niche sur sous-domaines. **BDB** : migration ensuite. Les sites WordPress migrent vers des duplications CDS ; le socle vit hors projet.
+- **VDI et Beautysané** : sites de niche sur sous-domaines. Les sites WordPress migrent vers des duplications CDS ; le socle vit hors projet.
 - **E-mails** : chaque site à domaine propre gère ses e-mails ; les sites Lovable du studio peuvent rester sur notify.manuelrohaut.fr.
 - **VPS** : feu vert au début du lot 14 (d'ici là, mutualisé OVH).
 
