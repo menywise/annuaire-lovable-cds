@@ -2,38 +2,41 @@
  * CDS — Liste des modules (V0.md §2 et §3), dépendances et état par défaut.
  * Fichier sans dépendance : partagé par le serveur, le navigateur et l'admin.
  * L'état par défaut est identique à `public.module_defaults()` en base.
+ * `socle: true` : outil d'administration (pilotage, médiathèque, recherche), toujours allumé.
+ * Les autres sont des modules : briques facultatives, éteintes tant que l'admin ne les allume pas.
  */
 export const MODULES = [
-  { key: "blog", label: "Blog, commentaires, RSS", requires: [], defaultOn: true },
-  { key: "faq", label: "FAQ", requires: [], defaultOn: true },
-  { key: "contact", label: "Contact et boîte de réception", requires: [], defaultOn: true },
-  { key: "newsletter", label: "Lettre d'information", requires: [], defaultOn: true },
-  { key: "forum", label: "Forum", requires: [], defaultOn: true },
-  { key: "members", label: "Membres (annuaire des membres, profils publics)", requires: [], defaultOn: true },
-  { key: "messaging", label: "Messagerie privée", requires: ["members"], defaultOn: true },
-  { key: "testimonials", label: "Témoignages", requires: [], defaultOn: true },
-  { key: "reviews", label: "Avis notés", requires: [], defaultOn: true },
-  { key: "pricing", label: "Tarifs", requires: [], defaultOn: true },
-  { key: "onboarding", label: "Parcours « Démarrer »", requires: [], defaultOn: true },
-  { key: "directory", label: "Annuaire métier", requires: [], defaultOn: false },
-  { key: "geo", label: "Géographie (régions, départements, intercommunalités, communes)", requires: ["directory"], defaultOn: false },
-  { key: "crm", label: "Suivi de contacts (CRM)", requires: [], defaultOn: false },
-  { key: "lms", label: "Formations", requires: [], defaultOn: false },
-  { key: "marketplace", label: "Petites annonces", requires: ["messaging"], defaultOn: false },
-  { key: "adNetwork", label: "Régie publicitaire", requires: [], defaultOn: false },
-  { key: "studio", label: "Pilotage, conformité, MCP", requires: [], defaultOn: true },
-  { key: "showcase", label: "Composants et guide", requires: [], defaultOn: true },
-  { key: "media", label: "Médiathèque (envoi d'images et de fichiers)", requires: [], defaultOn: true },
-  { key: "pages", label: "Pages libres par sections (dont l'accueil)", requires: [], defaultOn: false },
-  { key: "payments", label: "Paiement en ligne (Stripe) des formations", requires: ["lms"], defaultOn: false },
-  { key: "reports", label: "Signalements de contenus", requires: [], defaultOn: true },
-  { key: "search", label: "Recherche globale", requires: [], defaultOn: true },
-  { key: "shop", label: "Boutique (objets, PDF, e-books)", requires: [], defaultOn: false },
+  { key: "blog", label: "Blog, commentaires, RSS", requires: [], defaultOn: false, socle: false },
+  { key: "faq", label: "FAQ", requires: [], defaultOn: false, socle: false },
+  { key: "contact", label: "Contact et boîte de réception", requires: [], defaultOn: false, socle: false },
+  { key: "newsletter", label: "Lettre d'information", requires: [], defaultOn: false, socle: false },
+  { key: "forum", label: "Forum", requires: [], defaultOn: false, socle: false },
+  { key: "members", label: "Membres (annuaire des membres, profils publics)", requires: [], defaultOn: false, socle: false },
+  { key: "messaging", label: "Messagerie privée", requires: ["members"], defaultOn: false, socle: false },
+  { key: "testimonials", label: "Témoignages", requires: [], defaultOn: false, socle: false },
+  { key: "reviews", label: "Avis notés", requires: [], defaultOn: false, socle: false },
+  { key: "pricing", label: "Tarifs", requires: [], defaultOn: false, socle: false },
+  { key: "onboarding", label: "Parcours « Démarrer »", requires: [], defaultOn: false, socle: false },
+  { key: "directory", label: "Annuaire métier", requires: [], defaultOn: false, socle: false },
+  { key: "geo", label: "Géographie (régions, départements, intercommunalités, communes)", requires: ["directory"], defaultOn: false, socle: false },
+  { key: "crm", label: "Suivi de contacts (CRM)", requires: [], defaultOn: false, socle: false },
+  { key: "lms", label: "Formations", requires: [], defaultOn: false, socle: false },
+  { key: "marketplace", label: "Petites annonces", requires: ["messaging"], defaultOn: false, socle: false },
+  { key: "adNetwork", label: "Régie publicitaire", requires: [], defaultOn: false, socle: false },
+  { key: "studio", label: "Pilotage, conformité, MCP", requires: [], defaultOn: true, socle: true },
+  { key: "showcase", label: "Composants et guide", requires: [], defaultOn: false, socle: false },
+  { key: "media", label: "Médiathèque (envoi d'images et de fichiers)", requires: [], defaultOn: true, socle: true },
+  { key: "pages", label: "Pages libres par sections (dont l'accueil)", requires: [], defaultOn: false, socle: false },
+  { key: "payments", label: "Paiement en ligne (Stripe) des formations", requires: ["lms"], defaultOn: false, socle: false },
+  { key: "reports", label: "Signalements de contenus", requires: [], defaultOn: false, socle: false },
+  { key: "search", label: "Recherche globale", requires: [], defaultOn: true, socle: true },
+  { key: "shop", label: "Boutique (objets, PDF, e-books)", requires: [], defaultOn: false, socle: false },
 ] as const satisfies ReadonlyArray<{
   key: string;
   label: string;
   requires: readonly string[];
   defaultOn: boolean;
+  socle: boolean;
 }>;
 
 export type FeatureKey = (typeof MODULES)[number]["key"];
@@ -55,11 +58,15 @@ export function moduleDependents(key: FeatureKey): FeatureKey[] {
   );
 }
 
-/** Complète un objet lu en base : clés inconnues ignorées, clés absentes à leur valeur par défaut. */
+/**
+ * Complète un objet lu en base : clés inconnues ignorées, clés absentes à leur valeur par défaut,
+ * outils d'administration toujours allumés.
+ */
 export function normalizeModules(value: unknown): ModuleStates {
   const raw = (value && typeof value === "object" ? value : {}) as Record<string, unknown>;
   const out = { ...defaultModuleStates };
   for (const m of MODULES) {
+    if (m.socle) continue;
     if (typeof raw[m.key] === "boolean") out[m.key] = raw[m.key] as boolean;
   }
   return out;

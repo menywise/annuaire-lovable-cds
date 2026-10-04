@@ -28,6 +28,7 @@ type Status = {
   administrateurs: number;
   membres: number;
   domaine_envoi: string;
+  modules_choisis?: boolean;
 };
 type Env = { emailService: boolean; cronSecret: boolean; stripe: string; stripeWebhook: boolean };
 
@@ -68,7 +69,7 @@ function StarterPage() {
   }
 
   const paying = isModuleOn(modules, "payments") || isModuleOn(modules, "shop");
-  const on = MODULES.filter((m) => isModuleOn(modules, m.key));
+  const modulesOn = MODULES.filter((m) => !m.socle && isModuleOn(modules, m.key));
   const items: Item[] = [
     {
       done: brand.name !== brandFallback.name && brand.shortName !== brandFallback.shortName,
@@ -130,11 +131,14 @@ function StarterPage() {
       to: "/admin/utilisateurs",
     },
     {
-      done: on.length > 0,
+      done: status?.modules_choisis === true,
       title: "Modules",
-      detail: `${on.length} module(s) allumé(s) : ${on.map((m) => m.label.split(" (")[0]).join(", ")}.`,
+      detail: status?.modules_choisis
+        ? modulesOn.length > 0
+          ? `${modulesOn.length} module(s) allumé(s) : ${modulesOn.map((m) => m.label.split(" (")[0]).join(", ")}.`
+          : "Choix enregistré : aucun module allumé."
+        : "Choisir les briques facultatives du projet. Tant qu'aucun choix n'est enregistré, tous les modules sont éteints.",
       to: "/admin/modules",
-      optional: true,
     },
   ];
   const remaining = items.filter((i) => !i.done && !i.optional).length;

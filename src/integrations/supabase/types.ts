@@ -2388,6 +2388,7 @@ export type Database = {
       }
       member_accepts_messages: { Args: { _user_id: string }; Returns: boolean }
       module_defaults: { Args: never; Returns: Json }
+      module_socle_keys: { Args: never; Returns: string[] }
       geo_compute_neighbours: {
         Args: { _departement?: string | null; _rayon_km?: number; _max?: number; _limit?: number }
         Returns: number
