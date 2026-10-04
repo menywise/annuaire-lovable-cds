@@ -52,6 +52,12 @@ export async function fetchModuleStates(): Promise<ModuleStates> {
   return normalizeModules(await readSetting(MODULES_SETTINGS_KEY));
 }
 
+/** Vrai si un administrateur a déjà enregistré le choix des modules (date posée par la base). */
+export async function fetchModulesChosen(): Promise<boolean> {
+  const value = (await readSetting("demarrage")) as { modules_choisis_le?: unknown } | null;
+  return Boolean(value && value.modules_choisis_le);
+}
+
 export async function saveModuleStates(next: ModuleStates) {
   await writeSetting(MODULES_SETTINGS_KEY, next);
   setSiteConfig({ ...getSiteConfig(), modules: next });

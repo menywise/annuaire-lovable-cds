@@ -66,12 +66,9 @@ DO $$ BEGIN
   IF (SELECT count(*) FROM public.media_files) <> 1 THEN RAISE EXCEPTION 'fiche supprimée par un membre'; END IF;
 END $$;
 
--- 5. Module éteint : plus aucun dépôt, même pour l'admin ; les fichiers restent lisibles --
-UPDATE public.site_settings SET value = value || '{"media": false}'::jsonb WHERE key = 'modules';
+-- 5. Outil d'administration (socle 1.2.0) : la médiathèque ne s'éteint pas ; l'admin fait le ménage --
 SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'admin@test.fr');
-SELECT pg_temp.expect_error($$INSERT INTO storage.objects (bucket_id, name) VALUES ('media', '2026/09/eteint.png')$$, 'dépôt module éteint');
-SELECT pg_temp.expect_error($$INSERT INTO public.media_files (path, name, mime_type) VALUES ('2026/09/eteint.png', 'x', 'image/png')$$, 'inscription module éteint');
--- L'admin peut toujours faire le ménage.
+SELECT pg_temp.expect_error($$UPDATE public.site_settings SET value = value || '{"media": false}'::jsonb WHERE key = 'modules'$$, 'médiathèque éteinte');
 DELETE FROM storage.objects WHERE name = '2026/09/logo.png';
 DELETE FROM public.media_files WHERE path = '2026/09/logo.png';
 RESET ROLE;

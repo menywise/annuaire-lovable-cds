@@ -1681,6 +1681,24 @@ export type Database = {
           },
         ]
       }
+      premier_administrateur: {
+        Row: {
+          promu_le: string
+          user_id: string | null
+          verrou: boolean
+        }
+        Insert: {
+          promu_le?: string
+          user_id?: string | null
+          verrou?: boolean
+        }
+        Update: {
+          promu_le?: string
+          user_id?: string | null
+          verrou?: boolean
+        }
+        Relationships: []
+      }
       pricing_plans: {
         Row: {
           active: boolean
@@ -2103,6 +2121,72 @@ export type Database = {
         }
         Relationships: []
       }
+      socle_installation: {
+        Row: {
+          cree_le: string
+          detail: string | null
+          id: string
+          installe_le: string
+          migration_reference: string | null
+          niveau: string
+          resume: string
+          version: string
+        }
+        Insert: {
+          cree_le?: string
+          detail?: string | null
+          id?: string
+          installe_le: string
+          migration_reference?: string | null
+          niveau: string
+          resume: string
+          version: string
+        }
+        Update: {
+          cree_le?: string
+          detail?: string | null
+          id?: string
+          installe_le?: string
+          migration_reference?: string | null
+          niveau?: string
+          resume?: string
+          version?: string
+        }
+        Relationships: []
+      }
+      socle_versions: {
+        Row: {
+          cree_le: string
+          detail: string | null
+          id: string
+          migration_reference: string
+          niveau: string
+          publie_le: string
+          resume: string
+          version: string
+        }
+        Insert: {
+          cree_le?: string
+          detail?: string | null
+          id?: string
+          migration_reference: string
+          niveau: string
+          publie_le?: string
+          resume: string
+          version: string
+        }
+        Update: {
+          cree_le?: string
+          detail?: string | null
+          id?: string
+          migration_reference?: string
+          niveau?: string
+          publie_le?: string
+          resume?: string
+          version?: string
+        }
+        Relationships: []
+      }
       studio_admins: {
         Row: {
           created_at: string
@@ -2304,8 +2388,13 @@ export type Database = {
       }
       member_accepts_messages: { Args: { _user_id: string }; Returns: boolean }
       module_defaults: { Args: never; Returns: Json }
+      module_socle_keys: { Args: never; Returns: string[] }
       geo_compute_neighbours: {
         Args: { _departement?: string | null; _rayon_km?: number; _max?: number; _limit?: number }
+        Returns: number
+      }
+      geo_distance_km: {
+        Args: { _lat1: number; _lat2: number; _lon1: number; _lon2: number }
         Returns: number
       }
       geo_neighbours: {

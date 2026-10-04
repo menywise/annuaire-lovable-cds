@@ -13,7 +13,7 @@ import {
   type FeatureKey,
   type ModuleStates,
 } from "@/config/modules";
-import { fetchModuleStates, saveModuleStates } from "@/hooks/useSiteSettings";
+import { fetchModuleStates, fetchModulesChosen, saveModuleStates } from "@/hooks/useSiteSettings";
 import { seo } from "@/lib/seo";
 
 export const Route = createFileRoute("/_authenticated/admin/modules")({
@@ -53,15 +53,17 @@ function AdminModulesPage() {
   const [draft, setDraft] = useState<ModuleStates | null>(null);
   const [loadError, setLoadError] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [chosen, setChosen] = useState(true);
 
   useEffect(() => {
     if (!isAdmin) return;
     let cancelled = false;
-    fetchModuleStates()
-      .then((states) => {
+    Promise.all([fetchModuleStates(), fetchModulesChosen()])
+      .then(([states, isChosen]) => {
         if (cancelled) return;
         setSaved(states);
         setDraft(states);
+        setChosen(isChosen);
       })
       .catch(() => {
         if (!cancelled) setLoadError(true);
@@ -92,6 +94,7 @@ function AdminModulesPage() {
     try {
       await saveModuleStates(draft);
       setSaved(draft);
+      setChosen(true);
       toast.success("Modules enregistrés.", {
         description: "Pages, menus, pied de page, sitemap et administration suivent ces réglages.",
       });
@@ -106,11 +109,13 @@ function AdminModulesPage() {
 
   const dirty =
     draft !== null && saved !== null && MODULES.some((m) => draft[m.key] !== saved[m.key]);
+  const tools = MODULES.filter((m) => m.socle);
+  const modules = MODULES.filter((m) => !m.socle);
 
   return (
     <AdminShell
       title="Modules"
-      intro="Chaque module s'allume ou s'éteint ici. Éteint, il ne laisse aucune trace : ses pages renvoient à l'accueil et ses liens disparaissent des menus, du pied de page, du sitemap et de l'administration."
+      intro="Les modules sont les briques facultatives du site : chacun s'allume ou s'éteint ici. Éteint, il ne laisse aucune trace : ses pages renvoient à l'accueil et ses liens disparaissent des menus, du pied de page, du sitemap et de l'administration."
     >
       {loadError ? (
         <p className="rounded-lg border border-destructive/40 p-4 text-sm text-destructive-text">
@@ -124,8 +129,33 @@ function AdminModulesPage() {
         </div>
       ) : (
         <div className="space-y-6">
+          {!chosen ? (
+            <p className="rounded-lg border border-border bg-muted/40 p-4 text-sm text-foreground">
+              Aucun choix enregistré pour ce site : tous les modules sont éteints. Allumez ceux dont
+              le projet a besoin, puis enregistrez ; enregistrer sans rien allumer vaut aussi choix.
+            </p>
+          ) : null}
+          <section aria-labelledby="outils-admin">
+            <h2 id="outils-admin" className="mb-2 text-sm font-semibold text-foreground">
+              Outils d'administration, toujours allumés
+            </h2>
+            <ul className="divide-y divide-border rounded-xl border border-border bg-card">
+              {tools.map((m) => (
+                <li key={m.key} className="flex flex-wrap items-center gap-3 px-5 py-4">
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-medium text-foreground">{m.label}</p>
+                    <p className="text-xs text-muted-foreground">
+                      Clé <code>{m.key}</code> · fait partie du socle
+                    </p>
+                  </div>
+                  <Badge variant="secondary">Toujours allumé</Badge>
+                </li>
+              ))}
+            </ul>
+          </section>
+          <h2 className="text-sm font-semibold text-foreground">Modules</h2>
           <ul className="divide-y divide-border rounded-xl border border-border bg-card">
-            {MODULES.map((m) => {
+            {modules.map((m) => {
               const requires = moduleRequires(m.key);
               return (
                 <li key={m.key} className="flex flex-wrap items-center gap-3 px-5 py-4">
@@ -158,7 +188,7 @@ function AdminModulesPage() {
             <Button
               type="button"
               onClick={() => void save()}
-              disabled={!dirty || saving}
+              disabled={(!dirty && chosen) || saving}
               title="Enregistrer l'état des modules"
             >
               {saving ? "Enregistrement…" : "Enregistrer"}

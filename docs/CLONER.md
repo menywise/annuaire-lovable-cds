@@ -54,10 +54,15 @@ Utilisateurs. Le dernier administrateur ne peut ni se retirer ni supprimer son c
 
 Les clés ne vont jamais dans le code ni en base.
 
-## 6. Allumer les modules (Administration → Modules)
+## 6. Choisir les modules (Administration → Modules)
 
-Chaque module s'allume ou s'éteint, dépendances comprises. Un module éteint ne laisse aucune trace
-(pages, menus, plan du site, administration).
+Les modules sont les briques facultatives du projet : **tous éteints au départ**. Allumer ceux dont le
+projet a besoin, dépendances comprises, puis enregistrer ; enregistrer sans rien allumer vaut aussi
+choix. L'écran Démarrage reste « à faire » tant qu'aucun choix n'est enregistré. Un module éteint ne
+laisse aucune trace (pages, menus, plan du site, administration).
+
+Le pilotage (conformité, recettage), la médiathèque (logo, icônes, image de partage) et la recherche
+ne sont pas des modules : ce sont des outils d'administration du socle, toujours allumés.
 
 ## 7. Retirer la démonstration (Administration → Démarrage)
 
@@ -77,3 +82,4 @@ Le socle évolue (nouveaux modules, correctifs). Pour les reporter dans un clone
 socle comme source distante, fusionner sa branche `main` dans le clone (jamais de réécriture
 d'historique), puis passer dans la base du clone les nouvelles migrations du socle. Garder les
 ajouts du clone dans des fichiers à part limite les conflits.
+Mode d'emploi détaillé, ordre des étapes et exemple de l'annuaire : `docs/MISE_A_NIVEAU.md`.
