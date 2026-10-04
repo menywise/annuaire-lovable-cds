@@ -51,8 +51,8 @@ import {
   SUPABASE_URL,
   arg,
   args,
-  moduleOn,
   modulesState,
+  pageModuleOff,
   realSession,
 } from "./commun.ts";
 import { auditTexts, type PageTexts, type TextRules } from "./texte.ts";
@@ -386,7 +386,7 @@ async function checkPage(
   page.on("pageerror", onPageError);
   page.on("response", onResponse);
 
-  const moduleOff = qa.module !== undefined && !moduleOn(states, qa.module);
+  const moduleOff = pageModuleOff(states, qa);
   const needsLogin = RANK[qa.role] > RANK[role];
   let status = 0;
   try {
@@ -406,11 +406,16 @@ async function checkPage(
 
   const finalPath = new URL(page.url()).pathname;
   if (qa.raw) {
-    if (status !== 200 && !(moduleOff && status < 400)) problems.push(`réponse ${status}`);
+    // Module éteint : fichier absent (404) ou renvoi accepté.
+    if (status !== 200 && !(moduleOff && (status < 400 || status === 404)))
+      problems.push(`réponse ${status}`);
   } else if (moduleOff) {
     // Éteint : retour à l'accueil (ou à la connexion d'abord, pour une page protégée).
     const ok = finalPath === "/" || (needsLogin && finalPath.startsWith("/login"));
-    if (!ok) problems.push(`module « ${qa.module} » éteint mais page accessible (${finalPath})`);
+    if (!ok)
+      problems.push(
+        `module « ${qa.module ?? qa.anyOf?.join(" / ")} » éteint mais page accessible (${finalPath})`,
+      );
   } else if (needsLogin) {
     if (qa.role === "membre" || role === "visiteur") {
       if (!finalPath.startsWith("/login"))
@@ -725,7 +730,7 @@ async function main() {
         if (role !== "visiteur" && RANK[qa.role] === 0 && !qa.discover && qa.path !== "/") continue;
         if (role === "membre" && qa.role === "admin" && auth?.mode === "simulé") continue;
         if (auth?.mode === "simulé" && qa.discover && RANK[qa.role] === 0) continue;
-        const moduleOff = qa.module !== undefined && !moduleOn(states, qa.module);
+        const moduleOff = pageModuleOff(states, qa);
         let url: string | null = qa.path;
         let probe = false;
         if (qa.discover) {

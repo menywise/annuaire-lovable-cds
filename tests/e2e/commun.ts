@@ -53,6 +53,15 @@ export function moduleOn(states: Record<string, boolean>, key: string): boolean 
   return isModuleOn(normalizeModules(states), key as FeatureKey);
 }
 
+/** Page d'un module éteint (ou de modules tous éteints) : elle doit renvoyer à l'accueil. */
+export function pageModuleOff(
+  states: Record<string, boolean>,
+  qa: { module?: string; anyOf?: string[] },
+): boolean {
+  if (qa.module !== undefined && !moduleOn(states, qa.module)) return true;
+  return qa.anyOf !== undefined && !qa.anyOf.some((key) => moduleOn(states, key));
+}
+
 export type Session = Record<string, unknown> & { access_token: string; user: { id: string } };
 
 /**

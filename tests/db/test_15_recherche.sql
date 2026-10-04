@@ -6,7 +6,9 @@ BEGIN;
 INSERT INTO auth.users (id, email) VALUES
   ('00000000-0000-0000-0000-0000000000a1', 'membre@test.fr'),
   ('00000000-0000-0000-0000-0000000000a2', 'cache@test.fr');
-UPDATE public.site_settings SET value = value || '{"lms": true, "directory": true, "marketplace": true, "pages": true}'
+UPDATE public.site_settings SET value = value || '{"blog": true, "faq": true, "forum": true, "members": true,
+  "messaging": true, "reviews": true, "testimonials": true, "pricing": true, "lms": true, "directory": true,
+  "marketplace": true, "pages": true}'
   WHERE key = 'modules';
 
 INSERT INTO public.blog_posts (id, slug, title, excerpt, content, published, published_at) VALUES
@@ -92,7 +94,7 @@ DO $$ BEGIN
   IF (SELECT count(*) FROM public.search_site('electricien', 1000)) > 50 THEN RAISE EXCEPTION 'limite non plafonnée'; END IF;
 END $$;
 
--- 4. Modules éteints : leurs contenus disparaissent ; recherche éteinte : rien --------------------
+-- 4. Modules éteints : leurs contenus disparaissent ; la recherche (outil d'administration) ne s'éteint pas
 RESET ROLE;
 UPDATE public.site_settings SET value = value || '{"lms": false, "blog": false}' WHERE key = 'modules';
 SELECT pg_temp.as_anon();
@@ -102,15 +104,10 @@ DO $$ BEGIN
   END IF;
 END $$;
 RESET ROLE;
-UPDATE public.site_settings SET value = value || '{"search": false}' WHERE key = 'modules';
-SELECT pg_temp.as_anon();
+SELECT pg_temp.expect_error($$UPDATE public.site_settings SET value = value || '{"search": false}' WHERE key = 'modules'$$, 'recherche éteinte');
 DO $$ BEGIN
-  IF EXISTS (SELECT 1 FROM public.search_site('electricien')) THEN RAISE EXCEPTION 'recherche éteinte'; END IF;
-END $$;
-RESET ROLE;
-DO $$ BEGIN
-  IF NOT public.module_defaults() ? 'search' OR NOT (public.module_defaults()->>'search')::boolean THEN
-    RAISE EXCEPTION 'module search absent ou éteint par défaut';
+  IF NOT public.module_enabled('search') OR NOT (public.module_defaults()->>'search')::boolean THEN
+    RAISE EXCEPTION 'recherche absente ou éteinte';
   END IF;
 END $$;
 ROLLBACK;
