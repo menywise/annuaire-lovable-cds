@@ -63,7 +63,7 @@ Premier projet à dupliquer et mettre en conformité : **l'annuaire des sites fr
      - *Gestion de contrats* — le document se branche à l'extérieur ; les échéances, préavis et reconductions s'écrivent dans le socle, puisque ce sont des relances (module E Notifications).
      - *Assistant IA de rédaction* — rien à brancher, rien à construire. Le sujet réel est l'ouverture de la liste des outils que Claude peut appeler sur le site, aujourd'hui fermée dans le code : rattaché aux accroches manquantes de l'audit du 02/10 (`AUDIT_LOI_QUATRE_INTERDITS.md`), pas à une fonctionnalité.
    - **Deux préalables communs** aux cinq fonctionnalités écrites dans le socle (*Tunnels de vente*, *Agenda de prise de rendez-vous*, *Relances et rappels automatiques*, *Sondages et quiz*, *Formations enrichies*) : (1) le module B E-mails transactionnels, non livré ; (2) un déclencheur automatique à heure fixe : pg_cron est actif dans la base du socle (tâche `cds_purge_contact_messages`), il suffira d'y planifier chaque nouvelle tâche ; la route `/api/cron/purge-contact`, protégée par `LOVABLE_CRON_SECRET`, sert de secours. Le premier préalable reste bloquant : aucune de ces cinq fonctionnalités ne se planifie avant le module B.
-6. **Ensuite** — E Notifications (sur le site d'abord), H Événements, I Réalisations, G Rendez-vous, dans l'ordre des besoins des projets. Rôle Modérateur (reporté le 29/09).
+6. **Ensuite** — dans l'ordre des besoins des projets : notifications et relances (module E, sur le site d'abord), événements avec inscription (module H), galerie de réalisations (module I), prise de rendez-vous en ligne (module G). Rôle Modérateur : un compte qui modère sans être administrateur (reporté le 29/09). Définitions : `V0.md` §3.
 
 ## Décisions du 30/09 (soir)
 
