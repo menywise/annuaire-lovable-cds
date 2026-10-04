@@ -17,12 +17,16 @@ function escapeXml(value: string) {
 export const Route = createFileRoute("/rss.xml")({
   server: {
     handlers: {
-      GET: async () => {
+      GET: async ({ request }) => {
         const site = await loadSiteConfig().catch(() => fallbackSiteConfig);
         if (!isModuleOn(site.modules, "blog")) {
           return new Response("Flux indisponible", { status: 404 });
         }
-        const brand = site.brand;
+        // Adresses absolues exigées : sans URL réglée en admin, celle de la requête.
+        const brand = {
+          ...site.brand,
+          url: /^https?:\/\//.test(site.brand.url) ? site.brand.url : new URL(request.url).origin,
+        };
         let items = "";
         try {
           const posts = await listPosts();
