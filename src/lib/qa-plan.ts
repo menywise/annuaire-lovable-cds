@@ -21,6 +21,8 @@ export type QaPage = {
   role: QaRole;
   /** Module requis : éteint, la page doit renvoyer à l'accueil. */
   module?: string;
+  /** Page partagée par plusieurs modules : tous éteints, elle doit renvoyer à l'accueil. */
+  anyOf?: string[];
   /** Page dynamique : le robot prend le premier lien de `from` qui correspond à `match`. */
   discover?: { from: string; match: string };
   /** Page sans h1 par nature (flux, fichiers techniques). */
@@ -60,7 +62,7 @@ export const QA_PAGES: QaPage[] = [
   },
   { path: "/sitemap.xml", label: "Sitemap", role: "visiteur", raw: true },
   { path: "/robots.txt", label: "robots.txt", role: "visiteur", raw: true },
-  { path: "/rss.xml", label: "Flux RSS", role: "visiteur", raw: true },
+  { path: "/rss.xml", label: "Flux RSS", role: "visiteur", raw: true, module: "blog" },
   { path: "/manifest.webmanifest", label: "Manifeste", role: "visiteur", raw: true },
 
   // Modules publics
@@ -205,8 +207,8 @@ export const QA_PAGES: QaPage[] = [
   // Espace membre
   { path: "/tableau-de-bord", label: "Tableau de bord", role: "membre" },
   { path: "/compte", label: "Mon compte", role: "membre" },
-  { path: "/profil", label: "Mon profil public", role: "membre", module: "members" },
-  { path: "/decouvrir", label: "Découvrir", role: "membre" },
+  { path: "/profil", label: "Mon profil", role: "membre" },
+  { path: "/decouvrir", label: "Découvrir", role: "membre", module: "onboarding" },
   { path: "/messagerie", label: "Messagerie", role: "membre", module: "messaging" },
   { path: "/mes-annonces", label: "Mes annonces", role: "membre", module: "marketplace" },
   { path: "/mes-formations", label: "Mes formations", role: "membre", module: "lms" },
@@ -220,10 +222,15 @@ export const QA_PAGES: QaPage[] = [
   { path: "/admin", label: "Paramètres", role: "admin" },
   { path: "/admin/modules", label: "Modules", role: "admin" },
   { path: "/admin/utilisateurs", label: "Utilisateurs", role: "admin" },
-  { path: "/admin/contenus", label: "Contenus", role: "admin" },
+  { path: "/admin/contenus", label: "Contenus", role: "admin", anyOf: ["faq", "pricing", "blog"] },
   { path: "/admin/pages", label: "Pages", role: "admin", module: "pages" },
   { path: "/admin/mediatheque", label: "Médiathèque", role: "admin", module: "media" },
-  { path: "/admin/moderation", label: "Modération", role: "admin" },
+  {
+    path: "/admin/moderation",
+    label: "Modération",
+    role: "admin",
+    anyOf: ["reviews", "blog", "forum"],
+  },
   { path: "/admin/signalements", label: "Signalements", role: "admin", module: "reports" },
   { path: "/admin/forum", label: "Forum", role: "admin", module: "forum" },
   { path: "/admin/temoignages", label: "Témoignages", role: "admin", module: "testimonials" },
