@@ -7,8 +7,8 @@ comment l'amener à la version courante du socle, puis applique la méthode à l
 ## Ce qu'il faut savoir avant
 
 - **La référence d'une version est une migration du dépôt du socle**, jamais le journal de
-  migrations de la plateforme. Version courante : **1.3.0**, migration
-  `20261004120000_v1_3_0_accroches_greffes`.
+  migrations de la plateforme. Version courante : **1.4.0**, migration
+  `20261005120000_v1_4_0_grille_par_module`.
 - **Chaque base dit ce qu'elle embarque.** `socle_versions` liste les versions publiées du socle.
   `socle_installation` trace la vie de cette base (vide dans le socle). Le réglage « socle » de
   `site_settings` donne la version en un coup d'œil.
