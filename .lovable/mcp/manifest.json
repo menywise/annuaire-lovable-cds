@@ -13,13 +13,13 @@
     "server": {
       "name": "cds-framework",
       "version": "1.0.0",
-      "title": "CDS Framework"
+      "title": "Outils d'audit du site"
     },
     "tools": [
       {
         "name": "list_template_checks",
         "title": "Grille de conformité",
-        "description": "Liste les points de contrôle du modèle CDS (domaine, exigence, état, gravité, constat) et calcule le score de conformité.",
+        "description": "Liste les points de contrôle du site (domaine, exigence, état, gravité, constat, modules) et calcule le score de conformité sur les seuls points des modules allumés.",
         "annotations": {
           "readOnlyHint": true,
           "openWorldHint": false
@@ -163,7 +163,7 @@
       {
         "name": "list_roadmap",
         "title": "Feuille de route et plan directeur",
-        "description": "Retourne la feuille de route (lots, statuts, priorités) et les sections du plan directeur du modèle CDS.",
+        "description": "Retourne la feuille de route (lots, statuts, priorités) et les sections du plan directeur du socle.",
         "annotations": {
           "readOnlyHint": true,
           "openWorldHint": false
