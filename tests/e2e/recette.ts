@@ -750,7 +750,36 @@ async function main() {
     for (const role of ROLES) {
       const auth = auths[role] ?? null;
       const context = await newContext(browser, viewport, role, auth);
-      const page = await context.newPage();
+      let page = await context.newPage();
+      // Une page que le navigateur ferme en plein contrôle (plantage du moteur) compte en échec ;
+      // le passage continue sur une page neuve au lieu de s'arrêter.
+      const check = async (target: QaPage, url: string): Promise<QaResult> => {
+        try {
+          return await checkPage(
+            page,
+            target,
+            url,
+            role,
+            viewport,
+            states,
+            auth?.mode === "simulé",
+          );
+        } catch (err) {
+          if (!page.isClosed()) await page.close().catch(() => {});
+          page = await context.newPage();
+          return {
+            path: target.path,
+            url,
+            label: target.label,
+            role,
+            viewport,
+            status: "echec",
+            problems: [`contrôle interrompu : ${(err as Error).message.split("\n")[0]}`],
+            warnings: [],
+            ms: 0,
+          };
+        }
+      };
       for (const qa of pages) {
         // Le visiteur teste tout (y compris les redirections), les rôles connectés leurs pages
         // et les pages publiques dynamiques (boutons réservés aux membres).
@@ -790,15 +819,7 @@ async function main() {
         const target = probe
           ? { ...qa, label: `${qa.label} (introuvable)`, noH1: true, expectStatus: 404 }
           : qa;
-        let result = await checkPage(
-          page,
-          target,
-          url,
-          role,
-          viewport,
-          states,
-          auth?.mode === "simulé",
-        );
+        let result = await check(target, url);
         // Serveur local : un module chargé pendant que Vite recharge ses dépendances (voir warmUp)
         // échoue sans que l'application soit en cause. Une seule nouvelle tentative, sur ce seul cas.
         if (
@@ -809,15 +830,7 @@ async function main() {
           console.log(
             `↻ [${viewport} · ${role}] ${url} : rechargement de Vite, nouvelle tentative`,
           );
-          result = await checkPage(
-            page,
-            target,
-            url,
-            role,
-            viewport,
-            states,
-            auth?.mode === "simulé",
-          );
+          result = await check(target, url);
         }
         report.results.push(result);
         const mark = result.status === "ok" ? "✔" : "✘";
@@ -956,5 +969,6 @@ async function main() {
 
 main().catch((err) => {
   console.error(err);
-  process.exitCode = 2;
+  // Sortie immédiate : un navigateur resté ouvert garderait le processus en vie indéfiniment.
+  process.exit(2);
 });
