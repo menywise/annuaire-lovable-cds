@@ -7,6 +7,7 @@ import {
   HeadContent,
   Scripts,
   redirect,
+  type ErrorComponentProps,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 
@@ -55,7 +56,7 @@ export function NotFoundComponent() {
   );
 }
 
-export function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
+export function ErrorComponent({ error, reset }: ErrorComponentProps) {
   console.error(error);
   const router = useRouter();
   useEffect(() => {
