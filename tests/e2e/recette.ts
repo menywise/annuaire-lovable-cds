@@ -684,6 +684,11 @@ async function checkPage(
   };
 }
 
+// Erreurs de chargement de module dues au rechargement de Vite en local.
+const VITE_RELOAD =
+  /Importing a module script failed|Failed to fetch dynamically imported module|error loading dynamically imported module/;
+const isLocal = () => /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(BASE);
+
 /**
  * Serveur de développement local (vite dev) : Vite découvre certaines dépendances à la première
  * ouverture d'une page et recharge alors le navigateur (« optimized dependencies changed »).
@@ -691,7 +696,7 @@ async function checkPage(
  * sans que l'application soit en cause. Premier passage à blanc, sans contrôle, pour stabiliser.
  */
 async function warmUp(browser: Browser, pages: typeof QA_PAGES) {
-  if (!/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(BASE)) return;
+  if (!isLocal()) return;
   const context = await browser.newContext();
   const page = await context.newPage();
   // Pages dynamiques comprises (formation, fiche…) : elles chargent leurs propres dépendances.
@@ -776,15 +781,38 @@ async function main() {
             continue;
           }
         }
-        const result = await checkPage(
+        const target = probe
+          ? { ...qa, label: `${qa.label} (introuvable)`, noH1: true, expectStatus: 404 }
+          : qa;
+        let result = await checkPage(
           page,
-          probe ? { ...qa, label: `${qa.label} (introuvable)`, noH1: true, expectStatus: 404 } : qa,
+          target,
           url,
           role,
           viewport,
           states,
           auth?.mode === "simulé",
         );
+        // Serveur local : un module chargé pendant que Vite recharge ses dépendances (voir warmUp)
+        // échoue sans que l'application soit en cause. Une seule nouvelle tentative, sur ce seul cas.
+        if (
+          result.status !== "ok" &&
+          isLocal() &&
+          result.problems.some((p) => VITE_RELOAD.test(p))
+        ) {
+          console.log(
+            `↻ [${viewport} · ${role}] ${url} : rechargement de Vite, nouvelle tentative`,
+          );
+          result = await checkPage(
+            page,
+            target,
+            url,
+            role,
+            viewport,
+            states,
+            auth?.mode === "simulé",
+          );
+        }
         report.results.push(result);
         const mark = result.status === "ok" ? "✔" : "✘";
         console.log(
