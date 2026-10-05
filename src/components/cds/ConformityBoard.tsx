@@ -8,7 +8,16 @@ export type TemplateCheck = {
   severity: string;
   evidence: string;
   position: number;
+  /** Modules dont dépend le point (vide : tout site). */
+  modules?: string[];
+  /** Calculé par la base : faux quand tous les modules du point sont éteints. */
+  en_perimetre?: boolean | null;
 };
+
+/** Points dans le périmètre du site : ceux dont un module est allumé, ou sans module. */
+export function inScope(checks: TemplateCheck[]) {
+  return checks.filter((check) => check.en_perimetre !== false);
+}
 
 export const checkStatusLabel: Record<string, string> = {
   conforme: "Conforme",

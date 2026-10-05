@@ -165,6 +165,12 @@ CREATE POLICY greffe_sites_ecriture ON public.greffe_sites FOR ALL TO authentica
 Le SQL d'une greffe se range dans `supabase/greffe/` (le Remix retire `supabase/migrations`), en
 blocs rejouables pour l'éditeur SQL de Lovable, comme ceux du socle.
 
+### Grille de conformité
+
+Une greffe ajoute ses points de contrôle à la grille avec ses modules (`modules = ARRAY['greffe_veille']`)
+et un code qui commence par `GREFFE-`. Ils ne comptent dans le score que si le module est allumé
+(socle 1.4.0).
+
 ### Ce que la greffe ne fait pas
 
 - Modifier un fichier hors des emplacements ci-dessus, ou une table du socle (ni colonne, ni
