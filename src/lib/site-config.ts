@@ -1,6 +1,7 @@
-import { brandFallback } from "@/config/brand";
-import { defaultModuleStates, normalizeModules, type ModuleStates } from "@/config/modules";
-import { normaliserCouleur } from "@/lib/couleurs";
+// Chemins relatifs : le fichier est aussi chargé tel quel par les tests unitaires (node --test).
+import { brandFallback } from "../config/brand.ts";
+import { defaultModuleStates, normalizeModules, type ModuleStates } from "../config/modules.ts";
+import { normaliserCouleur } from "./couleurs.ts";
 
 /**
  * CDS — Configuration du site : source unique = table `site_settings`.
@@ -55,13 +56,48 @@ export type BrandSettings = {
   };
 };
 
+/** Type schema.org des fiches de l'annuaire (données structurées). */
+export const ANNUAIRE_TYPES_FICHE = ["LocalBusiness", "Organization", "WebSite"] as const;
+export type AnnuaireTypeFiche = (typeof ANNUAIRE_TYPES_FICHE)[number];
+
+/** Réglages de l'annuaire (clé `annuaire`) : titre et description de la page d'accueil. */
+export type AnnuaireSettings = {
+  titre: string;
+  description: string;
+  type_fiche: AnnuaireTypeFiche;
+};
+
 export type SiteConfig = {
   brand: BrandSettings;
   modules: ModuleStates;
+  annuaire: AnnuaireSettings;
 };
 
 export const BRAND_SETTINGS_KEY = "brand";
 export const MODULES_SETTINGS_KEY = "modules";
+export const ANNUAIRE_SETTINGS_KEY = "annuaire";
+
+export const defaultAnnuaireSettings: AnnuaireSettings = {
+  titre: "Annuaire",
+  description:
+    "Parcourez les fiches par activité, par lieu ou par mot-clé, puis prenez contact directement.",
+  type_fiche: "LocalBusiness",
+};
+
+/** Fusionne la clé `annuaire` lue en base avec les valeurs par défaut (texte vide = défaut). */
+export function normalizeAnnuaire(value: unknown): AnnuaireSettings {
+  const v = (value && typeof value === "object" ? value : {}) as Record<string, unknown>;
+  const text = (raw: unknown, fallback: string) =>
+    typeof raw === "string" && raw.trim() ? raw.trim() : fallback;
+  const type = v["type_fiche"];
+  return {
+    titre: text(v["titre"], defaultAnnuaireSettings.titre),
+    description: text(v["description"], defaultAnnuaireSettings.description),
+    type_fiche: ANNUAIRE_TYPES_FICHE.includes(type as AnnuaireTypeFiche)
+      ? (type as AnnuaireTypeFiche)
+      : defaultAnnuaireSettings.type_fiche,
+  };
+}
 
 export const defaultBrandSettings: BrandSettings = {
   ...brandFallback,
@@ -140,12 +176,14 @@ export function buildSiteConfig(rows: Array<{ key: string; value: unknown }>): S
   return {
     brand: normalizeBrand(byKey.get(BRAND_SETTINGS_KEY)),
     modules: normalizeModules(byKey.get(MODULES_SETTINGS_KEY)),
+    annuaire: normalizeAnnuaire(byKey.get(ANNUAIRE_SETTINGS_KEY)),
   };
 }
 
 export const fallbackSiteConfig: SiteConfig = {
   brand: defaultBrandSettings,
   modules: { ...defaultModuleStates },
+  annuaire: { ...defaultAnnuaireSettings },
 };
 
 declare global {
@@ -157,7 +195,11 @@ declare global {
 function initialConfig(): SiteConfig {
   if (typeof window !== "undefined" && window.__CDS_SITE__) {
     const c = window.__CDS_SITE__;
-    return { brand: normalizeBrand(c.brand), modules: normalizeModules(c.modules) };
+    return {
+      brand: normalizeBrand(c.brand),
+      modules: normalizeModules(c.modules),
+      annuaire: normalizeAnnuaire(c.annuaire),
+    };
   }
   return fallbackSiteConfig;
 }

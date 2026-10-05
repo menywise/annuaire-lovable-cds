@@ -1,30 +1,62 @@
 import { Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 
 const STORAGE_KEY = "cds.cookie-consent";
+const OPEN_EVENT = "cds:cookie-banner-open";
 
 export type CookieConsent = "accepted" | "refused";
 
 export function getCookieConsent(): CookieConsent | null {
   if (typeof window === "undefined") return null;
-  const value = window.localStorage.getItem(STORAGE_KEY);
-  return value === "accepted" || value === "refused" ? value : null;
+  try {
+    const value = window.localStorage.getItem(STORAGE_KEY);
+    return value === "accepted" || value === "refused" ? value : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Rouvre le bandeau pour modifier son choix (lien « Gérer les cookies »). */
+export function openCookieBanner() {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(new Event(OPEN_EVENT));
 }
 
 /**
- * Bandeau de consentement aux cookies de mesure d'audience.
- * Aucun traceur n'est déposé tant que le choix n'est pas « accepté ».
+ * Bandeau de consentement aux cookies non essentiels (mesure d'audience).
+ * Aucun traceur de ce type n'est déposé tant que le choix n'est pas « accepté ».
+ * Il s'affiche au premier passage, puis à la demande via `openCookieBanner()`.
  */
 export function CookieBanner() {
   const [visible, setVisible] = useState(false);
+  const firstButton = useRef<HTMLButtonElement>(null);
+  const reopened = useRef(false);
 
   useEffect(() => {
     setVisible(getCookieConsent() === null);
+    function onOpen() {
+      reopened.current = true;
+      setVisible(true);
+    }
+    window.addEventListener(OPEN_EVENT, onOpen);
+    return () => window.removeEventListener(OPEN_EVENT, onOpen);
   }, []);
 
+  // Rouvert à la demande : le focus passe dans le bandeau pour un usage au clavier.
+  useEffect(() => {
+    if (visible && reopened.current) {
+      reopened.current = false;
+      firstButton.current?.focus();
+    }
+  }, [visible]);
+
   function choose(value: CookieConsent) {
-    window.localStorage.setItem(STORAGE_KEY, value);
+    try {
+      window.localStorage.setItem(STORAGE_KEY, value);
+    } catch {
+      // Stockage indisponible (navigation privée stricte) : le choix vaut pour cette visite.
+    }
     window.dispatchEvent(new CustomEvent("cds:cookie-consent", { detail: value }));
     setVisible(false);
   }
@@ -40,7 +72,8 @@ export function CookieBanner() {
     >
       <div className="mx-auto flex max-w-[1200px] flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-sm text-muted-foreground">
-          Nous utilisons uniquement des cookies de mesure d'audience, déposés après votre accord.{" "}
+          Ce site n'utilise que les cookies nécessaires à son fonctionnement. Aucun cookie de mesure
+          d'audience ne sera déposé sans votre accord.{" "}
           <Link
             to="/legal/cookies"
             title="Lire la politique de gestion des cookies"
@@ -50,10 +83,18 @@ export function CookieBanner() {
           </Link>
         </p>
         <div className="flex shrink-0 gap-2">
-          <Button variant="outline" size="sm" onClick={() => choose("refused")}>
+          <Button
+            ref={firstButton}
+            variant="outline"
+            title="Refuser les cookies non essentiels"
+            onClick={() => choose("refused")}
+          >
             Refuser
           </Button>
-          <Button size="sm" onClick={() => choose("accepted")}>
+          <Button
+            title="Accepter les cookies de mesure d'audience"
+            onClick={() => choose("accepted")}
+          >
             Accepter
           </Button>
         </div>

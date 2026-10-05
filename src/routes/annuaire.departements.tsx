@@ -51,6 +51,16 @@ function DepartementsPage() {
           les joindre. Commencez par le vôtre.
         </p>
 
+        {departements.length === 0 ? (
+          <p className="mt-8 text-sm text-muted-foreground">
+            Aucun département n'est encore disponible. Revenez bientôt, ou{" "}
+            <Link to="/annuaire" title="Revenir à l'annuaire" className="underline">
+              parcourez l'annuaire
+            </Link>
+            .
+          </p>
+        ) : null}
+
         <div className="mt-8 space-y-8">
           {[...regions.entries()].map(([region, list]) => (
             <section key={region}>
