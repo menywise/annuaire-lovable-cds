@@ -9,6 +9,7 @@ import { CookieBanner } from "@/components/cds/CookieBanner";
 import { NewsletterForm } from "@/components/cds/NewsletterForm";
 import { AdSlot } from "@/components/cds/AdSlot";
 import { isFeatureOn, withActiveModules, type FeatureKey } from "@/config/features";
+import { GREFFE } from "@/greffe";
 
 type NavItem = {
   to: NonNullable<LinkProps["to"]>;
@@ -16,7 +17,14 @@ type NavItem = {
   title: string;
   /** Module dont dépend le lien : masqué quand le module est éteint. */
   module?: FeatureKey;
+  /** Lien partagé par plusieurs modules : masqué quand tous sont éteints. */
+  anyOf?: readonly FeatureKey[];
 };
+
+/** Liens déclarés par le projet dans sa prise de greffe (adresses connues du projet seulement). */
+function greffeLinks(links: readonly { to: string }[] | undefined): NavItem[] {
+  return (links ?? []) as unknown as NavItem[];
+}
 
 /** Menu des visiteurs : découvrir, comparer, échanger. */
 function buildPublicNav(): NavItem[] {
@@ -81,6 +89,7 @@ function buildPublicNav(): NavItem[] {
       title: "Écrire via le formulaire de contact protégé",
       module: "contact",
     },
+    ...greffeLinks(GREFFE.menuPublic),
   ]);
 }
 
@@ -131,6 +140,7 @@ function buildMemberNav(): NavItem[] {
       module: "crm",
     },
     { to: "/blog", label: "Blog", title: "Lire les derniers articles", module: "blog" },
+    ...greffeLinks(GREFFE.menuMembre),
   ]);
 }
 
@@ -258,6 +268,9 @@ function buildFooterColumns(): Array<{ title: string; links: NavItem[] }> {
       ],
     },
   ];
+  for (const link of GREFFE.piedDePage ?? []) {
+    columns.find((c) => c.title === link.colonne)?.links.push(...greffeLinks([link]));
+  }
   return columns
     .map((column) => ({ ...column, links: withActiveModules(column.links) }))
     .filter((column) => column.links.length > 0);

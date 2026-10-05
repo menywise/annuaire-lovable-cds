@@ -7,8 +7,8 @@ comment l'amener à la version courante du socle, puis applique la méthode à l
 ## Ce qu'il faut savoir avant
 
 - **La référence d'une version est une migration du dépôt du socle**, jamais le journal de
-  migrations de la plateforme. Version courante : **1.2.0**, migration
-  `20261003150000_v1_2_0_modules_facultatifs`.
+  migrations de la plateforme. Version courante : **1.3.0**, migration
+  `20261004120000_v1_3_0_accroches_greffes`.
 - **Chaque base dit ce qu'elle embarque.** `socle_versions` liste les versions publiées du socle.
   `socle_installation` trace la vie de cette base (vide dans le socle). Le réglage « socle » de
   `site_settings` donne la version en un coup d'œil.
@@ -20,8 +20,22 @@ comment l'amener à la version courante du socle, puis applique la méthode à l
   `supabase/config.toml`, `.lovable/mcp/manifest.json` et les quatre fichiers de
   `src/integrations/supabase/` (`auth-attacher.ts`, `auth-middleware.ts`, `client.server.ts`,
   `client.ts`), reformatés par Lovable.
-- **Lovable ne régénère ni `routeTree.gen.ts` ni `types.ts` dans le dépôt.** Le socle les tient à
-  jour ; l'installation les reçoit par la fusion.
+- **Fichiers générés : `src/routeTree.gen.ts` et `src/integrations/supabase/types.ts`.** Le socle les
+  tient à jour. Une installation qui a des greffes les modifie aussi (ses pages, ses tables). En cas
+  de conflit à la fusion : prendre la version du socle, puis régénérer. L'arbre des pages se
+  régénère au build (`npx vite build`) ; les types se régénèrent depuis la base de l'installation,
+  ou à défaut on y rajoute à la main les tables `greffe_…`. Ne jamais résoudre ce conflit ligne à
+  ligne.
+- **Greffes (depuis 1.3.0).** Ce qui est propre à l'installation vit dans `src/greffe/`,
+  `src/routes/(greffe)/`, `supabase/greffe/` et `tests/greffe/` : la fusion du socle n'y touche
+  pas. Mode d'emploi : `docs/CLONER.md`, « Écrire une greffe ».
+- **Une migration du socle qui réécrit le réglage « modules »** garde toujours les modules des
+  installations : `value = nouvelles_valeurs || public.module_greffe_values(value)`.
+- **Release de design system Lovable.** Si le socle est publié comme design system dans Lovable,
+  une installation qui s'y relie reçoit une **copie** du code du socle dans `src/design-system/`, plus
+  des consignes pour l'agent de Lovable. Une installation est déjà un clone du socle : elle ne s'y
+  relie pas. Si c'est arrivé, détacher le design system puis retirer `src/design-system/` et
+  `lovable.toml`. Les mises à niveau passent uniquement par la méthode ci-dessous.
 - **Une ancienne migration éditée côté socle** crée un conflit « modifiée d'un côté, supprimée de
   l'autre » à la fusion. Règle du socle : une migration publiée ne se modifie plus, on en ajoute une.
 

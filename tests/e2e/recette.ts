@@ -378,6 +378,14 @@ async function checkPage(
     consoleErrors.push(msg.text().slice(0, 300));
   };
   const onPageError = (err: Error) => consoleErrors.push(`JS : ${err.message.slice(0, 300)}`);
+  // Requêtes annulées par le navigateur (changement de page, redirection pendant le chargement).
+  // Safari signale ces annulations comme des erreurs « access control checks » : ce ne sont pas
+  // des défauts tant que la même requête a bien été annulée.
+  const cancelled: string[] = [];
+  const onRequestFailed = (req: import("playwright").Request) => {
+    if (/cancel|abort/i.test(req.failure()?.errorText ?? ""))
+      cancelled.push(req.url().replace(/^https?:\/\//, ""));
+  };
   const failed: string[] = [];
   const onResponse = (res: import("playwright").Response) => {
     if (res.status() >= 500) failed.push(`${res.status()} ${res.url().slice(0, 160)}`);
@@ -385,6 +393,7 @@ async function checkPage(
   page.on("console", onConsole);
   page.on("pageerror", onPageError);
   page.on("response", onResponse);
+  page.on("requestfailed", onRequestFailed);
 
   const moduleOff = pageModuleOff(states, qa);
   const needsLogin = RANK[qa.role] > RANK[role];
@@ -647,13 +656,20 @@ async function checkPage(
       }
     }
   }
-  if (consoleErrors.length)
-    problems.push(...[...new Set(consoleErrors)].map((e) => `console : ${e}`));
+  const realConsoleErrors = consoleErrors.filter(
+    (e) =>
+      !(
+        /due to access control checks/.test(e) && cancelled.some((u) => e.includes(u.slice(0, 60)))
+      ),
+  );
+  if (realConsoleErrors.length)
+    problems.push(...[...new Set(realConsoleErrors)].map((e) => `console : ${e}`));
   if (failed.length) problems.push(...[...new Set(failed)].map((f) => `requête en erreur : ${f}`));
 
   page.off("console", onConsole);
   page.off("pageerror", onPageError);
   page.off("response", onResponse);
+  page.off("requestfailed", onRequestFailed);
   return {
     path: qa.path,
     url,

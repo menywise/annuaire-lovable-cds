@@ -31,6 +31,7 @@
 - Thème tactile léger : surfaces hiérarchisées, cartes mieux détachées, champs creusés et états actifs renforcés
 - Socle 1.1.0 (03/10) : registres des versions (`socle_versions` inscrite au dépôt, `socle_installation` ajoutée, réglage « socle » jamais revu à la baisse), migration `20261003120000_v1_1_0_versions_installation.sql`, test `test_20_versions_socle.sql` ; mode d'emploi de mise à niveau `docs/MISE_A_NIVEAU.md`
 - Socle 1.2.0 (03/10) : les 22 modules facultatifs éteints par défaut, choisis au lancement dans l'écran Démarrage (choix daté en base) ; pilotage, médiathèque et recherche deviennent des outils d'administration toujours allumés. Migration `20261003150000_v1_2_0_modules_facultatifs.sql`, test `test_21_modules_facultatifs.sql`
+- Socle 1.3.0 (04/10) : accroches pour greffes. Un projet cloné déclare ses modules `greffe_<nom>`, ses liens de menu, ses pages protégées, publiques et de recette dans la prise `src/greffe/index.ts`, que le socle lit ; ses pages vont dans `src/routes/(greffe)/` ; ses tables `greffe_…` étendent une fiche de l'annuaire par id avec les droits de la fiche (`directory_listing_visible`, `directory_listing_modifiable`). La base accepte et garde les modules `greffe_…`. Migration `20261004120000_v1_3_0_accroches_greffes.sql`, test `test_22_accroches_greffes.sql`, mode d'emploi `docs/CLONER.md` « Écrire une greffe »
 
 ## En attente (décision du 29/09 : « beaucoup à faire avant de lancer les paiements »)
 
@@ -44,7 +45,7 @@
 Premier projet à dupliquer et mettre en conformité : **l'annuaire des sites français** (`annuaire-mac97000`). Il fixe l'ordre des lots 10 à 13.
 
 1. ~~Lot 13 a · Kit de démarrage~~ ✅ (01/10) — identité et domaine d'envoi des e-mails lus dans les réglages (plus aucune adresse de projet dans le code, vérifié par un test), écran Administration → Démarrage, retrait de la démonstration en deux gestes, mode d'emploi `docs/CLONER.md`.
-2. **Lot 13 b · Premier clone : l'annuaire des sites** (hors socle, **en pause le 03/10** jusqu'à la fin de la génération du socle et au plan d'action des briques et modules ; tous les modules restent éteints par défaut) — l'annuaire est un clone de CDS, pas une partie du socle. Il reçoit la veille de sites (code prêt : commit `b37f902`, PR #16 fermée sans merge le 01/10), ses données reprises. Sortie de la V0 : grille de conformité à 100 %, robot vert, chaque module « fini » (8 critères de V0.md).
+2. **Lot 13 b · Premier clone : l'annuaire des sites** (hors socle, **en pause le 03/10** jusqu'à la fin de la génération du socle et au plan d'action des briques et modules ; tous les modules restent éteints par défaut) — l'annuaire est un clone de CDS, pas une partie du socle. Il reçoit la veille de sites (code de départ : commit `b37f902`, PR #16 fermée sans merge le 01/10), **réécrite en greffe** sur les accroches du socle 1.3.0 ; ses données reprises depuis l'ancien annuaire, chaque site devenant une fiche de l'annuaire métier prolongée par une table de greffe (décision du 04/10). Sortie de la V0 : grille de conformité à 100 %, robot vert, chaque module « fini » (8 critères de V0.md).
 3. **Lot 14 · Briques externes** — Umami (audience sans cookie), zone Revive dans l'emplacement Régie, Ghost en cohabitation.
 4. **Lot 15 · Pages libres v2** — éditeur de menu, historique des versions ; Puck quand la dépendance pourra être validée côté Lovable.
 5. **Lot 16 · Tri des douze fonctionnalités concurrentes** (03/10) — douze fonctionnalités observées chez un concurrent, triées par une règle unique : une fonctionnalité qui a besoin de savoir qui est le membre connecté s'écrit dans le socle ; une fonctionnalité qui n'en a pas besoin se branche sur un logiciel séparé, comme Umami, Revive Adserver, Shlink et Meilisearch (sinon ce logiciel tiendrait ses propres comptes, une seconde liste de membres à côté de celle du socle).
@@ -63,7 +64,7 @@ Premier projet à dupliquer et mettre en conformité : **l'annuaire des sites fr
      - *Gestion de contrats* — le document se branche à l'extérieur ; les échéances, préavis et reconductions s'écrivent dans le socle, puisque ce sont des relances (module E Notifications).
      - *Assistant IA de rédaction* — rien à brancher, rien à construire. Le sujet réel est l'ouverture de la liste des outils que Claude peut appeler sur le site, aujourd'hui fermée dans le code : rattaché aux accroches manquantes de l'audit du 02/10 (`AUDIT_LOI_QUATRE_INTERDITS.md`), pas à une fonctionnalité.
    - **Deux préalables communs** aux cinq fonctionnalités écrites dans le socle (*Tunnels de vente*, *Agenda de prise de rendez-vous*, *Relances et rappels automatiques*, *Sondages et quiz*, *Formations enrichies*) : (1) le module B E-mails transactionnels, non livré ; (2) un déclencheur automatique à heure fixe : pg_cron est actif dans la base du socle (tâche `cds_purge_contact_messages`), il suffira d'y planifier chaque nouvelle tâche ; la route `/api/cron/purge-contact`, protégée par `LOVABLE_CRON_SECRET`, sert de secours. Le premier préalable reste bloquant : aucune de ces cinq fonctionnalités ne se planifie avant le module B.
-6. **Ensuite** — E Notifications (sur le site d'abord), H Événements, I Réalisations, G Rendez-vous, dans l'ordre des besoins des projets. Rôle Modérateur (reporté le 29/09).
+6. **Ensuite** — dans l'ordre des besoins des projets : notifications et relances (module E, sur le site d'abord), événements avec inscription (module H), galerie de réalisations (module I), prise de rendez-vous en ligne (module G). Rôle Modérateur : un compte qui modère sans être administrateur (reporté le 29/09). Définitions : `V0.md` §3.
 
 ## Décisions du 30/09 (soir)
 
@@ -72,7 +73,7 @@ Premier projet à dupliquer et mettre en conformité : **l'annuaire des sites fr
 - **Ordre** : correctifs de sécurité des projets Lovable (faits : kairognosia, skiagnosia, goldwing, annuaire) → lot 13 a kit de démarrage (socle) → lot 13 b clone annuaire avec sa veille de sites (hors socle), puis manuelrohaut.fr, puis VDI → lot 14 Coolify + Umami.
 - **Kit (13 a)** ✅ : nom du site, adresse et domaine d'envoi des e-mails lus dans les réglages.
 - **manuelrohaut.fr** : devient la vitrine du studio (parcours, projets, CDS), sur une duplication CDS hébergée chez Lovable pour l'instant ; Bootstrap sur VPS plus tard. Refondation : ni redirections 301 ni reprise des anciens articles (réécrits par un agent). S'appuie sur la Boutique.
-- **VDI et Beautysané** : sites de niche sur sous-domaines. **BDB** : migration ensuite. Les sites WordPress migrent vers des duplications CDS ; le socle vit hors projet.
+- **VDI et Beautysané** : sites de niche sur sous-domaines. Les sites WordPress migrent vers des duplications CDS ; le socle vit hors projet.
 - **E-mails** : chaque site à domaine propre gère ses e-mails ; les sites Lovable du studio peuvent rester sur notify.manuelrohaut.fr.
 - **VPS** : feu vert au début du lot 14 (d'ici là, mutualisé OVH).
 

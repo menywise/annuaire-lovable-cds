@@ -2414,6 +2414,10 @@ export type Database = {
         }[]
       }
       module_enabled: { Args: { _key: string }; Returns: boolean }
+      module_is_greffe: { Args: { _key: string }; Returns: boolean }
+      module_greffe_values: { Args: { _value: Json }; Returns: Json }
+      directory_listing_visible: { Args: { _id: string }; Returns: boolean }
+      directory_listing_modifiable: { Args: { _id: string }; Returns: boolean }
       payment_attach_session: {
         Args: { _payment_id: string; _session_id: string }
         Returns: undefined

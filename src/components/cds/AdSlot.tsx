@@ -23,6 +23,8 @@ export function AdSlot({ placement, className }: { placement: string; className?
   useEffect(() => {
     if (!isFeatureOn("adNetwork")) return;
     let cancelled = false;
+    // Requêtes annulées si l'emplacement disparaît (changement de page, redirection).
+    const controller = new AbortController();
 
     async function load() {
       const now = new Date().toISOString();
@@ -31,6 +33,7 @@ export function AdSlot({ placement, className }: { placement: string; className?
         .select("id")
         .eq("slug", placement)
         .eq("active", true)
+        .abortSignal(controller.signal)
         .maybeSingle();
       if (!slot || cancelled) return;
       const { data: campaigns } = await supabase
@@ -39,7 +42,8 @@ export function AdSlot({ placement, className }: { placement: string; className?
         .eq("placement_id", slot.id)
         .eq("active", true)
         .or(`starts_at.is.null,starts_at.lte.${now}`)
-        .limit(20);
+        .limit(20)
+        .abortSignal(controller.signal);
       const eligible = (campaigns ?? []).filter(
         (item) => !item.ends_at || new Date(item.ends_at).getTime() >= Date.now(),
       );
@@ -57,6 +61,7 @@ export function AdSlot({ placement, className }: { placement: string; className?
     void load();
     return () => {
       cancelled = true;
+      controller.abort();
     };
   }, [placement]);
 

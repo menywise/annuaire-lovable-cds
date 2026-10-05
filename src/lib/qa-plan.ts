@@ -9,7 +9,10 @@
  *    d'erreur console, pas d'erreur serveur, pas de débordement horizontal, un titre h1.
  *    Une page d'un module éteint doit renvoyer à l'accueil.
  * 2. QA_CHECKLIST : les contrôles que seul un humain peut faire (parcours complets, paiement).
+ *
+ * Les pages d'un projet (greffe) s'ajoutent dans `src/greffe/index.ts`, champ `recette`.
  */
+import { GREFFE } from "../greffe/index.ts";
 
 export type QaRole = "visiteur" | "membre" | "admin";
 
@@ -247,6 +250,8 @@ export const QA_PAGES: QaPage[] = [
   { path: "/admin/recettage", label: "Recette", role: "admin", module: "studio" },
   { path: "/admin/abonnes", label: "Abonnés", role: "admin", module: "newsletter" },
   { path: "/admin/messages", label: "Messages", role: "admin", module: "contact" },
+  // Pages du projet (prise de greffe)
+  ...(GREFFE.recette ?? []),
 ];
 
 /** Écrans (largeur × hauteur) sur lesquels le robot ouvre chaque page. */
