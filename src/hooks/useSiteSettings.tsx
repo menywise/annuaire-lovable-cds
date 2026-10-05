@@ -3,11 +3,14 @@ import { supabase } from "@/integrations/supabase/client";
 import type { Json } from "@/integrations/supabase/types";
 import { normalizeModules, type ModuleStates } from "@/config/modules";
 import {
+  ANNUAIRE_SETTINGS_KEY,
   BRAND_SETTINGS_KEY,
   MODULES_SETTINGS_KEY,
   getSiteConfig,
+  normalizeAnnuaire,
   normalizeBrand,
   setSiteConfig,
+  type AnnuaireSettings,
   type BrandSettings,
 } from "@/lib/site-config";
 
@@ -61,6 +64,16 @@ export async function fetchModulesChosen(): Promise<boolean> {
 export async function saveModuleStates(next: ModuleStates) {
   await writeSetting(MODULES_SETTINGS_KEY, next);
   setSiteConfig({ ...getSiteConfig(), modules: next });
+}
+
+export async function fetchAnnuaireSettings(): Promise<AnnuaireSettings> {
+  return normalizeAnnuaire(await readSetting(ANNUAIRE_SETTINGS_KEY));
+}
+
+export async function saveAnnuaireSettings(next: AnnuaireSettings) {
+  const clean = normalizeAnnuaire(next);
+  await writeSetting(ANNUAIRE_SETTINGS_KEY, clean);
+  setSiteConfig({ ...getSiteConfig(), annuaire: clean });
 }
 
 /** Marque effective du site (lue côté serveur au chargement de la page). */
