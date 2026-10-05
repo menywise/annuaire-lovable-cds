@@ -114,6 +114,19 @@ async function pricingPlans(): Promise<
   }>;
 }
 
+/** Durée maximale du contrôle d'une page : au-delà, le moteur est considéré comme figé. */
+const PAGE_TIMEOUT = 120_000;
+const BLOQUE = "page bloquée plus de 2 minutes";
+
+/** Rejette si la promesse ne se termine pas dans le délai (le moteur ne répond plus). */
+function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const limit = new Promise<never>((_, reject) => {
+    timer = setTimeout(() => reject(new Error(label)), ms);
+  });
+  return Promise.race([promise, limit]).finally(() => clearTimeout(timer));
+}
+
 /** Résultat de contrôle transversal (liens, plan du site, doublons, en-têtes). */
 function transversal(label: string, problems: string[], warnings: string[] = []): QaResult {
   return {
@@ -749,35 +762,49 @@ async function main() {
   for (const viewport of Object.keys(QA_VIEWPORTS) as QaViewport[]) {
     for (const role of ROLES) {
       const auth = auths[role] ?? null;
-      const context = await newContext(browser, viewport, role, auth);
+      let context = await newContext(browser, viewport, role, auth);
       let page = await context.newPage();
-      // Une page que le navigateur ferme en plein contrôle (plantage du moteur) compte en échec ;
-      // le passage continue sur une page neuve au lieu de s'arrêter.
+      // Session neuve après un blocage ou un plantage du moteur. Si elle-même ne répond pas,
+      // l'erreur remonte et le passage s'arrête au lieu d'attendre indéfiniment.
+      const reset = async () => {
+        await withTimeout(context.close(), 15_000, "fermeture de session").catch(() => {});
+        context = await withTimeout(
+          newContext(browser, viewport, role, auth),
+          30_000,
+          "ouverture de session",
+        );
+        page = await withTimeout(context.newPage(), 30_000, "ouverture de page");
+      };
+      // Une page qui ne répond plus (moteur figé, sans erreur) ou que le navigateur ferme en
+      // plein contrôle ne bloque pas le passage : un blocage est contrôlé une seconde fois sur
+      // une session neuve, un second blocage ou un plantage compte en échec.
       const check = async (target: QaPage, url: string): Promise<QaResult> => {
-        try {
-          return await checkPage(
-            page,
-            target,
-            url,
-            role,
-            viewport,
-            states,
-            auth?.mode === "simulé",
-          );
-        } catch (err) {
-          if (!page.isClosed()) await page.close().catch(() => {});
-          page = await context.newPage();
-          return {
-            path: target.path,
-            url,
-            label: target.label,
-            role,
-            viewport,
-            status: "echec",
-            problems: [`contrôle interrompu : ${(err as Error).message.split("\n")[0]}`],
-            warnings: [],
-            ms: 0,
-          };
+        for (let essai = 1; ; essai++) {
+          try {
+            return await withTimeout(
+              checkPage(page, target, url, role, viewport, states, auth?.mode === "simulé"),
+              PAGE_TIMEOUT,
+              BLOQUE,
+            );
+          } catch (err) {
+            await reset();
+            const message = (err as Error).message.split("\n")[0];
+            if (message === BLOQUE && essai === 1) {
+              console.log(`↻ [${viewport} · ${role}] ${url} : ${BLOQUE}, nouvelle tentative`);
+              continue;
+            }
+            return {
+              path: target.path,
+              url,
+              label: target.label,
+              role,
+              viewport,
+              status: "echec",
+              problems: [`contrôle interrompu : ${message}`],
+              warnings: [],
+              ms: 0,
+            };
+          }
         }
       };
       for (const qa of pages) {
