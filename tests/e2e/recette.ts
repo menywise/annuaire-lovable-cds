@@ -818,8 +818,10 @@ async function main() {
         }
         report.results.push(result);
         const mark = result.status === "ok" ? "✔" : "✘";
+        // Les avertissements sont aussi écrits ici : le journal reste lisible sans télécharger le rapport.
+        const notes = [...result.problems, ...result.warnings.map((w) => `⚠ ${w}`)];
         console.log(
-          `${mark} [${viewport} · ${role}] ${url}${result.problems.length ? "\n    " + result.problems.join("\n    ") : ""}`,
+          `${mark} [${viewport} · ${role}] ${url}${notes.length ? "\n    " + notes.join("\n    ") : ""}`,
         );
       }
       await context.close();
