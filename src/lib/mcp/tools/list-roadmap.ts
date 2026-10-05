@@ -17,7 +17,7 @@ export default defineTool({
       const supabase = await requireAdmin(ctx);
       let query = supabase
         .from("roadmap_items")
-        .select("id, title, description, lot, status, priority, position, public_visible")
+        .select("id, title, description, lot, status, priority, position")
         .order("position", { ascending: true });
       if (status) query = query.eq("status", status);
       const [{ data: items, error }, { data: sections }] = await Promise.all([

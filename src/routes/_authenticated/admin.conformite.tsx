@@ -14,6 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -34,18 +35,29 @@ export const Route = createFileRoute("/_authenticated/admin/conformite")({
 
 const statuses = ["conforme", "a_verifier", "a_corriger", "non_applicable"] as const;
 
+const INTRO =
+  "La grille de recettage du site : chaque point porte un état, une exigence et un constat. Seuls les points des modules allumés comptent ; les points mis en pause sortent aussi du calcul.";
+
 function AdminConformite() {
   const { user } = useAuth();
-  const [checks, setChecks] = useState<TemplateCheck[]>([]);
+  // null tant que la grille n'est pas chargée.
+  const [checks, setChecks] = useState<TemplateCheck[] | null>(null);
+  const [loadError, setLoadError] = useState(false);
   const [busy, setBusy] = useState(false);
 
   async function load() {
-    const { data } = await supabase
+    setLoadError(false);
+    const { data, error } = await supabase
       .from("template_checks")
       .select(
         "id, code, area, label, requirement, status, severity, evidence, position, modules, en_perimetre",
       )
       .order("position", { ascending: true });
+    if (error) {
+      setLoadError(true);
+      setChecks([]);
+      return;
+    }
     setChecks((data ?? []) as unknown as TemplateCheck[]);
   }
 
@@ -57,7 +69,9 @@ function AdminConformite() {
     check: TemplateCheck,
     patch: Partial<Pick<TemplateCheck, "status" | "evidence">>,
   ) {
-    setChecks((prev) => prev.map((item) => (item.id === check.id ? { ...item, ...patch } : item)));
+    setChecks((prev) =>
+      (prev ?? []).map((item) => (item.id === check.id ? { ...item, ...patch } : item)),
+    );
     const { error } = await supabase.from("template_checks").update(patch).eq("id", check.id);
     if (error)
       toast.error("Modification non enregistrée.", { description: "Réessayez dans un instant." });
@@ -99,14 +113,35 @@ function AdminConformite() {
     });
   }
 
-  const scoped = inScope(checks);
-  const outside = checks.filter((check) => check.en_perimetre === false);
+  const scoped = inScope(checks ?? []);
+  const outside = (checks ?? []).filter((check) => check.en_perimetre === false);
+
+  if (checks === null || loadError) {
+    return (
+      <AdminShell title="Conformité du modèle" intro={INTRO}>
+        {checks === null ? (
+          <Skeleton className="h-40 w-full rounded-xl" />
+        ) : (
+          <div className="rounded-lg border border-destructive/40 p-6 text-sm">
+            <p className="text-destructive-text">
+              La grille de conformité n'a pas pu être chargée.
+            </p>
+            <Button
+              className="mt-3"
+              variant="outline"
+              onClick={() => void load()}
+              title="Recharger"
+            >
+              Réessayer
+            </Button>
+          </div>
+        )}
+      </AdminShell>
+    );
+  }
 
   return (
-    <AdminShell
-      title="Conformité du modèle"
-      intro="La grille de recettage du site : chaque point porte un état, une exigence et un constat. Seuls les points des modules allumés comptent ; les points mis en pause sortent aussi du calcul."
-    >
+    <AdminShell title="Conformité du modèle" intro={INTRO}>
       <ConformitySummary checks={scoped} />
 
       <div className="mt-4">

@@ -155,7 +155,9 @@ export const getTopicDetail = createServerFn({ method: "GET" })
     const [{ data: replies }, { data: likes }, { data: category }] = await Promise.all([
       client
         .from("forum_replies")
-        .select("id, author_id, author_name, content, accepted, created_at, moderation_note, moderated_at")
+        .select(
+          "id, author_id, author_name, content, accepted, created_at, moderation_note, moderated_at",
+        )
         .eq("topic_id", topic.id)
         .order("created_at", { ascending: true }),
       client.from("forum_likes").select("id, topic_id, reply_id, user_id"),
@@ -245,21 +247,4 @@ export const listTestimonials = createServerFn({ method: "GET" }).handler(async 
     .order("position", { ascending: true })
     .order("created_at", { ascending: false });
   return data ?? [];
-});
-
-/** Feuille de route et plan directeur publics. */
-export const getPilotage = createServerFn({ method: "GET" }).handler(async () => {
-  const client = publicClient();
-  const [{ data: items }, { data: sections }] = await Promise.all([
-    client
-      .from("roadmap_items")
-      .select("id, title, description, lot, status, priority, position")
-      .eq("public_visible", true)
-      .order("position", { ascending: true }),
-    client
-      .from("masterplan_sections")
-      .select("id, title, content, position")
-      .order("position", { ascending: true }),
-  ]);
-  return { roadmap: items ?? [], masterplan: sections ?? [] };
 });

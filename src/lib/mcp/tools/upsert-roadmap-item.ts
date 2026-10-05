@@ -15,7 +15,6 @@ export default defineTool({
     lot: z.string().optional().describe("Lot ou chantier de rattachement."),
     status: z.enum(["a_faire", "en_cours", "fait"]).optional(),
     priority: z.enum(["normale", "haute", "bloque"]).optional(),
-    public_visible: z.boolean().optional(),
   },
   annotations: { readOnlyHint: false, destructiveHint: false, openWorldHint: false },
   handler: async (input, ctx) => {
@@ -28,9 +27,8 @@ export default defineTool({
         lot?: string;
         status?: string;
         priority?: string;
-        public_visible?: boolean;
       };
-      const columns = "id, title, description, lot, status, priority, position, public_visible";
+      const columns = "id, title, description, lot, status, priority, position";
       if (id) {
         if (Object.keys(patch).length === 0) return errorResult("Rien à mettre à jour.");
         const { data, error } = await supabase
