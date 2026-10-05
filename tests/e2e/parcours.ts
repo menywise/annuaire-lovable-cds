@@ -72,7 +72,8 @@ type Parcours = {
   id: string;
   label: string;
   role: "visiteur" | "membre";
-  module?: string;
+  /** Module(s) nécessaires : le parcours est ignoré si l'un d'eux est éteint. */
+  module?: string | string[];
   /** Écrit en base (réel seulement si la purge est possible). */
   ecrit: boolean;
   run: (ctx: Ctx) => Promise<void>;
@@ -197,7 +198,8 @@ const PARCOURS: Parcours[] = [
     id: "signalement",
     label: "Signaler une discussion",
     role: "membre",
-    module: "reports",
+    // Le signalement porte sur une discussion du forum : il faut les deux modules.
+    module: ["reports", "forum"],
     ecrit: true,
     async run({ page, etape }) {
       const res = await page.goto(`${BASE}/forum/${SEED.sujet}`, { waitUntil: "networkidle" });
@@ -273,12 +275,13 @@ async function jouer(
 ): Promise<Resultat> {
   const started = Date.now();
   const base = { id: p.id, label: p.label, etapes: [] as string[], problemes: [] as string[] };
-  if (p.module && !moduleOn(modules, p.module)) {
+  const eteint = [p.module ?? []].flat().find((m) => !moduleOn(modules, m));
+  if (eteint) {
     return {
       ...base,
       statut: "ignore",
       mode: "-",
-      problemes: [`module « ${p.module} » éteint`],
+      problemes: [`module « ${eteint} » éteint`],
       ms: 0,
     };
   }
