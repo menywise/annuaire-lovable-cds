@@ -3,6 +3,7 @@ import { listPosts, listPublicPages, listTopics } from "@/lib/content.functions"
 import { isModuleOn, onlyActive, type FeatureKey } from "@/config/modules";
 import { loadSiteConfig } from "@/lib/site-config.functions";
 import { getShopCatalog } from "@/lib/shop.functions";
+import { listDirectorySitemap } from "@/lib/directory.functions";
 import { fallbackSiteConfig } from "@/lib/site-config";
 import { GREFFE } from "@/greffe";
 
@@ -62,12 +63,33 @@ export const Route = createFileRoute("/sitemap.xml")({
         const lastmod = new Date().toISOString().slice(0, 10);
         const dynamic: SitemapPage[] = [];
         try {
-          const [posts, topics, freePages, shop] = await Promise.all([
+          const [posts, topics, freePages, shop, directory] = await Promise.all([
             isModuleOn(site.modules, "blog") ? listPosts() : Promise.resolve([]),
             isModuleOn(site.modules, "forum") ? listTopics() : Promise.resolve([]),
             isModuleOn(site.modules, "pages") ? listPublicPages() : Promise.resolve([]),
             isModuleOn(site.modules, "shop") ? getShopCatalog() : Promise.resolve(null),
+            isModuleOn(site.modules, "directory")
+              ? listDirectorySitemap({ data: { geo: isModuleOn(site.modules, "geo") } })
+              : Promise.resolve(null),
           ]);
+          // Annuaire : fiches publiées, catégories et départements ayant au moins une fiche.
+          for (const slug of directory?.listings ?? []) {
+            dynamic.push({ path: `/annuaire/${slug}`, priority: "0.7", changefreq: "weekly" });
+          }
+          for (const slug of directory?.categories ?? []) {
+            dynamic.push({
+              path: `/annuaire/categorie/${slug}`,
+              priority: "0.7",
+              changefreq: "weekly",
+            });
+          }
+          for (const slug of directory?.departements ?? []) {
+            dynamic.push({
+              path: `/annuaire/departement/${slug}`,
+              priority: "0.6",
+              changefreq: "weekly",
+            });
+          }
           for (const product of shop?.products ?? []) {
             dynamic.push({
               path: `/boutique/${product.slug}`,

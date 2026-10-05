@@ -1863,7 +1863,6 @@ export type Database = {
           lot: string
           position: number
           priority: string
-          public_visible: boolean
           status: string
           title: string
           updated_at: string
@@ -1875,7 +1874,6 @@ export type Database = {
           lot?: string
           position?: number
           priority?: string
-          public_visible?: boolean
           status?: string
           title: string
           updated_at?: string
@@ -1887,7 +1885,6 @@ export type Database = {
           lot?: string
           position?: number
           priority?: string
-          public_visible?: boolean
           status?: string
           title?: string
           updated_at?: string
@@ -2502,6 +2499,7 @@ export type Database = {
       }
       starter_reset_demo: { Args: { _scope: string }; Returns: Json }
       starter_status: { Args: never; Returns: Json }
+      tables_sans_protection: { Args: never; Returns: string[] }
       valid_page_data: { Args: { _data: Json }; Returns: boolean }
     }
     Enums: {

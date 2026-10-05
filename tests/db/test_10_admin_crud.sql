@@ -9,6 +9,9 @@ SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'admin@test.fr');
 SELECT public.bootstrap_current_user('Administrateur');
 SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a2', 'membre@test.fr');
 SELECT public.bootstrap_current_user('Membre');
+RESET ROLE;
+UPDATE public.site_settings SET value = value || '{"directory": true}' WHERE key = 'modules';
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a2', 'membre@test.fr');
 
 -- Données de départ : une annonce et une fiche déposées par le membre.
 INSERT INTO public.marketplace_listings (id, seller_id, slug, title, status)

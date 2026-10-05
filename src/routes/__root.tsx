@@ -7,6 +7,7 @@ import {
   HeadContent,
   Scripts,
   redirect,
+  type ErrorComponentProps,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 
@@ -55,7 +56,7 @@ export function NotFoundComponent() {
   );
 }
 
-export function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
+export function ErrorComponent({ error, reset }: ErrorComponentProps) {
   console.error(error);
   const router = useRouter();
   useEffect(() => {
@@ -99,12 +100,14 @@ export function ErrorComponent({ error, reset }: { error: Error; reset: () => vo
 function organizationJsonLd() {
   const { brand } = getSiteConfig();
   const name = brand.legal.company || brand.name;
+  // Forme juridique ajoutée seulement si elle est lisible (au moins deux caractères).
+  const form = brand.legal.form.trim();
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
     name,
-    ...(brand.legal.company && brand.legal.form
-      ? { legalName: `${brand.legal.company} — ${brand.legal.form}` }
+    ...(brand.legal.company
+      ? { legalName: form.length >= 2 ? `${brand.legal.company} ${form}` : brand.legal.company }
       : {}),
     ...(brand.url ? { url: brand.url } : {}),
     ...(brand.apparence.logo ? { logo: absoluteUrl(brand.apparence.logo) } : {}),
@@ -117,7 +120,7 @@ function organizationJsonLd() {
           },
         }
       : {}),
-    ...(brand.url
+    ...(brand.url && isFeatureOn("contact")
       ? {
           contactPoint: {
             "@type": "ContactPoint",

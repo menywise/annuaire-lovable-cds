@@ -18,7 +18,10 @@ function MerciPage() {
   return (
     <PageShell>
       <div className="mx-auto max-w-[560px] rounded-xl border border-border bg-card p-8 text-center">
-        <div className="mx-auto grid size-12 place-items-center rounded-full bg-[#dcfce7] text-xl font-bold text-[#008229]">
+        <div
+          aria-hidden="true"
+          className="mx-auto grid size-12 place-items-center rounded-full bg-success/10 text-xl font-bold text-success-text"
+        >
           ✓
         </div>
         <h1 className="mt-4 text-2xl font-bold text-foreground">Merci !</h1>
