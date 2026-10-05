@@ -114,6 +114,20 @@ async function pricingPlans(): Promise<
   }>;
 }
 
+/** Durée maximale du contrôle d'une page : au-delà, le moteur est considéré comme figé. */
+const PAGE_TIMEOUT = 120_000;
+const BLOQUE = "page bloquée plus de 2 minutes";
+const PLANTE = "le moteur du navigateur a planté sur cette page";
+
+/** Rejette si la promesse ne se termine pas dans le délai (le moteur ne répond plus). */
+function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const limit = new Promise<never>((_, reject) => {
+    timer = setTimeout(() => reject(new Error(label)), ms);
+  });
+  return Promise.race([promise, limit]).finally(() => clearTimeout(timer));
+}
+
 /** Résultat de contrôle transversal (liens, plan du site, doublons, en-têtes). */
 function transversal(label: string, problems: string[], warnings: string[] = []): QaResult {
   return {
@@ -749,8 +763,77 @@ async function main() {
   for (const viewport of Object.keys(QA_VIEWPORTS) as QaViewport[]) {
     for (const role of ROLES) {
       const auth = auths[role] ?? null;
-      const context = await newContext(browser, viewport, role, auth);
-      const page = await context.newPage();
+      let context = await newContext(browser, viewport, role, auth);
+      let page!: Page;
+      // Un onglet planté (« Page crashed ») reste ouvert mais mort : on le repère pour en
+      // rouvrir un, sinon toutes les pages suivantes échoueraient en cascade.
+      let crashed = false;
+      const openPage = async () => {
+        page = await withTimeout(context.newPage(), 30_000, "ouverture de page");
+        crashed = false;
+        page.on("crash", () => {
+          crashed = true;
+        });
+      };
+      await openPage();
+      // Session neuve après un blocage ou un plantage du moteur. Si elle-même ne répond pas,
+      // l'erreur remonte et le passage s'arrête au lieu d'attendre indéfiniment.
+      const reset = async () => {
+        await withTimeout(context.close(), 15_000, "fermeture de session").catch(() => {});
+        context = await withTimeout(
+          newContext(browser, viewport, role, auth),
+          30_000,
+          "ouverture de session",
+        );
+        await openPage();
+      };
+      // Une page qui fige le moteur (sans erreur), le fait planter ou que le navigateur ferme
+      // en plein contrôle ne bloque pas le passage : elle est contrôlée une seconde fois sur une
+      // session neuve ; si cela se reproduit, elle compte en échec.
+      const check = async (target: QaPage, url: string): Promise<QaResult> => {
+        for (let essai = 1; ; essai++) {
+          let result: QaResult;
+          try {
+            result = await withTimeout(
+              checkPage(page, target, url, role, viewport, states, auth?.mode === "simulé"),
+              PAGE_TIMEOUT,
+              BLOQUE,
+            );
+          } catch (err) {
+            await reset();
+            const message = (err as Error).message.split("\n")[0];
+            // Moteur figé ou onglet fermé par le navigateur : une seconde chance sur une session
+            // neuve ; une erreur du robot lui-même compte tout de suite en échec.
+            const moteur = message === BLOQUE || /has been closed|crashed/i.test(message);
+            if (moteur && essai === 1) {
+              console.log(`↻ [${viewport} · ${role}] ${url} : ${message}, nouvelle tentative`);
+              continue;
+            }
+            return {
+              path: target.path,
+              url,
+              label: target.label,
+              role,
+              viewport,
+              status: "echec",
+              problems: [`contrôle interrompu : ${message}`],
+              warnings: [],
+              ms: 0,
+            };
+          }
+          if (!crashed) return result;
+          await reset();
+          if (essai === 1) {
+            console.log(`↻ [${viewport} · ${role}] ${url} : ${PLANTE}, nouvelle tentative`);
+            continue;
+          }
+          return {
+            ...result,
+            status: "echec",
+            problems: [`${PLANTE} (deux fois)`, ...result.problems],
+          };
+        }
+      };
       for (const qa of pages) {
         // Le visiteur teste tout (y compris les redirections), les rôles connectés leurs pages
         // et les pages publiques dynamiques (boutons réservés aux membres).
@@ -761,6 +844,7 @@ async function main() {
         let url: string | null = qa.path;
         let probe = false;
         if (qa.discover) {
+          if (crashed) await reset();
           url = moduleOff ? null : await discover(page, qa, resolved);
           // Aucun contenu publié : on vérifie au moins la page « introuvable » de cette adresse.
           if (!url && !moduleOff) {
@@ -790,15 +874,7 @@ async function main() {
         const target = probe
           ? { ...qa, label: `${qa.label} (introuvable)`, noH1: true, expectStatus: 404 }
           : qa;
-        let result = await checkPage(
-          page,
-          target,
-          url,
-          role,
-          viewport,
-          states,
-          auth?.mode === "simulé",
-        );
+        let result = await check(target, url);
         // Serveur local : un module chargé pendant que Vite recharge ses dépendances (voir warmUp)
         // échoue sans que l'application soit en cause. Une seule nouvelle tentative, sur ce seul cas.
         if (
@@ -809,15 +885,7 @@ async function main() {
           console.log(
             `↻ [${viewport} · ${role}] ${url} : rechargement de Vite, nouvelle tentative`,
           );
-          result = await checkPage(
-            page,
-            target,
-            url,
-            role,
-            viewport,
-            states,
-            auth?.mode === "simulé",
-          );
+          result = await check(target, url);
         }
         report.results.push(result);
         const mark = result.status === "ok" ? "✔" : "✘";
@@ -956,5 +1024,6 @@ async function main() {
 
 main().catch((err) => {
   console.error(err);
-  process.exitCode = 2;
+  // Sortie immédiate : un navigateur resté ouvert garderait le processus en vie indéfiniment.
+  process.exit(2);
 });
