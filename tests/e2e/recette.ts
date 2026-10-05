@@ -660,7 +660,10 @@ async function checkPage(
     (e) =>
       !(
         /due to access control checks/.test(e) && cancelled.some((u) => e.includes(u.slice(0, 60)))
-      ),
+      ) &&
+      // Firefox signale en erreur le refus d'un cookie de CDN (ex. __cf_bm de Cloudflare sur une
+      // image de la médiathèque) : avis du navigateur sur un tiers, pas une erreur du site.
+      !/Cookie “[^”]+” has been rejected/.test(e),
   );
   if (realConsoleErrors.length)
     problems.push(...[...new Set(realConsoleErrors)].map((e) => `console : ${e}`));
