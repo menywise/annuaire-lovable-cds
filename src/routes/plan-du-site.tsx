@@ -4,6 +4,7 @@ import { seo } from "@/lib/seo";
 import { isFeatureOn, withActiveModules, type FeatureKey } from "@/config/features";
 import { listPublicPages } from "@/lib/content.functions";
 import { getSiteConfig } from "@/lib/site-config";
+import { GREFFE } from "@/greffe";
 
 export const Route = createFileRoute("/plan-du-site")({
   head: () =>
@@ -190,7 +191,13 @@ const modulesLinks: PlanLink[] = [
 
 /** Groupes visibles : liens des modules éteints retirés, groupes vides masqués. */
 function visibleGroups() {
-  return [...groupes, { title: "Modules", links: modulesLinks }]
+  const greffe = (GREFFE.pagesPubliques ?? []).map((p) => ({
+    to: p.path,
+    label: p.label,
+    title: p.label,
+    ...(p.module ? { module: p.module } : {}),
+  })) as unknown as PlanLink[];
+  return [...groupes, { title: "Modules", links: [...modulesLinks, ...greffe] }]
     .map((groupe) => ({ ...groupe, links: withActiveModules(groupe.links) }))
     .filter((groupe) => groupe.links.length > 0);
 }

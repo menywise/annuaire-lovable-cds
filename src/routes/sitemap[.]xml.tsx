@@ -4,6 +4,7 @@ import { isModuleOn, onlyActive, type FeatureKey } from "@/config/modules";
 import { loadSiteConfig } from "@/lib/site-config.functions";
 import { getShopCatalog } from "@/lib/shop.functions";
 import { fallbackSiteConfig } from "@/lib/site-config";
+import { GREFFE } from "@/greffe";
 
 type SitemapPage = { path: string; priority: string; changefreq: string; module?: FeatureKey };
 
@@ -40,6 +41,15 @@ const pages: SitemapPage[] = [
   { path: "/marketplace", priority: "0.9", changefreq: "daily", module: "marketplace" },
   { path: "/marketplace/publier", priority: "0.6", changefreq: "monthly", module: "marketplace" },
   { path: "/publicite", priority: "0.6", changefreq: "monthly", module: "adNetwork" },
+  // Pages publiques déclarées par le projet (prise de greffe).
+  ...(GREFFE.pagesPubliques ?? [])
+    .filter((p) => p.sitemap !== false)
+    .map((p) => ({
+      path: p.path,
+      priority: "0.7",
+      changefreq: "weekly",
+      ...(p.module ? { module: p.module } : {}),
+    })),
 ];
 
 export const Route = createFileRoute("/sitemap.xml")({

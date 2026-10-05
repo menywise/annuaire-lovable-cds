@@ -6,6 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { withActiveModules, type FeatureKey } from "@/config/features";
+import { GREFFE } from "@/greffe";
 
 type AdminNavItem = {
   to: NonNullable<LinkProps["to"]>;
@@ -135,6 +136,7 @@ function buildAdminNav(): AdminNavItem[] {
       title: "Boîte de réception du formulaire de contact",
       module: "contact",
     },
+    ...((GREFFE.menuAdmin ?? []) as unknown as AdminNavItem[]),
   ]);
 }
 

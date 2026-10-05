@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
 import {
-  MODULES,
+  ALL_MODULES,
   moduleDependents,
   moduleRequires,
   type FeatureKey,
@@ -27,7 +27,7 @@ export const Route = createFileRoute("/_authenticated/admin/modules")({
   component: AdminModulesPage,
 });
 
-const labelOf = (key: FeatureKey) => MODULES.find((m) => m.key === key)?.label ?? key;
+const labelOf = (key: FeatureKey) => ALL_MODULES.find((m) => m.key === key)?.label ?? key;
 
 /** Allume un module et, en cascade, tout ce dont il dépend. */
 function switchOn(states: ModuleStates, key: FeatureKey, changed: FeatureKey[]) {
@@ -108,9 +108,9 @@ function AdminModulesPage() {
   }
 
   const dirty =
-    draft !== null && saved !== null && MODULES.some((m) => draft[m.key] !== saved[m.key]);
-  const tools = MODULES.filter((m) => m.socle);
-  const modules = MODULES.filter((m) => !m.socle);
+    draft !== null && saved !== null && ALL_MODULES.some((m) => draft[m.key] !== saved[m.key]);
+  const tools = ALL_MODULES.filter((m) => m.socle);
+  const modules = ALL_MODULES.filter((m) => !m.socle);
 
   return (
     <AdminShell
@@ -161,8 +161,12 @@ function AdminModulesPage() {
                 <li key={m.key} className="flex flex-wrap items-center gap-3 px-5 py-4">
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-medium text-foreground">{m.label}</p>
+                    {m.definition ? (
+                      <p className="text-sm text-muted-foreground">{m.definition}</p>
+                    ) : null}
                     <p className="text-xs text-muted-foreground">
                       Clé <code>{m.key}</code>
+                      {m.greffe ? " · propre à ce projet" : ""}
                       {requires.length > 0
                         ? ` · nécessite : ${requires.map(labelOf).join(", ")}`
                         : ""}
@@ -173,7 +177,7 @@ function AdminModulesPage() {
                   ) : null}
                   <label className="inline-flex min-h-11 items-center gap-2 text-sm text-muted-foreground">
                     <Switch
-                      checked={draft[m.key]}
+                      checked={draft[m.key] === true}
                       onCheckedChange={(on) => toggle(m.key, on)}
                       aria-label={`${draft[m.key] ? "Éteindre" : "Allumer"} le module ${m.label}`}
                     />

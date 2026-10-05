@@ -6,20 +6,42 @@
  */
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { PROTECTED_PATH_MODULES } from "../../src/config/modules.ts";
 
-const DIR = join(import.meta.dirname, "..", "..", "src", "routes", "_authenticated");
+const ROUTES = join(import.meta.dirname, "..", "..", "src", "routes");
+const DIR = join(ROUTES, "_authenticated");
+// Pages d'une greffe (socle 1.3.0) : src/routes/(greffe)/, sous-dossiers compris.
+const GREFFE_DIR = join(ROUTES, "(greffe)");
+
+function routeFiles(): string[] {
+  const files = readdirSync(DIR)
+    .filter((f) => f.endsWith(".tsx"))
+    .map((f) => join(DIR, f));
+  if (existsSync(GREFFE_DIR)) {
+    for (const f of readdirSync(GREFFE_DIR, { recursive: true }) as string[]) {
+      if (f.endsWith(".tsx")) files.push(join(GREFFE_DIR, f));
+    }
+  }
+  return files;
+}
 
 function guardedRoutes() {
   const out: Array<{ file: string; path: string; modules: string[] }> = [];
-  for (const file of readdirSync(DIR).filter((f) => f.endsWith(".tsx"))) {
-    const src = readFileSync(join(DIR, file), "utf8");
-    const route = /createFileRoute\("\/_authenticated(\/[^"]*)"\)/.exec(src)?.[1];
+  for (const full of routeFiles()) {
+    const file = full.slice(ROUTES.length + 1);
+    const src = readFileSync(full, "utf8");
+    // « /_authenticated/admin/x » ou « /(greffe)/_connecte/admin/x » → « /admin/x ».
+    const id = /createFileRoute\("([^"]*)"\)/.exec(src)?.[1];
+    // Pages connectées seulement (rendues dans le navigateur) : une page publique est protégée
+    // par son beforeLoad, exécuté côté serveur.
+    if (!id || !(id.startsWith("/_authenticated/") || /^\/\(greffe\)(\/\([^)]*\))*\/_/.test(id)))
+      continue;
+    const route = id.replace(/\/\([^)]*\)/g, "").replace(/\/_[^/]+/g, "");
     const guard = /beforeLoad:\s*\(\)\s*=>\s*require(?:Any)?Feature\(([^)]*)\)/.exec(src)?.[1];
     if (!route || !guard) continue;
-    const modules = [...guard.matchAll(/"([A-Za-z]+)"/g)].map((m) => m[1]!).sort();
+    const modules = [...guard.matchAll(/"([A-Za-z_0-9]+)"/g)].map((m) => m[1]!).sort();
     // « /crm/prospect/$prospectId » → « /crm/prospect » : la règle porte sur le préfixe.
     const path = route.replace(/\/\$[^/]+/g, "").replace(/\/$/, "") || "/";
     out.push({ file, path, modules });
