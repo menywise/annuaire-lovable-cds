@@ -24,6 +24,8 @@ export const Route = createFileRoute("/annuaire/departement/$slug")({
       title: `Professionnels en ${departement.nom} (${departement.code})`,
       description: `Trouvez les professionnels référencés en ${departement.nom}. ${listings.length} fiche${listings.length > 1 ? "s" : ""} disponible${listings.length > 1 ? "s" : ""}.`,
       path: `/annuaire/departement/${departement.slug}`,
+      // Département sans fiche : page utile à la navigation, pas à l'index des moteurs.
+      noindex: listings.length === 0,
     });
     return {
       ...base,
