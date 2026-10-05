@@ -2210,6 +2210,7 @@ export type Database = {
           evidence: string
           id: string
           label: string
+          modules: string[]
           position: number
           requirement: string
           severity: string
@@ -2223,6 +2224,7 @@ export type Database = {
           evidence?: string
           id?: string
           label: string
+          modules?: string[]
           position?: number
           requirement?: string
           severity?: string
@@ -2236,6 +2238,7 @@ export type Database = {
           evidence?: string
           id?: string
           label?: string
+          modules?: string[]
           position?: number
           requirement?: string
           severity?: string
@@ -2414,6 +2417,10 @@ export type Database = {
         }[]
       }
       module_enabled: { Args: { _key: string }; Returns: boolean }
+      en_perimetre: {
+        Args: { "": Database["public"]["Tables"]["template_checks"]["Row"] }
+        Returns: boolean
+      }
       module_is_greffe: { Args: { _key: string }; Returns: boolean }
       module_greffe_values: { Args: { _value: Json }; Returns: Json }
       directory_listing_visible: { Args: { _id: string }; Returns: boolean }

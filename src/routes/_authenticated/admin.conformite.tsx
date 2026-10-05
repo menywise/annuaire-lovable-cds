@@ -7,6 +7,7 @@ import {
   ConformitySummary,
   checkStatusLabel,
   conformityScore,
+  inScope,
   groupByArea,
   type TemplateCheck,
 } from "@/components/cds/ConformityBoard";
@@ -24,8 +25,7 @@ export const Route = createFileRoute("/_authenticated/admin/conformite")({
   head: () =>
     seo({
       title: "Conformité du modèle",
-      description:
-        "Grille de contrôle du socle : ce qui est conforme, à corriger ou à vérifier.",
+      description: "Grille de contrôle du socle : ce qui est conforme, à corriger ou à vérifier.",
       path: "/admin/conformite",
       noindex: true,
     }),
@@ -42,16 +42,21 @@ function AdminConformite() {
   async function load() {
     const { data } = await supabase
       .from("template_checks")
-      .select("id, code, area, label, requirement, status, severity, evidence, position")
+      .select(
+        "id, code, area, label, requirement, status, severity, evidence, position, modules, en_perimetre",
+      )
       .order("position", { ascending: true });
-    setChecks(data ?? []);
+    setChecks((data ?? []) as unknown as TemplateCheck[]);
   }
 
   useEffect(() => {
     void load();
   }, []);
 
-  async function update(check: TemplateCheck, patch: Partial<TemplateCheck>) {
+  async function update(
+    check: TemplateCheck,
+    patch: Partial<Pick<TemplateCheck, "status" | "evidence">>,
+  ) {
     setChecks((prev) => prev.map((item) => (item.id === check.id ? { ...item, ...patch } : item)));
     const { error } = await supabase.from("template_checks").update(patch).eq("id", check.id);
     if (error)
@@ -62,7 +67,7 @@ function AdminConformite() {
   async function snapshot() {
     if (!user) return;
     setBusy(true);
-    const score = conformityScore(checks);
+    const score = conformityScore(scoped);
     const { data: audit, error } = await supabase
       .from("audits")
       .insert({
@@ -78,7 +83,7 @@ function AdminConformite() {
       toast.error("Audit non enregistré.", { description: "Réessayez dans un instant." });
       return;
     }
-    const findings = checks
+    const findings = scoped
       .filter((check) => check.status === "a_corriger" || check.status === "a_verifier")
       .map((check) => ({
         audit_id: audit.id,
@@ -94,12 +99,15 @@ function AdminConformite() {
     });
   }
 
+  const scoped = inScope(checks);
+  const outside = checks.filter((check) => check.en_perimetre === false);
+
   return (
     <AdminShell
       title="Conformité du modèle"
-      intro="La grille de recettage du modèle : chaque point porte un état, une exigence et un constat. Le score se recalcule tout seul et les points mis en pause sortent du calcul."
+      intro="La grille de recettage du site : chaque point porte un état, une exigence et un constat. Seuls les points des modules allumés comptent ; les points mis en pause sortent aussi du calcul."
     >
-      <ConformitySummary checks={checks} />
+      <ConformitySummary checks={scoped} />
 
       <div className="mt-4">
         <Button
@@ -112,7 +120,7 @@ function AdminConformite() {
         </Button>
       </div>
 
-      {groupByArea(checks).map((group) => (
+      {groupByArea(scoped).map((group) => (
         <section key={group.area} className="mt-8">
           <h2 className="text-base font-semibold text-foreground">{group.area}</h2>
           <ul className="mt-3 space-y-3">
@@ -165,6 +173,25 @@ function AdminConformite() {
         </section>
       ))}
 
+      {outside.length > 0 ? (
+        <details className="mt-8 rounded-xl border border-border bg-card p-5">
+          <summary className="cursor-pointer text-sm font-semibold text-foreground">
+            Hors périmètre : {outside.length} point{outside.length > 1 ? "s" : ""} de modules
+            éteints
+          </summary>
+          <p className="mt-2 text-xs text-muted-foreground">
+            Ils ne comptent pas dans le score. Ils reviennent dès que leur module est allumé.
+          </p>
+          <ul className="mt-3 space-y-1 text-sm text-muted-foreground">
+            {outside.map((check) => (
+              <li key={check.id}>
+                {check.code} · {check.label} ({(check.modules ?? []).join(", ")})
+              </li>
+            ))}
+          </ul>
+        </details>
+      ) : null}
+
       <section className="mt-10 rounded-xl border border-border bg-card p-5">
         <h2 className="text-base font-semibold text-foreground">Ajouter un point de contrôle</h2>
         <NewCheckForm onDone={load} nextPosition={(checks.at(-1)?.position ?? 0) + 1} />
@@ -186,6 +213,10 @@ function NewCheckForm({ onDone, nextPosition }: { onDone: () => void; nextPositi
       area: String(data.get("area") ?? "").trim(),
       label: String(data.get("label") ?? "").trim(),
       requirement: String(data.get("requirement") ?? "").trim(),
+      modules: String(data.get("modules") ?? "")
+        .split(",")
+        .map((key) => key.trim())
+        .filter(Boolean),
       position: nextPosition,
     });
     setBusy(false);
@@ -219,6 +250,12 @@ function NewCheckForm({ onDone, nextPosition }: { onDone: () => void; nextPositi
           name="requirement"
           placeholder="Comment savoir que c'est conforme"
         />
+      </div>
+      <div className="space-y-1.5 sm:col-span-2">
+        <Label htmlFor="check-modules">
+          Modules concernés (clés séparées par des virgules, vide : tout site)
+        </Label>
+        <Input id="check-modules" name="modules" placeholder="directory, geo" />
       </div>
       <div className="sm:col-span-2">
         <Button type="submit" disabled={busy} title="Ajouter ce point à la grille">
