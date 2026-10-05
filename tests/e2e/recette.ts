@@ -117,6 +117,7 @@ async function pricingPlans(): Promise<
 /** Durée maximale du contrôle d'une page : au-delà, le moteur est considéré comme figé. */
 const PAGE_TIMEOUT = 120_000;
 const BLOQUE = "page bloquée plus de 2 minutes";
+const PLANTE = "le moteur du navigateur a planté sur cette page";
 
 /** Rejette si la promesse ne se termine pas dans le délai (le moteur ne répond plus). */
 function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
@@ -763,7 +764,18 @@ async function main() {
     for (const role of ROLES) {
       const auth = auths[role] ?? null;
       let context = await newContext(browser, viewport, role, auth);
-      let page = await context.newPage();
+      let page!: Page;
+      // Un onglet planté (« Page crashed ») reste ouvert mais mort : on le repère pour en
+      // rouvrir un, sinon toutes les pages suivantes échoueraient en cascade.
+      let crashed = false;
+      const openPage = async () => {
+        page = await withTimeout(context.newPage(), 30_000, "ouverture de page");
+        crashed = false;
+        page.on("crash", () => {
+          crashed = true;
+        });
+      };
+      await openPage();
       // Session neuve après un blocage ou un plantage du moteur. Si elle-même ne répond pas,
       // l'erreur remonte et le passage s'arrête au lieu d'attendre indéfiniment.
       const reset = async () => {
@@ -773,15 +785,16 @@ async function main() {
           30_000,
           "ouverture de session",
         );
-        page = await withTimeout(context.newPage(), 30_000, "ouverture de page");
+        await openPage();
       };
-      // Une page qui ne répond plus (moteur figé, sans erreur) ou que le navigateur ferme en
-      // plein contrôle ne bloque pas le passage : un blocage est contrôlé une seconde fois sur
-      // une session neuve, un second blocage ou un plantage compte en échec.
+      // Une page qui fige le moteur (sans erreur), le fait planter ou que le navigateur ferme
+      // en plein contrôle ne bloque pas le passage : elle est contrôlée une seconde fois sur une
+      // session neuve ; si cela se reproduit, elle compte en échec.
       const check = async (target: QaPage, url: string): Promise<QaResult> => {
         for (let essai = 1; ; essai++) {
+          let result: QaResult;
           try {
-            return await withTimeout(
+            result = await withTimeout(
               checkPage(page, target, url, role, viewport, states, auth?.mode === "simulé"),
               PAGE_TIMEOUT,
               BLOQUE,
@@ -805,6 +818,17 @@ async function main() {
               ms: 0,
             };
           }
+          if (!crashed) return result;
+          await reset();
+          if (essai === 1) {
+            console.log(`↻ [${viewport} · ${role}] ${url} : ${PLANTE}, nouvelle tentative`);
+            continue;
+          }
+          return {
+            ...result,
+            status: "echec",
+            problems: [`${PLANTE} (deux fois)`, ...result.problems],
+          };
         }
       };
       for (const qa of pages) {
@@ -817,6 +841,7 @@ async function main() {
         let url: string | null = qa.path;
         let probe = false;
         if (qa.discover) {
+          if (crashed) await reset();
           url = moduleOff ? null : await discover(page, qa, resolved);
           // Aucun contenu publié : on vérifie au moins la page « introuvable » de cette adresse.
           if (!url && !moduleOff) {
