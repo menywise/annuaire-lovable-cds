@@ -802,8 +802,11 @@ async function main() {
           } catch (err) {
             await reset();
             const message = (err as Error).message.split("\n")[0];
-            if (message === BLOQUE && essai === 1) {
-              console.log(`↻ [${viewport} · ${role}] ${url} : ${BLOQUE}, nouvelle tentative`);
+            // Moteur figé ou onglet fermé par le navigateur : une seconde chance sur une session
+            // neuve ; une erreur du robot lui-même compte tout de suite en échec.
+            const moteur = message === BLOQUE || /has been closed|crashed/i.test(message);
+            if (moteur && essai === 1) {
+              console.log(`↻ [${viewport} · ${role}] ${url} : ${message}, nouvelle tentative`);
               continue;
             }
             return {
