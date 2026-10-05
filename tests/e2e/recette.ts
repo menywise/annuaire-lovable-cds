@@ -453,9 +453,12 @@ async function checkPage(
         ].filter((el) => {
           // Champ piège anti-robot (hors tabulation) : pas une cible pour un humain.
           if (!visible(el) || el.getAttribute("tabindex") === "-1") return false;
+          // Un élément dans une étiquette (ou relié à elle) se touche par toute l'étiquette.
+          const label = (el as HTMLInputElement).labels?.[0] ?? el.closest("label") ?? el;
           const r = el.getBoundingClientRect();
           return (
             r.height < 44 &&
+            label.getBoundingClientRect().height < 44 &&
             !(el as HTMLInputElement).matches("input[type=checkbox], input[type=radio]")
           );
         }).length;
@@ -818,8 +821,10 @@ async function main() {
         }
         report.results.push(result);
         const mark = result.status === "ok" ? "✔" : "✘";
+        // Les avertissements sont aussi écrits ici : le journal reste lisible sans télécharger le rapport.
+        const notes = [...result.problems, ...result.warnings.map((w) => `⚠ ${w}`)];
         console.log(
-          `${mark} [${viewport} · ${role}] ${url}${result.problems.length ? "\n    " + result.problems.join("\n    ") : ""}`,
+          `${mark} [${viewport} · ${role}] ${url}${notes.length ? "\n    " + notes.join("\n    ") : ""}`,
         );
       }
       await context.close();

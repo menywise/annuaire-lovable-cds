@@ -138,7 +138,7 @@ function SignupPage() {
             />
             <Label
               htmlFor="cgu"
-              className="text-xs font-normal leading-relaxed text-muted-foreground"
+              className="block min-h-11 text-xs font-normal leading-relaxed text-muted-foreground"
             >
               J'accepte les{" "}
               <Link
