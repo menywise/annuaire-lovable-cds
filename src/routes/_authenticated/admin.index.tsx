@@ -75,7 +75,7 @@ function ColorField({
           title={`${label} : choisir dans le nuancier`}
           value={valide || "#334155"}
           onChange={(e) => onChange(e.target.value)}
-          className="h-9 w-12 shrink-0 cursor-pointer rounded-md border border-input bg-card p-1"
+          className="h-9 max-md:h-11 w-12 shrink-0 cursor-pointer rounded-md border border-input bg-card p-1"
         />
         <Input id={id} value={value} placeholder="#334155" onChange={(e) => onChange(e.target.value)} />
       </div>
