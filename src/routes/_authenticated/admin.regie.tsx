@@ -362,10 +362,10 @@ function AdminAdsPage() {
             </Button>
           </div>
 
+          {campaigns.length === 0 ? (
+            <p className="mt-3 text-sm text-muted-foreground">Aucune campagne pour l'instant.</p>
+          ) : null}
           <ul className="mt-3 space-y-3">
-            {campaigns.length === 0 ? (
-              <p className="text-sm text-muted-foreground">Aucune campagne pour l'instant.</p>
-            ) : null}
             {campaigns.map((item) => {
               const stat = stats[item.id] ?? { impressions: 0, clicks: 0 };
               const ctr = stat.impressions > 0 ? ((stat.clicks / stat.impressions) * 100).toFixed(1) : "0,0";
