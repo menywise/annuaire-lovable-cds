@@ -453,9 +453,12 @@ async function checkPage(
         ].filter((el) => {
           // Champ piège anti-robot (hors tabulation) : pas une cible pour un humain.
           if (!visible(el) || el.getAttribute("tabindex") === "-1") return false;
+          // Un élément dans une étiquette (ou relié à elle) se touche par toute l'étiquette.
+          const label = (el as HTMLInputElement).labels?.[0] ?? el.closest("label") ?? el;
           const r = el.getBoundingClientRect();
           return (
             r.height < 44 &&
+            label.getBoundingClientRect().height < 44 &&
             !(el as HTMLInputElement).matches("input[type=checkbox], input[type=radio]")
           );
         }).length;
