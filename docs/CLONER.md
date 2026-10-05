@@ -51,6 +51,7 @@ Utilisateurs. Le dernier administrateur ne peut ni se retirer ni supprimer son c
 | `LOVABLE_CRON_SECRET` | conseillé | tâches planifiées (purge des messages de contact) |
 | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` | paiement des formations ou Boutique | Stripe ; webhook vers `<adresse>/api/stripe-webhook` |
 | `CDS_RECETTE_*` (secrets GitHub) | recette en écriture réelle | comptes de test du robot |
+| `CDS_URL_PUBLIQUE` (variable GitHub) | recette du site public | adresse en ligne visée par le workflow « Recette du site public » (lancement manuel, et chaque lundi) |
 
 Les clés ne vont jamais dans le code ni en base.
 

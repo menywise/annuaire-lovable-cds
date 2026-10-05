@@ -1,0 +1,76 @@
+# CDS — Recette du site public (en ligne), et non d'une copie locale.
+# Lecture seule : seul le robot de pages tourne, jamais les parcours qui écrivent.
+# Adresse : saisie au lancement, sinon la variable de dépôt CDS_URL_PUBLIQUE
+# (Settings → Secrets and variables → Actions → Variables). Sans adresse, rien ne tourne.
+# Comptes réels si les secrets CDS_RECETTE_* existent, sinon membre et admin simulés.
+name: Recette du site public
+
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: "Adresse publique du site (vide : variable CDS_URL_PUBLIQUE)"
+        required: false
+        default: ""
+  schedule:
+    # Chaque lundi, 6 h 17 UTC.
+    - cron: "17 6 * * 1"
+
+concurrency:
+  group: recette-publique
+  cancel-in-progress: false
+
+jobs:
+  recette:
+    name: Site public (${{ matrix.navigateur }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - navigateur: chromium
+            roles: visiteur,membre,admin
+          - navigateur: firefox
+            roles: visiteur
+          - navigateur: webkit
+            roles: visiteur
+    env:
+      URL_PUBLIQUE: ${{ inputs.url || vars.CDS_URL_PUBLIQUE }}
+    steps:
+      - name: Adresse du site
+        id: adresse
+        run: |
+          if [ -z "$URL_PUBLIQUE" ]; then
+            echo "::notice::Aucune adresse publique (saisie ou variable CDS_URL_PUBLIQUE) : recette ignorée."
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/checkout@v4
+        if: steps.adresse.outputs.ok == 'true'
+      - uses: actions/setup-node@v4
+        if: steps.adresse.outputs.ok == 'true'
+        with:
+          node-version: 22
+      - name: Dépendances et navigateur
+        if: steps.adresse.outputs.ok == 'true'
+        run: |
+          npm install --no-package-lock --no-audit --no-fund
+          npm install --no-save --no-package-lock --no-audit --no-fund playwright@1.56.1 axe-core@4.13.0 html-validate@11.16.1
+          npx playwright install --with-deps ${{ matrix.navigateur }}
+      - name: Robot (${{ matrix.navigateur }}, ${{ matrix.roles }})
+        if: steps.adresse.outputs.ok == 'true'
+        env:
+          CDS_RECETTE_MEMBRE_EMAIL: ${{ secrets.CDS_RECETTE_MEMBRE_EMAIL }}
+          CDS_RECETTE_MEMBRE_MDP: ${{ secrets.CDS_RECETTE_MEMBRE_MDP }}
+          CDS_RECETTE_ADMIN_EMAIL: ${{ secrets.CDS_RECETTE_ADMIN_EMAIL }}
+          CDS_RECETTE_ADMIN_MDP: ${{ secrets.CDS_RECETTE_ADMIN_MDP }}
+        run: node tests/e2e/recette.ts --url "${URL_PUBLIQUE%/}" --roles ${{ matrix.roles }} --navigateur ${{ matrix.navigateur }}
+      - name: Rapport (à importer dans /admin/recettage)
+        if: always() && steps.adresse.outputs.ok == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: rapport-recette-publique-${{ matrix.navigateur }}
+          path: tests/e2e/rapport/
+          if-no-files-found: ignore
