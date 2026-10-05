@@ -1863,7 +1863,6 @@ export type Database = {
           lot: string
           position: number
           priority: string
-          public_visible: boolean
           status: string
           title: string
           updated_at: string
@@ -1875,7 +1874,6 @@ export type Database = {
           lot?: string
           position?: number
           priority?: string
-          public_visible?: boolean
           status?: string
           title: string
           updated_at?: string
@@ -1887,7 +1885,6 @@ export type Database = {
           lot?: string
           position?: number
           priority?: string
-          public_visible?: boolean
           status?: string
           title?: string
           updated_at?: string
