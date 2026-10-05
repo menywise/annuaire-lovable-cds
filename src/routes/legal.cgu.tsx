@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ContactChannel, LegalPage, Section, editorName } from "@/components/cds/LegalPage";
 import { useBrandSettings } from "@/hooks/useSiteSettings";
+import { isFeatureOn } from "@/config/features";
 import { getSiteConfig } from "@/lib/site-config";
 
 import { seo } from "@/lib/seo";
@@ -9,8 +10,7 @@ export const Route = createFileRoute("/legal/cgu")({
   head: () =>
     seo({
       title: "Conditions générales d'utilisation",
-      description:
-        `Conditions générales d'utilisation des services ${editorName(getSiteConfig().brand)} : accès, compte, obligations, résiliation et droit applicable.`,
+      description: `Conditions générales d'utilisation des services ${editorName(getSiteConfig().brand)} : accès, compte, obligations, résiliation et droit applicable.`,
       path: "/legal/cgu",
       type: "article",
     }),
@@ -20,6 +20,12 @@ export const Route = createFileRoute("/legal/cgu")({
 function CguPage() {
   const { settings } = useBrandSettings();
   const editor = editorName(settings);
+  // Exemples de contributions publiques : seulement ceux des modules allumés.
+  const contributions = [
+    isFeatureOn("forum") ? "forum" : null,
+    isFeatureOn("blog") ? "commentaires" : null,
+    isFeatureOn("reviews") ? "avis" : null,
+  ].filter(Boolean);
   return (
     <LegalPage title="Conditions générales d'utilisation" updatedAt="17 septembre 2026">
       <Section title="Objet">
@@ -59,9 +65,10 @@ function CguPage() {
           >
             Mon profil
           </Link>
-          . Ses données personnelles sont alors effacées ; ses contributions publiques (forum,
-          commentaires, avis) restent en ligne sous le nom « Ancien membre ». {editor} peut
-          suspendre un compte en cas de manquement aux présentes conditions.
+          . Ses données personnelles sont alors effacées ; ses contributions publiques
+          {contributions.length ? ` (${contributions.join(", ")})` : ""} restent en ligne sous le
+          nom « Ancien membre ». {editor} peut suspendre un compte en cas de manquement aux
+          présentes conditions.
         </p>
       </Section>
       <Section title="Contact et droit applicable">

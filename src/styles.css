@@ -81,7 +81,7 @@
   --destructive-foreground: #ffffff;
   --destructive-text: #cf1919; /* texte / icônes d'erreur : contraste AA sur fond clair */
   --info: #0dcaf0;
-  --info-text: #0891b2;
+  --info-text: #0e7490; /* texte d'information : contraste AA sur fond clair */
   --cds-purple: #7c3aed;
   --primary-text: #334155; /* couleur principale en texte : contraste AA sur fond clair */
   --text-light: #5b6472;
@@ -192,7 +192,7 @@
   font-weight: 600;
 }
 
+/* Pas d'opacité réduite : la description garde le contraste AA de la couleur du motif. */
 [data-sonner-toast].cds-toast .cds-toast-description {
   color: inherit;
-  opacity: 0.85;
 }

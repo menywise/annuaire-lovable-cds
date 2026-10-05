@@ -11,7 +11,10 @@ import { ImageField, ImageListField } from "@/components/cds/MediaPicker";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
+import { fetchAnnuaireSettings, saveAnnuaireSettings } from "@/hooks/useSiteSettings";
+import { ANNUAIRE_TYPES_FICHE, type AnnuaireSettings } from "@/lib/site-config";
 import { requireFeature } from "@/config/features";
 import { downloadCsv } from "@/lib/csv";
 import { slugify } from "@/lib/format";
@@ -72,6 +75,7 @@ const TABS = [
   { key: "categories", label: "Catégories" },
   { key: "avis", label: "Avis" },
   { key: "claims", label: "Revendications" },
+  { key: "reglages", label: "Réglages" },
 ] as const;
 
 function AdminDirectoryPage() {
@@ -82,6 +86,7 @@ function AdminDirectoryPage() {
   const [openImages, setOpenImages] = useState<string | null>(null);
   const [editing, setEditing] = useState<string | null>(null);
   const [failed, setFailed] = useState(false);
+  const [creating, setCreating] = useState(false);
 
   const load = useCallback(async () => {
     const [l, c, r] = await Promise.all([
@@ -119,6 +124,32 @@ function AdminDirectoryPage() {
     toast.success("Fiche mise à jour.");
     void load();
     return true;
+  }
+
+  /** Nouvelle fiche : brouillon au nom provisoire, ouvert aussitôt dans l'éditeur. */
+  async function createListing() {
+    setCreating(true);
+    const { data: userData } = await supabase.auth.getUser();
+    const { data, error } = await supabase
+      .from("directory_listings")
+      .insert({
+        name: "Nouvelle fiche",
+        slug: `nouvelle-fiche-${Date.now().toString(36)}`,
+        status: "draft",
+        created_by: userData.user?.id ?? null,
+      })
+      .select("id")
+      .single();
+    setCreating(false);
+    if (error) {
+      toast.error("Fiche non créée.");
+      return;
+    }
+    toast.success("Brouillon créé.", { description: "Complétez la fiche puis publiez-la." });
+    setTab("fiches");
+    setOpenImages(null);
+    setEditing(data.id);
+    await load();
   }
 
   async function removeListing(item: Listing) {
@@ -165,8 +196,15 @@ function AdminDirectoryPage() {
           </button>
         ))}
         <Button
-          variant="outline"
           className="ml-auto"
+          disabled={creating}
+          title="Créer une fiche en brouillon et l'ouvrir dans l'éditeur"
+          onClick={() => void createListing()}
+        >
+          {creating ? "Création…" : "Nouvelle fiche"}
+        </Button>
+        <Button
+          variant="outline"
           title="Télécharger les fiches au format tableur"
           onClick={() => downloadCsv("annuaire.csv", listings ?? [])}
         >
@@ -182,8 +220,13 @@ function AdminDirectoryPage() {
           </button>
         </p>
       ) : null}
-      {listings === null ? (
-        <p className="mt-6 text-sm text-muted-foreground">Chargement…</p>
+      {tab === "reglages" ? (
+        <AnnuaireSettingsTab />
+      ) : listings === null ? (
+        // Échec du chargement : le bandeau d'erreur suffit, pas de « Chargement… » sans fin.
+        failed ? null : (
+          <p className="mt-6 text-sm text-muted-foreground">Chargement…</p>
+        )
       ) : tab === "fiches" ? (
         <>
           {listings.length === 0 ? (
@@ -458,6 +501,118 @@ function ListingImages({
       <Button type="submit" size="sm">
         Enregistrer les images
       </Button>
+    </form>
+  );
+}
+
+const TYPE_FICHE_LABELS: Record<AnnuaireSettings["type_fiche"], string> = {
+  LocalBusiness: "Établissement avec adresse (LocalBusiness)",
+  Organization: "Organisation (Organization)",
+  WebSite: "Site web (WebSite)",
+};
+
+/** Réglages de l'annuaire (clé `annuaire` de site_settings) : titre, description, type des fiches. */
+function AnnuaireSettingsTab() {
+  const [settings, setSettings] = useState<AnnuaireSettings | null>(null);
+  const [failed, setFailed] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  const read = useCallback(() => {
+    setFailed(false);
+    fetchAnnuaireSettings()
+      .then(setSettings)
+      .catch(() => setFailed(true));
+  }, []);
+
+  useEffect(() => {
+    read();
+  }, [read]);
+
+  async function save(event: React.FormEvent) {
+    event.preventDefault();
+    if (!settings) return;
+    setSaving(true);
+    try {
+      await saveAnnuaireSettings(settings);
+      setSettings(await fetchAnnuaireSettings());
+      toast.success("Réglages enregistrés.");
+    } catch {
+      toast.error("Réglages non enregistrés.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  if (failed) {
+    return (
+      <p role="alert" className="mt-6 text-sm text-destructive-text">
+        Les réglages n'ont pas pu être chargés.{" "}
+        <button type="button" className="underline" onClick={read}>
+          Réessayer
+        </button>
+      </p>
+    );
+  }
+  if (!settings) return <p className="mt-6 text-sm text-muted-foreground">Chargement…</p>;
+
+  return (
+    <form
+      onSubmit={save}
+      className="mt-6 grid max-w-[640px] gap-4 rounded-xl border border-border bg-card p-5"
+    >
+      <div>
+        <Label htmlFor="ann-titre">Titre de la page Annuaire</Label>
+        <Input
+          id="ann-titre"
+          value={settings.titre}
+          maxLength={120}
+          onChange={(e) => setSettings({ ...settings, titre: e.target.value })}
+          className="mt-1"
+        />
+      </div>
+      <div>
+        <Label htmlFor="ann-description">Description</Label>
+        <Textarea
+          id="ann-description"
+          rows={3}
+          maxLength={300}
+          value={settings.description}
+          onChange={(e) => setSettings({ ...settings, description: e.target.value })}
+          className="mt-1"
+        />
+        <p className="mt-1 text-xs text-muted-foreground">
+          Affichée sous le titre et reprise par les moteurs de recherche. Vide : texte par défaut.
+        </p>
+      </div>
+      <div>
+        <Label htmlFor="ann-type">Nature des fiches</Label>
+        <select
+          id="ann-type"
+          value={settings.type_fiche}
+          onChange={(e) =>
+            setSettings({
+              ...settings,
+              type_fiche: e.target.value as AnnuaireSettings["type_fiche"],
+            })
+          }
+          className="mt-1 h-11 w-full rounded-md border border-border bg-card px-3 text-sm text-foreground"
+        >
+          {ANNUAIRE_TYPES_FICHE.map((type) => (
+            <option key={type} value={type}>
+              {TYPE_FICHE_LABELS[type]}
+            </option>
+          ))}
+        </select>
+        <p className="mt-1 text-xs text-muted-foreground">
+          Sert aux données structurées de chaque fiche. L'adresse n'y figure que pour un
+          établissement.
+        </p>
+      </div>
+      <div>
+        <Button type="submit" disabled={saving} title="Enregistrer les réglages de l'annuaire">
+          {saving ? "Enregistrement…" : "Enregistrer"}
+        </Button>
+      </div>
     </form>
   );
 }

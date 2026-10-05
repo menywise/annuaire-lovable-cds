@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { useBrandSettings } from "@/hooks/useSiteSettings";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { CookieBanner } from "@/components/cds/CookieBanner";
+import { CookieBanner, openCookieBanner } from "@/components/cds/CookieBanner";
 import { NewsletterForm } from "@/components/cds/NewsletterForm";
 import { AdSlot } from "@/components/cds/AdSlot";
 import { isFeatureOn, withActiveModules, type FeatureKey } from "@/config/features";
@@ -108,6 +108,12 @@ function buildMemberNav(): NavItem[] {
       label: "Annuaire des membres",
       title: "Découvrir les autres membres",
       module: "members",
+    },
+    {
+      to: "/annuaire",
+      label: "Annuaire",
+      title: "Trouver un professionnel près de chez vous",
+      module: "directory",
     },
     {
       to: "/messagerie",
@@ -476,6 +482,18 @@ export function SiteFooter() {
                     </Link>
                   </li>
                 ))}
+                {column.title === "Informations légales" ? (
+                  <li>
+                    <button
+                      type="button"
+                      onClick={openCookieBanner}
+                      title="Rouvrir le bandeau pour modifier vos choix de cookies"
+                      className="inline-flex min-h-11 cursor-pointer items-center rounded text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:min-h-8"
+                    >
+                      Gérer les cookies
+                    </button>
+                  </li>
+                ) : null}
               </ul>
             </nav>
           ))}
@@ -501,6 +519,7 @@ export function PageShell({ children }: { children: React.ReactNode }) {
     <div className="flex min-h-screen flex-col bg-background">
       <a
         href="#contenu"
+        title="Passer directement au contenu principal de la page"
         className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-primary-foreground"
       >
         Aller au contenu principal

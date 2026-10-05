@@ -21,7 +21,7 @@ export const cds = {
     danger: "#dc3545",
     dangerText: "#cf1919",
     info: "#0dcaf0",
-    infoText: "#0891b2",
+    infoText: "#0e7490",
     secondary: "#6c757d",
     purple: "#7c3aed",
     purpleLight: "#ede9fe",

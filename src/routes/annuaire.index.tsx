@@ -9,19 +9,18 @@ import { Button } from "@/components/ui/button";
 import { requireFeature, isFeatureOn } from "@/config/features";
 import { listDirectoryListings } from "@/lib/directory.functions";
 import { seo } from "@/lib/seo";
+import { getSiteConfig } from "@/lib/site-config";
 
 const PAGE_SIZE = 20;
 
 export const Route = createFileRoute("/annuaire/")({
   beforeLoad: () => requireFeature("directory"),
   loader: () => listDirectoryListings(),
-  head: () =>
-    seo({
-      title: "Annuaire des professionnels",
-      description:
-        "Trouvez le professionnel qu'il vous faut : filtrez par activité, par département et par mot-clé, puis contactez-le directement.",
-      path: "/annuaire",
-    }),
+  head: () => {
+    // Titre et description réglés en administration (Annuaire → Réglages).
+    const { titre, description } = getSiteConfig().annuaire;
+    return seo({ title: titre, description, path: "/annuaire" });
+  },
   errorComponent: () => (
     <PageShell>
       <p className="text-sm text-muted-foreground">L'annuaire n'a pas pu être chargé.</p>
@@ -37,6 +36,7 @@ export const Route = createFileRoute("/annuaire/")({
 
 function DirectoryIndex() {
   const { listings, categories, departements, ratings } = Route.useLoaderData();
+  const reglages = getSiteConfig().annuaire;
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("");
   const [departement, setDepartement] = useState("");
@@ -80,14 +80,8 @@ function DirectoryIndex() {
   return (
     <PageShell>
       <div className="mx-auto max-w-[1000px]">
-        <p className="text-xs font-medium uppercase tracking-wide text-primary-text">Annuaire</p>
-        <h1 className="mt-2 text-3xl font-bold text-foreground">
-          Le bon professionnel, près de chez vous
-        </h1>
-        <p className="mt-2 max-w-[70ch] text-sm text-muted-foreground">
-          Chaque fiche dit qui fait quoi, où, et comment le joindre. Vous comparez calmement, vous
-          contactez quand vous êtes prêt.
-        </p>
+        <h1 className="text-3xl font-bold text-foreground">{reglages.titre}</h1>
+        <p className="mt-2 max-w-[70ch] text-sm text-muted-foreground">{reglages.description}</p>
 
         <div className="mt-6 grid gap-3 rounded-xl border border-border bg-card p-4 sm:grid-cols-2 lg:grid-cols-4">
           <div className="space-y-1.5">

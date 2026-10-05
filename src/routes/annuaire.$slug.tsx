@@ -10,11 +10,11 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { RichText } from "@/lib/richtext";
-import { requireFeature } from "@/config/features";
+import { isFeatureOn, requireFeature } from "@/config/features";
 import { getDirectoryListing } from "@/lib/directory.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { absoluteUrl } from "@/lib/site-config";
+import { absoluteUrl, getSiteConfig } from "@/lib/site-config";
 import { breadcrumbJsonLd, seo } from "@/lib/seo";
 import { formatDate } from "@/lib/format";
 
@@ -54,6 +54,20 @@ export const Route = createFileRoute("/annuaire/$slug")({
     const average = reviews.length
       ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
       : null;
+    // Type réglé en administration ; l'adresse (et son pays) seulement pour un établissement
+    // qui en a une.
+    const typeFiche = getSiteConfig().annuaire.type_fiche;
+    const hasAddress = Boolean(listing.address || listing.postal_code || listing.city);
+    const address =
+      typeFiche === "LocalBusiness" && hasAddress
+        ? {
+            "@type": "PostalAddress",
+            streetAddress: listing.address || undefined,
+            postalCode: listing.postal_code || undefined,
+            addressLocality: listing.city || undefined,
+            addressCountry: "FR",
+          }
+        : null;
     return {
       ...base,
       scripts: [
@@ -65,19 +79,13 @@ export const Route = createFileRoute("/annuaire/$slug")({
           type: "application/ld+json",
           children: JSON.stringify({
             "@context": "https://schema.org",
-            "@type": "LocalBusiness",
+            "@type": typeFiche,
             name: listing.name,
             description,
             url: absoluteUrl(`/annuaire/${listing.slug}`),
             ...(listing.phone ? { telephone: listing.phone } : {}),
             ...(listing.website ? { sameAs: [listing.website] } : {}),
-            address: {
-              "@type": "PostalAddress",
-              streetAddress: listing.address || undefined,
-              postalCode: listing.postal_code || undefined,
-              addressLocality: listing.city || undefined,
-              addressCountry: "FR",
-            },
+            ...(address ? { address } : {}),
             ...(average
               ? {
                   aggregateRating: {
@@ -196,7 +204,7 @@ function ListingPage() {
         ) : null}
 
         <h1 className="mt-4 text-3xl font-bold text-foreground">{listing.name}</h1>
-        <ReportButton contentType="fiche" contentId={listing.id} />
+        <ReportButton contentType="fiche" contentId={listing.id} authorId={listing.claimed_by} />
         <p className="mt-2 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
           {listing.city ? (
             <span className="inline-flex items-center gap-1">
@@ -391,7 +399,8 @@ function ListingPage() {
               </div>
             ) : null}
 
-            {departement ? (
+            {/* Les pages département n'existent que si le module géographique est allumé. */}
+            {departement && isFeatureOn("geo") ? (
               <div className="rounded-xl border border-border bg-card p-4">
                 <h2 className="text-sm font-semibold text-foreground">Zone</h2>
                 <Link
