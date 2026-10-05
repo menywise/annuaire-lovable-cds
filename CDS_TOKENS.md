@@ -23,70 +23,70 @@ Il n'existe **aucun** `tailwind.config.ts` ni `src/index.css` : en Tailwind v4 l
 
 Valeurs **neutres** du socle. Chaque projet règle sa couleur dans Administration → Paramètres → Apparence : le site recalcule alors `--primary`, `--primary-hover`, `--primary-text`, `--primary-foreground` et `--ring` au contraste AA (`src/lib/couleurs.ts`). Aucune couleur de marque n'est écrite dans le code.
 
-| Token                  | Valeur    | Usage                                                         |
-| ---------------------- | --------- | ------------------------------------------------------------- |
-| `--primary`            | `#334155` | Fonds de boutons et surfaces primaires (blanc dessus : 10,35:1) |
-| `--primary-hover`      | `#1e293b` | Survol des surfaces primaires                                 |
+| Token                  | Valeur    | Usage                                                             |
+| ---------------------- | --------- | ----------------------------------------------------------------- |
+| `--primary`            | `#334155` | Fonds de boutons et surfaces primaires (blanc dessus : 10,35:1)   |
+| `--primary-hover`      | `#1e293b` | Survol des surfaces primaires                                     |
 | `--primary-text`       | `#334155` | **Couleur principale en texte et en liens** (9,9:1 sur `#f8fafc`) |
-| `--primary-foreground` | `#ffffff` | Texte posé sur `--primary`                                    |
-| `--secondary`          | `#6c757d` | Surfaces secondaires (blanc dessus : 4,69:1)                  |
-| `--cds-purple`         | `#7c3aed` | Accent ponctuel                                               |
+| `--primary-foreground` | `#ffffff` | Texte posé sur `--primary`                                        |
+| `--secondary`          | `#6c757d` | Surfaces secondaires (blanc dessus : 4,69:1)                      |
+| `--cds-purple`         | `#7c3aed` | Accent ponctuel                                                   |
 
 ## Couleurs d'état
 
-| Token            | Valeur    | Usage                       | Contraste sur `#f8fafc`     |
-| ---------------- | --------- | --------------------------- | --------------------------- |
-| `--success`      | `#198754` | Fonds et bordures de succès | 4,33:1 (surface uniquement) |
-| `--success-text` | `#15803d` | Texte et icônes de succès   | 4,79:1                      |
-| `--warning`      | `#ffc107` | Fonds et bordures d'alerte  | 1,56:1 (surface uniquement) |
-| `--warning-text` | `#b45200` | Texte, icônes et étoiles    | 4,84:1                      |
-| `--destructive`  | `#dc3545` | Fonds et bordures d'erreur  | blanc dessus : 4,53:1 (texte : 4,33:1, non conforme) |
-| `--destructive-text` | `#cf1919` | Texte et icônes d'erreur | 5,27:1 (5,52:1 sur blanc, 5,01:1 sur `--accent`) |
-| `--info`         | `#0dcaf0` | Fonds d'information         | surface uniquement          |
-| `--info-text`    | `#0891b2` | Texte d'information         | 4,5:1                       |
+| Token                | Valeur    | Usage                       | Contraste sur `#f8fafc`                                             |
+| -------------------- | --------- | --------------------------- | ------------------------------------------------------------------- |
+| `--success`          | `#198754` | Fonds et bordures de succès | 4,33:1 (surface uniquement)                                         |
+| `--success-text`     | `#15803d` | Texte et icônes de succès   | 4,79:1                                                              |
+| `--warning`          | `#ffc107` | Fonds et bordures d'alerte  | 1,56:1 (surface uniquement)                                         |
+| `--warning-text`     | `#b45200` | Texte, icônes et étoiles    | 4,84:1                                                              |
+| `--destructive`      | `#dc3545` | Fonds et bordures d'erreur  | blanc dessus : 4,53:1 (texte : 4,33:1, non conforme)                |
+| `--destructive-text` | `#cf1919` | Texte et icônes d'erreur    | 5,27:1 (5,52:1 sur blanc, 5,01:1 sur `--accent`)                    |
+| `--info`             | `#0dcaf0` | Fonds d'information         | surface uniquement                                                  |
+| `--info-text`        | `#0e7490` | Texte d'information         | 5,12:1 (5,36:1 sur blanc ; ancien `#0891b2` : 3,52:1, non conforme) |
 
 > Règle : les tokens **sans** suffixe `-text` servent aux **fonds** ; les tokens `-text` servent au **texte et aux icônes**. Ne jamais poser `--warning` ou `--info` en couleur de texte sur fond clair.
 
 ## Neutres
 
-| Token                  | Valeur    | Usage                                            | Contraste sur `#f8fafc` |
-| ---------------------- | --------- | ------------------------------------------------ | ----------------------- |
-| `--background`         | `#f8fafc` | Fond de page                                     | —                       |
-| `--foreground`         | `#1e293b` | Texte principal                                  | 13,98:1                 |
-| `--card` / `--popover` | `#ffffff` | Surfaces surélevées                              | —                       |
-| `--muted` / `--accent` | `#f3f4f6` | Fonds discrets                                   | —                       |
+| Token                  | Valeur    | Usage                                                                     | Contraste sur `#f8fafc`        |
+| ---------------------- | --------- | ------------------------------------------------------------------------- | ------------------------------ |
+| `--background`         | `#f8fafc` | Fond de page                                                              | —                              |
+| `--foreground`         | `#1e293b` | Texte principal                                                           | 13,98:1                        |
+| `--card` / `--popover` | `#ffffff` | Surfaces surélevées                                                       | —                              |
+| `--muted` / `--accent` | `#f3f4f6` | Fonds discrets                                                            | —                              |
 | `--muted-foreground`   | `#5d6b80` | Texte secondaire (ancien `#64748b` : 4,32:1 sur `--accent`, non conforme) | 5,17:1 (4,92:1 sur `--accent`) |
-| `--text-light`         | `#5b6472` | Texte tertiaire (ancien `#8e95a1`, non conforme) | 5,72:1                  |
-| `--border` / `--input` | `#e5e7eb` | Bordures et champs                               | —                       |
-| `--border-strong`      | `#cbd5e1` | Bordure renforcée au survol ou sur une sélection | —                       |
-| `--surface-raised`     | `#ffffff` | Cartes détachées du fond                         | —                       |
-| `--surface-sunken`     | `#f1f5f9` | Champs et zones légèrement creusées              | —                       |
-| `--ring`               | `#334155` | Anneau de focus                                  | —                       |
+| `--text-light`         | `#5b6472` | Texte tertiaire (ancien `#8e95a1`, non conforme)                          | 5,72:1                         |
+| `--border` / `--input` | `#e5e7eb` | Bordures et champs                                                        | —                              |
+| `--border-strong`      | `#cbd5e1` | Bordure renforcée au survol ou sur une sélection                          | —                              |
+| `--surface-raised`     | `#ffffff` | Cartes détachées du fond                                                  | —                              |
+| `--surface-sunken`     | `#f1f5f9` | Champs et zones légèrement creusées                                       | —                              |
+| `--ring`               | `#334155` | Anneau de focus                                                           | —                              |
 
 ## Rayons
 
-| Token         | Valeur            | Usage                       |
-| ------------- | ----------------- | --------------------------- |
-| `--radius`    | `0.375rem` (6 px) | **Boutons**, champs, badges |
-| `--radius-sm` | `0.25rem`         | Petits éléments             |
-| `--radius-md` | `0.375rem` (6 px) | = `--radius` : classe `rounded-md` des contrôles |
-| `--radius-lg` | `0.75rem` (12 px) | **Cartes**, notifications, encarts |
+| Token         | Valeur            | Usage                                                                   |
+| ------------- | ----------------- | ----------------------------------------------------------------------- |
+| `--radius`    | `0.375rem` (6 px) | **Boutons**, champs, badges                                             |
+| `--radius-sm` | `0.25rem`         | Petits éléments                                                         |
+| `--radius-md` | `0.375rem` (6 px) | = `--radius` : classe `rounded-md` des contrôles                        |
+| `--radius-lg` | `0.75rem` (12 px) | **Cartes**, notifications, encarts                                      |
 | `--radius-xl` | `0.75rem` (12 px) | = `--radius-lg` : classe `rounded-xl` des cartes (ciblée par le relief) |
-| plein         | `50%`             | Pastilles rondes            |
+| plein         | `50%`             | Pastilles rondes                                                        |
 
 Images et vignettes : `rounded-md` (12 px arrondirait trop une vignette de 44 px). Squelettes de chargement : forme de l'élément qu'ils remplacent (`rounded-md` par défaut, `rounded-xl` pour une carte).
 
 ## Ombres
 
-| Nom  | Valeur                                                  |
-| ---- | ------------------------------------------------------- |
-| `xs` | `0 1px 2px rgba(0,0,0,.04)`                             |
-| `sm` | `0 1px 3px rgba(0,0,0,.04), 0 1px 2px rgba(0,0,0,.02)`  |
-| `md` | `0 4px 12px rgba(0,0,0,.08), 0 2px 4px rgba(0,0,0,.04)` |
-| `lg` | `0 8px 24px rgba(0,0,0,.12)`                            |
-| `field-inset` | `inset 0 1px 2px rgba(15,23,42,.06)` |
-| `card-tactile` | `0 1px 2px rgba(15,23,42,.05), 0 6px 18px rgba(15,23,42,.06)` |
-| `card-hover` | `0 2px 4px rgba(15,23,42,.06), 0 12px 28px rgba(15,23,42,.09)` |
+| Nom            | Valeur                                                         |
+| -------------- | -------------------------------------------------------------- |
+| `xs`           | `0 1px 2px rgba(0,0,0,.04)`                                    |
+| `sm`           | `0 1px 3px rgba(0,0,0,.04), 0 1px 2px rgba(0,0,0,.02)`         |
+| `md`           | `0 4px 12px rgba(0,0,0,.08), 0 2px 4px rgba(0,0,0,.04)`        |
+| `lg`           | `0 8px 24px rgba(0,0,0,.12)`                                   |
+| `field-inset`  | `inset 0 1px 2px rgba(15,23,42,.06)`                           |
+| `card-tactile` | `0 1px 2px rgba(15,23,42,.05), 0 6px 18px rgba(15,23,42,.06)`  |
+| `card-hover`   | `0 2px 4px rgba(15,23,42,.06), 0 12px 28px rgba(15,23,42,.09)` |
 
 ## Transitions
 

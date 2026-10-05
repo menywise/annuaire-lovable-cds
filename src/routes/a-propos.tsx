@@ -11,26 +11,26 @@ export const Route = createFileRoute("/a-propos")({
   head: () =>
     seo({
       title: "À propos",
-      description:
-        `Qui édite ${getSiteConfig().brand.name}, pour qui il est conçu et selon quels engagements : clarté, accessibilité et propriété de vos données.`,
+      description: `Qui édite ${getSiteConfig().brand.name} et selon quels engagements : accessibilité, respect de vos données et informations claires.`,
       path: "/a-propos",
       type: "article",
     }),
   component: AProposPage,
 });
 
+/** Engagements tenus par le socle lui-même, valables quel que soit le site et ses modules. */
 const engagements = [
   {
-    title: "Vous restez propriétaire",
-    body: "Vos contenus, vos membres et vos réglages vous appartiennent et restent chez vous, hors de toute régie publicitaire.",
+    title: "Un site accessible",
+    body: "Contrastes conformes au niveau AA, navigation complète au clavier, textes lisibles : chaque visiteur est accueilli, handicap compris.",
   },
   {
-    title: "Vous comprenez ce que vous utilisez",
-    body: "Chaque écran est documenté en français, sans jargon. Vous savez où régler quoi, sans dépendre de quelqu'un d'autre.",
+    title: "Vos données respectées",
+    body: "Aucun cookie de mesure d'audience ou de publicité n'est déposé sans votre accord. Vos droits sur vos données s'exercent simplement.",
   },
   {
-    title: "Vous êtes accessible à tous vos visiteurs",
-    body: "Contrastes conformes au niveau AA, navigation au clavier, textes lisibles : votre site accueille chaque visiteur, handicap compris.",
+    title: "Des informations claires",
+    body: "Qui édite le site, comment vos données sont traitées et quelles règles s'appliquent : tout est écrit en français, accessible depuis chaque page.",
   },
 ];
 
@@ -48,13 +48,12 @@ function AProposPage() {
     <PageShell>
       <article className="mx-auto max-w-[760px]">
         <p className="text-xs font-medium uppercase tracking-wide text-primary-text">À propos</p>
-        <h1 className="mt-2 text-3xl font-bold text-foreground">
-          Un socle solide pour artisans et indépendants
-        </h1>
+        <h1 className="mt-2 text-3xl font-bold text-foreground">{settings.name}</h1>
+        {settings.tagline ? (
+          <p className="mt-3 text-base text-foreground">{settings.tagline}</p>
+        ) : null}
         <p className="mt-3 text-sm text-muted-foreground">
-          {settings.name} est né d'un constat simple. Un artisan ou un indépendant manque de temps
-          pour refaire, à chaque projet, un site sérieux, conforme et trouvable. Ce socle est
-          assemblé une fois pour toutes : votre énergie va à votre métier.
+          Cette page présente l'éditeur du site et les engagements qu'il prend envers ses visiteurs.
         </p>
 
         <h2 className="mt-10 text-lg font-semibold text-foreground">Qui édite ce site</h2>
@@ -81,13 +80,6 @@ function AProposPage() {
             </section>
           ))}
         </div>
-
-        <h2 className="mt-10 text-lg font-semibold text-foreground">Et concrètement ?</h2>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Vous obtenez un site complet : comptes, pages légales, blog, forum, avis, FAQ, offres et
-          espace d'administration. Vous réglez tout depuis votre back-office, sans toucher à une
-          seule ligne de code.
-        </p>
 
         <div className="mt-6 flex flex-wrap gap-3">
           {isFeatureOn("onboarding") ? (
