@@ -71,10 +71,106 @@ L'écran **Démarrage** liste ce qui reste à régler et retire, en deux gestes 
 - les **exemples de la recette** (contenus « Exemple — » et leur membre fictif) ;
 - les **contenus de démarrage** (FAQ, offres, article d'origine), sauf ceux déjà modifiés.
 
-## 8. Ajouter ce qui est propre au projet
+## 8. Ajouter ce qui est propre au projet : écrire une greffe
 
-Dans le dépôt du clone uniquement : nouvelles pages, nouvelles tables (migrations datées après
-celles du socle), modules métier (par exemple la veille de sites pour l'annuaire).
+Une **greffe** est ce qu'un projet ajoute au socle : ses modules, ses pages, ses tables. Règle
+(Loi des Quatre Interdits) : un projet ne modifie **jamais** un fichier ni une table du socle. Tout
+ce qui lui appartient porte la marque `greffe` et vit dans des emplacements que le socle ne touche
+pas. Depuis le socle 1.3.0, le socle lit ces ajouts lui-même.
+
+| Quoi | Où | Forme |
+| --- | --- | --- |
+| Déclarations (modules, menus, pages) | `src/greffe/index.ts` | la « prise », livrée vide par le socle |
+| Code (fonctions, composants) | `src/greffe/` | libre |
+| Pages | `src/routes/(greffe)/` | le dossier entre parenthèses ne change pas les adresses |
+| Pages connectées | `src/routes/(greffe)/_connecte/` | avec la mise en page ci-dessous |
+| Tables, fonctions, politiques SQL | `supabase/greffe/` | objets nommés `greffe_<nom>`, blocs rejouables |
+| Modules | dans la prise | clé `greffe_<nom>` (minuscules, chiffres, soulignés) |
+| Tests | `tests/greffe/` | libre |
+
+### La prise : `src/greffe/index.ts`
+
+Le socle la livre vide et ne la modifie plus jamais : une mise à niveau n'y crée pas de conflit.
+Ce qui peut y être déclaré est décrit dans `src/config/greffe.ts`. Exemple :
+
+```ts
+import type { GreffeDeclaration } from "../config/greffe.ts";
+
+export const GREFFE: GreffeDeclaration = {
+  modules: [
+    {
+      key: "greffe_veille",
+      label: "Veille de sites",
+      definition: "Le site découvre de nouveaux sites, les analyse et repère ceux qui ne répondent plus.",
+      requires: ["directory"],
+    },
+  ],
+  menuAdmin: [{ to: "/admin/veille", label: "Veille", title: "Découverte et surveillance des sites", module: "greffe_veille" }],
+  menuMembre: [{ to: "/proposer-un-site", label: "Proposer un site", title: "Signaler un site à ajouter", module: "greffe_veille" }],
+  pagesProtegees: [
+    { prefix: "/admin/veille", anyOf: ["greffe_veille"] },
+    { prefix: "/proposer-un-site", anyOf: ["greffe_veille"] },
+  ],
+  recette: [{ path: "/admin/veille", label: "Veille", role: "admin", module: "greffe_veille" }],
+};
+```
+
+Effets : le module apparaît dans Administration → Modules, éteint par défaut, avec sa définition ;
+les liens apparaissent dans les menus quand il est allumé ; ses pages renvoient à l'accueil quand il
+est éteint ; le robot de recette les ouvre. Champs disponibles : `modules`, `menuPublic`,
+`menuMembre`, `piedDePage` (avec `colonne`), `menuAdmin`, `pagesProtegees`, `pagesPubliques`
+(plan du site et sitemap), `recette`.
+
+Fichier sans alias `@/` : il est lu aussi par Node (tests, robot). Importer en chemin relatif avec
+l'extension `.ts`.
+
+### Pages
+
+Page publique : `src/routes/(greffe)/ma-page.tsx`, adresse `/ma-page`. Si elle dépend d'un module :
+`beforeLoad: () => requireFeature("greffe_x")`, et la déclarer dans `pagesPubliques` pour le plan
+du site.
+
+Pages connectées : une mise en page de quelques lignes, puis les pages dessous.
+
+```tsx
+// src/routes/(greffe)/_connecte/route.tsx
+import { createFileRoute } from "@tanstack/react-router";
+import { EspaceConnecte } from "@/components/cds/EspaceConnecte";
+
+export const Route = createFileRoute("/(greffe)/_connecte")({ ssr: false, component: EspaceConnecte });
+```
+
+`src/routes/(greffe)/_connecte/admin.veille.tsx` répond à `/admin/veille`, avec `AdminShell` du
+socle. Toute page connectée rattachée à un module se déclare dans `pagesProtegees` : un test
+(`tests/unit/modules-pages-protegees.test.ts`) refuse l'oubli.
+
+### Tables : étendre une fiche du socle sans toucher sa table
+
+Une table de greffe est liée par id à la fiche du socle, supprimée avec elle, et reprend ses droits
+avec les fonctions du socle (ici, une fiche de l'annuaire métier) :
+
+```sql
+CREATE TABLE IF NOT EXISTS public.greffe_sites (
+  listing_id uuid PRIMARY KEY REFERENCES public.directory_listings(id) ON DELETE CASCADE,
+  technologies text[] NOT NULL DEFAULT '{}'
+);
+ALTER TABLE public.greffe_sites ENABLE ROW LEVEL SECURITY;
+CREATE POLICY greffe_sites_lecture ON public.greffe_sites FOR SELECT TO anon, authenticated
+  USING (public.directory_listing_visible(listing_id) AND public.module_enabled('greffe_veille'));
+CREATE POLICY greffe_sites_ecriture ON public.greffe_sites FOR ALL TO authenticated
+  USING (public.directory_listing_modifiable(listing_id))
+  WITH CHECK (public.directory_listing_modifiable(listing_id));
+```
+
+Le SQL d'une greffe se range dans `supabase/greffe/` (le Remix retire `supabase/migrations`), en
+blocs rejouables pour l'éditeur SQL de Lovable, comme ceux du socle.
+
+### Ce que la greffe ne fait pas
+
+- Modifier un fichier hors des emplacements ci-dessus, ou une table du socle (ni colonne, ni
+  contrainte, ni politique).
+- Nommer un objet sans la marque : un futur objet du socle pourrait porter le même nom.
+- Réécrire le réglage « modules » en effaçant les clés `greffe_…`.
 
 ## 9. Recevoir les améliorations du socle
 

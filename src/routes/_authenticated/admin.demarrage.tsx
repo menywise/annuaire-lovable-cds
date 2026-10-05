@@ -4,7 +4,7 @@ import { CheckCircle2, Circle } from "lucide-react";
 import { toast } from "sonner";
 import { AdminShell, useIsAdmin } from "@/components/cds/AdminShell";
 import { ConfirmButton } from "@/components/cds/ConfirmButton";
-import { MODULES, isModuleOn } from "@/config/modules";
+import { ALL_MODULES, isModuleOn } from "@/config/modules";
 import { supabase } from "@/integrations/supabase/client";
 import { seo } from "@/lib/seo";
 import { getSiteConfig } from "@/lib/site-config";
@@ -69,7 +69,7 @@ function StarterPage() {
   }
 
   const paying = isModuleOn(modules, "payments") || isModuleOn(modules, "shop");
-  const modulesOn = MODULES.filter((m) => !m.socle && isModuleOn(modules, m.key));
+  const modulesOn = ALL_MODULES.filter((m) => !m.socle && isModuleOn(modules, m.key));
   const items: Item[] = [
     {
       done: brand.name !== brandFallback.name && brand.shortName !== brandFallback.shortName,
