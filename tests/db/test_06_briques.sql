@@ -45,6 +45,9 @@ DO $$ BEGIN
 END $$;
 
 -- 2. Annuaire métier ------------------------------------------------------------------------
+-- Module allumé (socle 1.4.1 : éteint, l'annuaire refuse tout dépôt d'un membre, voir test_24).
+RESET ROLE;
+UPDATE public.site_settings SET value = value || '{"directory": true}' WHERE key = 'modules';
 SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a2', 'membre@test.fr');
 SELECT pg_temp.expect_error($$INSERT INTO public.directory_listings (name, slug, created_by, status)
   VALUES ('Publiée', 'publiee', '00000000-0000-0000-0000-0000000000a2', 'published')$$, 'fiche publiée sans modération');
