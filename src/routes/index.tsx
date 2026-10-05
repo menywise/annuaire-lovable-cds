@@ -12,7 +12,8 @@ import { pageExcerpt, pageFaqJsonLd, toPageRow } from "@/lib/pages";
 
 export const Route = createFileRoute("/")({
   // Module « pages » allumé et page d'accueil publiée : elle remplace l'accueil de démonstration.
-  loader: async () => (isFeatureOn("pages") ? toPageRow(await getHomePage().catch(() => null)) : null),
+  loader: async () =>
+    isFeatureOn("pages") ? toPageRow(await getHomePage().catch(() => null)) : null,
   head: ({ loaderData: page }) => {
     const brand = getSiteConfig().brand;
     if (page) {
@@ -156,16 +157,20 @@ function Index() {
   const texte = settings.accueil.texte || settings.tagline;
   return (
     <PageShell>
-      <h1 className="text-3xl font-bold text-foreground">{settings.accueil.titre || settings.name}</h1>
+      <h1 className="text-3xl font-bold text-foreground">
+        {settings.accueil.titre || settings.name}
+      </h1>
       {texte ? (
-        <p className="mt-3 max-w-[680px] whitespace-pre-line text-sm text-muted-foreground">{texte}</p>
+        <p className="mt-3 max-w-[680px] whitespace-pre-line text-sm text-muted-foreground">
+          {texte}
+        </p>
       ) : null}
       <div className="mt-6 flex flex-wrap gap-2">
         {isFeatureOn("contact") ? (
           <Link
             to="/contact"
             title="Écrire au site"
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary-hover"
+            className="inline-flex min-h-11 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary-hover"
           >
             Nous contacter
           </Link>
@@ -173,7 +178,7 @@ function Index() {
         <Link
           to="/signup"
           title="Créer un compte sur le site"
-          className="inline-flex items-center justify-center rounded-md border border-input bg-card px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
+          className="inline-flex min-h-11 items-center justify-center rounded-md border border-input bg-card px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
         >
           Créer un compte
         </Link>

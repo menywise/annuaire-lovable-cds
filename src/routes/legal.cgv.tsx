@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { ContactChannel, LegalPage, Section, editorName } from "@/components/cds/LegalPage";
 import { useBrandSettings } from "@/hooks/useSiteSettings";
 import { getSiteConfig } from "@/lib/site-config";
@@ -10,8 +10,7 @@ export const Route = createFileRoute("/legal/cgv")({
   head: () =>
     seo({
       title: "Conditions générales de vente",
-      description:
-        `Conditions générales de vente ${editorName(getSiteConfig().brand)} : offres, prix, paiement, durée, droit de rétractation et réclamations.`,
+      description: `Conditions générales de vente ${editorName(getSiteConfig().brand)} : offres, prix, paiement, durée, droit de rétractation et réclamations.`,
       path: "/legal/cgv",
       type: "article",
     }),
@@ -21,54 +20,89 @@ export const Route = createFileRoute("/legal/cgv")({
 function CgvPage() {
   const { settings } = useBrandSettings();
   const editor = editorName(settings);
+  // Chaque partie ne s'affiche que si le module payant correspondant est allumé.
+  const pricing = isFeatureOn("pricing");
+  const payments = isFeatureOn("payments");
+  const shop = isFeatureOn("shop");
+  const sold = [
+    pricing ? "les abonnements présentés sur la page Tarifs" : null,
+    payments ? "les formations en ligne" : null,
+    shop ? "les articles de la boutique" : null,
+  ].filter(Boolean);
+
+  if (sold.length === 0) {
+    return (
+      <LegalPage title="Conditions générales de vente" updatedAt="17 septembre 2026">
+        <Section title="Objet et champ d'application">
+          <p>
+            Le site ne propose actuellement aucune offre payante. Si {editor} en propose une, ces
+            conditions seront complétées avant son ouverture.
+          </p>
+        </Section>
+      </LegalPage>
+    );
+  }
+
   return (
     <LegalPage title="Conditions générales de vente" updatedAt="17 septembre 2026">
       <Section title="Objet et champ d'application">
         <p>
-          Les présentes conditions encadrent la souscription aux offres payantes éditées par {editor}. Toute souscription vaut acceptation pleine et entière de ces conditions.
+          Les présentes conditions encadrent les ventes conclues sur le site édité par {editor} :{" "}
+          {sold.join(", ")}. Tout achat vaut acceptation pleine et entière de ces conditions.
         </p>
       </Section>
-      <Section title="Offres et prix">
-        <ul>
-          <li>
-            Les offres et leurs tarifs sont présentés sur la page Tarifs, en euros, toutes taxes
-            comprises.
-          </li>
-          <li>Le prix applicable est celui affiché au moment de la souscription.</li>
-          <li>
-            Toute évolution tarifaire est annoncée avant sa prise d'effet et ne s'applique jamais
-            rétroactivement.
-          </li>
-        </ul>
-      </Section>
-      <Section title="Souscription et paiement">
-        <p>
-          La souscription s'effectue depuis un compte créé sur le site. Le paiement s'effectue par
-          carte bancaire, par période d'abonnement échue ou d'avance selon l'offre choisie. Une
-          facture est mise à disposition dans l'espace personnel.
-        </p>
-      </Section>
-      <Section title="Durée, renouvellement et résiliation">
-        <ul>
-          <li>
-            Les abonnements sont conclus pour la période indiquée sur l'offre, renouvelable par
-            tacite reconduction.
-          </li>
-          <li>
-            La résiliation est possible à tout moment depuis l'espace personnel et prend effet à la
-            fin de la période en cours.
-          </li>
-          <li>Aucun prélèvement n'intervient après la date de résiliation.</li>
-        </ul>
-      </Section>
-      <Section title="Droit de rétractation">
-        <p>
-          Le consommateur dispose de quatorze jours pour se rétracter à compter de la souscription.
-          Lorsque l'exécution du service commence immédiatement à sa demande expresse, le montant dû
-          est calculé au prorata de la période consommée.
-        </p>
-      </Section>
-      {isFeatureOn("payments") ? (
+      {pricing ? (
+        <>
+          <Section title="Offres et prix">
+            <ul>
+              <li>
+                Les offres et leurs tarifs sont présentés sur la page{" "}
+                <Link
+                  to="/tarifs"
+                  title="Consulter les offres et leurs tarifs"
+                  className="font-medium text-primary-text hover:underline"
+                >
+                  Tarifs
+                </Link>
+                , en euros, toutes taxes comprises.
+              </li>
+              <li>Le prix applicable est celui affiché au moment de la souscription.</li>
+              <li>
+                Toute évolution tarifaire est annoncée avant sa prise d'effet et ne s'applique
+                jamais rétroactivement.
+              </li>
+            </ul>
+          </Section>
+          <Section title="Souscription et paiement">
+            <p>
+              La souscription s'effectue depuis un compte créé sur le site. Le paiement s'effectue
+              par carte bancaire, par période d'abonnement échue ou d'avance selon l'offre choisie.
+              Une facture est mise à disposition dans l'espace personnel.
+            </p>
+          </Section>
+          <Section title="Durée, renouvellement et résiliation">
+            <ul>
+              <li>
+                Les abonnements sont conclus pour la période indiquée sur l'offre, renouvelable par
+                tacite reconduction.
+              </li>
+              <li>
+                La résiliation est possible à tout moment depuis l'espace personnel et prend effet à
+                la fin de la période en cours.
+              </li>
+              <li>Aucun prélèvement n'intervient après la date de résiliation.</li>
+            </ul>
+          </Section>
+          <Section title="Droit de rétractation">
+            <p>
+              Le consommateur dispose de quatorze jours pour se rétracter à compter de la
+              souscription. Lorsque l'exécution du service commence immédiatement à sa demande
+              expresse, le montant dû est calculé au prorata de la période consommée.
+            </p>
+          </Section>
+        </>
+      ) : null}
+      {payments ? (
         <Section title="Formations en ligne">
           <ul>
             <li>
@@ -89,7 +123,7 @@ function CgvPage() {
           </ul>
         </Section>
       ) : null}
-      {isFeatureOn("shop") ? (
+      {shop ? (
         <Section title="Boutique">
           <ul>
             <li>
@@ -134,8 +168,9 @@ function CgvPage() {
       </Section>
       <Section title="Réclamations et médiation">
         <p>
-          Toute réclamation est adressée via <ContactChannel />. À défaut de solution amiable, le consommateur peut recourir gratuitement à un médiateur
-          de la consommation. Le droit français s'applique.
+          Toute réclamation est adressée via <ContactChannel />. À défaut de solution amiable, le
+          consommateur peut recourir gratuitement à un médiateur de la consommation. Le droit
+          français s'applique.
         </p>
       </Section>
     </LegalPage>
