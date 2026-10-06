@@ -2,7 +2,8 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { AuthLayout } from "@/components/cds/AuthLayout";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { messageAuth } from "@/lib/auth-messages";
+import { PasswordInput } from "@/components/cds/PasswordInput";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { supabase } from "@/integrations/supabase/client";
@@ -39,9 +40,7 @@ function ResetPasswordPage() {
     const { error: updateError } = await supabase.auth.updateUser({ password });
     setBusy(false);
     if (updateError) {
-      setError(
-        "Le lien de réinitialisation est invalide ou expiré. Demandez-en un nouveau depuis la page « Mot de passe oublié ».",
-      );
+      setError(messageAuth(updateError, "reinitialisation"));
       return;
     }
     navigate({ to: "/compte" });
@@ -70,9 +69,8 @@ function ResetPasswordPage() {
         )}
         <div className="space-y-1.5">
           <Label htmlFor="password">Nouveau mot de passe</Label>
-          <Input
+          <PasswordInput
             id="password"
-            type="password"
             autoComplete="new-password"
             required
             minLength={8}
@@ -83,9 +81,8 @@ function ResetPasswordPage() {
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="confirm">Confirmer le mot de passe</Label>
-          <Input
+          <PasswordInput
             id="confirm"
-            type="password"
             autoComplete="new-password"
             required
             minLength={8}

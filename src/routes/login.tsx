@@ -3,6 +3,8 @@ import { useState } from "react";
 import { AuthLayout } from "@/components/cds/AuthLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { messageAuth } from "@/lib/auth-messages";
+import { PasswordInput } from "@/components/cds/PasswordInput";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { supabase } from "@/integrations/supabase/client";
@@ -50,7 +52,7 @@ function LoginPage() {
       password,
     });
     if (signInError) {
-      setError("Adresse e-mail ou mot de passe incorrect.");
+      setError(messageAuth(signInError, "connexion"));
       setBusy(false);
       return;
     }
@@ -113,9 +115,8 @@ function LoginPage() {
               Mot de passe oublié ?
             </Link>
           </div>
-          <Input
+          <PasswordInput
             id="password"
-            type="password"
             autoComplete="current-password"
             required
             value={password}
