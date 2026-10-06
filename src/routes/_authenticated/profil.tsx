@@ -4,6 +4,8 @@ import { toast } from "sonner";
 import { PageShell } from "@/components/cds/SiteHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { messageAuth } from "@/lib/auth-messages";
+import { PasswordInput } from "@/components/cds/PasswordInput";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -88,7 +90,7 @@ function ProfilPage() {
     setSavingPassword(true);
     const { error } = await supabase.auth.updateUser({ password });
     setSavingPassword(false);
-    if (error) toast.error("Le mot de passe n'a pas pu être modifié.");
+    if (error) toast.error(messageAuth(error, "mot-de-passe"));
     else {
       toast.success("Mot de passe modifié.");
       e.currentTarget.reset();
@@ -135,7 +137,7 @@ function ProfilPage() {
 
         {isFeatureOn("members") ? <PublicProfileCard /> : null}
 
-        <Card className="mt-6">
+        <Card id="mot-de-passe" className="mt-6 scroll-mt-24">
           <CardHeader>
             <CardTitle className="text-base">Mot de passe</CardTitle>
             <CardDescription>8 caractères minimum.</CardDescription>
@@ -144,20 +146,18 @@ function ProfilPage() {
             <form className="space-y-4" onSubmit={savePassword}>
               <div className="space-y-1.5">
                 <Label htmlFor="password">Nouveau mot de passe</Label>
-                <Input
+                <PasswordInput
                   id="password"
                   name="password"
-                  type="password"
                   autoComplete="new-password"
                   required
                 />
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="confirm">Confirmer le mot de passe</Label>
-                <Input
+                <PasswordInput
                   id="confirm"
                   name="confirm"
-                  type="password"
                   autoComplete="new-password"
                   required
                 />
