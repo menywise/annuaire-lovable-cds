@@ -23,7 +23,9 @@ concurrency:
 jobs:
   recette:
     name: Site public (${{ matrix.navigateur }})
-    runs-on: ubuntu-latest
+    # Version figée : ubuntu-latest passe à Ubuntu 26 le 19/10/2026 ; les navigateurs de test
+    # (Playwright) s'installent par paquets propres à chaque version. À relever une fois Ubuntu 26 pris en charge.
+    runs-on: ubuntu-24.04
     timeout-minutes: 60
     strategy:
       fail-fast: false
