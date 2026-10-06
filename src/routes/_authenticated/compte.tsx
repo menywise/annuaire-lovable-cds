@@ -76,6 +76,14 @@ function ComptePage() {
           >
             Mon profil
           </Link>
+          <Link
+            to="/profil"
+            hash="mot-de-passe"
+            title="Choisir un nouveau mot de passe"
+            className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent max-md:min-h-11"
+          >
+            Changer mon mot de passe
+          </Link>
           <Button variant="outline" onClick={signOut} title="Fermer la session en cours">
             Se déconnecter
           </Button>

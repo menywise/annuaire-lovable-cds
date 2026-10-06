@@ -3,6 +3,8 @@ import { useState } from "react";
 import { AuthLayout } from "@/components/cds/AuthLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { messageAuth } from "@/lib/auth-messages";
+import { PasswordInput } from "@/components/cds/PasswordInput";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -51,11 +53,7 @@ function SignupPage() {
     });
     setBusy(false);
     if (signUpError) {
-      setError(
-        signUpError.message.includes("already")
-          ? "Un compte existe déjà avec cette adresse."
-          : "La création du compte a échoué. Vérifiez les informations saisies.",
-      );
+      setError(messageAuth(signUpError, "inscription"));
       return;
     }
     setDone(true);
@@ -118,9 +116,8 @@ function SignupPage() {
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="password">Mot de passe</Label>
-            <Input
+            <PasswordInput
               id="password"
-              type="password"
               autoComplete="new-password"
               required
               minLength={8}
