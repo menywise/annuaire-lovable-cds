@@ -159,14 +159,9 @@ export const getDepartement = createServerFn({ method: "GET" })
         .eq("region", departement.region)
         .neq("code", departement.code)
         .order("code"),
-      // Principales communes (référentiel géographique, lot 11).
-      client
-        .from("geo_places")
-        .select("code, name, population")
-        .eq("kind", "commune")
-        .eq("parent_code", departement.code)
-        .order("population", { ascending: false, nullsFirst: false })
-        .limit(48),
+      // Principales communes (référentiel géographique, lot 11). Lecture par fonction depuis 1.5.0 :
+      // la table n'est plus lisible directement par un visiteur (pas d'export en masse).
+      client.rpc("geo_communes_principales", { _departement: departement.code, _limit: 48 }),
     ]);
     return {
       departement,
@@ -185,12 +180,7 @@ export const getCommune = createServerFn({ method: "GET" })
     if (!INSEE.test(input.code)) return null;
     const client = publicClient();
     const commune = check(
-      await client
-        .from("geo_places")
-        .select("code, name, parent_code, epci_code, postal_codes, population, latitude, longitude")
-        .eq("kind", "commune")
-        .eq("code", input.code)
-        .maybeSingle(),
+      await client.rpc("geo_lieu", { _kind: "commune", _code: input.code }).maybeSingle(),
     );
     if (!commune) return null;
     const fields = "id, name, slug, excerpt, city, plan, verified, featured, category_id";
@@ -201,12 +191,7 @@ export const getCommune = createServerFn({ method: "GET" })
         .eq("code", commune.parent_code ?? "")
         .maybeSingle(),
       commune.epci_code
-        ? client
-            .from("geo_places")
-            .select("code, name")
-            .eq("kind", "epci")
-            .eq("code", commune.epci_code)
-            .maybeSingle()
+        ? client.rpc("geo_lieu", { _kind: "epci", _code: commune.epci_code }).maybeSingle()
         : Promise.resolve({ data: null, error: null }),
       client.rpc("geo_neighbours", { _code: commune.code, _limit: 12 }),
       commune.postal_codes.length
