@@ -1,0 +1,9 @@
+{
+  "name": "annuaire-greffe-r2",
+  "private": true,
+  "type": "module",
+  "description": "Règle R2 de l'annuaire : numéro d'entreprise lu dans les mentions légales, puis registre public des entreprises.",
+  "dependencies": {
+    "playwright-core": "1.63.0"
+  }
+}
