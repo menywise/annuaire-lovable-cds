@@ -150,7 +150,8 @@ RESET ROLE;
 
 -- 6. Version et point de grille ------------------------------------------------------------------------
 DO $$ BEGIN
-  IF (SELECT value ->> 'version' FROM public.site_settings WHERE key = 'socle') <> '1.4.1' THEN RAISE EXCEPTION 'version 1.4.1'; END IF;
+  IF string_to_array((SELECT value ->> 'version' FROM public.site_settings WHERE key = 'socle'), '.')::int[]
+     < string_to_array('1.4.1', '.')::int[] THEN RAISE EXCEPTION 'version 1.4.1'; END IF;
   IF NOT EXISTS (SELECT 1 FROM public.template_checks t WHERE code = 'SEC-RLS' AND t.en_perimetre) THEN
     RAISE EXCEPTION 'point SEC-RLS'; END IF;
 END $$;

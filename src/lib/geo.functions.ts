@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { GEO_NIVEAUX, PAYS_CODE } from "@/lib/geo-import";
 
 type Ctx = {
   supabase: import("@supabase/supabase-js").SupabaseClient<
@@ -68,4 +69,30 @@ export const computeGeoNeighbours = createServerFn({ method: "POST" })
     });
     if (error) throw new Error(`Calcul impossible : ${error.message}`);
     return { communes: n ?? 0 };
+  });
+
+/** Référentiel du Studio (GeoAnnonces, socle 1.5.0) : pays disponibles. */
+export const geoStudioPays = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context);
+    const { studioPays } = await import("@/lib/geo.server");
+    return studioPays();
+  });
+
+/** Référentiel du Studio : un niveau d'un pays, par paquets (à relancer tant que `suivant` existe). */
+export const importGeoStudio = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { pays?: string; niveau?: string; apres?: string | null }) => {
+    const pays = String(input?.pays ?? "").toUpperCase();
+    const niveau = String(input?.niveau ?? "");
+    if (!PAYS_CODE.test(pays)) throw new Error("Pays : code ISO à deux lettres.");
+    if (!(GEO_NIVEAUX as readonly string[]).includes(niveau)) throw new Error("Niveau inconnu.");
+    const apres = input?.apres ? String(input.apres).slice(0, 40) : null;
+    return { pays, niveau, apres };
+  })
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    const { importStudio } = await import("@/lib/geo.server");
+    return importStudio(context.supabase, data.pays, data.niveau, data.apres, 3);
   });
