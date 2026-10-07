@@ -2401,6 +2401,26 @@ export type Database = {
         Args: { _code: string; _limit?: number }
         Returns: { code: string; name: string; population: number | null; distance_km: number | null }[]
       }
+      geo_communes_principales: {
+        Args: { _departement: string; _limit?: number; _pays?: string }
+        Returns: { code: string; name: string; population: number | null }[]
+      }
+      geo_importer: { Args: { _lignes: Json }; Returns: number }
+      geo_lieu: {
+        Args: { _kind: string; _code: string; _pays?: string }
+        Returns: {
+          kind: string
+          code: string
+          name: string
+          slug: string
+          parent_code: string | null
+          epci_code: string | null
+          postal_codes: string[]
+          population: number | null
+          latitude: number | null
+          longitude: number | null
+        }[]
+      }
       geo_status: { Args: never; Returns: Json }
       geo_search: {
         Args: { _q: string; _kinds?: string[] | null; _limit?: number }

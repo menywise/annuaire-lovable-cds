@@ -1,5 +1,6 @@
 /**
  * CDS — Géographie (lot 11) : conversion des réponses de geo.api.gouv.fr en lignes `geo_places`.
+ * Socle 1.5.0 : conversion des réponses de l'API du référentiel du Studio (GeoAnnonces), même modèle.
  * Fichier sans dépendance (testé par tests/unit/geo-import.test.ts). Même modèle que l'annuaire
  * (annuaire-mac97000, src/lib/geo.server.ts) pour que ses données se reprennent telles quelles.
  */
@@ -21,7 +22,7 @@ export const DEPARTEMENT_CODE = /^(0[1-9]|1[0-9]|2[1-9]|[3-8][0-9]|9[0-5]|2A|2B|
 export type GeoKind = "pays" | "region" | "departement" | "epci" | "commune";
 
 export type GeoPlaceRow = {
-  country_code: "FR";
+  country_code: string;
   kind: GeoKind;
   code: string;
   name: string;
@@ -132,5 +133,49 @@ export function toCommunes(data: unknown): GeoPlaceRow[] {
         latitude: lat,
         longitude: lon,
       });
+    });
+}
+
+// --- Référentiel du Studio (GeoAnnonces), socle 1.5.0 ------------------------------------------
+
+/** Niveaux importés, dans l'ordre : chaque lieu retrouve son parent déjà présent. */
+export const GEO_NIVEAUX = ["pays", "region", "departement", "epci", "commune"] as const;
+export const PAYS_CODE = /^[A-Z]{2}$/;
+const KINDS = new Set<string>(GEO_NIVEAUX);
+
+const textes = (v: unknown) =>
+  Array.isArray(v) ? [...new Set(v.map(text).filter(Boolean))].sort() : [];
+const nombre = (v: unknown) => (typeof v === "number" && Number.isFinite(v) ? v : null);
+
+/** Lieux renvoyés par `/api/geo/v1/lieux` : même modèle que `geo_places`, contrôlé ligne à ligne. */
+export function toGeoAnnonces(data: unknown, pays: string): GeoPlaceRow[] {
+  return list(data)
+    .filter(
+      (l) =>
+        text(l["country_code"]) === pays &&
+        KINDS.has(text(l["kind"])) &&
+        text(l["code"]) &&
+        text(l["name"]),
+    )
+    .map((l) => {
+      const attrs = l["attributes"];
+      return {
+        country_code: pays,
+        kind: text(l["kind"]) as GeoKind,
+        code: text(l["code"]),
+        name: text(l["name"]),
+        slug: text(l["slug"]) || geoSlug(text(l["name"])),
+        parent_code: text(l["parent_code"]) || null,
+        epci_code: text(l["epci_code"]) || null,
+        postal_codes: textes(l["postal_codes"]),
+        population: int(l["population"]),
+        latitude: nombre(l["latitude"]),
+        longitude: nombre(l["longitude"]),
+        attributes:
+          attrs && typeof attrs === "object" && !Array.isArray(attrs)
+            ? (attrs as Record<string, unknown>)
+            : {},
+        source: text(l["source"]) || "GeoAnnonces",
+      };
     });
 }

@@ -12,6 +12,7 @@ import {
   toCommunes,
   toDepartements,
   toEpcis,
+  toGeoAnnonces,
   toRegions,
   type GeoPlaceRow,
 } from "@/lib/geo-import";
@@ -68,4 +69,69 @@ export async function importCommunes(client: Client, lots: number) {
     communes += await upsert(client, toCommunes(await apiGet(GEO_ENDPOINTS.communes(code))));
   }
   return { departements: pending, communes };
+}
+
+// --- Référentiel du Studio (GeoAnnonces), socle 1.5.0 ------------------------------------------
+// Adresse et clé dans les secrets du projet (jamais dans le code) : CDS_GEO_URL, CDS_GEO_CLE.
+
+const PAGE = 1000;
+
+function studio() {
+  const url = process.env["CDS_GEO_URL"]?.trim().replace(/\/+$/, "");
+  const cle = process.env["CDS_GEO_CLE"]?.trim();
+  if (!url || !cle) {
+    throw new Error(
+      "Référentiel du Studio non relié : renseigner les secrets CDS_GEO_URL et CDS_GEO_CLE (Lovable → Cloud → Secrets).",
+    );
+  }
+  return { url, cle };
+}
+
+async function studioGet(path: string): Promise<Record<string, unknown>> {
+  const { url, cle } = studio();
+  const res = await fetch(`${url}/api/geo/v1${path}`, {
+    headers: { Accept: "application/json", "X-Api-Key": cle },
+    signal: AbortSignal.timeout(TIMEOUT_MS),
+  });
+  const body = (await res.json().catch(() => null)) as Record<string, unknown> | null;
+  if (!res.ok || !body) {
+    const erreur = typeof body?.["erreur"] === "string" ? body["erreur"] : `réponse ${res.status}`;
+    throw new Error(`Référentiel du Studio : ${erreur}`);
+  }
+  return body;
+}
+
+/** Pays proposés par le référentiel du Studio. */
+export async function studioPays(): Promise<{ code: string; name: string }[]> {
+  const body = await studioGet("/pays");
+  const pays = Array.isArray(body["pays"]) ? (body["pays"] as Record<string, unknown>[]) : [];
+  return pays
+    .map((p) => ({ code: String(p["code"] ?? ""), name: String(p["name"] ?? "") }))
+    .filter((p) => /^[A-Z]{2}$/.test(p.code) && p.name);
+}
+
+/** Un niveau d'un pays, quelques paquets à la fois ; `suivant` dit où reprendre (null : terminé). */
+export async function importStudio(
+  client: Client,
+  pays: string,
+  niveau: string,
+  apres: string | null,
+  paquets: number,
+) {
+  let suivant = apres;
+  let lieux = 0;
+  for (let i = 0; i < paquets; i++) {
+    const query = new URLSearchParams({ pays, niveau, limite: String(PAGE) });
+    if (suivant) query.set("apres", suivant);
+    const body = await studioGet(`/lieux?${query.toString()}`);
+    const rows = toGeoAnnonces(body["lieux"], pays);
+    if (rows.length) {
+      const { error } = await client.rpc("geo_importer", { _lignes: rows as never });
+      if (error) throw new Error(`Enregistrement impossible : ${error.message}`);
+      lieux += rows.length;
+    }
+    suivant = typeof body["suivant"] === "string" && body["suivant"] ? body["suivant"] : null;
+    if (!suivant) break;
+  }
+  return { pays, niveau, lieux, suivant };
 }

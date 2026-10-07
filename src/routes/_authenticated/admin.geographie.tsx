@@ -9,10 +9,13 @@ import { downloadCsv } from "@/lib/csv";
 import {
   computeGeoNeighbours,
   geoStatus,
+  geoStudioPays,
   importGeoCommunes,
   importGeoSocle,
+  importGeoStudio,
   type GeoStatus,
 } from "@/lib/geo.functions";
+import { GEO_NIVEAUX } from "@/lib/geo-import";
 import { seo } from "@/lib/seo";
 
 export const Route = createFileRoute("/_authenticated/admin/geographie")({
@@ -65,8 +68,9 @@ function AdminGeoPage() {
   return (
     <AdminShell
       title="Géographie"
-      intro="Les pages départementales et communales se génèrent automatiquement à partir du référentiel officiel (geo.api.gouv.fr) : rien à créer à la main."
+      intro="Les pages départementales et communales se génèrent automatiquement à partir du référentiel géographique : rien à créer à la main."
     >
+      <StudioPanel />
       <ReferentielPanel />
       {failed ? (
         <p
@@ -276,6 +280,129 @@ function ReferentielPanel() {
             </Button>
           ) : null}
         </>
+      )}
+    </section>
+  );
+}
+
+const NIVEAU_LIBELLE: Record<(typeof GEO_NIVEAUX)[number], string> = {
+  pays: "pays",
+  region: "régions",
+  departement: "subdivisions",
+  epci: "intercommunalités",
+  commune: "communes",
+};
+
+/**
+ * Socle 1.5.0 : import depuis le référentiel géographique du Studio (GeoAnnonces), par clé.
+ * Un pays à la fois, niveau par niveau, par paquets de 1 000 ; rejouable, sans doublon.
+ */
+function StudioPanel() {
+  const [pays, setPays] = useState<{ code: string; name: string }[] | null>(null);
+  const [erreur, setErreur] = useState<string | null>(null);
+  const [choix, setChoix] = useState("FR");
+  const [busy, setBusy] = useState<string | null>(null);
+  const stop = useRef(false);
+
+  useEffect(() => {
+    void (async () => {
+      try {
+        setPays(await geoStudioPays());
+      } catch (error) {
+        setErreur(error instanceof Error ? error.message : "Référentiel du Studio injoignable.");
+      }
+    })();
+  }, []);
+
+  async function importer() {
+    stop.current = false;
+    let total = 0;
+    try {
+      for (const niveau of GEO_NIVEAUX) {
+        let apres: string | null = null;
+        do {
+          if (stop.current) return;
+          setBusy(
+            `${NIVEAU_LIBELLE[niveau]}… (${new Intl.NumberFormat("fr-FR").format(total)} lieux)`,
+          );
+          const r: { lieux: number; suivant: string | null } = await importGeoStudio({
+            data: { pays: choix, niveau, apres },
+          });
+          total += r.lieux;
+          apres = r.suivant;
+        } while (apres);
+      }
+      toast.success(
+        `${new Intl.NumberFormat("fr-FR").format(total)} lieux importés ou mis à jour.`,
+      );
+    } catch (error) {
+      toast.error("Import interrompu.", {
+        description: error instanceof Error ? error.message : "Réessayez dans un instant.",
+      });
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  return (
+    <section aria-labelledby="studio" className="mb-6 rounded-xl border border-border bg-card p-5">
+      <h2 id="studio" className="text-lg font-semibold text-foreground">
+        Référentiel du Studio
+      </h2>
+      <p className="mt-1 text-sm text-muted-foreground">
+        Importer un pays depuis le référentiel géographique commun aux projets du Studio : pays,
+        régions, subdivisions, intercommunalités et communes.
+      </p>
+      {erreur ? (
+        <p
+          role="alert"
+          className="mt-3 rounded-lg border border-destructive p-4 text-sm text-foreground"
+        >
+          {erreur}
+        </p>
+      ) : !pays ? (
+        <p className="mt-3 text-sm text-muted-foreground">Chargement…</p>
+      ) : (
+        <div className="mt-4 flex flex-wrap items-center gap-3">
+          <label htmlFor="studio-pays" className="text-sm text-foreground">
+            Pays
+          </label>
+          <select
+            id="studio-pays"
+            value={choix}
+            disabled={busy !== null}
+            onChange={(event) => setChoix(event.target.value)}
+            className="h-9 rounded-md border border-input bg-background px-3 text-sm text-foreground"
+          >
+            {pays.map((p) => (
+              <option key={p.code} value={p.code}>
+                {p.name}
+              </option>
+            ))}
+          </select>
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={busy !== null}
+            onClick={() => void importer()}
+            title="Importer ou mettre à jour ce pays, niveau par niveau, jusqu'au dernier lieu"
+          >
+            {busy ? "Import…" : "Importer ce pays"}
+          </Button>
+          {busy ? (
+            <>
+              <span className="text-sm text-muted-foreground">{busy}</span>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => (stop.current = true)}
+                title="Arrêter après le paquet en cours (relancer reprend sans doublon)"
+              >
+                Arrêter après ce paquet
+              </Button>
+            </>
+          ) : null}
+        </div>
       )}
     </section>
   );

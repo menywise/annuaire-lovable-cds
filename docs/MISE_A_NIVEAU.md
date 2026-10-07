@@ -7,8 +7,8 @@ comment l'amener à la version courante du socle, puis applique la méthode à l
 ## Ce qu'il faut savoir avant
 
 - **La référence d'une version est une migration du dépôt du socle**, jamais le journal de
-  migrations de la plateforme. Version courante : **1.4.1**, migration
-  `20261005150000_v1_4_1_correctifs`.
+  migrations de la plateforme. Version courante : **1.5.0**, migration
+  `20261007200000_v1_5_0_referentiel_studio`.
 - **Ordre code / base.** En général la base passe avant le code (le nouveau code lit ce que la base
   vient de recevoir). Exception 1.4.1 : le code d'abord, car la base supprime une colonne que
   l'ancien code lit. Le `LISEZMOI.md` des blocs de chaque version donne l'ordre.

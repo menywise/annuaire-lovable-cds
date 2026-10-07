@@ -11,6 +11,7 @@ import {
   toCommunes,
   toDepartements,
   toEpcis,
+  toGeoAnnonces,
   toRegions,
 } from "../../src/lib/geo-import.ts";
 
@@ -87,4 +88,40 @@ test("codes de département acceptés pour l'import", () => {
     assert.ok(DEPARTEMENT_CODE.test(ok), ok);
   for (const ko of ["20", "00", "96", "977", "../x", "69 ", ""])
     assert.ok(!DEPARTEMENT_CODE.test(ko), ko);
+});
+
+test("référentiel du Studio (1.5.0) : lignes contrôlées, pays imposé, lignes fausses écartées", () => {
+  const rows = toGeoAnnonces(
+    [
+      {
+        country_code: "BE",
+        kind: "commune",
+        code: "21001",
+        name: "Anderlecht",
+        slug: "be-anderlecht",
+        parent_code: "BRU",
+        postal_codes: ["1070", "1070", ""],
+        population: 126581.4,
+        latitude: null,
+        attributes: { nuts3: "BE100" },
+        source: "Eurostat, LAU 2024",
+      },
+      { country_code: "BE", kind: "quartier", code: "x", name: "Type inconnu" },
+      { country_code: "FR", kind: "commune", code: "75056", name: "Autre pays" },
+      { country_code: "BE", kind: "commune", code: "", name: "Sans code" },
+      { country_code: "BE", kind: "region", code: "BE-WAL", name: "Wallonie", attributes: [1, 2] },
+    ],
+    "BE",
+  );
+  assert.equal(rows.length, 2);
+  const [c, r] = rows;
+  assert.equal(c!.country_code, "BE");
+  assert.deepEqual(c!.postal_codes, ["1070"]);
+  assert.equal(c!.population, 126581);
+  assert.equal(c!.latitude, null);
+  assert.deepEqual(c!.attributes, { nuts3: "BE100" });
+  assert.equal(r!.slug, "wallonie");
+  assert.deepEqual(r!.attributes, {});
+  assert.equal(r!.source, "GeoAnnonces");
+  assert.deepEqual(toGeoAnnonces(null, "BE"), []);
 });
