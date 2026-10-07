@@ -97,9 +97,10 @@ DO $$ BEGIN
   IF EXISTS (SELECT 1 FROM public.geo_search('')) OR EXISTS (SELECT 1 FROM public.geo_search('l')) THEN RAISE EXCEPTION 'saisie trop courte'; END IF;
   PERFORM * FROM public.geo_search($q$%' OR 1=1 --$q$);
   IF (SELECT count(*) FROM public.geo_search('lyon', NULL, 500)) > 50 THEN RAISE EXCEPTION 'limite'; END IF;
-  -- Lecture publique du référentiel.
-  IF (SELECT count(*) FROM public.geo_places) < 8 THEN RAISE EXCEPTION 'référentiel illisible'; END IF;
 END $$;
+-- Socle 1.5.0 : plus de lecture directe du référentiel par un visiteur (pas d'export en masse) ;
+-- les pages lisent par fonctions à l'unité (test_25_referentiel_studio.sql).
+SELECT pg_temp.expect_error($$SELECT count(*) FROM public.geo_places$$, 'visiteur lit tout le référentiel');
 
 -- 4. État du référentiel --------------------------------------------------------------------
 DO $$

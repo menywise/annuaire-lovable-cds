@@ -2385,6 +2385,26 @@ export type Database = {
         Args: { _lat1: number; _lat2: number; _lon1: number; _lon2: number }
         Returns: number
       }
+      geo_communes_principales: {
+        Args: { _departement: string; _limit?: number; _pays?: string }
+        Returns: { code: string; name: string; population: number | null }[]
+      }
+      geo_importer: { Args: { _lignes: Json }; Returns: number }
+      geo_lieu: {
+        Args: { _kind: string; _code: string; _pays?: string }
+        Returns: {
+          kind: string
+          code: string
+          name: string
+          slug: string
+          parent_code: string | null
+          epci_code: string | null
+          postal_codes: string[]
+          population: number | null
+          latitude: number | null
+          longitude: number | null
+        }[]
+      }
       geo_neighbours: {
         Args: { _code: string; _limit?: number }
         Returns: {
