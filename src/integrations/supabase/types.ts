@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      activites: {
+        Row: {
+          cadran: string | null
+          categorie: string
+          code: string
+          code_naf_2025: string | null
+          libelle: string
+          source: string
+          statut: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          cadran?: string | null
+          categorie: string
+          code: string
+          code_naf_2025?: string | null
+          libelle: string
+          source?: string
+          statut?: string
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          cadran?: string | null
+          categorie?: string
+          code?: string
+          code_naf_2025?: string | null
+          libelle?: string
+          source?: string
+          statut?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       ad_campaigns: {
         Row: {
           active: boolean
