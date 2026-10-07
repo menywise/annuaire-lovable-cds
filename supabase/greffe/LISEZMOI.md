@@ -54,3 +54,22 @@ classements ; une fiche publiée module allumé est visible avec son usage.
 À venir : classements des axes « à classer » (lecture des pages, numéro d'entreprise et code d'activité
 officiel, cible), puis contenu éditorial de chaque fiche avant publication. Captures d'OLD perdues (liens
 expirés) : à refaire.
+
+## Règle R2 : numéro d'entreprise et registre public (07/10/2026)
+
+`02_taches.sql` ajoute la colonne `siren` aux fiches site web, la table `greffe_taches` (une ligne par site et par
+tâche : statut, date, détail ; administration seule) et la vue `greffe_r2_a_traiter` (sites francophones en ligne
+pas encore passés par R2).
+
+Outil : `r2/r2.mjs` (Node, `playwright-core`, navigateur Chromium sans écran : les sites Lovable s'affichent dans
+le navigateur, une simple lecture de la page ne voit presque rien). Pour chaque site : page d'accueil, puis page
+des mentions légales si un lien y mène ; numéro SIREN ou SIRET près d'une étiquette (SIREN, SIRET, RCS…), contrôlé
+par sa clé ; puis registre public des entreprises (recherche-entreprises.api.gouv.fr, API de l'État, sans clé).
+Lecture passive : agent identifié, une page à la fois, une seconde de pause, 20 secondes au plus par page.
+
+Résultats, version `R2-2026-10-07`, confiance « sourcé » : activité = code NAF du registre (code eqNAF s'il existe
+dans `activites`, sinon `NAF:<code>`, trou du registre à combler dans la base SCM) ; géographie = commune du siège.
+Le fichier SQL produit est rejouable.
+
+Usage : `node r2.mjs a_traiter.json resultats.json resultats.sql`, avec `CHROME_PATH` vers Chromium. Essai sur 40
+sites francophones : 8 numéros vérifiés au registre (20 %). Tâche planifiée : 25 sites par heure.
