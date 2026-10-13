@@ -66,15 +66,45 @@ export function supabaseForUser(ctx: ToolContext) {
   });
 }
 
-/** Adresse du site audité : paramètre de l'outil, sinon SITE_URL, sinon l'adresse réglée en admin. */
-export async function siteBaseUrl(override?: string): Promise<string> {
-  let base = override?.trim() || configuredEnv(["SITE_URL"]) || "";
-  if (!base) {
-    const { loadSiteConfig } = await import("@/lib/site-config.functions");
-    base = (await loadSiteConfig().catch(() => null))?.brand.url ?? "";
+function origine(adresse: string | undefined): string | null {
+  try {
+    const url = new URL(adresse ?? "");
+    return url.protocol === "https:" || url.protocol === "http:" ? url.origin : null;
+  } catch {
+    return null;
   }
-  if (!base) throw new Error("Adresse du site inconnue : indiquez base_url ou réglez-la en admin.");
-  return base.replace(/\/+$/, "");
+}
+
+/**
+ * Adresse du site audité : SITE_URL, sinon l'adresse réglée en admin, sinon ce serveur.
+ * `base_url` ne peut désigner que l'une de ces adresses : le serveur ne charge jamais une
+ * adresse choisie librement par l'appelant.
+ */
+export async function siteBaseUrl(override?: string): Promise<string> {
+  const { loadSiteConfig } = await import("@/lib/site-config.functions");
+  const reglee = origine((await loadSiteConfig().catch(() => null))?.brand.url);
+  let courante: string | null = null;
+  try {
+    const { getRequest } = await import("@tanstack/react-start/server");
+    courante = origine(getRequest().url);
+  } catch {
+    /* hors requête : seule l'adresse réglée compte */
+  }
+  const autorisees = [origine(configuredEnv(["SITE_URL"])), reglee, courante].filter(
+    (o): o is string => Boolean(o),
+  );
+  if (override?.trim()) {
+    const demandee = origine(override.trim());
+    if (!demandee || !autorisees.includes(demandee)) {
+      throw new Error(
+        `base_url refusée : seules l'adresse du site réglée en admin et celle de ce serveur sont acceptées (${autorisees.join(", ") || "aucune connue"}).`,
+      );
+    }
+    return demandee;
+  }
+  const base = autorisees[0];
+  if (!base) throw new Error("Adresse du site inconnue : réglez-la en admin.");
+  return base;
 }
 
 export function textResult(payload: unknown) {

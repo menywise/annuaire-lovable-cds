@@ -1,5 +1,6 @@
 import { defineTool } from "@lovable.dev/mcp-js";
 import { z } from "zod";
+import { requireAdmin } from "../guard";
 import { errorResult, siteBaseUrl, textResult } from "../supabase";
 
 function all(html: string, re: RegExp) {
@@ -23,12 +24,17 @@ export default defineTool({
       .string()
       .url()
       .optional()
-      .describe("Adresse du site, si différente de la production."),
+      .describe("Adresse du site : celle réglée en admin ou celle de ce serveur (préproduction)."),
   },
   annotations: { readOnlyHint: true, openWorldHint: true },
   handler: async ({ path, base_url }, ctx) => {
-    const base = await siteBaseUrl(base_url).catch(() => null);
-    if (!base) return errorResult("Adresse du site inconnue : indiquez base_url.");
+    let base: string;
+    try {
+      await requireAdmin(ctx);
+      base = await siteBaseUrl(base_url);
+    } catch (e) {
+      return errorResult((e as Error).message);
+    }
     const url = `${base}${path.startsWith("/") ? path : `/${path}`}`;
     try {
       const res = await fetch(url, { signal: ctx.signal, redirect: "follow" });
