@@ -130,6 +130,8 @@ export const startShopCheckout = createServerFn({ method: "POST" })
     if (error || !order) throw new Error(error?.message ?? "Commande impossible.");
 
     // Commande précédente encore ouverte chez Stripe (autre onglet) : fermée avant d'en ouvrir une.
+    // Son stock est déjà rendu : toute commande qui passe à « expired » le rend, une seule fois
+    // (déclencheur shop_orders_release_stock, migration 1.6.1).
     for (const old of order.superseded_sessions ?? []) {
       if ((await expireCheckoutSession(old)) === "paid") {
         await supabaseAdmin
@@ -162,6 +164,7 @@ export const startShopCheckout = createServerFn({ method: "POST" })
       shippingCountries: order.countries,
     });
     if (!session) {
+      // Commande abandonnée : le passage à « expired » rend son stock réservé.
       await supabaseAdmin.from("payments").update({ status: "failed" }).eq("id", order.payment_id);
       await supabaseAdmin
         .from("shop_orders")

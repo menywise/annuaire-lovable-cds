@@ -50,6 +50,8 @@ function CartPage() {
   const [failed, setFailed] = useState(false);
   const [waiver, setWaiver] = useState(false);
   const [paying, setPaying] = useState(false);
+  // Relecture du stock après un refus : les quantités au-delà du stock restant s'affichent.
+  const [reload, setReload] = useState(0);
   const ids = cart.map((l) => l.productId).join(",");
 
   useEffect(() => {
@@ -77,7 +79,7 @@ function CartPage() {
     return () => {
       cancelled = true;
     };
-  }, [ready, ids]);
+  }, [ready, ids, reload]);
 
   // Lignes du panier dont le produit est toujours en vente.
   const lines = useMemo(
@@ -123,6 +125,7 @@ function CartPage() {
       window.location.assign(url);
     } catch (err) {
       setPaying(false);
+      setReload((n) => n + 1);
       toast.error("Commande impossible.", {
         description: err instanceof Error ? err.message : "Réessayez dans un instant.",
       });

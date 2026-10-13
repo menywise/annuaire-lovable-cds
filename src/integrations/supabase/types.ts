@@ -1935,6 +1935,7 @@ export type Database = {
           order_id: string
           product_id: string | null
           quantity: number
+          reserved_quantity: number
           title: string
           unit_price_cents: number
         }
@@ -1945,6 +1946,7 @@ export type Database = {
           order_id: string
           product_id?: string | null
           quantity: number
+          reserved_quantity?: number
           title: string
           unit_price_cents: number
         }
@@ -1955,6 +1957,7 @@ export type Database = {
           order_id?: string
           product_id?: string | null
           quantity?: number
+          reserved_quantity?: number
           title?: string
           unit_price_cents?: number
         }
@@ -2535,6 +2538,7 @@ export type Database = {
           path: string
         }[]
       }
+      shop_release_stock: { Args: { _order_id: string }; Returns: boolean }
       shop_set_customer: {
         Args: { _address: Json; _email: string; _name: string; _session_id: string }
         Returns: boolean

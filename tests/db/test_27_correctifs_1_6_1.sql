@@ -1,7 +1,7 @@
 \set ON_ERROR_STOP 1
 \i tests/db/_helpers.sql
 BEGIN;
--- Socle 1.6.1 : correctifs issus de l'audit du 13/10.
+-- Socle 1.6.1 : correctifs issus de l'audit du 13/10 (messagerie privée, stock de la boutique).
 -- b1 : membre · b2 : autre membre · b3 : tiers
 INSERT INTO auth.users (id, email) VALUES
   ('00000000-0000-0000-0000-0000000000b1', 'un@test.fr'),
@@ -82,11 +82,123 @@ DO $$ BEGIN
   THEN RAISE EXCEPTION 'droits de modification de la messagerie'; END IF;
 END $$;
 
+-- 2. Boutique : stock réservé à la commande, rendu une seule fois, pas de double décompte ------------
+-- e1 : objet en stock 1 · e2 : PDF (sans stock) · e3 : objet sans limite de stock
+RESET ROLE;
+UPDATE public.site_settings SET value = value || '{"shop": true}' WHERE key = 'modules';
+UPDATE public.site_settings SET value = '{"shipping_cents": 0, "countries": ["FR"]}' WHERE key = 'shop';
+INSERT INTO public.shop_products (id, slug, title, kind, price_cents, stock, published) VALUES
+  ('00000000-0000-0000-0000-0000000000e1', 'carnet', 'Carnet', 'physique', 1000, 1, true),
+  ('00000000-0000-0000-0000-0000000000e2', 'fiche-pdf', 'Fiche PDF', 'pdf', 500, NULL, true),
+  ('00000000-0000-0000-0000-0000000000e3', 'affiche', 'Affiche', 'physique', 800, NULL, true);
+INSERT INTO public.shop_product_files (product_id, path, file_name) VALUES
+  ('00000000-0000-0000-0000-0000000000e2', 'produits/fiche.pdf', 'fiche.pdf');
+CREATE FUNCTION pg_temp.stock() RETURNS integer LANGUAGE sql AS
+  $$ SELECT stock FROM public.shop_products WHERE id = '00000000-0000-0000-0000-0000000000e1' $$;
+-- Message lu par l'acheteur dans le panier.
+CREATE FUNCTION pg_temp.refus(_user uuid, _items jsonb) RETURNS text LANGUAGE plpgsql AS $$
+BEGIN
+  PERFORM public.shop_start_checkout(_user, _items, false);
+  RETURN NULL;
+EXCEPTION WHEN check_violation THEN
+  RETURN SQLERRM;
+END $$;
+
+-- b1 commande le dernier carnet : le stock est réservé tout de suite.
+CREATE TEMP TABLE k1 AS SELECT * FROM public.shop_start_checkout('00000000-0000-0000-0000-0000000000b1',
+  '[{"product_id":"00000000-0000-0000-0000-0000000000e1","quantity":1}]', false);
+UPDATE public.payments SET stripe_session_id = 'cs_stock_1' WHERE id = (SELECT payment_id FROM k1);
+DO $$ BEGIN
+  IF pg_temp.stock() <> 0 THEN RAISE EXCEPTION 'stock non réservé : %', pg_temp.stock(); END IF;
+  IF (SELECT reserved_quantity FROM public.shop_order_items WHERE order_id = (SELECT order_id FROM k1)) <> 1
+  THEN RAISE EXCEPTION 'réserve de la ligne'; END IF;
+END $$;
+-- b2 commande ensuite le même carnet : refus lisible, aucune commande créée.
+DO $$
+DECLARE _m text := pg_temp.refus('00000000-0000-0000-0000-0000000000b2',
+  '[{"product_id":"00000000-0000-0000-0000-0000000000e1","quantity":1}]');
+BEGIN
+  IF _m IS NULL THEN RAISE EXCEPTION 'seconde commande acceptée : survente'; END IF;
+  IF _m <> '« Carnet » est épuisé : retirez-le du panier pour commander.' THEN RAISE EXCEPTION 'message : %', _m; END IF;
+  IF EXISTS (SELECT 1 FROM public.shop_orders WHERE user_id = '00000000-0000-0000-0000-0000000000b2')
+  THEN RAISE EXCEPTION 'commande refusée enregistrée'; END IF;
+  IF pg_temp.stock() <> 0 THEN RAISE EXCEPTION 'stock après refus'; END IF;
+END $$;
+
+-- La session de b1 expire : le stock revient, une seule fois même si la restitution est rappelée.
+DO $$ BEGIN
+  IF NOT public.payment_mark_status('cs_stock_1', 'expired') THEN RAISE EXCEPTION 'expiration'; END IF;
+  IF pg_temp.stock() <> 1 THEN RAISE EXCEPTION 'stock non rendu à l''expiration : %', pg_temp.stock(); END IF;
+  IF public.shop_release_stock((SELECT order_id FROM k1)) THEN RAISE EXCEPTION 'restitution rejouée'; END IF;
+  PERFORM public.shop_release_stock((SELECT order_id FROM k1));
+  IF pg_temp.stock() <> 1 THEN RAISE EXCEPTION 'stock rendu deux fois : %', pg_temp.stock(); END IF;
+END $$;
+
+-- Commande remplacée par une nouvelle (deux onglets) : l'ancienne rend son stock d'abord.
+CREATE TEMP TABLE k2 AS SELECT * FROM public.shop_start_checkout('00000000-0000-0000-0000-0000000000b2',
+  '[{"product_id":"00000000-0000-0000-0000-0000000000e1","quantity":1}]', false);
+CREATE TEMP TABLE k3 AS SELECT * FROM public.shop_start_checkout('00000000-0000-0000-0000-0000000000b2',
+  '[{"product_id":"00000000-0000-0000-0000-0000000000e1","quantity":1}]', false);
+UPDATE public.payments SET stripe_session_id = 'cs_stock_3' WHERE id = (SELECT payment_id FROM k3);
+DO $$ BEGIN
+  IF (SELECT status FROM public.shop_orders WHERE id = (SELECT order_id FROM k2)) <> 'expired' THEN RAISE EXCEPTION 'commande remplacée'; END IF;
+  IF pg_temp.stock() <> 0 THEN RAISE EXCEPTION 'stock après remplacement : %', pg_temp.stock(); END IF;
+  IF (SELECT reserved_quantity FROM public.shop_order_items WHERE order_id = (SELECT order_id FROM k2)) <> 0
+  THEN RAISE EXCEPTION 'réserve de la commande remplacée'; END IF;
+END $$;
+
+-- Paiement de la commande réservée : le stock ne baisse pas une seconde fois.
+DO $$ BEGIN
+  IF NOT public.payment_mark_paid('cs_stock_3', 'pi_stock_3', (SELECT total_cents FROM k3), 'eur') THEN RAISE EXCEPTION 'paiement'; END IF;
+  IF (SELECT status FROM public.shop_orders WHERE id = (SELECT order_id FROM k3)) <> 'paid' THEN RAISE EXCEPTION 'commande non payée'; END IF;
+  IF pg_temp.stock() <> 0 THEN RAISE EXCEPTION 'stock décompté deux fois : %', pg_temp.stock(); END IF;
+  IF public.shop_release_stock((SELECT order_id FROM k3)) THEN RAISE EXCEPTION 'commande payée restituée'; END IF;
+END $$;
+
+-- Quantité au-delà du stock : message qui donne le nombre restant.
+UPDATE public.shop_products SET stock = 2 WHERE id = '00000000-0000-0000-0000-0000000000e1';
+DO $$
+DECLARE _m text := pg_temp.refus('00000000-0000-0000-0000-0000000000b1',
+  '[{"product_id":"00000000-0000-0000-0000-0000000000e1","quantity":3}]');
+BEGIN
+  IF _m IS DISTINCT FROM 'Il reste 2 exemplaire(s) de « Carnet » : ajustez la quantité pour commander.'
+  THEN RAISE EXCEPTION 'message : %', _m; END IF;
+END $$;
+
+-- Commande expirée puis payée quand même : la réserve rendue est décomptée au paiement.
+CREATE TEMP TABLE k4 AS SELECT * FROM public.shop_start_checkout('00000000-0000-0000-0000-0000000000b1',
+  '[{"product_id":"00000000-0000-0000-0000-0000000000e1","quantity":1}]', false);
+UPDATE public.payments SET stripe_session_id = 'cs_stock_4' WHERE id = (SELECT payment_id FROM k4);
+DO $$ BEGIN
+  IF pg_temp.stock() <> 1 THEN RAISE EXCEPTION 'réserve k4'; END IF;
+  PERFORM public.payment_mark_status('cs_stock_4', 'expired');
+  IF pg_temp.stock() <> 2 THEN RAISE EXCEPTION 'restitution k4'; END IF;
+  IF NOT public.payment_mark_paid('cs_stock_4', 'pi_stock_4', (SELECT total_cents FROM k4), 'eur') THEN RAISE EXCEPTION 'paiement tardif'; END IF;
+  IF pg_temp.stock() <> 1 THEN RAISE EXCEPTION 'paiement tardif non décompté : %', pg_temp.stock(); END IF;
+END $$;
+
+-- Produits sans stock (PDF, objet sans limite) : aucun changement.
+CREATE TEMP TABLE k5 AS SELECT * FROM public.shop_start_checkout('00000000-0000-0000-0000-0000000000b2',
+  '[{"product_id":"00000000-0000-0000-0000-0000000000e2","quantity":1},{"product_id":"00000000-0000-0000-0000-0000000000e3","quantity":4}]', true);
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM public.shop_products WHERE id IN ('00000000-0000-0000-0000-0000000000e2', '00000000-0000-0000-0000-0000000000e3') AND stock IS NOT NULL)
+  THEN RAISE EXCEPTION 'stock posé sur un produit sans stock'; END IF;
+  IF EXISTS (SELECT 1 FROM public.shop_order_items WHERE order_id = (SELECT order_id FROM k5) AND reserved_quantity <> 0)
+  THEN RAISE EXCEPTION 'réserve sur un produit sans stock'; END IF;
+END $$;
+
+-- Restitution réservée au serveur.
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000b1', 'un@test.fr');
+SELECT pg_temp.expect_error($$SELECT public.shop_release_stock('00000000-0000-0000-0000-0000000000e1')$$, 'membre rend du stock');
+RESET ROLE;
+
 -- Rejouable (toujours en dernier) ---------------------------------------------------------------------------------------
 \i supabase/migrations/20261013120000_v1_6_1_correctifs_audit.sql
 DO $$ BEGIN
   IF has_column_privilege('authenticated', 'public.messages', 'content', 'UPDATE')
      OR NOT has_column_privilege('authenticated', 'public.messages', 'read_at', 'UPDATE')
   THEN RAISE EXCEPTION 'rejeu de la messagerie'; END IF;
+  IF pg_temp.stock() <> 1 THEN RAISE EXCEPTION 'rejeu : stock modifié'; END IF;
+  IF (SELECT count(*) FROM pg_trigger WHERE tgname = 'shop_orders_release_stock') <> 1 THEN RAISE EXCEPTION 'rejeu : déclencheur'; END IF;
 END $$;
 ROLLBACK;
