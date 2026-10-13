@@ -1,7 +1,8 @@
 \set ON_ERROR_STOP 1
 \i tests/db/_helpers.sql
 BEGIN;
--- Socle 1.6.1 : correctifs issus de l'audit du 13/10 (messagerie privée, stock de la boutique, forum).
+-- Socle 1.6.1 : correctifs issus de l'audit du 13/10 (messagerie privée, stock de la boutique, forum,
+-- formulaires ouverts aux visiteurs).
 -- b1 : membre · b2 : autre membre · b3 : tiers · b4 : administrateur (section 3)
 INSERT INTO auth.users (id, email) VALUES
   ('00000000-0000-0000-0000-0000000000b1', 'un@test.fr'),
@@ -315,6 +316,194 @@ DO $$ BEGIN
 END $$;
 ALTER TABLE public.forum_topics DROP COLUMN pinned;
 
+-- 4. Formulaires ouverts aux visiteurs ---------------------------------------------------------------------------------
+-- Erreur attendue avec un code précis.
+CREATE OR REPLACE FUNCTION pg_temp.expect_sqlstate(_sql text, _code text, _label text) RETURNS void LANGUAGE plpgsql AS $$
+BEGIN
+  BEGIN
+    EXECUTE _sql;
+  EXCEPTION WHEN OTHERS THEN
+    IF SQLSTATE = _code THEN RETURN; END IF;
+    RAISE EXCEPTION 'ÉCHEC % : code % attendu, % reçu (%)', _label, _code, SQLSTATE, SQLERRM;
+  END;
+  RAISE EXCEPTION 'ÉCHEC attendu non survenu : %', _label;
+END $$;
+DELETE FROM public.contact_messages;
+DELETE FROM public.newsletter_subscribers;
+
+-- 4.1 Contact : bornes de longueur et de format, y compris pour le serveur (contraintes).
+SELECT pg_temp.expect_sqlstate($$INSERT INTO public.contact_messages (name, email, subject, message) VALUES ('Serveur', 'pas-une-adresse', 'Objet', 'Texte')$$, '23514', 'contact : e-mail invalide (serveur)');
+SELECT pg_temp.as_anon();
+SELECT pg_temp.expect_sqlstate($$INSERT INTO public.contact_messages (name, email, subject, message) VALUES ('Visiteur', 'v@test.fr', 'Objet', repeat('x', 2000000))$$, '23514', 'contact : message de 2 000 000 caractères');
+SELECT pg_temp.expect_sqlstate($$INSERT INTO public.contact_messages (name, email, subject, message) VALUES ('Visiteur', 'v@test.fr', 'Objet', repeat('x', 5001))$$, '23514', 'contact : message de 5001 caractères');
+SELECT pg_temp.expect_sqlstate($$INSERT INTO public.contact_messages (name, email, subject, message) VALUES ('Visiteur', 'v@test.fr', 'Objet', '')$$, '23514', 'contact : message vide');
+SELECT pg_temp.expect_sqlstate($$INSERT INTO public.contact_messages (name, email, subject, message) VALUES ('Visiteur', 'pas-une-adresse', 'Objet', 'Texte')$$, '23514', 'contact : e-mail sans arobase');
+SELECT pg_temp.expect_sqlstate($$INSERT INTO public.contact_messages (name, email, subject, message) VALUES ('Visiteur', 'a b@test.fr', 'Objet', 'Texte')$$, '23514', 'contact : e-mail avec espace');
+SELECT pg_temp.expect_sqlstate($$INSERT INTO public.contact_messages (name, email, subject, message) VALUES ('Visiteur', repeat('a', 250) || '@test.fr', 'Objet', 'Texte')$$, '23514', 'contact : e-mail trop long');
+SELECT pg_temp.expect_sqlstate($$INSERT INTO public.contact_messages (name, email, subject, message) VALUES (repeat('n', 121), 'v@test.fr', 'Objet', 'Texte')$$, '23514', 'contact : nom trop long');
+SELECT pg_temp.expect_sqlstate($$INSERT INTO public.contact_messages (name, email, subject, message) VALUES ('', 'v@test.fr', 'Objet', 'Texte')$$, '23514', 'contact : nom vide');
+SELECT pg_temp.expect_sqlstate($$INSERT INTO public.contact_messages (name, email, subject, message) VALUES ('Visiteur', 'v@test.fr', repeat('o', 201), 'Texte')$$, '23514', 'contact : objet trop long');
+-- Aux bornes exactes : accepté. La date choisie par le visiteur est remplacée par maintenant.
+INSERT INTO public.contact_messages (name, email, subject, message, created_at)
+  VALUES (repeat('n', 120), 'v@test.fr', repeat('o', 200), repeat('x', 5000), '2020-01-01');
+RESET ROLE;
+DO $$ BEGIN
+  IF (SELECT count(*) FROM public.contact_messages) <> 1 THEN RAISE EXCEPTION 'contact : message aux bornes refusé ou message hors borne accepté'; END IF;
+  IF (SELECT created_at FROM public.contact_messages) <> now() THEN RAISE EXCEPTION 'contact : date antidatée acceptée'; END IF;
+END $$;
+
+-- 4.2 Contact : 5 messages par adresse et par 24 heures (casse et espaces ignorés), puis CDS02.
+SELECT pg_temp.as_anon();
+INSERT INTO public.contact_messages (name, email, subject, message) VALUES
+  ('Visiteur', 'V@Test.fr', 'Objet 2', 'Texte'), ('Visiteur', 'v@test.fr', 'Objet 3', 'Texte'),
+  ('Visiteur', 'v@TEST.fr', 'Objet 4', 'Texte'), ('Visiteur', 'v@test.fr', 'Objet 5', 'Texte');
+SELECT pg_temp.expect_sqlstate($$INSERT INTO public.contact_messages (name, email, subject, message) VALUES ('Visiteur', 'v@test.fr', 'Objet 6', 'Texte')$$, 'CDS02', 'contact : sixième message de la même adresse');
+SELECT pg_temp.expect_sqlstate($$INSERT INTO public.contact_messages (name, email, subject, message) VALUES ('Visiteur', 'V@TEST.FR', 'Objet 6', 'Texte')$$, 'CDS02', 'contact : sixième message, casse différente');
+-- Une autre adresse passe ; un membre est soumis au même plafond.
+INSERT INTO public.contact_messages (name, email, subject, message) VALUES ('Autre', 'autre@test.fr', 'Objet', 'Texte');
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000b1', 'un@test.fr');
+SELECT pg_temp.expect_sqlstate($$INSERT INTO public.contact_messages (name, email, subject, message) VALUES ('Membre', 'v@test.fr', 'Objet 6', 'Texte')$$, 'CDS02', 'contact : plafond par adresse pour un membre');
+-- Un message de plus de 24 heures ne compte plus.
+RESET ROLE;
+UPDATE public.contact_messages SET created_at = now() - interval '25 hours' WHERE subject = 'Objet 2';
+SELECT pg_temp.as_anon();
+INSERT INTO public.contact_messages (name, email, subject, message) VALUES ('Visiteur', 'v@test.fr', 'Objet 7', 'Texte');
+RESET ROLE;
+
+-- Plafond global : 30 messages par heure, puis CDS01. 6 messages récents sont déjà là.
+INSERT INTO public.contact_messages (name, email, subject, message)
+  SELECT 'Foule', 'foule' || i || '@test.fr', 'Objet', 'Texte' FROM generate_series(1, 23) i;
+SELECT pg_temp.as_anon();
+INSERT INTO public.contact_messages (name, email, subject, message) VALUES ('Trentième', 'trente@test.fr', 'Objet', 'Texte');
+SELECT pg_temp.expect_sqlstate($$INSERT INTO public.contact_messages (name, email, subject, message) VALUES ('De trop', 'detrop@test.fr', 'Objet', 'Texte')$$, 'CDS01', 'contact : plafond global');
+-- L'administrateur et le serveur ne sont pas plafonnés, et gardent la date qu'ils choisissent.
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000b4', 'admin@test.fr');
+INSERT INTO public.contact_messages (name, email, subject, message, created_at) VALUES ('Équipe', 'equipe@test.fr', 'Saisie', 'Texte', '2020-01-01');
+RESET ROLE;
+INSERT INTO public.contact_messages (name, email, subject, message, created_at) VALUES ('Serveur', 'serveur@test.fr', 'Reprise', 'Texte', '2020-01-02');
+DO $$ BEGIN
+  IF (SELECT count(*) FROM public.contact_messages WHERE created_at > now() - interval '1 hour') <> 30
+  THEN RAISE EXCEPTION 'contact : plafond global dépassé'; END IF;
+  IF (SELECT created_at FROM public.contact_messages WHERE subject = 'Saisie') <> '2020-01-01'::timestamptz
+     OR (SELECT created_at FROM public.contact_messages WHERE subject = 'Reprise') <> '2020-01-02'::timestamptz
+  THEN RAISE EXCEPTION 'contact : date de l''administrateur ou du serveur réécrite'; END IF;
+END $$;
+-- Une heure plus tard, la boîte accepte à nouveau.
+UPDATE public.contact_messages SET created_at = now() - interval '61 minutes' WHERE name = 'Foule';
+SELECT pg_temp.as_anon();
+INSERT INTO public.contact_messages (name, email, subject, message) VALUES ('Plus tard', 'plustard@test.fr', 'Objet', 'Texte');
+RESET ROLE;
+
+-- 4.3 Lettre d'information : plus d'insertion directe pour le visiteur ni pour le membre.
+SELECT pg_temp.as_anon();
+SELECT pg_temp.expect_error($$INSERT INTO public.newsletter_subscribers (email) VALUES ('direct@test.fr')$$, 'lettre : insertion directe par un visiteur');
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000b1', 'un@test.fr');
+SELECT pg_temp.expect_error($$INSERT INTO public.newsletter_subscribers (email) VALUES ('direct@test.fr')$$, 'lettre : insertion directe par un membre');
+-- Abonnement par la fonction : adresse nettoyée, origine inconnue ramenée à « site », dates à maintenant.
+RESET ROLE;
+SELECT pg_temp.as_anon();
+SELECT public.newsletter_subscribe('  Nouveau@Test.fr ', ' Ana ', 'origine-forgée');
+SELECT public.newsletter_subscribe('blog@test.fr', NULL, 'blog');
+-- Adresse déjà abonnée : aucune erreur, rien de visible, quelle que soit la casse.
+SELECT public.newsletter_subscribe('nouveau@test.fr', 'Autre prénom', 'faq');
+SELECT public.newsletter_subscribe('NOUVEAU@TEST.FR');
+SELECT pg_temp.expect_sqlstate($$SELECT public.newsletter_subscribe('pas-une-adresse')$$, '22023', 'lettre : e-mail invalide');
+SELECT pg_temp.expect_sqlstate($$SELECT public.newsletter_subscribe(NULL)$$, '22023', 'lettre : e-mail absent');
+SELECT pg_temp.expect_sqlstate($$SELECT public.newsletter_subscribe(repeat('a', 250) || '@test.fr')$$, '22023', 'lettre : e-mail trop long');
+SELECT pg_temp.expect_sqlstate($$SELECT public.newsletter_subscribe('long@test.fr', repeat('p', 81))$$, '22023', 'lettre : prénom trop long');
+SELECT pg_temp.expect_error($$SELECT count(*) FROM public.newsletter_subscribers$$, 'lettre : liste lue par un visiteur');
+RESET ROLE;
+DO $$
+DECLARE _s public.newsletter_subscribers;
+BEGIN
+  IF (SELECT count(*) FROM public.newsletter_subscribers) <> 2 THEN RAISE EXCEPTION 'lettre : nombre d''abonnés inattendu'; END IF;
+  SELECT * INTO _s FROM public.newsletter_subscribers WHERE email = 'nouveau@test.fr';
+  IF _s.first_name <> 'Ana' OR _s.source <> 'site' OR _s.consent_at <> now() OR _s.created_at <> now()
+     OR _s.unsubscribed_at IS NOT NULL
+  THEN RAISE EXCEPTION 'lettre : abonné mal enregistré ou réécrit par un doublon'; END IF;
+  IF (SELECT source FROM public.newsletter_subscribers WHERE email = 'blog@test.fr') <> 'blog'
+  THEN RAISE EXCEPTION 'lettre : origine connue perdue'; END IF;
+END $$;
+-- Adresse désinscrite : réabonnée, consentement daté de maintenant. Ancienne adresse en majuscules : pas de doublon.
+UPDATE public.newsletter_subscribers SET unsubscribed_at = now() - interval '1 day', consent_at = '2020-01-01'
+  WHERE email = 'nouveau@test.fr';
+INSERT INTO public.newsletter_subscribers (email, source, consent_at) VALUES ('Ancien@Test.fr', 'import', '2019-01-01');
+SELECT pg_temp.as_anon();
+SELECT public.newsletter_subscribe('nouveau@test.fr');
+SELECT public.newsletter_subscribe('ancien@test.fr');
+RESET ROLE;
+DO $$ BEGIN
+  IF (SELECT count(*) FROM public.newsletter_subscribers) <> 3 THEN RAISE EXCEPTION 'lettre : doublon créé'; END IF;
+  IF (SELECT unsubscribed_at FROM public.newsletter_subscribers WHERE email = 'nouveau@test.fr') IS NOT NULL
+     OR (SELECT consent_at FROM public.newsletter_subscribers WHERE email = 'nouveau@test.fr') <> now()
+  THEN RAISE EXCEPTION 'lettre : adresse désinscrite non réabonnée'; END IF;
+  IF (SELECT consent_at FROM public.newsletter_subscribers WHERE email = 'Ancien@Test.fr') <> '2019-01-01'::timestamptz
+     OR (SELECT source FROM public.newsletter_subscribers WHERE email = 'Ancien@Test.fr') <> 'import'
+  THEN RAISE EXCEPTION 'lettre : abonné existant réécrit'; END IF;
+END $$;
+-- Contraintes, y compris pour le serveur.
+SELECT pg_temp.expect_sqlstate($$INSERT INTO public.newsletter_subscribers (email) VALUES ('pas-une-adresse')$$, '23514', 'lettre : e-mail invalide (serveur)');
+SELECT pg_temp.expect_sqlstate($$INSERT INTO public.newsletter_subscribers (email, first_name) VALUES ('p@test.fr', repeat('p', 81))$$, '23514', 'lettre : prénom trop long (serveur)');
+SELECT pg_temp.expect_sqlstate($$INSERT INTO public.newsletter_subscribers (email, source) VALUES ('s@test.fr', repeat('s', 41))$$, '23514', 'lettre : origine trop longue (serveur)');
+-- L'administrateur ajoute un abonné à la main et garde ses valeurs.
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000b4', 'admin@test.fr');
+INSERT INTO public.newsletter_subscribers (email, source, consent_at) VALUES ('salon@test.fr', 'salon', '2021-01-01');
+RESET ROLE;
+DO $$ BEGIN
+  IF (SELECT consent_at FROM public.newsletter_subscribers WHERE email = 'salon@test.fr') <> '2021-01-01'::timestamptz
+     OR (SELECT source FROM public.newsletter_subscribers WHERE email = 'salon@test.fr') <> 'salon'
+  THEN RAISE EXCEPTION 'lettre : saisie de l''administrateur réécrite'; END IF;
+END $$;
+-- Filet : si l'insertion directe était rouverte, dates et origine resteraient tenues par la base.
+CREATE POLICY "test insertion directe" ON public.newsletter_subscribers FOR INSERT TO anon WITH CHECK (true);
+GRANT INSERT ON public.newsletter_subscribers TO anon;
+SELECT pg_temp.as_anon();
+INSERT INTO public.newsletter_subscribers (email, source, consent_at, created_at, unsubscribed_at)
+  VALUES ('filet@test.fr', 'origine-forgée', '2020-01-01', '2020-01-01', '2020-01-02');
+RESET ROLE;
+DO $$
+DECLARE _s public.newsletter_subscribers;
+BEGIN
+  SELECT * INTO _s FROM public.newsletter_subscribers WHERE email = 'filet@test.fr';
+  IF _s.source <> 'site' OR _s.consent_at <> now() OR _s.created_at <> now() OR _s.unsubscribed_at IS NOT NULL
+  THEN RAISE EXCEPTION 'lettre : consentement antidaté ou origine forgée acceptés'; END IF;
+END $$;
+DROP POLICY "test insertion directe" ON public.newsletter_subscribers;
+REVOKE INSERT ON public.newsletter_subscribers FROM anon;
+
+-- 4.4 Régie : affichages et clics comptés pour une campagne en cours seulement.
+INSERT INTO public.ad_placements (id, name, slug, active) VALUES
+  ('00000000-0000-0000-0000-000000000701', 'Colonne', 'test-colonne', true),
+  ('00000000-0000-0000-0000-000000000702', 'Éteint', 'test-eteint', false);
+INSERT INTO public.ad_campaigns (id, placement_id, advertiser, title, link_url, active, starts_at, ends_at) VALUES
+  ('00000000-0000-0000-0000-000000000711', '00000000-0000-0000-0000-000000000701', 'Annonceur', 'En cours', '/a', true, NULL, now() + interval '1 day'),
+  ('00000000-0000-0000-0000-000000000712', '00000000-0000-0000-0000-000000000701', 'Annonceur', 'Inactive', '/b', false, NULL, NULL),
+  ('00000000-0000-0000-0000-000000000713', '00000000-0000-0000-0000-000000000701', 'Annonceur', 'Terminée', '/c', true, NULL, now() - interval '1 day'),
+  ('00000000-0000-0000-0000-000000000714', '00000000-0000-0000-0000-000000000701', 'Annonceur', 'À venir', '/d', true, now() + interval '1 day', NULL),
+  ('00000000-0000-0000-0000-000000000715', '00000000-0000-0000-0000-000000000702', 'Annonceur', 'Emplacement éteint', '/e', true, NULL, NULL);
+SELECT pg_temp.as_anon();
+INSERT INTO public.ad_events (campaign_id, event_type, page_path, user_agent, created_at)
+  VALUES ('00000000-0000-0000-0000-000000000711', 'click', '/blog', repeat('u', 250), '2020-01-01');
+SELECT pg_temp.expect_sqlstate($$INSERT INTO public.ad_events (campaign_id, event_type) VALUES ('00000000-0000-0000-0000-000000000712', 'click')$$, '42501', 'régie : clic sur une campagne inactive');
+SELECT pg_temp.expect_sqlstate($$INSERT INTO public.ad_events (campaign_id, event_type) SELECT '00000000-0000-0000-0000-000000000712', 'click' FROM generate_series(1, 1000)$$, '42501', 'régie : 1000 clics sur une campagne inactive');
+SELECT pg_temp.expect_sqlstate($$INSERT INTO public.ad_events (campaign_id, event_type) VALUES ('00000000-0000-0000-0000-000000000713', 'impression')$$, '42501', 'régie : campagne terminée');
+SELECT pg_temp.expect_sqlstate($$INSERT INTO public.ad_events (campaign_id, event_type) VALUES ('00000000-0000-0000-0000-000000000714', 'impression')$$, '42501', 'régie : campagne à venir');
+SELECT pg_temp.expect_sqlstate($$INSERT INTO public.ad_events (campaign_id, event_type) VALUES ('00000000-0000-0000-0000-000000000715', 'impression')$$, '42501', 'régie : emplacement éteint');
+SELECT pg_temp.expect_sqlstate($$INSERT INTO public.ad_events (campaign_id, event_type, user_agent) VALUES ('00000000-0000-0000-0000-000000000711', 'click', repeat('u', 251))$$, '23514', 'régie : user_agent trop long');
+SELECT pg_temp.expect_sqlstate($$INSERT INTO public.ad_events (campaign_id, event_type, page_path) VALUES ('00000000-0000-0000-0000-000000000711', 'click', repeat('p', 501))$$, '23514', 'régie : page_path trop long');
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000b1', 'un@test.fr');
+INSERT INTO public.ad_events (campaign_id, event_type, created_at) VALUES ('00000000-0000-0000-0000-000000000711', 'impression', '2020-01-01');
+SELECT pg_temp.expect_sqlstate($$INSERT INTO public.ad_events (campaign_id, event_type) VALUES ('00000000-0000-0000-0000-000000000712', 'click')$$, '42501', 'régie : membre, campagne inactive');
+RESET ROLE;
+-- Le serveur garde la main (reprise de données).
+INSERT INTO public.ad_events (campaign_id, event_type, created_at) VALUES ('00000000-0000-0000-0000-000000000712', 'impression', '2020-01-01');
+DO $$ BEGIN
+  IF (SELECT count(*) FROM public.ad_events WHERE campaign_id = '00000000-0000-0000-0000-000000000711' AND created_at = now()) <> 2
+  THEN RAISE EXCEPTION 'régie : événement antidaté accepté ou événement valide refusé'; END IF;
+  IF (SELECT count(*) FROM public.ad_events WHERE campaign_id <> '00000000-0000-0000-0000-000000000711') <> 1
+  THEN RAISE EXCEPTION 'régie : événement compté hors campagne en cours'; END IF;
+END $$;
+
 -- Rejouable (toujours en dernier) ---------------------------------------------------------------------------------------
 \i supabase/migrations/20261013120000_v1_6_1_correctifs_audit.sql
 DO $$ BEGIN
@@ -325,5 +514,27 @@ DO $$ BEGIN
   IF (SELECT count(*) FROM pg_trigger WHERE tgname = 'shop_orders_release_stock') <> 1 THEN RAISE EXCEPTION 'rejeu : déclencheur'; END IF;
   IF (SELECT count(*) FROM pg_trigger WHERE tgname IN ('forum_topics_guard_insert', 'forum_replies_guard_insert')) <> 2
   THEN RAISE EXCEPTION 'rejeu : déclencheurs du forum'; END IF;
+  IF (SELECT count(*) FROM pg_trigger WHERE tgname IN ('contact_messages_guard_insert', 'newsletter_subscribers_guard_insert', 'ad_events_guard_insert')) <> 3
+  THEN RAISE EXCEPTION 'rejeu : déclencheurs des formulaires'; END IF;
+  IF (SELECT count(*) FROM pg_constraint WHERE convalidated AND conname IN (
+        'contact_messages_name_len', 'contact_messages_email_format', 'contact_messages_subject_len',
+        'contact_messages_message_len', 'newsletter_subscribers_email_format',
+        'newsletter_subscribers_first_name_len', 'newsletter_subscribers_source_len',
+        'ad_events_user_agent_len', 'ad_events_page_path_len')) <> 9
+  THEN RAISE EXCEPTION 'rejeu : contraintes des formulaires'; END IF;
+  IF has_table_privilege('anon', 'public.newsletter_subscribers', 'INSERT')
+     OR (SELECT count(*) FROM pg_policies WHERE tablename = 'newsletter_subscribers' AND cmd = 'INSERT') <> 1
+  THEN RAISE EXCEPTION 'rejeu : insertion directe des abonnés rouverte'; END IF;
+END $$;
+-- Existant hors borne : la migration passe, la contrainte reste NOT VALID et s'applique aux nouvelles lignes.
+ALTER TABLE public.contact_messages DROP CONSTRAINT contact_messages_email_format;
+INSERT INTO public.contact_messages (name, email, subject, message) VALUES ('Ancien', 'ancienne-saisie', 'Objet', 'Texte');
+SET client_min_messages = warning;
+\i supabase/migrations/20261013120000_v1_6_1_correctifs_audit.sql
+RESET client_min_messages;
+SELECT pg_temp.expect_sqlstate($$INSERT INTO public.contact_messages (name, email, subject, message) VALUES ('Nouveau', 'pas-une-adresse', 'Objet', 'Texte')$$, '23514', 'contrainte non validée : toujours appliquée');
+DO $$ BEGIN
+  IF (SELECT convalidated FROM pg_constraint WHERE conname = 'contact_messages_email_format')
+  THEN RAISE EXCEPTION 'contrainte validée malgré une ligne hors borne'; END IF;
 END $$;
 ROLLBACK;

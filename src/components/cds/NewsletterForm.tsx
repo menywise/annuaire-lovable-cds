@@ -40,20 +40,21 @@ function NewsletterFormInner({ source }: { source: string }) {
       return;
     }
     setBusy(true);
-    const { error } = await supabase.from("newsletter_subscribers").insert({
-      email: String(form.get("email") ?? "")
+    // Abonnement par une fonction de la base : une adresse déjà inscrite reçoit la même réponse
+    // qu'une nouvelle, le formulaire ne révèle donc pas qui est abonné.
+    const { error } = await supabase.rpc("newsletter_subscribe", {
+      _email: String(form.get("email") ?? "")
         .trim()
         .toLowerCase(),
-      first_name: String(form.get("first_name") ?? "").trim() || null,
-      source,
+      _first_name: String(form.get("first_name") ?? "").trim(),
+      _source: source,
     });
     setBusy(false);
     if (error) {
-      if (error.code === "23505") {
-        toast.info("Vous êtes déjà inscrit.", {
-          description: "Votre adresse figure déjà dans la liste, rien à faire de plus.",
+      if (error.code === "22023") {
+        toast.error("Inscription impossible.", {
+          description: "Vérifiez votre adresse e-mail et votre prénom (80 caractères au plus).",
         });
-        setDone(true);
         return;
       }
       toast.error("Inscription impossible.", {
@@ -94,6 +95,7 @@ function NewsletterFormInner({ source }: { source: string }) {
               id="nl-first-name"
               name="first_name"
               autoComplete="given-name"
+              maxLength={80}
               placeholder="Votre prénom"
             />
           </div>
@@ -105,6 +107,7 @@ function NewsletterFormInner({ source }: { source: string }) {
               type="email"
               required
               autoComplete="email"
+              maxLength={254}
               placeholder="nom@exemple.fr"
             />
           </div>

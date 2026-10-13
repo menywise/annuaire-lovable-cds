@@ -27,7 +27,8 @@ export const Route = createFileRoute("/contact")({
 function ContactPage() {
   const [sent, setSent] = useState(false);
   const [blocked, setBlocked] = useState(false);
-  const [failed, setFailed] = useState(false);
+  // Raison du refus : erreur technique, plafond global de la boîte, plafond par adresse e-mail.
+  const [failed, setFailed] = useState<false | "erreur" | "boite-pleine" | "trop-envois">(false);
   const [busy, setBusy] = useState(false);
   const openedAt = useRef(Date.now());
 
@@ -52,7 +53,10 @@ function ContactPage() {
     });
     setBusy(false);
     if (error) {
-      setFailed(true);
+      // Codes posés par la base (plafonds d'envoi).
+      setFailed(
+        error.code === "CDS01" ? "boite-pleine" : error.code === "CDS02" ? "trop-envois" : "erreur",
+      );
       return;
     }
     setSent(true);
@@ -85,7 +89,7 @@ function ContactPage() {
               </Alert>
             )}
 
-            {failed && (
+            {failed === "erreur" && (
               <Alert variant="destructive">
                 <AlertTitle>Envoi impossible</AlertTitle>
                 <AlertDescription>
@@ -94,9 +98,36 @@ function ContactPage() {
               </Alert>
             )}
 
+            {failed === "boite-pleine" && (
+              <Alert variant="destructive">
+                <AlertTitle>Trop de messages reçus pour le moment</AlertTitle>
+                <AlertDescription>
+                  Votre message n'a pas été envoyé. Réessayez dans une heure : votre texte reste
+                  affiché ci-dessous.
+                </AlertDescription>
+              </Alert>
+            )}
+
+            {failed === "trop-envois" && (
+              <Alert variant="destructive">
+                <AlertTitle>Limite d'envoi atteinte pour aujourd'hui</AlertTitle>
+                <AlertDescription>
+                  Plusieurs messages ont déjà été envoyés avec cette adresse e-mail. Réessayez
+                  demain : nous lisons tous les messages reçus.
+                </AlertDescription>
+              </Alert>
+            )}
+
             <div className="space-y-1.5">
               <Label htmlFor="name">Nom</Label>
-              <Input id="name" name="name" autoComplete="name" required placeholder="Prénom Nom" />
+              <Input
+                id="name"
+                name="name"
+                autoComplete="name"
+                required
+                maxLength={120}
+                placeholder="Prénom Nom"
+              />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="email">Votre adresse e-mail</Label>
@@ -106,12 +137,19 @@ function ContactPage() {
                 type="email"
                 autoComplete="email"
                 required
+                maxLength={254}
                 placeholder="nom@exemple.fr"
               />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="subject">Objet</Label>
-              <Input id="subject" name="subject" required placeholder="Objet de votre demande" />
+              <Input
+                id="subject"
+                name="subject"
+                required
+                maxLength={200}
+                placeholder="Objet de votre demande"
+              />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="message">Message</Label>
@@ -120,6 +158,7 @@ function ContactPage() {
                 name="message"
                 required
                 rows={6}
+                maxLength={5000}
                 placeholder="Votre message…"
               />
             </div>

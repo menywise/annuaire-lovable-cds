@@ -2366,6 +2366,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      ad_campaign_is_live: { Args: { _campaign_id: string }; Returns: boolean }
       admin_list_users: {
         Args: never
         Returns: {
@@ -2510,6 +2511,11 @@ export type Database = {
           product_label: string
           superseded_sessions: string[]
         }[]
+      }
+      newsletter_known_source: { Args: { _source: string }; Returns: string }
+      newsletter_subscribe: {
+        Args: { _email: string; _first_name?: string; _source?: string }
+        Returns: undefined
       }
       purge_contact_messages: { Args: never; Returns: number }
       recette_purge: { Args: { _membre?: string }; Returns: Json }
