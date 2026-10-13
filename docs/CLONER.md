@@ -1,16 +1,18 @@
 # Cloner CDS pour un nouveau projet
 
-CDS est le **socle**. Chaque projet (annuaire des sites, manuelrohaut.fr, VDI…) est un **clone** : il
+CDS est le **socle**. Chaque projet (un annuaire, une vitrine, une boutique…) est un **clone** : il
 part du socle, règle son identité, allume ses modules, puis ajoute ce qui lui est propre **dans son
-propre dépôt**. Le socle ne contient jamais rien de propre à un projet.
+propre dépôt**. Le socle ne contient jamais rien de propre à un projet : ni nom, ni domaine, ni
+dépôt d'un projet réel. Les exemples de ce document sont fictifs (`exemple.fr`, « le premier
+clone »).
 
 Durée indicative : une heure, hors contenus.
 
 ## 1. Créer le clone
 
-1. Dans Lovable, ouvrir le projet **CDS Framework** → menu du projet → **Remix**. Nommer le clone
-   (par exemple « Annuaire des sites »).
-2. Dans le clone : **GitHub → Connect** pour créer son dépôt (`menywise/<nom>`).
+1. Dans Lovable, ouvrir le projet du socle → menu du projet → **Remix**. Nommer le clone
+   (par exemple « Le premier clone »).
+2. Dans le clone : **GitHub → Connect** pour créer son dépôt (`<organisation>/<nom>`).
 3. Activer **Lovable Cloud** si ce n'est pas fait : le clone a sa propre base de données, vide.
 
 ## 2. Passer le SQL du socle
@@ -41,7 +43,8 @@ Utilisateurs. Le dernier administrateur ne peut ni se retirer ni supprimer son c
   module « Pages ».
 - **Envoi des e-mails** : sous-domaine délégué au service de Lovable (Cloud → Emails, par exemple
   `notify.exemple.fr`) et domaine de l'expéditeur (`exemple.fr`). Chaque site à domaine propre gère
-  ses e-mails ; un site du studio sans domaine propre peut garder `notify.manuelrohaut.fr`.
+  ses e-mails ; un site sans domaine propre peut utiliser le sous-domaine d'envoi d'un autre site de
+  la même organisation, déjà validé chez le registraire.
 
 ## 5. Secrets d'environnement (Lovable → Cloud → Secrets)
 
@@ -192,4 +195,4 @@ Le socle évolue (nouveaux modules, correctifs). Pour les reporter dans un clone
 socle comme source distante, fusionner sa branche `main` dans le clone (jamais de réécriture
 d'historique), puis passer dans la base du clone les nouvelles migrations du socle. Garder les
 ajouts du clone dans des fichiers à part limite les conflits.
-Mode d'emploi détaillé, ordre des étapes et exemple de l'annuaire : `docs/MISE_A_NIVEAU.md`.
+Mode d'emploi détaillé et ordre des étapes : `docs/MISE_A_NIVEAU.md`.

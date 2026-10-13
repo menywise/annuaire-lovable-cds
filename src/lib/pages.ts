@@ -1,5 +1,5 @@
 /**
- * CDS — Pages libres par sections (module « pages », V0.md §3 C).
+ * CDS — Pages libres par sections (module « pages »).
  *
  * Le contenu d'une page suit le format de données de Puck (éditeur de pages React, licence MIT) :
  *   { root: { props: {} }, content: [{ type: "Hero", props: { id: "Hero-ab12", title: "…" } }] }

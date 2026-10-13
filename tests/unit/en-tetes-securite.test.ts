@@ -48,7 +48,7 @@ test("zone d'aperçu Lovable : l'éditeur peut encadrer, personne d'autre", () =
   for (const hote of [
     `id-preview--${UUID}.lovable.app`,
     `${UUID}.lovableproject.com`,
-    "cds-mac97000.lovable.app",
+    "premier-clone.lovable.app",
     "lovable.app",
   ]) {
     assert.equal(estZoneApercuLovable(hote), true, hote);

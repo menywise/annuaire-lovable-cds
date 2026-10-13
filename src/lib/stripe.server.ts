@@ -1,6 +1,6 @@
 /**
  * CDS — Module D « Paiement » : appels à Stripe côté serveur uniquement.
- * Repris de Goldwing (create-checkout-session, stripe-webhook), sans SDK : l'API REST suffit.
+ * Sans SDK : l'API REST suffit (création de session Checkout, webhook).
  *
  * Secrets lus dans l'environnement du serveur, jamais en base, jamais dans le code, jamais logués :
  * - STRIPE_SECRET_KEY : clé secrète (sk_test_… ou sk_live_…)

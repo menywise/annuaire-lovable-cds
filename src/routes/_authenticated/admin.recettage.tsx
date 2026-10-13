@@ -28,7 +28,7 @@ export const Route = createFileRoute("/_authenticated/admin/recettage")({
   component: AdminRecettePage,
 });
 
-// Progression propre à ce navigateur (comme Goldwing) : une campagne de recette = un poste.
+// Progression propre à ce navigateur : une campagne de recette = un poste.
 const CHECK_KEY = "cds.recette.checklist.v1";
 const REPORT_KEY = "cds.recette.rapport.v1";
 

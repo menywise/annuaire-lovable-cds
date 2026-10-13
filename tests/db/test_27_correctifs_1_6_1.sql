@@ -3,7 +3,8 @@
 BEGIN;
 -- Socle 1.6.1 : correctifs issus de l'audit du 13/10 (messagerie privée, stock de la boutique, forum,
 -- formulaires ouverts aux visiteurs, revendication d'une fiche d'annuaire, fiche publiée et modifiée,
--- adresse confirmée exigée pour les administrateurs nommés d'avance, prix négatifs refusés).
+-- adresse confirmée exigée pour les administrateurs nommés d'avance, prix négatifs refusés, plan directeur
+-- et feuille de route du socle retirés du pilotage).
 -- b1 : membre · b2 : autre membre · b3 : tiers · b4 : administrateur (section 3)
 INSERT INTO auth.users (id, email) VALUES
   ('00000000-0000-0000-0000-0000000000b1', 'un@test.fr'),
@@ -762,6 +763,77 @@ DO $$ BEGIN
         'pricing_plans_features_array')) <> 4
   THEN RAISE EXCEPTION 'contraintes de prix ou des avantages non validées'; END IF;
 END $$;
+
+-- 9. Pilotage : plan directeur et feuille de route du socle retirés ----------------------------------------------------
+RESET ROLE;
+-- Après les migrations, une base neuve n'a plus aucune des lignes insérées le 17/09.
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM public.masterplan_sections WHERE content LIKE 'CDS est le socle commun de tous les projets du workspace%')
+     OR EXISTS (SELECT 1 FROM public.masterplan_sections WHERE title IN ('Vision', 'Pour qui', 'Promesse', 'Modules activés'))
+     OR EXISTS (SELECT 1 FROM public.roadmap_items WHERE title IN ('Forum communautaire', 'Profils et messagerie', 'Témoignages',
+          'Navigation et mobile', 'Tableau de bord de pilotage', 'Paiement des offres', 'Envoi e-mail du contact'))
+  THEN RAISE EXCEPTION 'plan directeur ou feuille de route du socle encore présents après les migrations'; END IF;
+END $$;
+-- Base d'un clone avant le correctif : les lignes du 17/09 telles qu'insérées, plus ce qu'un administrateur a écrit
+-- ou modifié (même titre, un mot changé ; même ligne, état passé à « fait » ; section nouvelle).
+INSERT INTO public.masterplan_sections (title, content, position) VALUES
+  ('Vision', 'CDS est le socle commun de tous les projets du workspace : un thème, un kit de pages système et une communauté prêts à être réutilisés sans repartir de zéro.', 1),
+  ('Pour qui', 'Indépendants, artisans et solopreneurs qui veulent un site sérieux sans recommencer chaque fondation à chaque projet.', 2),
+  ('Promesse', 'Vous démarrez un nouveau projet avec des fondations déjà auditées : accessibilité, référencement, mentions légales, comptes et communauté.', 3),
+  ('Modules activés', 'FAQ, blog, forum, avis, témoignages, lettre d''information, tarifs, tunnel de vente, espace membre, messagerie, administration.', 4),
+  ('Vision', 'Notre clone est le site de référence des artisans de la région : un thème, un kit de pages système et une communauté prêts à être réutilisés sans repartir de zéro.', 1),
+  ('Cap du projet', 'Texte écrit par l''administrateur du clone.', 9);
+INSERT INTO public.roadmap_items (title, description, lot, status, priority, position) VALUES
+  ('Forum communautaire', 'Thématiques, texte enrichi, j''aime, suivi, réponse acceptée, membres actifs.', 'Lot 1', 'en_cours', 'haute', 1),
+  ('Profils et messagerie', 'Annuaire des membres, profil public, messages privés.', 'Lot 2', 'en_cours', 'haute', 2),
+  ('Témoignages', 'Page dédiée, bandeau réutilisable, validation en administration.', 'Lot 3', 'en_cours', 'normale', 3),
+  ('Navigation et mobile', 'En-tête fixe, pied de page 4 colonnes, installation sur mobile, responsive vérifié.', 'Lot 4', 'en_cours', 'haute', 4),
+  ('Tableau de bord de pilotage', 'Feuille de route, plan directeur, audits avec mémoire.', 'Lot 5', 'en_cours', 'normale', 5),
+  ('Paiement des offres', 'Brancher Stripe ou Paddle sur les offres tarifaires.', 'À venir', 'bloque', 'haute', 6),
+  ('Envoi e-mail du contact', 'Acheminer les messages de contact par e-mail.', 'À venir', 'bloque', 'normale', 7),
+  ('Paiement des offres', 'Brancher Stripe ou Paddle sur les offres tarifaires.', 'À venir', 'fait', 'haute', 6),
+  ('Ouverture du clone', 'Ligne écrite par l''administrateur du clone.', 'Lot 1', 'a_faire', 'haute', 8);
+SET client_min_messages = warning;
+\i supabase/migrations/20261013120000_v1_6_1_correctifs_audit.sql
+RESET client_min_messages;
+DO $$ BEGIN
+  -- Les onze lignes du socle sont parties.
+  IF EXISTS (SELECT 1 FROM public.masterplan_sections WHERE content LIKE 'CDS est le socle commun de tous les projets du workspace%')
+     OR EXISTS (SELECT 1 FROM public.masterplan_sections WHERE title IN ('Pour qui', 'Promesse', 'Modules activés'))
+     OR EXISTS (SELECT 1 FROM public.roadmap_items WHERE status <> 'fait' AND title IN ('Forum communautaire', 'Profils et messagerie',
+          'Témoignages', 'Navigation et mobile', 'Tableau de bord de pilotage', 'Paiement des offres', 'Envoi e-mail du contact'))
+  THEN RAISE EXCEPTION 'lignes du socle non retirées du pilotage'; END IF;
+  -- Ce que l'administrateur a écrit ou modifié reste : trois lignes exactement.
+  IF (SELECT count(*) FROM public.masterplan_sections WHERE title IN ('Vision', 'Cap du projet')) <> 2
+     OR NOT EXISTS (SELECT 1 FROM public.masterplan_sections WHERE title = 'Vision' AND content LIKE 'Notre clone est le site de référence%')
+  THEN RAISE EXCEPTION 'plan directeur de l''administrateur retiré'; END IF;
+  IF (SELECT count(*) FROM public.roadmap_items WHERE title IN ('Paiement des offres', 'Ouverture du clone')) <> 2
+     OR NOT EXISTS (SELECT 1 FROM public.roadmap_items WHERE title = 'Paiement des offres' AND status = 'fait')
+  THEN RAISE EXCEPTION 'feuille de route de l''administrateur retirée'; END IF;
+END $$;
+
+-- 10. Grille de conformité : points « Module fini » sans lien vers un document retiré ----------------------------------
+RESET ROLE;
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM public.template_checks WHERE requirement LIKE '%V0.md%')
+  THEN RAISE EXCEPTION 'la grille renvoie encore à un document retiré du dépôt'; END IF;
+  IF (SELECT count(*) FROM public.template_checks WHERE code LIKE 'MOD-%' AND requirement LIKE 'Les 8 critères d''un module fini : %') < 20
+  THEN RAISE EXCEPTION 'exigence des points « Module fini » non réécrite'; END IF;
+END $$;
+-- Base d'un clone avant le correctif : texte d'origine (remplacé) et texte retouché par un administrateur (gardé).
+INSERT INTO public.template_checks (code, area, label, requirement, position, modules) VALUES
+  ('MOD-essai_origine', 'Modules', 'Module fini : essai', 'Les 8 critères de V0.md §4 : interrupteur, aucune trace éteint, accès testés, administration complète, états de page, SEO, test automatique, ligne cochée.', 290, ARRAY['blog']),
+  ('MOD-essai_retouche', 'Modules', 'Module fini : essai retouché', 'Les 8 critères de V0.md §4, plus le nôtre : interrupteur, aucune trace éteint, accès testés.', 291, ARRAY['blog']);
+SET client_min_messages = warning;
+\i supabase/migrations/20261013120000_v1_6_1_correctifs_audit.sql
+RESET client_min_messages;
+DO $$ BEGIN
+  IF (SELECT requirement FROM public.template_checks WHERE code = 'MOD-essai_origine') NOT LIKE 'Les 8 critères d''un module fini : %'
+  THEN RAISE EXCEPTION 'texte d''origine non remplacé'; END IF;
+  IF (SELECT requirement FROM public.template_checks WHERE code = 'MOD-essai_retouche') <> 'Les 8 critères de V0.md §4, plus le nôtre : interrupteur, aucune trace éteint, accès testés.'
+  THEN RAISE EXCEPTION 'texte retouché par l''administrateur modifié'; END IF;
+END $$;
+DELETE FROM public.template_checks WHERE code IN ('MOD-essai_origine', 'MOD-essai_retouche');
 
 -- Rejouable (toujours en dernier) ---------------------------------------------------------------------------------------
 \i supabase/migrations/20261013120000_v1_6_1_correctifs_audit.sql

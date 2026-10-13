@@ -3,7 +3,6 @@ import { Link } from "@tanstack/react-router";
 /**
  * Renonciation au droit de rétractation pour un contenu numérique fourni immédiatement
  * (art. L221-28 13° du Code de la consommation). Case obligatoire avant tout paiement.
- * Repris de Goldwing (retraction-waiver.tsx).
  */
 export function RetractionWaiver({
   checked,

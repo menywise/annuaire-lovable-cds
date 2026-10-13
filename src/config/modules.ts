@@ -1,5 +1,5 @@
 /**
- * CDS — Liste des modules (V0.md §2 et §3), dépendances et état par défaut.
+ * CDS — Liste des modules, dépendances et état par défaut.
  * Fichier sans dépendance : partagé par le serveur, le navigateur et l'admin.
  * L'état par défaut est identique à `public.module_defaults()` en base.
  * `socle: true` : outil d'administration (pilotage, médiathèque, recherche), toujours allumé.

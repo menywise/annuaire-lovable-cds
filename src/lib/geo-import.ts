@@ -1,8 +1,8 @@
 /**
  * CDS — Géographie (lot 11) : conversion des réponses de geo.api.gouv.fr en lignes `geo_places`.
  * Socle 1.5.0 : conversion des réponses de l'API du référentiel du Studio (GeoAnnonces), même modèle.
- * Fichier sans dépendance (testé par tests/unit/geo-import.test.ts). Même modèle que l'annuaire
- * (annuaire-mac97000, src/lib/geo.server.ts) pour que ses données se reprennent telles quelles.
+ * Fichier sans dépendance (testé par tests/unit/geo-import.test.ts). Même modèle de données que le
+ * référentiel, pour que les données d'un clone se reprennent telles quelles.
  */
 
 export const GEO_API = "https://geo.api.gouv.fr";

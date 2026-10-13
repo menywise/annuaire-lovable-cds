@@ -3,7 +3,7 @@ import type { Tables } from "@/integrations/supabase/types";
 import { slugify } from "@/lib/format";
 
 /**
- * CDS — Médiathèque (module « media », V0.md §3 A).
+ * CDS — Médiathèque (module « media »).
  *
  * Les fichiers vont dans l'espace de stockage public « media » (Supabase Storage) :
  * l'admin dépose, tout le monde lit par l'adresse publique. La table `media_files`

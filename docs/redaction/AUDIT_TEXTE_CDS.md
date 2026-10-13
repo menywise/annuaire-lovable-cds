@@ -4,11 +4,11 @@
 EN-TÊTE
 * pourquoi          : noter une page sur 100 et produire un rapport d'anomalies
                       exploitable par le robot de contrôle
-* destination vault : _HOLOKAI\03_PROJETS\CDS\AUDIT_TEXTE_CDS.md
+* emplacement       : docs/redaction/AUDIT_TEXTE_CDS.md
 * dépend de         : text-rules.json (v1), CHARTE_REDACTION_CDS.md (v1.0)
 * version           : v1.0
 * état              : actif
-* rédigé par        : Claude, sous DT Unuhi (peut contenir des erreurs)
+* rédigé par        : Claude (peut contenir des erreurs)
 ```
 
 ---
@@ -228,7 +228,7 @@ Rappel : dès qu'une anomalie bloquante existe, le score ne dépasse jamais 49.
 
 ```
 HISTORIQUE
-* v1.0 — 2026-09-29 — Création sous DT Unuhi. Pondération signalée comme choix.
+* v1.0 — 2026-09-29 — Création. Pondération signalée comme choix.
     Ordre d'évaluation imposé pour éviter les faux positifs sur la liste blanche.
     Trois règles explicitement laissées à la revue humaine.
 ```

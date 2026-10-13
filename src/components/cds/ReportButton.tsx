@@ -19,7 +19,7 @@ const TRIGGER =
   "inline-flex min-h-11 items-center gap-1.5 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground";
 
 /**
- * Bouton discret « Signaler » + fenêtre de signalement (repris de Goldwing).
+ * Bouton discret « Signaler » + fenêtre de signalement.
  * Membres connectés seulement ; l'auteur du contenu ne sait jamais qui a signalé.
  * Invisible si le module « Signalements » est éteint ou sur son propre contenu.
  */

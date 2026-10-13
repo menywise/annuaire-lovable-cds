@@ -555,7 +555,7 @@ async function checkPage(
         if (viewport === "ordinateur")
           META.push({ url, title: facts.title, description: facts.description });
       }
-      // Contrôles du catalogue d'audit (agents-mac97000, src/lib/audit-offer.ts) : remarques.
+      // Contrôles du catalogue d'audit (codes de src/lib/qa-plan.ts, QA_AUDIT_CODES) : remarques.
       if (facts.h1 > 1) warnings.push(`[s3] ${facts.h1} titres h1`);
       if (!facts.title) warnings.push("[s1] balise <title> vide");
       else if (facts.title.length > 60)

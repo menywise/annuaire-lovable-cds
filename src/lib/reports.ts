@@ -1,4 +1,4 @@
-/** Signalements (repris de Goldwing) : types de contenus, motifs et statuts. Mêmes listes qu'en base. */
+/** Signalements : types de contenus, motifs et statuts. Mêmes listes qu'en base. */
 
 export const REPORT_CONTENT_TYPES = [
   { value: "article", label: "Article" },
