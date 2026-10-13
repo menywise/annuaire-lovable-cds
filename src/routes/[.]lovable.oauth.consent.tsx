@@ -4,6 +4,7 @@ import { AuthLayout } from "@/components/cds/AuthLayout";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { supabase } from "@/integrations/supabase/client";
+import { cheminInterne } from "@/lib/redirection";
 
 /**
  * Liste blanche finale stricte des hostnames autorisés pour les redirections OAuth absolues.
@@ -14,7 +15,8 @@ const ALLOWED_REDIRECT_HOSTNAMES = new Set(["lovable.dev", "lovable.app"]);
  * Valide et assainit une URL de redirection pour prévenir les attaques Open Redirect.
  *
  * Règles strictes :
- * 1. URL relative : doit commencer par "/" mais PAS par "//" ni "/\"
+ * 1. Page du site lui-même : chemin rendu par cheminInterne (même origine, sans caractère de
+ *    contrôle ni antislash).
  * 2. URL absolue :
  *    - Localhost (127.0.0.1 / localhost) est autorisé UNIQUEMENT en mode développement (import.meta.env.DEV === true).
  *    - Pour tous les autres domaines distants, le protocole HTTPS est EXIGÉ STRICTEMENT (http:// rejeté).
@@ -29,10 +31,9 @@ export function getSafeRedirectUrl(
 
   const trimmed = target.trim();
 
-  // 1. URL relative (ex: "/tableau-de-bord")
-  if (trimmed.startsWith("/") && !trimmed.startsWith("//") && !trimmed.startsWith("/\\")) {
-    return trimmed;
-  }
+  // 1. Page du site lui-même (ex: "/tableau-de-bord")
+  const interne = cheminInterne(trimmed);
+  if (interne) return interne;
 
   // 2. URL absolue avec parsing new URL()
   try {
