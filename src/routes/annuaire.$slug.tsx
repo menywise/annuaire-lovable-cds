@@ -160,6 +160,13 @@ function ListingPage() {
     });
     setBusy(false);
     if (error) {
+      // Code posé par la base : un autre membre a déjà demandé cette fiche.
+      if (error.code === "CDS03") {
+        toast.error("Une demande est déjà en cours pour cette fiche.", {
+          description: "L'équipe l'examine. Contactez-nous si cet établissement est le vôtre.",
+        });
+        return;
+      }
       toast.error("Demande non enregistrée.", { description: "Réessayez dans un instant." });
       return;
     }

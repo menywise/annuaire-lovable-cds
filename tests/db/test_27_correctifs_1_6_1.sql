@@ -2,7 +2,7 @@
 \i tests/db/_helpers.sql
 BEGIN;
 -- Socle 1.6.1 : correctifs issus de l'audit du 13/10 (messagerie privée, stock de la boutique, forum,
--- formulaires ouverts aux visiteurs).
+-- formulaires ouverts aux visiteurs, revendication d'une fiche d'annuaire).
 -- b1 : membre · b2 : autre membre · b3 : tiers · b4 : administrateur (section 3)
 INSERT INTO auth.users (id, email) VALUES
   ('00000000-0000-0000-0000-0000000000b1', 'un@test.fr'),
@@ -504,6 +504,66 @@ DO $$ BEGIN
   THEN RAISE EXCEPTION 'régie : événement compté hors campagne en cours'; END IF;
 END $$;
 
+-- 5. Annuaire : une demande de revendication en attente n'est plus écrasée --------------------------------------------
+UPDATE public.site_settings SET value = value || '{"directory": true}' WHERE key = 'modules';
+INSERT INTO public.directory_listings (id, name, slug, status) VALUES
+  ('00000000-0000-0000-0000-000000000801', 'Fiche revendiquée', 'fiche-revendiquee-161', 'published'),
+  ('00000000-0000-0000-0000-000000000802', 'Fiche en brouillon', 'fiche-brouillon-161', 'draft');
+-- b1 demande la fiche.
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000b1', 'un@test.fr');
+DO $$ BEGIN
+  IF NOT public.request_directory_claim('00000000-0000-0000-0000-000000000801') THEN
+    RAISE EXCEPTION 'revendication : première demande refusée'; END IF;
+END $$;
+RESET ROLE;
+UPDATE public.directory_listings SET claim_requested_at = '2026-01-01 10:00:00+00'
+  WHERE id = '00000000-0000-0000-0000-000000000801';
+-- b2 demande ensuite : refus avec CDS03 et un message lisible.
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000b2', 'deux@test.fr');
+SELECT pg_temp.expect_sqlstate($$SELECT public.request_directory_claim('00000000-0000-0000-0000-000000000801')$$, 'CDS03', 'revendication : seconde demande');
+DO $$ BEGIN
+  PERFORM public.request_directory_claim('00000000-0000-0000-0000-000000000801');
+  RAISE EXCEPTION 'revendication : seconde demande acceptée';
+EXCEPTION WHEN SQLSTATE 'CDS03' THEN
+  IF SQLERRM <> 'Une demande est déjà en cours d''examen pour cette fiche.' THEN
+    RAISE EXCEPTION 'revendication : message inattendu (%)', SQLERRM; END IF;
+END $$;
+-- Une fiche non publiée ne se revendique toujours pas.
+DO $$ BEGIN
+  IF public.request_directory_claim('00000000-0000-0000-0000-000000000802') THEN
+    RAISE EXCEPTION 'revendication : brouillon revendiqué'; END IF;
+END $$;
+-- b1 redemande : pas d'erreur.
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000b1', 'un@test.fr');
+DO $$ BEGIN
+  IF NOT public.request_directory_claim('00000000-0000-0000-0000-000000000801') THEN
+    RAISE EXCEPTION 'revendication : le même demandeur ne peut pas redemander'; END IF;
+END $$;
+RESET ROLE;
+-- La demande de b1 est intacte : même demandeur, même date.
+DO $$ BEGIN
+  IF (SELECT claim_requested_by FROM public.directory_listings WHERE id = '00000000-0000-0000-0000-000000000801')
+     IS DISTINCT FROM '00000000-0000-0000-0000-0000000000b1'::uuid
+  THEN RAISE EXCEPTION 'revendication : première demande écrasée'; END IF;
+  IF (SELECT claim_requested_at FROM public.directory_listings WHERE id = '00000000-0000-0000-0000-000000000801')
+     IS DISTINCT FROM '2026-01-01 10:00:00+00'::timestamptz
+  THEN RAISE EXCEPTION 'revendication : date de la première demande modifiée'; END IF;
+  IF (SELECT claim_requested_by FROM public.directory_listings WHERE id = '00000000-0000-0000-0000-000000000802') IS NOT NULL
+  THEN RAISE EXCEPTION 'revendication : demande enregistrée sur un brouillon'; END IF;
+END $$;
+-- Demande écartée par l'administration : la fiche se demande de nouveau.
+UPDATE public.directory_listings SET claim_requested_by = NULL, claim_requested_at = NULL
+  WHERE id = '00000000-0000-0000-0000-000000000801';
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000b2', 'deux@test.fr');
+DO $$ BEGIN
+  IF NOT public.request_directory_claim('00000000-0000-0000-0000-000000000801') THEN
+    RAISE EXCEPTION 'revendication : fiche libérée non demandable'; END IF;
+END $$;
+-- Le visiteur n'appelle toujours pas la fonction.
+SELECT pg_temp.as_anon();
+SELECT pg_temp.expect_sqlstate($$SELECT public.request_directory_claim('00000000-0000-0000-0000-000000000801')$$, '42501', 'revendication : visiteur');
+RESET ROLE;
+
 -- Rejouable (toujours en dernier) ---------------------------------------------------------------------------------------
 \i supabase/migrations/20261013120000_v1_6_1_correctifs_audit.sql
 DO $$ BEGIN
@@ -526,6 +586,9 @@ DO $$ BEGIN
      OR (SELECT count(*) FROM pg_policies WHERE tablename = 'newsletter_subscribers' AND cmd = 'INSERT') <> 1
   THEN RAISE EXCEPTION 'rejeu : insertion directe des abonnés rouverte'; END IF;
 END $$;
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000b1', 'un@test.fr');
+SELECT pg_temp.expect_sqlstate($$SELECT public.request_directory_claim('00000000-0000-0000-0000-000000000801')$$, 'CDS03', 'rejeu : revendication en attente écrasée');
+RESET ROLE;
 -- Existant hors borne : la migration passe, la contrainte reste NOT VALID et s'applique aux nouvelles lignes.
 ALTER TABLE public.contact_messages DROP CONSTRAINT contact_messages_email_format;
 INSERT INTO public.contact_messages (name, email, subject, message) VALUES ('Ancien', 'ancienne-saisie', 'Objet', 'Texte');

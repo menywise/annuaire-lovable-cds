@@ -8,6 +8,8 @@
 -- 4. Formulaires ouverts aux visiteurs (contact, lettre d'information, régie) : longueurs et format
 --    d'e-mail bornés, dates forcées, plafonds d'envoi du contact, abonnement par une fonction qui ne
 --    révèle pas une adresse déjà inscrite, clics et affichages acceptés pour une campagne en cours.
+-- 5. Annuaire : une demande de revendication en attente n'est plus écrasée par celle d'un autre
+--    membre. La seconde demande est refusée avec un message ; le même membre peut redemander.
 -- Rejouable sans danger.
 
 -- 1. Messagerie privée -----------------------------------------------------------------------------
@@ -579,3 +581,46 @@ REVOKE ALL ON FUNCTION public.guard_ad_event_insert() FROM PUBLIC, anon, authent
 DROP TRIGGER IF EXISTS ad_events_guard_insert ON public.ad_events;
 CREATE TRIGGER ad_events_guard_insert BEFORE INSERT ON public.ad_events
   FOR EACH ROW EXECUTE FUNCTION public.guard_ad_event_insert();
+
+-- 5. Annuaire : une demande de revendication en attente n'est plus écrasée ---------------------------
+-- Avant : la mise à jour ne regardait pas claim_requested_by ; le dernier demandeur remplaçait le
+-- précédent sans trace. La fiche est maintenant verrouillée le temps de la décision : deux demandes
+-- simultanées ne se croisent pas. Une demande en attente d'un autre membre lève CDS03, que la page de
+-- la fiche traduit. Le même membre peut redemander : sa demande garde sa date d'origine.
+CREATE OR REPLACE FUNCTION public.request_directory_claim(_listing_id uuid)
+RETURNS boolean LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
+DECLARE
+  _uid uuid := auth.uid();
+  _demandeur uuid;
+BEGIN
+  IF _uid IS NULL THEN
+    RAISE EXCEPTION 'Non authentifie';
+  END IF;
+  IF NOT public.module_enabled('directory') THEN
+    RETURN false;
+  END IF;
+  SELECT claim_requested_by INTO _demandeur
+    FROM public.directory_listings
+   WHERE id = _listing_id
+     AND status = 'published'
+     AND claimed_by IS NULL
+     FOR UPDATE;
+  IF NOT FOUND THEN
+    RETURN false;
+  END IF;
+  IF _demandeur = _uid THEN
+    RETURN true;
+  END IF;
+  IF _demandeur IS NOT NULL THEN
+    RAISE EXCEPTION 'Une demande est déjà en cours d''examen pour cette fiche.'
+      USING ERRCODE = 'CDS03';
+  END IF;
+  UPDATE public.directory_listings
+     SET claim_requested_by = _uid,
+         claim_requested_at = now()
+   WHERE id = _listing_id;
+  RETURN true;
+END;
+$$;
+REVOKE ALL ON FUNCTION public.request_directory_claim(uuid) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.request_directory_claim(uuid) TO authenticated;
