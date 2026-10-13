@@ -24,7 +24,8 @@ npm install --no-package-lock --no-audit --no-fund
 npm run typecheck        # npx tsc --noEmit -p .
 npm test                 # node --test tests/unit/*.test.ts
 npm run build            # npx vite build
-tests/db/run.sh          # migrations et règles d'accès, sur un Postgres 16 local (PGHOST, PGUSER…)
+tests/db/run.sh          # forme des blocs SQL, migrations, règles d'accès, égalité migrations/blocs,
+                         # sur un Postgres 16 local (PGHOST, PGUSER…)
 ```
 
 Le CI (`.github/workflows/qualite.yml`) enchaîne ces mêmes commandes, puis une recette automatisée

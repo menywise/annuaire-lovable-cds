@@ -1,0 +1,5 @@
+# Écarts connus entre le schéma des migrations et celui des blocs SQL (tests/db/blocs_egalite.sh).
+# Une ligne par écart, recopiée telle quelle de la sortie du script (« < ligne » : dans les
+# migrations seulement ; « > ligne » : dans les blocs seulement). Un écart listé ici est un
+# avertissement, pas un échec : il vient d'une version publiée, qu'une migration ne corrige plus ;
+# on le lève dans une version suivante, puis on retire sa ligne. Aucun écart connu à ce jour.
