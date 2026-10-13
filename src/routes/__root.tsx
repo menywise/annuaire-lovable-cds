@@ -17,6 +17,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { siteLocale } from "@/config/brand";
 import { absoluteUrl, getSiteConfig, setSiteConfig, siteConfigScript } from "@/lib/site-config";
 import { cssCouleurPrincipale } from "@/lib/couleurs";
+import { jsonLdScript } from "@/lib/seo";
 import { loadSiteConfig } from "@/lib/site-config.functions";
 import { isFeatureOn } from "@/config/features";
 import { isPathOff } from "@/config/modules";
@@ -186,10 +187,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       scripts: [
         // Doit précéder le code du navigateur : l'hydratation relit ces valeurs.
         { children: siteConfigScript() },
-        {
-          type: "application/ld+json",
-          children: JSON.stringify(organizationJsonLd()),
-        },
+        jsonLdScript(organizationJsonLd()),
       ],
     };
   },

@@ -15,7 +15,7 @@ import { getDirectoryListing } from "@/lib/directory.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { absoluteUrl, getSiteConfig } from "@/lib/site-config";
-import { breadcrumbJsonLd, seo } from "@/lib/seo";
+import { breadcrumbJsonLd, jsonLdScript, seo } from "@/lib/seo";
 import { formatDate } from "@/lib/format";
 
 const DAYS = [
@@ -75,28 +75,25 @@ export const Route = createFileRoute("/annuaire/$slug")({
           { name: "Annuaire", path: "/annuaire" },
           { name: listing.name, path: `/annuaire/${listing.slug}` },
         ]),
-        {
-          type: "application/ld+json",
-          children: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": typeFiche,
-            name: listing.name,
-            description,
-            url: absoluteUrl(`/annuaire/${listing.slug}`),
-            ...(listing.phone ? { telephone: listing.phone } : {}),
-            ...(listing.website ? { sameAs: [listing.website] } : {}),
-            ...(address ? { address } : {}),
-            ...(average
-              ? {
-                  aggregateRating: {
-                    "@type": "AggregateRating",
-                    ratingValue: average.toFixed(1),
-                    reviewCount: reviews.length,
-                  },
-                }
-              : {}),
-          }),
-        },
+        jsonLdScript({
+          "@context": "https://schema.org",
+          "@type": typeFiche,
+          name: listing.name,
+          description,
+          url: absoluteUrl(`/annuaire/${listing.slug}`),
+          ...(listing.phone ? { telephone: listing.phone } : {}),
+          ...(listing.website ? { sameAs: [listing.website] } : {}),
+          ...(address ? { address } : {}),
+          ...(average
+            ? {
+                aggregateRating: {
+                  "@type": "AggregateRating",
+                  ratingValue: average.toFixed(1),
+                  reviewCount: reviews.length,
+                },
+              }
+            : {}),
+        }),
       ],
     };
   },

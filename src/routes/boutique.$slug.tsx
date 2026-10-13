@@ -11,7 +11,7 @@ import { RichText } from "@/lib/richtext";
 import { getShopProduct } from "@/lib/shop.functions";
 import { CART_MAX_QUANTITY, addToCart, isDigital, shopKindLabel } from "@/lib/shop";
 import { absoluteUrl } from "@/lib/site-config";
-import { breadcrumbJsonLd, clampText, seo } from "@/lib/seo";
+import { breadcrumbJsonLd, clampText, jsonLdScript, seo } from "@/lib/seo";
 import { formatPrice } from "@/lib/format";
 
 export const Route = createFileRoute("/boutique/$slug")({
@@ -43,26 +43,21 @@ export const Route = createFileRoute("/boutique/$slug")({
           { name: "Boutique", path: "/boutique" },
           { name: product.title, path: `/boutique/${product.slug}` },
         ]),
-        {
-          type: "application/ld+json",
-          children: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Product",
-            name: product.title,
-            description: product.summary || undefined,
-            image,
-            offers: {
-              "@type": "Offer",
-              url: absoluteUrl(`/boutique/${product.slug}`),
-              price: (product.price_cents / 100).toFixed(2),
-              priceCurrency: "EUR",
-              availability:
-                product.stock === 0
-                  ? "https://schema.org/OutOfStock"
-                  : "https://schema.org/InStock",
-            },
-          }),
-        },
+        jsonLdScript({
+          "@context": "https://schema.org",
+          "@type": "Product",
+          name: product.title,
+          description: product.summary || undefined,
+          image,
+          offers: {
+            "@type": "Offer",
+            url: absoluteUrl(`/boutique/${product.slug}`),
+            price: (product.price_cents / 100).toFixed(2),
+            priceCurrency: "EUR",
+            availability:
+              product.stock === 0 ? "https://schema.org/OutOfStock" : "https://schema.org/InStock",
+          },
+        }),
       ],
     };
   },

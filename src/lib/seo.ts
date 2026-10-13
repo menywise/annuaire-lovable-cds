@@ -1,5 +1,6 @@
-import { absoluteUrl, getSiteConfig } from "@/lib/site-config";
-import { siteLocale } from "@/config/brand";
+// Chemins relatifs : le fichier est aussi chargé tel quel par les tests unitaires (node --test).
+import { absoluteUrl, getSiteConfig } from "./site-config.ts";
+import { siteLocale } from "../config/brand.ts";
 
 type SeoInput = {
   /** Titre de la page, sans le suffixe de marque. */
@@ -65,21 +66,36 @@ export function seo({
   };
 }
 
-/** Fil d'Ariane structuré (JSON-LD) pour les pages profondes. */
-export function breadcrumbJsonLd(items: Array<{ name: string; path: string }>) {
+/**
+ * Balise de données structurées (JSON-LD), seule sortie `application/ld+json` du dépôt.
+ * Le routeur injecte `children` tel quel dans la balise script : un titre saisi par un
+ * visiteur contenant `</script>` fermerait la balise. « < », « > », « & », U+2028 et
+ * U+2029 sont donc écrits en séquences \uXXXX ; le JSON relu reste identique.
+ */
+export function jsonLdScript(data: Record<string, unknown>) {
   return {
     type: "application/ld+json",
-    children: JSON.stringify({
-      "@context": "https://schema.org",
-      "@type": "BreadcrumbList",
-      itemListElement: items.map((item, index) => ({
-        "@type": "ListItem",
-        position: index + 1,
-        name: item.name,
-        item: absoluteUrl(item.path),
-      })),
-    }),
+    children: JSON.stringify(data)
+      .replace(/</g, "\\u003c")
+      .replace(/>/g, "\\u003e")
+      .replace(/&/g, "\\u0026")
+      .replace(/\u2028/g, "\\u2028")
+      .replace(/\u2029/g, "\\u2029"),
   };
+}
+
+/** Fil d'Ariane structuré (JSON-LD) pour les pages profondes. */
+export function breadcrumbJsonLd(items: Array<{ name: string; path: string }>) {
+  return jsonLdScript({
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: items.map((item, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: item.name,
+      item: absoluteUrl(item.path),
+    })),
+  });
 }
 
 /** Coupe un texte au dernier mot entier avant `max` caractères, avec « … ». */

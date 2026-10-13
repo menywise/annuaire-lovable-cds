@@ -12,7 +12,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { listFaq } from "@/lib/content.functions";
-import { breadcrumbJsonLd, seo } from "@/lib/seo";
+import { breadcrumbJsonLd, jsonLdScript, seo } from "@/lib/seo";
 import { requireFeature, isFeatureOn } from "@/config/features";
 
 function anchorOf(value: string) {
@@ -43,18 +43,15 @@ export const Route = createFileRoute("/faq")({
           { name: "Accueil", path: "/" },
           { name: "Questions fréquentes", path: "/faq" },
         ]),
-        {
-          type: "application/ld+json",
-          children: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "FAQPage",
-            mainEntity: items.map((item) => ({
-              "@type": "Question",
-              name: item.question,
-              acceptedAnswer: { "@type": "Answer", text: item.answer },
-            })),
-          }),
-        },
+        jsonLdScript({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: items.map((item) => ({
+            "@type": "Question",
+            name: item.question,
+            acceptedAnswer: { "@type": "Answer", text: item.answer },
+          })),
+        }),
       ],
     };
   },

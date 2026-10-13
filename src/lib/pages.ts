@@ -8,6 +8,7 @@
  * Aujourd'hui, l'édition passe par des formulaires (`/admin/pages`) et le rendu par nos composants CDS.
  * Règles d'accès et contrôle du format : migration `20260929200000_v0_lot5c_pages.sql`.
  */
+import { jsonLdScript } from "./seo.ts";
 
 export type SectionProps = Record<string, unknown> & { id: string };
 export type Section = { type: string; props: SectionProps };
@@ -246,16 +247,13 @@ export function pageFaqJsonLd(data: PageData) {
     .flatMap((s) => items(s.props, "items"))
     .filter((item) => str(item, "question") && str(item, "answer"));
   if (!questions.length) return null;
-  return {
-    type: "application/ld+json",
-    children: JSON.stringify({
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      mainEntity: questions.map((item) => ({
-        "@type": "Question",
-        name: str(item, "question"),
-        acceptedAnswer: { "@type": "Answer", text: str(item, "answer") },
-      })),
-    }),
-  };
+  return jsonLdScript({
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: questions.map((item) => ({
+      "@type": "Question",
+      name: str(item, "question"),
+      acceptedAnswer: { "@type": "Answer", text: str(item, "answer") },
+    })),
+  });
 }

@@ -13,7 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { listTestimonials } from "@/lib/community.functions";
 import { absoluteUrl } from "@/lib/site-config";
-import { seo } from "@/lib/seo";
+import { jsonLdScript, seo } from "@/lib/seo";
 import { requireFeature } from "@/config/features";
 
 export const Route = createFileRoute("/temoignages")({
@@ -30,24 +30,21 @@ export const Route = createFileRoute("/temoignages")({
     return {
       ...base,
       scripts: [
-        {
-          type: "application/ld+json",
-          children: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "ItemList",
-            name: "Témoignages",
-            url: absoluteUrl("/temoignages"),
-            itemListElement: (loaderData ?? []).slice(0, 10).map((item, index) => ({
-              "@type": "ListItem",
-              position: index + 1,
-              item: {
-                "@type": "Review",
-                author: { "@type": "Person", name: item.author_name },
-                reviewBody: item.content,
-              },
-            })),
-          }),
-        },
+        jsonLdScript({
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          name: "Témoignages",
+          url: absoluteUrl("/temoignages"),
+          itemListElement: (loaderData ?? []).slice(0, 10).map((item, index) => ({
+            "@type": "ListItem",
+            position: index + 1,
+            item: {
+              "@type": "Review",
+              author: { "@type": "Person", name: item.author_name },
+              reviewBody: item.content,
+            },
+          })),
+        }),
       ],
     };
   },

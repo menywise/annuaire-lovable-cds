@@ -15,7 +15,7 @@ import { getPost } from "@/lib/content.functions";
 import { RichText } from "@/lib/richtext";
 import { readingMinutes } from "@/lib/reading";
 import { absoluteUrl } from "@/lib/site-config";
-import { breadcrumbJsonLd, seo } from "@/lib/seo";
+import { breadcrumbJsonLd, jsonLdScript, seo } from "@/lib/seo";
 import { requireFeature } from "@/config/features";
 
 export const Route = createFileRoute("/blog/$slug")({
@@ -41,17 +41,14 @@ export const Route = createFileRoute("/blog/$slug")({
           { name: "Blog", path: "/blog" },
           { name: post?.title ?? "Article", path: `/blog/${params.slug}` },
         ]),
-        {
-          type: "application/ld+json",
-          children: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "BlogPosting",
-            headline: post?.title,
-            description: post?.excerpt,
-            datePublished: post?.published_at,
-            mainEntityOfPage: absoluteUrl(`/blog/${params.slug}`),
-          }),
-        },
+        jsonLdScript({
+          "@context": "https://schema.org",
+          "@type": "BlogPosting",
+          headline: post?.title,
+          description: post?.excerpt,
+          datePublished: post?.published_at,
+          mainEntityOfPage: absoluteUrl(`/blog/${params.slug}`),
+        }),
       ],
     };
   },

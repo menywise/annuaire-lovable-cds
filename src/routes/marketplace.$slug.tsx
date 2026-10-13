@@ -10,7 +10,7 @@ import { getMarketplaceListing } from "@/lib/marketplace.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { absoluteUrl } from "@/lib/site-config";
-import { breadcrumbJsonLd, seo } from "@/lib/seo";
+import { breadcrumbJsonLd, jsonLdScript, seo } from "@/lib/seo";
 import { formatDate, formatPrice } from "@/lib/format";
 import { ReportButton } from "@/components/cds/ReportButton";
 
@@ -42,23 +42,20 @@ export const Route = createFileRoute("/marketplace/$slug")({
           { name: "Petites annonces", path: "/marketplace" },
           { name: listing.title, path: `/marketplace/${listing.slug}` },
         ]),
-        {
-          type: "application/ld+json",
-          children: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Product",
-            name: listing.title,
-            description,
-            url: absoluteUrl(`/marketplace/${listing.slug}`),
-            ...(photo ? { image: photo } : {}),
-            offers: {
-              "@type": "Offer",
-              price: (listing.price_cents / 100).toFixed(2),
-              priceCurrency: listing.currency ?? "EUR",
-              availability: "https://schema.org/InStock",
-            },
-          }),
-        },
+        jsonLdScript({
+          "@context": "https://schema.org",
+          "@type": "Product",
+          name: listing.title,
+          description,
+          url: absoluteUrl(`/marketplace/${listing.slug}`),
+          ...(photo ? { image: photo } : {}),
+          offers: {
+            "@type": "Offer",
+            price: (listing.price_cents / 100).toFixed(2),
+            priceCurrency: listing.currency ?? "EUR",
+            availability: "https://schema.org/InStock",
+          },
+        }),
       ],
     };
   },
