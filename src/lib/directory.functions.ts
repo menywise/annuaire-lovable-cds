@@ -1,11 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { publicClient } from "@/lib/supabase-public";
-
-/** Une panne de base lève une erreur : elle ne doit pas s'afficher comme une liste vide. */
-function check<T>(result: { data: T; error: { message: string } | null }): T {
-  if (result.error) throw new Error(result.error.message);
-  return result.data;
-}
+import { check } from "@/lib/check";
 
 const LISTING_FIELDS =
   "id, name, slug, excerpt, description, city, postal_code, address, departement, phone, email, website, logo_url, cover_url, photos, hours, plan, featured, verified, tags, category_id, claimed_by, latitude, longitude, created_at";

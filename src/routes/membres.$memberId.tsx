@@ -2,6 +2,7 @@ import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-ro
 import { useState } from "react";
 import { toast } from "sonner";
 import { PageShell } from "@/components/cds/SiteHeader";
+import { erreurChargement } from "@/components/cds/ErreurChargement";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -40,11 +41,7 @@ export const Route = createFileRoute("/membres/$memberId")({
       ],
     };
   },
-  errorComponent: () => (
-    <PageShell>
-      <p className="text-sm text-muted-foreground">Ce profil n'a pas pu être chargé.</p>
-    </PageShell>
-  ),
+  errorComponent: erreurChargement("Ce profil n'a pas pu être chargé."),
   notFoundComponent: () => (
     <PageShell>
       <h1 className="text-2xl font-bold text-foreground">Profil introuvable</h1>

@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Quote } from "lucide-react";
 import { toast } from "sonner";
 import { PageShell } from "@/components/cds/SiteHeader";
+import { erreurChargement } from "@/components/cds/ErreurChargement";
 import { ModerationNote } from "@/components/cds/ModerationNote";
 import { ReportButton } from "@/components/cds/ReportButton";
 import { Button } from "@/components/ui/button";
@@ -48,11 +49,7 @@ export const Route = createFileRoute("/temoignages")({
       ],
     };
   },
-  errorComponent: () => (
-    <PageShell>
-      <p className="text-sm text-muted-foreground">Les témoignages n'ont pas pu être chargés.</p>
-    </PageShell>
-  ),
+  errorComponent: erreurChargement("Les témoignages n'ont pas pu être chargés."),
   notFoundComponent: () => (
     <PageShell>
       <p className="text-sm text-muted-foreground">Cette page n'existe pas.</p>

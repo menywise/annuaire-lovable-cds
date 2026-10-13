@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { PageShell } from "@/components/cds/SiteHeader";
+import { erreurChargement } from "@/components/cds/ErreurChargement";
 import { ModerationNote } from "@/components/cds/ModerationNote";
 import { ReportButton } from "@/components/cds/ReportButton";
 import { ShareButtons } from "@/components/cds/ShareButtons";
@@ -47,11 +48,7 @@ export const Route = createFileRoute("/forum/$topicId")({
       ],
     };
   },
-  errorComponent: () => (
-    <PageShell>
-      <p className="text-sm text-muted-foreground">Cette discussion n'a pas pu être chargée.</p>
-    </PageShell>
-  ),
+  errorComponent: erreurChargement("Cette discussion n'a pas pu être chargée."),
   notFoundComponent: () => (
     <PageShell>
       <h1 className="text-2xl font-bold text-foreground">Discussion introuvable</h1>

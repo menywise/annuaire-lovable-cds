@@ -2,6 +2,7 @@ import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
 import { PageShell } from "@/components/cds/SiteHeader";
+import { erreurChargement } from "@/components/cds/ErreurChargement";
 import { CategoryBadge, TopicMeta, TopMembers } from "@/components/cds/ForumParts";
 import { RichTextEditor, richTextToPlain } from "@/lib/richtext";
 import { Button } from "@/components/ui/button";
@@ -27,11 +28,7 @@ export const Route = createFileRoute("/forum/")({
       path: "/forum",
       type: "website",
     }),
-  errorComponent: () => (
-    <PageShell>
-      <p className="text-sm text-muted-foreground">Les discussions n'ont pas pu être chargées.</p>
-    </PageShell>
-  ),
+  errorComponent: erreurChargement("Les discussions n'ont pas pu être chargées."),
   notFoundComponent: () => (
     <PageShell>
       <p className="text-sm text-muted-foreground">Cette page n'existe pas.</p>

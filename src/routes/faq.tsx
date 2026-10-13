@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
 import { PageShell } from "@/components/cds/SiteHeader";
+import { erreurChargement } from "@/components/cds/ErreurChargement";
 import { NewsletterForm } from "@/components/cds/NewsletterForm";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -55,13 +56,7 @@ export const Route = createFileRoute("/faq")({
       ],
     };
   },
-  errorComponent: () => (
-    <PageShell>
-      <p className="text-sm text-muted-foreground">
-        Les questions n'ont pas pu être chargées. Rechargez la page dans un instant.
-      </p>
-    </PageShell>
-  ),
+  errorComponent: erreurChargement("Les questions n'ont pas pu être chargées."),
   notFoundComponent: () => (
     <PageShell>
       <p className="text-sm text-muted-foreground">Cette page n'existe pas.</p>

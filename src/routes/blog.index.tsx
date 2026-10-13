@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
 import { PageShell } from "@/components/cds/SiteHeader";
+import { erreurChargement } from "@/components/cds/ErreurChargement";
 import { NewsletterForm } from "@/components/cds/NewsletterForm";
 import { AdSlot } from "@/components/cds/AdSlot";
 import { Input } from "@/components/ui/input";
@@ -22,11 +23,7 @@ export const Route = createFileRoute("/blog/")({
       path: "/blog",
       type: "website",
     }),
-  errorComponent: () => (
-    <PageShell>
-      <p className="text-sm text-muted-foreground">Les articles n'ont pas pu être chargés.</p>
-    </PageShell>
-  ),
+  errorComponent: erreurChargement("Les articles n'ont pas pu être chargés."),
   notFoundComponent: () => (
     <PageShell>
       <p className="text-sm text-muted-foreground">Cette page n'existe pas.</p>

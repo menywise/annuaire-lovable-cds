@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Star } from "lucide-react";
 import { toast } from "sonner";
 import { PageShell } from "@/components/cds/SiteHeader";
+import { erreurChargement } from "@/components/cds/ErreurChargement";
 import { ModerationNote } from "@/components/cds/ModerationNote";
 import { ReportButton } from "@/components/cds/ReportButton";
 import { Button } from "@/components/ui/button";
@@ -26,11 +27,7 @@ export const Route = createFileRoute("/avis")({
       path: "/avis",
       type: "website",
     }),
-  errorComponent: () => (
-    <PageShell>
-      <p className="text-sm text-muted-foreground">Les avis n'ont pas pu être chargés.</p>
-    </PageShell>
-  ),
+  errorComponent: erreurChargement("Les avis n'ont pas pu être chargés."),
   notFoundComponent: () => (
     <PageShell>
       <p className="text-sm text-muted-foreground">Cette page n'existe pas.</p>

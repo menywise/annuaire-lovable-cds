@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
+import { check } from "@/lib/check";
 
 /** Client public (lecture seule) utilisable pendant le rendu serveur. */
 function publicClient() {
@@ -31,10 +32,13 @@ export type ForumCategory = {
 };
 
 export const listCategories = createServerFn({ method: "GET" }).handler(async () => {
-  const { data } = await publicClient()
-    .from("forum_categories")
-    .select("id, slug, name, description, color, position")
-    .order("position", { ascending: true });
+  const data = check(
+    await publicClient()
+      .from("forum_categories")
+      .select("id, slug, name, description, color, position")
+      .order("position", { ascending: true }),
+    { contexte: "forum_categories" },
+  );
   return (data ?? []) as ForumCategory[];
 });
 
@@ -44,26 +48,29 @@ export const getForumOverview = createServerFn({ method: "GET" })
   .handler(async ({ data: input }) => {
     const client = publicClient();
 
-    const [{ data: categories }, { data: allTopics }, { data: replies }, { data: likes }] =
-      await Promise.all([
-        client
-          .from("forum_categories")
-          .select("id, slug, name, description, color, position")
-          .order("position", { ascending: true }),
-        client
-          .from("forum_topics")
-          .select(
-            "id, title, content, author_id, author_name, locked, views, category_id, created_at, last_activity_at, moderation_note, moderated_at",
-          )
-          .order("last_activity_at", { ascending: false })
-          .limit(200),
-        client
-          .from("forum_replies")
-          .select("id, topic_id, author_name, created_at")
-          .order("created_at", { ascending: false })
-          .limit(500),
-        client.from("forum_likes").select("id, topic_id, reply_id"),
-      ]);
+    const [categoriesRes, topicsRes, repliesRes, likesRes] = await Promise.all([
+      client
+        .from("forum_categories")
+        .select("id, slug, name, description, color, position")
+        .order("position", { ascending: true }),
+      client
+        .from("forum_topics")
+        .select(
+          "id, title, content, author_id, author_name, locked, views, category_id, created_at, last_activity_at, moderation_note, moderated_at",
+        )
+        .order("last_activity_at", { ascending: false })
+        .limit(200),
+      client
+        .from("forum_replies")
+        .select("id, topic_id, author_name, created_at")
+        .order("created_at", { ascending: false })
+        .limit(500),
+      client.from("forum_likes").select("id, topic_id, reply_id"),
+    ]);
+    const categories = check(categoriesRes, { contexte: "forum_categories" });
+    const allTopics = check(topicsRes, { contexte: "forum_topics" });
+    const replies = check(repliesRes, { contexte: "forum_replies" });
+    const likes = check(likesRes, { contexte: "forum_likes" });
 
     const cats = (categories ?? []) as ForumCategory[];
     const topics = allTopics ?? [];
@@ -132,9 +139,9 @@ export const getTopMembers = createServerFn({ method: "GET" }).handler(async () 
   ]);
 
   return {
-    always: all.data ?? [],
-    month: last30.data ?? [],
-    week: last7.data ?? [],
+    always: check(all, { contexte: "forum_top_members" }) ?? [],
+    month: check(last30, { contexte: "forum_top_members" }) ?? [],
+    week: check(last7, { contexte: "forum_top_members" }) ?? [],
   };
 });
 
@@ -143,16 +150,19 @@ export const getTopicDetail = createServerFn({ method: "GET" })
   .inputValidator((input: { id: string }) => input)
   .handler(async ({ data: input }) => {
     const client = publicClient();
-    const { data: topic } = await client
-      .from("forum_topics")
-      .select(
-        "id, title, content, author_id, author_name, locked, views, category_id, created_at, last_activity_at, moderation_note, moderated_at",
-      )
-      .eq("id", input.id)
-      .maybeSingle();
+    const topic = check(
+      await client
+        .from("forum_topics")
+        .select(
+          "id, title, content, author_id, author_name, locked, views, category_id, created_at, last_activity_at, moderation_note, moderated_at",
+        )
+        .eq("id", input.id)
+        .maybeSingle(),
+      { contexte: "forum_topics" },
+    );
     if (!topic) return null;
 
-    const [{ data: replies }, { data: likes }, { data: category }] = await Promise.all([
+    const [repliesRes, likesRes, categoryRes] = await Promise.all([
       client
         .from("forum_replies")
         .select(
@@ -167,8 +177,11 @@ export const getTopicDetail = createServerFn({ method: "GET" })
             .select("id, slug, name, color")
             .eq("id", topic.category_id)
             .maybeSingle()
-        : Promise.resolve({ data: null }),
+        : Promise.resolve({ data: null, error: null }),
     ]);
+    const replies = check(repliesRes, { contexte: "forum_replies" });
+    const likes = check(likesRes, { contexte: "forum_likes" });
+    const category = check(categoryRes, { contexte: "forum_categories" });
 
     const allLikes = likes ?? [];
     const countFor = (key: "topic_id" | "reply_id", id: string) =>
@@ -186,7 +199,7 @@ export const getTopicDetail = createServerFn({ method: "GET" })
 /** Annuaire public des membres ayant accepté d'y figurer. */
 export const listMembers = createServerFn({ method: "GET" }).handler(async () => {
   const client = publicClient();
-  const [{ data: members }, { data: ranking }] = await Promise.all([
+  const [membersRes, rankingRes] = await Promise.all([
     client
       .from("member_profiles")
       .select(
@@ -196,6 +209,8 @@ export const listMembers = createServerFn({ method: "GET" }).handler(async () =>
       .order("created_at", { ascending: true }),
     client.rpc("forum_top_members", {}),
   ]);
+  const members = check(membersRes, { contexte: "member_profiles" });
+  const ranking = check(rankingRes, { contexte: "forum_top_members" });
 
   const scores = new Map<string, number>();
   for (const row of ranking ?? []) scores.set(row.user_id, Number(row.score));
@@ -208,16 +223,19 @@ export const getMember = createServerFn({ method: "GET" })
   .inputValidator((input: { userId: string }) => input)
   .handler(async ({ data: input }) => {
     const client = publicClient();
-    const { data: profile } = await client
-      .from("member_profiles")
-      .select(
-        "user_id, display_name, avatar_url, bio, job_title, website, listed, accepts_messages, created_at",
-      )
-      .eq("user_id", input.userId)
-      .maybeSingle();
+    const profile = check(
+      await client
+        .from("member_profiles")
+        .select(
+          "user_id, display_name, avatar_url, bio, job_title, website, listed, accepts_messages, created_at",
+        )
+        .eq("user_id", input.userId)
+        .maybeSingle(),
+      { contexte: "member_profiles" },
+    );
     if (!profile) return null;
 
-    const [{ data: topics }, { data: replies }] = await Promise.all([
+    const [topicsRes, repliesRes] = await Promise.all([
       client
         .from("forum_topics")
         .select("id, title, created_at")
@@ -231,20 +249,25 @@ export const getMember = createServerFn({ method: "GET" })
         .order("created_at", { ascending: false })
         .limit(10),
     ]);
+    const topics = check(topicsRes, { contexte: "forum_topics" });
+    const replies = check(repliesRes, { contexte: "forum_replies" });
 
     return { profile, topics: topics ?? [], replies: replies ?? [] };
   });
 
 /** Témoignages validés, du plus mis en avant au plus récent. */
 export const listTestimonials = createServerFn({ method: "GET" }).handler(async () => {
-  const { data } = await publicClient()
-    .from("testimonials")
-    .select(
-      "id, author_name, role_title, company, avatar_url, content, outcome, featured, position, created_at, moderation_note, moderated_at",
-    )
-    .eq("approved", true)
-    .order("featured", { ascending: false })
-    .order("position", { ascending: true })
-    .order("created_at", { ascending: false });
+  const data = check(
+    await publicClient()
+      .from("testimonials")
+      .select(
+        "id, author_name, role_title, company, avatar_url, content, outcome, featured, position, created_at, moderation_note, moderated_at",
+      )
+      .eq("approved", true)
+      .order("featured", { ascending: false })
+      .order("position", { ascending: true })
+      .order("created_at", { ascending: false }),
+    { contexte: "testimonials" },
+  );
   return data ?? [];
 });

@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { MapPin } from "lucide-react";
 import { toast } from "sonner";
 import { PageShell } from "@/components/cds/SiteHeader";
+import { erreurChargement } from "@/components/cds/ErreurChargement";
 import { Button } from "@/components/ui/button";
 import { RichText } from "@/lib/richtext";
 import { requireFeature } from "@/config/features";
@@ -59,11 +60,7 @@ export const Route = createFileRoute("/marketplace/$slug")({
       ],
     };
   },
-  errorComponent: () => (
-    <PageShell>
-      <p className="text-sm text-muted-foreground">Cette annonce n'a pas pu être chargée.</p>
-    </PageShell>
-  ),
+  errorComponent: erreurChargement("Cette annonce n'a pas pu être chargée."),
   notFoundComponent: () => (
     <PageShell>
       <p className="text-sm text-muted-foreground">

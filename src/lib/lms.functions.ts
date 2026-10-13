@@ -1,10 +1,11 @@
 import { createServerFn } from "@tanstack/react-start";
 import { publicClient } from "@/lib/supabase-public";
+import { check } from "@/lib/check";
 
 /** Catalogue des formations publiées. */
 export const listCourses = createServerFn({ method: "GET" }).handler(async () => {
   const client = publicClient();
-  const [{ data: courses }, { data: enrollments }] = await Promise.all([
+  const [coursesRes, enrollmentsRes] = await Promise.all([
     client
       .from("lms_courses")
       .select(
@@ -14,6 +15,8 @@ export const listCourses = createServerFn({ method: "GET" }).handler(async () =>
       .order("position", { ascending: true }),
     client.from("lms_enrollments").select("course_id"),
   ]);
+  const courses = check(coursesRes, { contexte: "lms_courses" });
+  const enrollments = check(enrollmentsRes, { contexte: "lms_enrollments" });
   const counts = new Map<string, number>();
   for (const row of enrollments ?? []) {
     counts.set(row.course_id, (counts.get(row.course_id) ?? 0) + 1);
@@ -26,28 +29,37 @@ export const getCourse = createServerFn({ method: "GET" })
   .inputValidator((input: { slug: string }) => input)
   .handler(async ({ data: input }) => {
     const client = publicClient();
-    const { data: course } = await client
-      .from("lms_courses")
-      .select(
-        "id, title, slug, excerpt, description, cover_url, level, duration_minutes, price_cents, currency",
-      )
-      .eq("published", true)
-      .eq("slug", input.slug)
-      .maybeSingle();
+    const course = check(
+      await client
+        .from("lms_courses")
+        .select(
+          "id, title, slug, excerpt, description, cover_url, level, duration_minutes, price_cents, currency",
+        )
+        .eq("published", true)
+        .eq("slug", input.slug)
+        .maybeSingle(),
+      { contexte: "lms_courses" },
+    );
     if (!course) return null;
-    const { data: modules } = await client
-      .from("lms_modules")
-      .select("id, title, position")
-      .eq("course_id", course.id)
-      .order("position", { ascending: true });
+    const modules = check(
+      await client
+        .from("lms_modules")
+        .select("id, title, position")
+        .eq("course_id", course.id)
+        .order("position", { ascending: true }),
+      { contexte: "lms_modules" },
+    );
     const moduleIds = (modules ?? []).map((m) => m.id);
-    const { data: lessons } = moduleIds.length
-      ? await client
-          .from("lms_lessons")
-          .select("id, module_id, title, content_type, duration_minutes, position, free_preview")
-          .in("module_id", moduleIds)
-          .order("position", { ascending: true })
-      : { data: [] };
+    const lessons = moduleIds.length
+      ? check(
+          await client
+            .from("lms_lessons")
+            .select("id, module_id, title, content_type, duration_minutes, position, free_preview")
+            .in("module_id", moduleIds)
+            .order("position", { ascending: true }),
+          { contexte: "lms_lessons" },
+        )
+      : [];
     return { course, modules: modules ?? [], lessons: lessons ?? [] };
   });
 
@@ -56,27 +68,36 @@ export const getLesson = createServerFn({ method: "GET" })
   .inputValidator((input: { slug: string; lessonId: string }) => input)
   .handler(async ({ data: input }) => {
     const client = publicClient();
-    const { data: course } = await client
-      .from("lms_courses")
-      .select("id, title, slug")
-      .eq("published", true)
-      .eq("slug", input.slug)
-      .maybeSingle();
+    const course = check(
+      await client
+        .from("lms_courses")
+        .select("id, title, slug")
+        .eq("published", true)
+        .eq("slug", input.slug)
+        .maybeSingle(),
+      { contexte: "lms_courses" },
+    );
     if (!course) return null;
 
-    const { data: modules } = await client
-      .from("lms_modules")
-      .select("id, position")
-      .eq("course_id", course.id)
-      .order("position", { ascending: true });
+    const modules = check(
+      await client
+        .from("lms_modules")
+        .select("id, position")
+        .eq("course_id", course.id)
+        .order("position", { ascending: true }),
+      { contexte: "lms_modules" },
+    );
     const moduleIds = (modules ?? []).map((m) => m.id);
     if (moduleIds.length === 0) return null;
 
-    const { data: lessons } = await client
-      .from("lms_lessons")
-      .select("id, module_id, title, content_type, duration_minutes, position, free_preview")
-      .in("module_id", moduleIds)
-      .order("position", { ascending: true });
+    const lessons = check(
+      await client
+        .from("lms_lessons")
+        .select("id, module_id, title, content_type, duration_minutes, position, free_preview")
+        .in("module_id", moduleIds)
+        .order("position", { ascending: true }),
+      { contexte: "lms_lessons" },
+    );
 
     const ordered = [...(lessons ?? [])].sort((a, b) => {
       const ma = moduleIds.indexOf(a.module_id);
@@ -87,7 +108,9 @@ export const getLesson = createServerFn({ method: "GET" })
     if (!lesson) return null;
     // Contenu lu par la base selon les droits du visiteur : ici seulement les aperçus gratuits.
     // Les leçons réservées sont relues dans le navigateur avec la session de l'inscrit.
-    const { data: content } = await client.rpc("lms_lesson_content", { _lesson_id: lesson.id });
+    const content = check(await client.rpc("lms_lesson_content", { _lesson_id: lesson.id }), {
+      contexte: "lms_lesson_content",
+    });
     const preview = content?.[0] ?? null;
     return {
       course,

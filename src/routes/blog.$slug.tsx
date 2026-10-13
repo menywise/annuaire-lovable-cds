@@ -2,6 +2,7 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
 import { PageShell } from "@/components/cds/SiteHeader";
+import { erreurChargement } from "@/components/cds/ErreurChargement";
 import { ModerationNote } from "@/components/cds/ModerationNote";
 import { ReportButton } from "@/components/cds/ReportButton";
 import { ShareButtons } from "@/components/cds/ShareButtons";
@@ -52,11 +53,7 @@ export const Route = createFileRoute("/blog/$slug")({
       ],
     };
   },
-  errorComponent: () => (
-    <PageShell>
-      <p className="text-sm text-muted-foreground">Cet article n'a pas pu être chargé.</p>
-    </PageShell>
-  ),
+  errorComponent: erreurChargement("Cet article n'a pas pu être chargé."),
   notFoundComponent: () => (
     <PageShell>
       <h1 className="text-2xl font-bold text-foreground">Article introuvable</h1>

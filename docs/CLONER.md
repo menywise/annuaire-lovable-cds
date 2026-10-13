@@ -132,6 +132,12 @@ Page publique : `src/routes/(greffe)/ma-page.tsx`, adresse `/ma-page`. Si elle d
 `beforeLoad: () => requireFeature("greffe_x")`, et la déclarer dans `pagesPubliques` pour le plan
 du site.
 
+Lecture de la base dans une fonction serveur : chaque résultat `{ data, error }` passe par
+`check()` (`src/lib/check.ts`), qui journalise la panne côté serveur et lève un message neutre, au
+lieu de renvoyer une liste vide. La page déclare alors
+`errorComponent: erreurChargement("Les fiches n'ont pas pu être chargées.")`
+(`src/components/cds/ErreurChargement.tsx`) : état d'erreur et bouton « Réessayer ».
+
 Pages connectées : une mise en page de quelques lignes, puis les pages dessous.
 
 ```tsx

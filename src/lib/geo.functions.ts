@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { GEO_NIVEAUX, PAYS_CODE } from "@/lib/geo-import";
+import { check } from "@/lib/check";
 
 type Ctx = {
   supabase: import("@supabase/supabase-js").SupabaseClient<
@@ -10,10 +11,10 @@ type Ctx = {
 };
 
 async function assertAdmin(context: Ctx) {
-  const { data: isAdmin } = await context.supabase.rpc("has_role", {
-    _user_id: context.userId,
-    _role: "admin",
-  });
+  const isAdmin = check(
+    await context.supabase.rpc("has_role", { _user_id: context.userId, _role: "admin" }),
+    { contexte: "has_role" },
+  );
   if (!isAdmin) throw new Error("Réservé aux administrateurs.");
 }
 
