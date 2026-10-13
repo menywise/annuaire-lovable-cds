@@ -2,7 +2,8 @@
 \i tests/db/_helpers.sql
 BEGIN;
 -- Socle 1.6.1 : correctifs issus de l'audit du 13/10 (messagerie privée, stock de la boutique, forum,
--- formulaires ouverts aux visiteurs, revendication d'une fiche d'annuaire, fiche publiée et modifiée).
+-- formulaires ouverts aux visiteurs, revendication d'une fiche d'annuaire, fiche publiée et modifiée,
+-- adresse confirmée exigée pour les administrateurs nommés d'avance).
 -- b1 : membre · b2 : autre membre · b3 : tiers · b4 : administrateur (section 3)
 INSERT INTO auth.users (id, email) VALUES
   ('00000000-0000-0000-0000-0000000000b1', 'un@test.fr'),
@@ -675,6 +676,58 @@ DO $$ BEGIN
   THEN RAISE EXCEPTION 'fiche modifiée par un tiers'; END IF;
 END $$;
 
+-- 7. Administrateurs nommés d'avance : adresse confirmée exigée ---------------------------------------------------------
+-- Un administrateur existe déjà (b4) : le verrou du premier administrateur ne joue pas ici.
+-- b5 : adresse listée, non confirmée · b6 : adresse listée, confirmée · b7 : compte non confirmé, adresse ajoutée
+-- ensuite · b8 : compte confirmé, adresse ajoutée ensuite · b9 : compte confirmé sous une autre adresse que
+-- celle de son jeton.
+INSERT INTO public.studio_admins (email) VALUES ('cinq@test.fr'), ('six@test.fr'), ('ancien@test.fr');
+INSERT INTO auth.users (id, email, email_confirmed_at) VALUES
+  ('00000000-0000-0000-0000-0000000000b5', 'cinq@test.fr', NULL),
+  ('00000000-0000-0000-0000-0000000000b6', 'six@test.fr', now()),
+  ('00000000-0000-0000-0000-0000000000b7', 'sept@test.fr', NULL),
+  ('00000000-0000-0000-0000-0000000000b8', 'huit@test.fr', now()),
+  ('00000000-0000-0000-0000-0000000000b9', 'neuf@test.fr', now());
+-- À la connexion : l'adresse listée mais non confirmée ne donne rien ; confirmée, elle donne le rôle.
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000b5', 'cinq@test.fr');
+DO $$ BEGIN
+  IF public.bootstrap_current_user('Cinq') <> 'user' THEN RAISE EXCEPTION 'adresse listée non confirmée promue à la connexion'; END IF;
+END $$;
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000b6', 'six@test.fr');
+DO $$ BEGIN
+  IF public.bootstrap_current_user('Six') <> 'admin' THEN RAISE EXCEPTION 'adresse listée confirmée non promue à la connexion'; END IF;
+END $$;
+-- Jeton portant une adresse listée alors que l'adresse confirmée du compte est une autre : rien.
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000b9', 'ancien@test.fr');
+DO $$ BEGIN
+  IF public.bootstrap_current_user('Neuf') <> 'user' THEN RAISE EXCEPTION 'promotion sur l''adresse du jeton, pas celle du compte'; END IF;
+END $$;
+RESET ROLE;
+DO $$ BEGIN
+  IF public.has_role('00000000-0000-0000-0000-0000000000b5', 'admin') THEN RAISE EXCEPTION 'rôle donné à un compte non confirmé'; END IF;
+  IF NOT public.has_role('00000000-0000-0000-0000-0000000000b6', 'admin') THEN RAISE EXCEPTION 'rôle absent pour un compte confirmé'; END IF;
+  IF public.has_role('00000000-0000-0000-0000-0000000000b9', 'admin') THEN RAISE EXCEPTION 'rôle donné sur l''adresse du jeton'; END IF;
+END $$;
+-- Une fois l'adresse confirmée, la connexion suivante donne le rôle.
+UPDATE auth.users SET email_confirmed_at = now() WHERE id = '00000000-0000-0000-0000-0000000000b5';
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000b5', 'cinq@test.fr');
+DO $$ BEGIN
+  IF public.bootstrap_current_user() <> 'admin' THEN RAISE EXCEPTION 'adresse confirmée après coup non promue'; END IF;
+END $$;
+RESET ROLE;
+-- À l'ajout dans la liste : seul le compte existant à l'adresse confirmée est promu aussitôt.
+INSERT INTO public.studio_admins (email) VALUES ('sept@test.fr'), ('huit@test.fr');
+DO $$ BEGIN
+  IF public.has_role('00000000-0000-0000-0000-0000000000b7', 'admin') THEN RAISE EXCEPTION 'compte non confirmé promu à l''ajout de l''adresse'; END IF;
+  IF NOT public.has_role('00000000-0000-0000-0000-0000000000b8', 'admin') THEN RAISE EXCEPTION 'compte confirmé non promu à l''ajout de l''adresse'; END IF;
+END $$;
+-- Le compte non confirmé le reste à la connexion, tant que l'adresse n'est pas confirmée.
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000b7', 'sept@test.fr');
+DO $$ BEGIN
+  IF public.bootstrap_current_user('Sept') <> 'user' THEN RAISE EXCEPTION 'compte non confirmé promu à la connexion'; END IF;
+END $$;
+RESET ROLE;
+
 -- Rejouable (toujours en dernier) ---------------------------------------------------------------------------------------
 \i supabase/migrations/20261013120000_v1_6_1_correctifs_audit.sql
 DO $$ BEGIN
@@ -700,6 +753,15 @@ END $$;
 SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000b1', 'un@test.fr');
 SELECT pg_temp.expect_sqlstate($$SELECT public.request_directory_claim('00000000-0000-0000-0000-000000000801')$$, 'CDS03', 'rejeu : revendication en attente écrasée');
 RESET ROLE;
+-- Rejeu : la liste des adresses nommées d'avance exige toujours une adresse confirmée.
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000b7', 'sept@test.fr');
+DO $$ BEGIN
+  IF public.bootstrap_current_user() <> 'user' THEN RAISE EXCEPTION 'rejeu : compte non confirmé promu'; END IF;
+END $$;
+RESET ROLE;
+DO $$ BEGIN
+  IF (SELECT count(*) FROM pg_trigger WHERE tgname = 'studio_admins_promote') <> 1 THEN RAISE EXCEPTION 'rejeu : déclencheur des adresses nommées d''avance'; END IF;
+END $$;
 -- Rejeu : la fiche 803 (publiée) repasse toujours en attente quand son auteur la modifie.
 SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000b1', 'un@test.fr');
 UPDATE public.directory_listings SET description = 'Texte modifié après rejeu' WHERE id = '00000000-0000-0000-0000-000000000803';
