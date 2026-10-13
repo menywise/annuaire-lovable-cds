@@ -1,5 +1,5 @@
 // Chemins relatifs : le fichier est aussi chargé tel quel par les tests unitaires (node --test).
-import { absoluteUrl, getSiteConfig } from "./site-config.ts";
+import { absoluteUrl, getSiteConfig, jsonPourScript } from "./site-config.ts";
 import { siteLocale } from "../config/brand.ts";
 
 type SeoInput = {
@@ -69,18 +69,12 @@ export function seo({
 /**
  * Balise de données structurées (JSON-LD), seule sortie `application/ld+json` du dépôt.
  * Le routeur injecte `children` tel quel dans la balise script : un titre saisi par un
- * visiteur contenant `</script>` fermerait la balise. « < », « > », « & », U+2028 et
- * U+2029 sont donc écrits en séquences \uXXXX ; le JSON relu reste identique.
+ * visiteur contenant `</script>` fermerait la balise : `jsonPourScript` l'en empêche.
  */
 export function jsonLdScript(data: Record<string, unknown>) {
   return {
     type: "application/ld+json",
-    children: JSON.stringify(data)
-      .replace(/</g, "\\u003c")
-      .replace(/>/g, "\\u003e")
-      .replace(/&/g, "\\u0026")
-      .replace(/\u2028/g, "\\u2028")
-      .replace(/\u2029/g, "\\u2029"),
+    children: jsonPourScript(data),
   };
 }
 

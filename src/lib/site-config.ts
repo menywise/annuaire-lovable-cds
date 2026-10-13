@@ -217,7 +217,20 @@ export function setSiteConfig(next: SiteConfig) {
 
 /** Script à placer dans la page : transmet la configuration au navigateur avant l'hydratation. */
 export function siteConfigScript(config: SiteConfig = current) {
-  return `window.__CDS_SITE__=${JSON.stringify(config).replace(/</g, "\\u003c")};`;
+  return `window.__CDS_SITE__=${jsonPourScript(config)};`;
+}
+
+/**
+ * JSON sûr dans une balise script : un texte contenant `</script>` ne la ferme jamais.
+ * « < », « > », « & », U+2028 et U+2029 deviennent des séquences \uXXXX.
+ * Le JSON relu reste identique.
+ * Seule sérialisation des balises script du dépôt (configuration du site, données structurées).
+ */
+export function jsonPourScript(data: unknown) {
+  return JSON.stringify(data).replace(
+    /[<>&\u2028\u2029]/g,
+    (c) => `\\u${c.charCodeAt(0).toString(16).padStart(4, "0")}`,
+  );
 }
 
 /** Construit une URL absolue à partir d'un chemin interne (relative tant que l'URL n'est pas saisie). */

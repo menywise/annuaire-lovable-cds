@@ -8,6 +8,7 @@ import assert from "node:assert/strict";
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { breadcrumbJsonLd, jsonLdScript } from "../../src/lib/seo.ts";
+import { getSiteConfig, siteConfigScript } from "../../src/lib/site-config.ts";
 
 const ROOT = join(import.meta.dirname, "..", "..", "src");
 const PIEGE = "</script><script>alert(1)</script> & <!-- \u2028\u2029 fin";
@@ -25,6 +26,16 @@ test("le fil d'Ariane passe par la même protection", () => {
   const { children } = breadcrumbJsonLd([{ name: PIEGE, path: "/forum/1" }]);
   assert.doesNotMatch(children, /<\/script/i);
   assert.equal(JSON.parse(children).itemListElement[0].name, PIEGE);
+});
+
+test("la configuration du site passe par la même protection", () => {
+  const base = getSiteConfig();
+  const config = { ...base, brand: { ...base.brand, name: PIEGE } };
+  const script = siteConfigScript(config);
+  assert.doesNotMatch(script, /<\/script/i);
+  assert.doesNotMatch(script, /[<>&\u2028\u2029]/);
+  const json = script.replace(/^window\.__CDS_SITE__=/, "").replace(/;$/, "");
+  assert.deepEqual(JSON.parse(json), config);
 });
 
 function files(dir: string): string[] {
