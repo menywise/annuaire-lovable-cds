@@ -43,7 +43,7 @@ test("connexion, Google et consentement passent par cheminInterne", () => {
   for (const fichier of [
     "routes/login.tsx",
     "components/cds/GoogleSignInButton.tsx",
-    "routes/[.]lovable.oauth.consent.tsx",
+    "lib/redirection-oauth.ts",
   ]) {
     const texte = readFileSync(join(SRC, fichier), "utf8");
     assert.match(texte, /cheminInterne\(/, fichier);
