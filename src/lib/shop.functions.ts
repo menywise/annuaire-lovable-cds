@@ -120,6 +120,7 @@ export const startShopCheckout = createServerFn({ method: "POST" })
       await import("@/lib/stripe.server");
     if (!stripeSecretKey()) throw new Error("Le paiement en ligne n'est pas encore configuré.");
 
+    const { isSessionAttached } = await import("@/lib/paiement-rattachement");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: rows, error } = await supabaseAdmin.rpc("shop_start_checkout", {
       _user_id: context.userId,
@@ -172,10 +173,31 @@ export const startShopCheckout = createServerFn({ method: "POST" })
         .eq("id", order.order_id);
       throw new Error("Stripe n'a pas pu ouvrir la page de paiement. Réessayez dans un instant.");
     }
-    await supabaseAdmin.rpc("payment_attach_session", {
+    // Sans rattachement, le webhook ne retrouverait pas ce paiement : le client ne part pas payer.
+    const { error: attachError } = await supabaseAdmin.rpc("payment_attach_session", {
       _payment_id: order.payment_id,
       _session_id: session.id,
     });
+    const { data: attached } = attachError
+      ? { data: null }
+      : await supabaseAdmin
+          .from("payments")
+          .select("stripe_session_id")
+          .eq("id", order.payment_id)
+          .maybeSingle();
+    if (!isSessionAttached(attached, session.id)) {
+      console.error(
+        `[paiement] session ${session.id} non rattachée au paiement ${order.payment_id} : session expirée`,
+      );
+      await expireCheckoutSession(session.id).catch(() => "unknown");
+      // Commande abandonnée : le passage à « expired » rend son stock réservé.
+      await supabaseAdmin.from("payments").update({ status: "failed" }).eq("id", order.payment_id);
+      await supabaseAdmin
+        .from("shop_orders")
+        .update({ status: "expired" })
+        .eq("id", order.order_id);
+      throw new Error("Le paiement n'a pas pu être préparé. Rien n'a été débité. Réessayez.");
+    }
     return { url: session.url };
   });
 

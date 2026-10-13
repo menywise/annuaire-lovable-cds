@@ -29,6 +29,7 @@ export const startCourseCheckout = createServerFn({ method: "POST" })
     if (!stripeSecretKey()) throw new Error("Le paiement en ligne n'est pas encore configuré.");
     if (!data.waiver) throw new Error("Cochez la renonciation au droit de rétractation.");
 
+    const { isSessionAttached } = await import("@/lib/paiement-rattachement");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: rows, error } = await supabaseAdmin.rpc("payment_start_course", {
       _user_id: context.userId,
@@ -64,10 +65,26 @@ export const startCourseCheckout = createServerFn({ method: "POST" })
       await supabaseAdmin.from("payments").update({ status: "failed" }).eq("id", payment.id);
       throw new Error("Stripe n'a pas pu ouvrir la page de paiement. Réessayez dans un instant.");
     }
-    await supabaseAdmin.rpc("payment_attach_session", {
+    // Sans rattachement, le webhook ne retrouverait pas ce paiement : le client ne part pas payer.
+    const { error: attachError } = await supabaseAdmin.rpc("payment_attach_session", {
       _payment_id: payment.id,
       _session_id: session.id,
     });
+    const { data: attached } = attachError
+      ? { data: null }
+      : await supabaseAdmin
+          .from("payments")
+          .select("stripe_session_id")
+          .eq("id", payment.id)
+          .maybeSingle();
+    if (!isSessionAttached(attached, session.id)) {
+      console.error(
+        `[paiement] session ${session.id} non rattachée au paiement ${payment.id} : session expirée`,
+      );
+      await expireCheckoutSession(session.id).catch(() => "unknown");
+      await supabaseAdmin.from("payments").update({ status: "failed" }).eq("id", payment.id);
+      throw new Error("Le paiement n'a pas pu être préparé. Rien n'a été débité. Réessayez.");
+    }
     return { url: session.url };
   });
 
