@@ -165,7 +165,11 @@ export function isDomainName(value: string) {
 
 function cleanEmailDomains(email: BrandSettings["email"]): BrandSettings["email"] {
   const clean = (d: string) => {
-    const v = d.trim().toLowerCase().replace(/^https?:\/\//, "").replace(/\/.*$/, "");
+    const v = d
+      .trim()
+      .toLowerCase()
+      .replace(/^https?:\/\//, "")
+      .replace(/\/.*$/, "");
     return isDomainName(v) ? v : "";
   };
   return { senderDomain: clean(email.senderDomain), fromDomain: clean(email.fromDomain) };
