@@ -1,8 +1,8 @@
 \set ON_ERROR_STOP 1
 \i tests/db/_helpers.sql
 BEGIN;
--- Socle 1.6.1 : correctifs issus de l'audit du 13/10 (messagerie privée, stock de la boutique).
--- b1 : membre · b2 : autre membre · b3 : tiers
+-- Socle 1.6.1 : correctifs issus de l'audit du 13/10 (messagerie privée, stock de la boutique, forum).
+-- b1 : membre · b2 : autre membre · b3 : tiers · b4 : administrateur (section 3)
 INSERT INTO auth.users (id, email) VALUES
   ('00000000-0000-0000-0000-0000000000b1', 'un@test.fr'),
   ('00000000-0000-0000-0000-0000000000b2', 'deux@test.fr'),
@@ -192,6 +192,129 @@ SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000b1', 'un@test.fr');
 SELECT pg_temp.expect_error($$SELECT public.shop_release_stock('00000000-0000-0000-0000-0000000000e1')$$, 'membre rend du stock');
 RESET ROLE;
 
+-- 3. Forum : garde-fous à la création -----------------------------------------------------------------
+INSERT INTO auth.users (id, email) VALUES ('00000000-0000-0000-0000-0000000000b4', 'admin@test.fr');
+INSERT INTO public.user_roles (user_id, role) VALUES ('00000000-0000-0000-0000-0000000000b4', 'admin')
+  ON CONFLICT DO NOTHING;
+-- b1 : nom dans le profil membre · b2 : nom du compte seulement · b3 : aucun nom.
+INSERT INTO public.profiles (id, email, full_name) VALUES
+  ('00000000-0000-0000-0000-0000000000b1', 'un@test.fr', 'Compte Un'),
+  ('00000000-0000-0000-0000-0000000000b2', 'deux@test.fr', 'Compte Deux'),
+  ('00000000-0000-0000-0000-0000000000b3', 'tiers@test.fr', NULL)
+  ON CONFLICT (id) DO UPDATE SET full_name = EXCLUDED.full_name;
+INSERT INTO public.member_profiles (user_id, display_name) VALUES
+  ('00000000-0000-0000-0000-0000000000b1', 'Membre Un'),
+  ('00000000-0000-0000-0000-0000000000b2', 'Membre')
+  ON CONFLICT (user_id) DO UPDATE SET display_name = EXCLUDED.display_name;
+DELETE FROM public.member_profiles WHERE user_id = '00000000-0000-0000-0000-0000000000b3';
+
+-- Un membre crée un sujet avec des vues gonflées, des dates truquées, un verrou et un nom d'emprunt.
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000b1', 'un@test.fr');
+INSERT INTO public.forum_topics (id, author_id, author_name, title, content, views, locked, created_at, updated_at, last_activity_at) VALUES
+  ('00000000-0000-0000-0000-0000000000f1', '00000000-0000-0000-0000-0000000000b1', 'Admin officiel', 'Sujet truqué', 'Texte',
+   999999, true, '2001-01-01', '2099-01-01', '2099-01-01');
+RESET ROLE;
+DO $$
+DECLARE _t public.forum_topics;
+BEGIN
+  SELECT * INTO _t FROM public.forum_topics WHERE id = '00000000-0000-0000-0000-0000000000f1';
+  IF _t.views <> 0 THEN RAISE EXCEPTION 'sujet : vues %', _t.views; END IF;
+  IF _t.locked THEN RAISE EXCEPTION 'sujet : créé verrouillé'; END IF;
+  IF _t.last_activity_at <> now() THEN RAISE EXCEPTION 'sujet : date d''activité %', _t.last_activity_at; END IF;
+  IF _t.created_at <> now() OR _t.updated_at <> now() THEN RAISE EXCEPTION 'sujet : dates'; END IF;
+  IF _t.author_name <> 'Membre Un' THEN RAISE EXCEPTION 'sujet : nom %', _t.author_name; END IF;
+  IF _t.title <> 'Sujet truqué' OR _t.content <> 'Texte' THEN RAISE EXCEPTION 'sujet : contenu modifié'; END IF;
+END $$;
+-- Un membre n'ouvre toujours pas un sujet au nom d'un autre.
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000b1', 'un@test.fr');
+SELECT pg_temp.expect_error($$INSERT INTO public.forum_topics (author_id, title, content) VALUES ('00000000-0000-0000-0000-0000000000b2', 'Usurpé', 'Texte')$$, 'sujet au nom d''un autre');
+
+-- b2 répond au sujet de b1 : réponse « retenue », date et nom truqués.
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000b2', 'deux@test.fr');
+INSERT INTO public.forum_replies (id, topic_id, author_id, author_name, content, accepted, created_at) VALUES
+  ('00000000-0000-0000-0000-0000000000f2', '00000000-0000-0000-0000-0000000000f1', '00000000-0000-0000-0000-0000000000b2',
+   'Admin officiel', 'Réponse', true, '2099-01-01');
+-- b3, sans aucun nom en base : « Membre ».
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000b3', 'tiers@test.fr');
+INSERT INTO public.forum_replies (id, topic_id, author_id, author_name, content) VALUES
+  ('00000000-0000-0000-0000-0000000000f3', '00000000-0000-0000-0000-0000000000f1', '00000000-0000-0000-0000-0000000000b3',
+   'Admin officiel', 'Autre réponse');
+RESET ROLE;
+DO $$
+DECLARE _r public.forum_replies;
+BEGIN
+  SELECT * INTO _r FROM public.forum_replies WHERE id = '00000000-0000-0000-0000-0000000000f2';
+  IF _r.accepted THEN RAISE EXCEPTION 'réponse : créée retenue'; END IF;
+  IF _r.created_at <> now() THEN RAISE EXCEPTION 'réponse : date %', _r.created_at; END IF;
+  -- Profil membre resté au nom par défaut : le nom du compte s'affiche.
+  IF _r.author_name <> 'Compte Deux' THEN RAISE EXCEPTION 'réponse : nom %', _r.author_name; END IF;
+  IF _r.content <> 'Réponse' THEN RAISE EXCEPTION 'réponse : contenu modifié'; END IF;
+  IF (SELECT author_name FROM public.forum_replies WHERE id = '00000000-0000-0000-0000-0000000000f3') <> 'Membre'
+  THEN RAISE EXCEPTION 'réponse : nom sans profil'; END IF;
+END $$;
+-- L'auteur du sujet retient toujours une réponse après coup.
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000b1', 'un@test.fr');
+UPDATE public.forum_replies SET accepted = true WHERE id = '00000000-0000-0000-0000-0000000000f2';
+RESET ROLE;
+DO $$ BEGIN
+  IF NOT (SELECT accepted FROM public.forum_replies WHERE id = '00000000-0000-0000-0000-0000000000f2')
+  THEN RAISE EXCEPTION 'l''auteur du sujet ne retient plus une réponse'; END IF;
+END $$;
+
+-- Sujet verrouillé : ni un membre ni l'auteur du sujet n'y répondent.
+UPDATE public.forum_topics SET locked = true WHERE id = '00000000-0000-0000-0000-0000000000f1';
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000b2', 'deux@test.fr');
+SELECT pg_temp.expect_error($$INSERT INTO public.forum_replies (topic_id, author_id, content) VALUES ('00000000-0000-0000-0000-0000000000f1', '00000000-0000-0000-0000-0000000000b2', 'Malgré le verrou')$$, 'réponse dans un sujet verrouillé');
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000b1', 'un@test.fr');
+SELECT pg_temp.expect_error($$INSERT INTO public.forum_replies (topic_id, author_id, content) VALUES ('00000000-0000-0000-0000-0000000000f1', '00000000-0000-0000-0000-0000000000b1', 'Malgré le verrou')$$, 'l''auteur répond dans son sujet verrouillé');
+RESET ROLE;
+DO $$ BEGIN
+  IF (SELECT count(*) FROM public.forum_replies WHERE topic_id = '00000000-0000-0000-0000-0000000000f1') <> 2
+  THEN RAISE EXCEPTION 'réponse ajoutée malgré le verrou'; END IF;
+END $$;
+
+-- Un administrateur garde la main : il répond dans un sujet verrouillé et choisit ses valeurs.
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000b4', 'admin@test.fr');
+INSERT INTO public.forum_replies (id, topic_id, author_id, author_name, content, accepted, created_at) VALUES
+  ('00000000-0000-0000-0000-0000000000f4', '00000000-0000-0000-0000-0000000000f1', '00000000-0000-0000-0000-0000000000b4',
+   'Équipe', 'Réponse de l''équipe', true, '2020-01-01');
+INSERT INTO public.forum_topics (id, author_id, author_name, title, content, views, locked, created_at, last_activity_at) VALUES
+  ('00000000-0000-0000-0000-0000000000f5', '00000000-0000-0000-0000-0000000000b4', 'Équipe', 'Annonce', 'Texte',
+   12, true, '2020-01-01', '2020-01-02');
+RESET ROLE;
+DO $$
+DECLARE _t public.forum_topics; _r public.forum_replies;
+BEGIN
+  SELECT * INTO _r FROM public.forum_replies WHERE id = '00000000-0000-0000-0000-0000000000f4';
+  IF NOT _r.accepted OR _r.author_name <> 'Équipe' OR _r.created_at <> '2020-01-01'::timestamptz
+  THEN RAISE EXCEPTION 'administrateur : réponse réécrite'; END IF;
+  SELECT * INTO _t FROM public.forum_topics WHERE id = '00000000-0000-0000-0000-0000000000f5';
+  IF _t.views <> 12 OR NOT _t.locked OR _t.author_name <> 'Équipe'
+     OR _t.created_at <> '2020-01-01'::timestamptz OR _t.last_activity_at <> '2020-01-02'::timestamptz
+  THEN RAISE EXCEPTION 'administrateur : sujet réécrit'; END IF;
+END $$;
+
+-- Le serveur (données de démarrage, fonctions internes) n'est pas concerné.
+INSERT INTO public.forum_topics (id, author_id, author_name, title, content, views) VALUES
+  ('00000000-0000-0000-0000-0000000000f6', '00000000-0000-0000-0000-0000000000b1', 'Exemple', 'Sujet du serveur', 'Texte', 7);
+DO $$ BEGIN
+  IF (SELECT views FROM public.forum_topics WHERE id = '00000000-0000-0000-0000-0000000000f6') <> 7
+     OR (SELECT author_name FROM public.forum_topics WHERE id = '00000000-0000-0000-0000-0000000000f6') <> 'Exemple'
+  THEN RAISE EXCEPTION 'serveur : sujet réécrit'; END IF;
+END $$;
+
+-- Colonne « pinned » ajoutée plus tard (par un projet) : forcée à faux sans toucher à la fonction.
+ALTER TABLE public.forum_topics ADD COLUMN pinned boolean NOT NULL DEFAULT false;
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000b2', 'deux@test.fr');
+INSERT INTO public.forum_topics (id, author_id, title, content, pinned) VALUES
+  ('00000000-0000-0000-0000-0000000000f7', '00000000-0000-0000-0000-0000000000b2', 'Sujet épinglé', 'Texte', true);
+RESET ROLE;
+DO $$ BEGIN
+  IF (SELECT pinned FROM public.forum_topics WHERE id = '00000000-0000-0000-0000-0000000000f7')
+  THEN RAISE EXCEPTION 'sujet : créé épinglé'; END IF;
+END $$;
+ALTER TABLE public.forum_topics DROP COLUMN pinned;
+
 -- Rejouable (toujours en dernier) ---------------------------------------------------------------------------------------
 \i supabase/migrations/20261013120000_v1_6_1_correctifs_audit.sql
 DO $$ BEGIN
@@ -200,5 +323,7 @@ DO $$ BEGIN
   THEN RAISE EXCEPTION 'rejeu de la messagerie'; END IF;
   IF pg_temp.stock() <> 1 THEN RAISE EXCEPTION 'rejeu : stock modifié'; END IF;
   IF (SELECT count(*) FROM pg_trigger WHERE tgname = 'shop_orders_release_stock') <> 1 THEN RAISE EXCEPTION 'rejeu : déclencheur'; END IF;
+  IF (SELECT count(*) FROM pg_trigger WHERE tgname IN ('forum_topics_guard_insert', 'forum_replies_guard_insert')) <> 2
+  THEN RAISE EXCEPTION 'rejeu : déclencheurs du forum'; END IF;
 END $$;
 ROLLBACK;

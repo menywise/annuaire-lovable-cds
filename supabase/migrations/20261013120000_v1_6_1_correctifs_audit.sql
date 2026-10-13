@@ -3,6 +3,8 @@
 --    change plus les membres d'une conversation. Seul le destinataire marque un message comme lu.
 -- 2. Boutique : stock réservé à la création de la commande, rendu une seule fois si elle expire ;
 --    le paiement ne le décompte plus une seconde fois. Fin de la survente.
+-- 3. Forum : garde-fous à la création. Un membre ne choisit plus ses compteurs, ses dates, son nom
+--    affiché ni l'état « retenue » ; il ne répond plus dans un sujet verrouillé.
 -- Rejouable sans danger.
 
 -- 1. Messagerie privée -----------------------------------------------------------------------------
@@ -301,3 +303,77 @@ BEGIN
   RETURN true;
 END;
 $$;
+
+-- 3. Forum : garde-fous à la création ----------------------------------------------------------------
+-- Les règles d'insertion ne vérifient que l'auteur, et les gardes existantes ne couvrent que la
+-- modification. Un membre pouvait donc créer un sujet avec des vues gonflées, une date d'activité
+-- future (sujet figé en tête de liste) ou un nom d'emprunt, se donner une réponse « retenue » sur le
+-- sujet d'un autre, et répondre dans un sujet verrouillé.
+-- Même convention que les gardes de modification : les fonctions internes et le serveur (rôle autre
+-- que authenticated ou anon) passent, l'administrateur garde la main.
+
+-- Nom affiché d'un membre, relu en base : profil membre, sinon profil du compte, sinon « Membre ».
+-- Le nom par défaut « Membre » du profil membre ne masque pas le nom du compte.
+-- Droits de l'appelant : chacun lit son propre profil.
+CREATE OR REPLACE FUNCTION public.forum_author_name(_user_id uuid)
+RETURNS text LANGUAGE sql STABLE SET search_path = public AS $$
+  SELECT coalesce(
+    (SELECT nullif(nullif(btrim(mp.display_name), ''), 'Membre')
+     FROM public.member_profiles mp WHERE mp.user_id = _user_id),
+    (SELECT nullif(btrim(p.full_name), '') FROM public.profiles p WHERE p.id = _user_id),
+    'Membre')
+$$;
+REVOKE ALL ON FUNCTION public.forum_author_name(uuid) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.forum_author_name(uuid) TO authenticated, service_role;
+
+-- Sujet : compteur à zéro, non verrouillé, non épinglé, dates à maintenant, nom relu depuis le profil.
+CREATE OR REPLACE FUNCTION public.guard_forum_topic_insert()
+RETURNS trigger LANGUAGE plpgsql SET search_path = public AS $$
+BEGIN
+  IF current_user NOT IN ('authenticated', 'anon') THEN
+    RETURN NEW; -- serveur, données de démarrage, fonctions internes
+  END IF;
+  IF auth.uid() IS NOT NULL AND public.has_role(auth.uid(), 'admin') THEN
+    RETURN NEW;
+  END IF;
+  -- « pinned » n'existe pas dans le socle : la clé est ignorée tant que la colonne est absente,
+  -- et forcée à faux le jour où elle est ajoutée.
+  NEW := jsonb_populate_record(NEW, '{"pinned": false}'::jsonb);
+  NEW.views := 0;
+  NEW.locked := false;
+  NEW.created_at := now();
+  NEW.updated_at := now();
+  NEW.last_activity_at := now();
+  NEW.author_name := public.forum_author_name(auth.uid());
+  RETURN NEW;
+END;
+$$;
+REVOKE ALL ON FUNCTION public.guard_forum_topic_insert() FROM PUBLIC, anon, authenticated;
+DROP TRIGGER IF EXISTS forum_topics_guard_insert ON public.forum_topics;
+CREATE TRIGGER forum_topics_guard_insert BEFORE INSERT ON public.forum_topics
+  FOR EACH ROW EXECUTE FUNCTION public.guard_forum_topic_insert();
+
+-- Réponse : refusée dans un sujet verrouillé ; jamais « retenue » à la création, date à maintenant,
+-- nom relu depuis le profil.
+CREATE OR REPLACE FUNCTION public.guard_forum_reply_insert()
+RETURNS trigger LANGUAGE plpgsql SET search_path = public AS $$
+BEGIN
+  IF current_user NOT IN ('authenticated', 'anon') THEN
+    RETURN NEW;
+  END IF;
+  IF auth.uid() IS NOT NULL AND public.has_role(auth.uid(), 'admin') THEN
+    RETURN NEW;
+  END IF;
+  IF (SELECT t.locked FROM public.forum_topics t WHERE t.id = NEW.topic_id) THEN
+    RAISE EXCEPTION 'Discussion verrouillée' USING ERRCODE = '42501';
+  END IF;
+  NEW.accepted := false;
+  NEW.created_at := now();
+  NEW.author_name := public.forum_author_name(auth.uid());
+  RETURN NEW;
+END;
+$$;
+REVOKE ALL ON FUNCTION public.guard_forum_reply_insert() FROM PUBLIC, anon, authenticated;
+DROP TRIGGER IF EXISTS forum_replies_guard_insert ON public.forum_replies;
+CREATE TRIGGER forum_replies_guard_insert BEFORE INSERT ON public.forum_replies
+  FOR EACH ROW EXECUTE FUNCTION public.guard_forum_reply_insert();

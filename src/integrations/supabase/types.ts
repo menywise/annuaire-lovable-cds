@@ -2391,6 +2391,7 @@ export type Database = {
         Returns: boolean
       }
       delete_my_account: { Args: never; Returns: undefined }
+      forum_author_name: { Args: { _user_id: string }; Returns: string }
       forum_top_members: {
         Args: { _since?: string }
         Returns: {
