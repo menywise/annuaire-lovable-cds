@@ -107,6 +107,26 @@ export async function siteBaseUrl(override?: string): Promise<string> {
   return base;
 }
 
+/**
+ * Charge une page du site en suivant ses redirections, cinq au plus, seulement vers la même
+ * origine : une redirection vers un autre site est refusée au lieu d'être suivie.
+ */
+export async function fetchMemeOrigine(adresse: string, signal?: AbortSignal) {
+  const depart = new URL(adresse).origin;
+  let url = adresse;
+  for (let etape = 0; etape <= 5; etape++) {
+    const res = await fetch(url, { signal: signal ?? null, redirect: "manual" });
+    const cible = res.status >= 300 && res.status < 400 ? res.headers.get("location") : null;
+    if (!cible) return { res, url };
+    const suivante = new URL(cible, url);
+    if (suivante.origin !== depart) {
+      throw new Error(`Redirection vers un autre site refusée : ${suivante.origin}`);
+    }
+    url = suivante.toString();
+  }
+  throw new Error("Trop de redirections (cinq au plus).");
+}
+
 export function textResult(payload: unknown) {
   return { content: [{ type: "text" as const, text: JSON.stringify(payload, null, 2) }] };
 }

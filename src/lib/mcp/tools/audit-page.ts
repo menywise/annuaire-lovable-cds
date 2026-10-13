@@ -1,7 +1,7 @@
 import { defineTool } from "@lovable.dev/mcp-js";
 import { z } from "zod";
 import { requireAdmin } from "../guard";
-import { errorResult, siteBaseUrl, textResult } from "../supabase";
+import { errorResult, fetchMemeOrigine, siteBaseUrl, textResult } from "../supabase";
 
 function all(html: string, re: RegExp) {
   return [...html.matchAll(re)];
@@ -37,12 +37,13 @@ export default defineTool({
     }
     const url = `${base}${path.startsWith("/") ? path : `/${path}`}`;
     try {
-      const res = await fetch(url, { signal: ctx.signal, redirect: "follow" });
+      const { res, url: finale } = await fetchMemeOrigine(url, ctx.signal);
       const html = await res.text();
       const links = all(html, /<a\b[^>]*>/gi);
       const images = all(html, /<img\b[^>]*>/gi);
       return textResult({
         url,
+        ...(finale !== url ? { url_finale: finale } : {}),
         statut: res.status,
         langue: html.match(/<html[^>]+lang=["']([^"']+)["']/i)?.[1] ?? null,
         titre: html.match(/<title[^>]*>([^<]*)<\/title>/i)?.[1] ?? null,
