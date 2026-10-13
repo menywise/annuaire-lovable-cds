@@ -14,6 +14,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { requireFeature } from "@/config/features";
 import { downloadCsv } from "@/lib/csv";
 import { formatPrice, slugify } from "@/lib/format";
+import { lirePrix } from "@/lib/prix";
 import { moveRow } from "@/lib/reorder";
 import { seo } from "@/lib/seo";
 
@@ -108,12 +109,19 @@ function AdminCoursesPage() {
     const data = new FormData(form);
     const title = String(data.get("title") ?? "").trim();
     if (!title) return;
+    const prix = lirePrix(String(data.get("price") ?? ""));
+    if (prix.cents === null) {
+      toast.error(prix.erreur, {
+        description: prix.detail ?? "Indiquez 0 pour une formation gratuite.",
+      });
+      return;
+    }
     const { error } = await supabase.from("lms_courses").insert({
       title,
       slug: slugify(title),
       excerpt: String(data.get("excerpt") ?? ""),
       level: String(data.get("level") ?? "debutant"),
-      price_cents: Math.round(Number(data.get("price") ?? 0) * 100),
+      price_cents: prix.cents,
       cover_url: String(data.get("cover_url") ?? "").trim() || null,
       position: (courses ?? []).length,
     });

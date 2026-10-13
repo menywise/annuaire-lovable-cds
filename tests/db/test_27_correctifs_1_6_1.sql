@@ -3,7 +3,7 @@
 BEGIN;
 -- Socle 1.6.1 : correctifs issus de l'audit du 13/10 (messagerie privée, stock de la boutique, forum,
 -- formulaires ouverts aux visiteurs, revendication d'une fiche d'annuaire, fiche publiée et modifiée,
--- adresse confirmée exigée pour les administrateurs nommés d'avance).
+-- adresse confirmée exigée pour les administrateurs nommés d'avance, prix négatifs refusés).
 -- b1 : membre · b2 : autre membre · b3 : tiers · b4 : administrateur (section 3)
 INSERT INTO auth.users (id, email) VALUES
   ('00000000-0000-0000-0000-0000000000b1', 'un@test.fr'),
@@ -728,6 +728,41 @@ DO $$ BEGIN
 END $$;
 RESET ROLE;
 
+-- 8. Prix négatifs refusés ----------------------------------------------------------------------------------------------
+-- Même requête que l'écran /marketplace/publier : l'annonce à -500 est refusée (23514), l'annonce donnée (0) passe.
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000b1', 'un@test.fr');
+SELECT pg_temp.expect_sqlstate($$INSERT INTO public.marketplace_listings (seller_id, seller_name, slug, title, price_cents, status)
+  VALUES ('00000000-0000-0000-0000-0000000000b1', 'Un', 'annonce-negative', 'Annonce', -500, 'active')$$, '23514', 'annonce à prix négatif acceptée');
+INSERT INTO public.marketplace_listings (id, seller_id, seller_name, slug, title, price_cents, status)
+  VALUES ('00000000-0000-0000-0000-000000000901', '00000000-0000-0000-0000-0000000000b1', 'Un', 'annonce-donnee', 'Annonce donnée', 0, 'active');
+INSERT INTO public.marketplace_listings (id, seller_id, seller_name, slug, title, price_cents, status)
+  VALUES ('00000000-0000-0000-0000-000000000902', '00000000-0000-0000-0000-0000000000b1', 'Un', 'annonce-payante', 'Annonce payante', 2500, 'active');
+-- Le vendeur ne repasse pas son annonce sous zéro.
+SELECT pg_temp.expect_sqlstate($$UPDATE public.marketplace_listings SET price_cents = -1 WHERE id = '00000000-0000-0000-0000-000000000902'$$, '23514', 'annonce repassée sous zéro');
+RESET ROLE;
+-- Formations et offres : l'administrateur non plus, ni à la création ni à la modification.
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000b4', 'admin@test.fr');
+SELECT pg_temp.expect_sqlstate($$INSERT INTO public.lms_courses (title, slug, price_cents) VALUES ('Négative', 'formation-negative', -100)$$, '23514', 'formation à prix négatif acceptée');
+INSERT INTO public.lms_courses (id, title, slug, price_cents) VALUES ('00000000-0000-0000-0000-000000000903', 'Gratuite', 'formation-gratuite', 0);
+SELECT pg_temp.expect_sqlstate($$UPDATE public.lms_courses SET price_cents = -1 WHERE id = '00000000-0000-0000-0000-000000000903'$$, '23514', 'formation repassée sous zéro');
+SELECT pg_temp.expect_sqlstate($$INSERT INTO public.pricing_plans (name, price_cents) VALUES ('Négative', -1990)$$, '23514', 'offre à prix négatif acceptée');
+INSERT INTO public.pricing_plans (id, name, price_cents) VALUES ('00000000-0000-0000-0000-000000000904', 'Gratuite', 0);
+SELECT pg_temp.expect_sqlstate($$UPDATE public.pricing_plans SET price_cents = -1 WHERE id = '00000000-0000-0000-0000-000000000904'$$, '23514', 'offre repassée sous zéro');
+-- La liste des avantages reste une liste (contrainte désormais validée, donc relue sur l'existant).
+SELECT pg_temp.expect_sqlstate($$UPDATE public.pricing_plans SET features = '"texte"' WHERE id = '00000000-0000-0000-0000-000000000904'$$, '23514', 'avantages non listés');
+RESET ROLE;
+DO $$ BEGIN
+  IF (SELECT price_cents FROM public.marketplace_listings WHERE id = '00000000-0000-0000-0000-000000000902') <> 2500
+     OR (SELECT price_cents FROM public.lms_courses WHERE id = '00000000-0000-0000-0000-000000000903') <> 0
+     OR (SELECT price_cents FROM public.pricing_plans WHERE id = '00000000-0000-0000-0000-000000000904') <> 0
+  THEN RAISE EXCEPTION 'prix modifié malgré le refus'; END IF;
+  -- Les quatre contraintes sont validées : l'existant a été relu, plus de NOT VALID qui traîne.
+  IF (SELECT count(*) FROM pg_constraint WHERE convalidated AND conname IN (
+        'marketplace_listings_price_check', 'lms_courses_price_check', 'pricing_plans_price_check',
+        'pricing_plans_features_array')) <> 4
+  THEN RAISE EXCEPTION 'contraintes de prix ou des avantages non validées'; END IF;
+END $$;
+
 -- Rejouable (toujours en dernier) ---------------------------------------------------------------------------------------
 \i supabase/migrations/20261013120000_v1_6_1_correctifs_audit.sql
 DO $$ BEGIN
@@ -746,6 +781,10 @@ DO $$ BEGIN
         'newsletter_subscribers_first_name_len', 'newsletter_subscribers_source_len',
         'ad_events_user_agent_len', 'ad_events_page_path_len')) <> 9
   THEN RAISE EXCEPTION 'rejeu : contraintes des formulaires'; END IF;
+  IF (SELECT count(*) FROM pg_constraint WHERE convalidated AND conname IN (
+        'marketplace_listings_price_check', 'lms_courses_price_check', 'pricing_plans_price_check',
+        'pricing_plans_features_array')) <> 4
+  THEN RAISE EXCEPTION 'rejeu : contraintes de prix'; END IF;
   IF has_table_privilege('anon', 'public.newsletter_subscribers', 'INSERT')
      OR (SELECT count(*) FROM pg_policies WHERE tablename = 'newsletter_subscribers' AND cmd = 'INSERT') <> 1
   THEN RAISE EXCEPTION 'rejeu : insertion directe des abonnés rouverte'; END IF;
@@ -781,5 +820,22 @@ SELECT pg_temp.expect_sqlstate($$INSERT INTO public.contact_messages (name, emai
 DO $$ BEGIN
   IF (SELECT convalidated FROM pg_constraint WHERE conname = 'contact_messages_email_format')
   THEN RAISE EXCEPTION 'contrainte validée malgré une ligne hors borne'; END IF;
+END $$;
+-- Même chose pour une ancienne annonce à prix négatif : la migration passe, la nouvelle annonce négative est refusée.
+ALTER TABLE public.marketplace_listings DROP CONSTRAINT marketplace_listings_price_check;
+INSERT INTO public.marketplace_listings (seller_id, seller_name, slug, title, price_cents)
+  VALUES ('00000000-0000-0000-0000-0000000000b1', 'Un', 'ancienne-negative', 'Ancienne', -500);
+SET client_min_messages = warning;
+\i supabase/migrations/20261013120000_v1_6_1_correctifs_audit.sql
+RESET client_min_messages;
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000b1', 'un@test.fr');
+SELECT pg_temp.expect_sqlstate($$INSERT INTO public.marketplace_listings (seller_id, seller_name, slug, title, price_cents)
+  VALUES ('00000000-0000-0000-0000-0000000000b1', 'Un', 'nouvelle-negative', 'Nouvelle', -1)$$, '23514', 'contrainte de prix non validée : toujours appliquée');
+RESET ROLE;
+DO $$ BEGIN
+  IF (SELECT convalidated FROM pg_constraint WHERE conname = 'marketplace_listings_price_check')
+  THEN RAISE EXCEPTION 'contrainte de prix validée malgré une ligne hors borne'; END IF;
+  IF (SELECT count(*) FROM pg_constraint WHERE convalidated AND conname IN ('lms_courses_price_check', 'pricing_plans_price_check')) <> 2
+  THEN RAISE EXCEPTION 'contraintes de prix des autres tables dévalidées'; END IF;
 END $$;
 ROLLBACK;

@@ -12,6 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
+import { lirePrix } from "@/lib/prix";
 import { seo } from "@/lib/seo";
 import { requireAnyFeature, withActiveModules } from "@/config/features";
 
@@ -389,9 +390,16 @@ function PlanSection({ plans, reload }: { plans: Plan[] | null; reload: Reload }
     e.preventDefault();
     const form = e.currentTarget;
     const data = new FormData(form);
+    const prix = lirePrix(String(data.get("price") ?? ""));
+    if (prix.cents === null) {
+      toast.error(prix.erreur, {
+        description: prix.detail ?? "Indiquez 0 pour une offre gratuite.",
+      });
+      return;
+    }
     const { error } = await supabase.from("pricing_plans").insert({
       name: String(data.get("name") ?? "").trim(),
-      price_cents: Math.round(Number(String(data.get("price") ?? "0").replace(",", ".")) * 100) || 0,
+      price_cents: prix.cents,
       period: String(data.get("period") ?? "").trim() || "mois",
       position: (plans?.length ?? 0) + 1,
       active: false,
@@ -464,9 +472,11 @@ function PlanEditor({ plan, reload }: { plan: Plan; reload: Reload }) {
 
   async function save(e: React.FormEvent) {
     e.preventDefault();
-    const cents = Math.round(Number(draft.price.replace(",", ".")) * 100);
-    if (!Number.isFinite(cents) || cents < 0) {
-      toast.error("Prix invalide.", { description: "Exemple : 19,90" });
+    const prix = lirePrix(draft.price);
+    if (prix.cents === null) {
+      toast.error(prix.erreur, {
+        description: prix.detail ?? "Indiquez 0 pour une offre gratuite.",
+      });
       return;
     }
     const { error } = await supabase
@@ -474,7 +484,7 @@ function PlanEditor({ plan, reload }: { plan: Plan; reload: Reload }) {
       .update({
         name: draft.name.trim(),
         tagline: draft.tagline.trim(),
-        price_cents: cents,
+        price_cents: prix.cents,
         currency: draft.currency.trim().toUpperCase() || "EUR",
         period: draft.period.trim() || "mois",
         cta_label: draft.cta_label.trim() || "Commencer",

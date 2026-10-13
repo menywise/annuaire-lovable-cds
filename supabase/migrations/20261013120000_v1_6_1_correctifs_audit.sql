@@ -14,6 +14,8 @@
 --    en attente de validation (brouillon), comme une petite annonce. L'administrateur publie de nouveau.
 -- 7. Administrateurs nommés d'avance : le rôle n'est donné qu'à un compte dont l'adresse est confirmée
 --    (auth.users.email_confirmed_at), à la connexion comme à l'ajout de l'adresse dans la liste.
+-- 8. Prix négatifs refusés : petites annonces, formations et offres (price_cents >= 0), comme la
+--    boutique et les paiements. La contrainte pricing_plans_features_array, restée NOT VALID, est validée.
 -- Rejouable sans danger.
 
 -- 1. Messagerie privée -----------------------------------------------------------------------------
@@ -745,3 +747,43 @@ REVOKE ALL ON FUNCTION public.promote_studio_admin() FROM PUBLIC, anon, authenti
 DROP TRIGGER IF EXISTS studio_admins_promote ON public.studio_admins;
 CREATE TRIGGER studio_admins_promote AFTER INSERT ON public.studio_admins
   FOR EACH ROW EXECUTE FUNCTION public.promote_studio_admin();
+
+-- 8. Prix négatifs refusés ---------------------------------------------------------------------------
+-- Avant : marketplace_listings.price_cents, lms_courses.price_cents et pricing_plans.price_cents
+-- acceptaient n'importe quel entier. Un membre publiait une annonce à -500 ; l'administrateur pouvait
+-- enregistrer une formation ou une offre à prix négatif. shop_products et payments avaient déjà leur
+-- contrainte. Zéro reste permis : annonce donnée, formation gratuite, offre gratuite.
+-- Ajoutées NOT VALID (appliquées aussitôt aux nouvelles lignes), puis validées comme en section 4 :
+-- une ancienne ligne hors borne ne fait pas échouer la migration, la contrainte reste NOT VALID et un
+-- avis le signale.
+ALTER TABLE public.marketplace_listings DROP CONSTRAINT IF EXISTS marketplace_listings_price_check;
+ALTER TABLE public.marketplace_listings
+  ADD CONSTRAINT marketplace_listings_price_check CHECK (price_cents >= 0) NOT VALID;
+ALTER TABLE public.lms_courses DROP CONSTRAINT IF EXISTS lms_courses_price_check;
+ALTER TABLE public.lms_courses
+  ADD CONSTRAINT lms_courses_price_check CHECK (price_cents >= 0) NOT VALID;
+ALTER TABLE public.pricing_plans DROP CONSTRAINT IF EXISTS pricing_plans_price_check;
+ALTER TABLE public.pricing_plans
+  ADD CONSTRAINT pricing_plans_price_check CHECK (price_cents >= 0) NOT VALID;
+
+-- Validation de l'existant, y compris pricing_plans_features_array (posée NOT VALID par la migration
+-- 20260929090000 et jamais validée : l'existant n'était pas relu).
+DO $$
+DECLARE _c record;
+BEGIN
+  FOR _c IN
+    SELECT c.conrelid::regclass AS tbl, c.conname
+    FROM pg_constraint c
+    WHERE NOT c.convalidated
+      AND c.conrelid IN ('public.marketplace_listings'::regclass, 'public.lms_courses'::regclass,
+                         'public.pricing_plans'::regclass)
+      AND c.conname IN ('marketplace_listings_price_check', 'lms_courses_price_check',
+                        'pricing_plans_price_check', 'pricing_plans_features_array')
+  LOOP
+    BEGIN
+      EXECUTE format('ALTER TABLE %s VALIDATE CONSTRAINT %I', _c.tbl, _c.conname);
+    EXCEPTION WHEN check_violation THEN
+      RAISE NOTICE 'Contrainte % non validée : des lignes existantes de % sont hors borne', _c.conname, _c.tbl;
+    END;
+  END LOOP;
+END $$;
