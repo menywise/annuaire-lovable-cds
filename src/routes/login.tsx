@@ -23,8 +23,7 @@ export const Route = createFileRoute("/login")({
   head: () =>
     seo({
       title: "Connexion",
-      description:
-        `Connectez-vous à votre espace personnel ${getSiteConfig().brand.name} avec votre adresse e-mail et votre mot de passe.`,
+      description: `Connectez-vous à votre espace personnel ${getSiteConfig().brand.name} avec votre adresse e-mail et votre mot de passe.`,
       path: "/login",
       type: "website",
     }),
