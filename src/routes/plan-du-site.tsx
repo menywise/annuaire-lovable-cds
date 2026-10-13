@@ -138,6 +138,12 @@ const modulesLinks: PlanLink[] = [
     module: "directory",
   },
   {
+    to: "/mes-fiches",
+    label: "Mes fiches",
+    title: "Suivre et mettre à jour vos fiches de l'annuaire",
+    module: "directory",
+  },
+  {
     to: "/annuaire/departements",
     label: "Départements",
     title: "Parcourir l'annuaire département par département",

@@ -40,6 +40,7 @@ import { Route as AuthenticatedCompteRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedDecouvrirRouteImport } from './routes/_authenticated/decouvrir'
 import { Route as AuthenticatedMesAchatsRouteImport } from './routes/_authenticated/mes-achats'
 import { Route as AuthenticatedMesAnnoncesRouteImport } from './routes/_authenticated/mes-annonces'
+import { Route as AuthenticatedMesFichesRouteImport } from './routes/_authenticated/mes-fiches'
 import { Route as AuthenticatedMesFormationsRouteImport } from './routes/_authenticated/mes-formations'
 import { Route as AuthenticatedProfilRouteImport } from './routes/_authenticated/profil'
 import { Route as AuthenticatedTableauDeBordRouteImport } from './routes/_authenticated/tableau-de-bord'
@@ -265,6 +266,11 @@ const AuthenticatedMesAnnoncesRoute =
     path: '/mes-annonces',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedMesFichesRoute = AuthenticatedMesFichesRouteImport.update({
+  id: '/mes-fiches',
+  path: '/mes-fiches',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedMesFormationsRoute =
   AuthenticatedMesFormationsRouteImport.update({
     id: '/mes-formations',
@@ -664,6 +670,7 @@ export interface FileRoutesByFullPath {
   '/decouvrir': typeof AuthenticatedDecouvrirRoute
   '/mes-achats': typeof AuthenticatedMesAchatsRoute
   '/mes-annonces': typeof AuthenticatedMesAnnoncesRoute
+  '/mes-fiches': typeof AuthenticatedMesFichesRoute
   '/mes-formations': typeof AuthenticatedMesFormationsRoute
   '/profil': typeof AuthenticatedProfilRoute
   '/tableau-de-bord': typeof AuthenticatedTableauDeBordRoute
@@ -764,6 +771,7 @@ export interface FileRoutesByTo {
   '/decouvrir': typeof AuthenticatedDecouvrirRoute
   '/mes-achats': typeof AuthenticatedMesAchatsRoute
   '/mes-annonces': typeof AuthenticatedMesAnnoncesRoute
+  '/mes-fiches': typeof AuthenticatedMesFichesRoute
   '/mes-formations': typeof AuthenticatedMesFormationsRoute
   '/profil': typeof AuthenticatedProfilRoute
   '/tableau-de-bord': typeof AuthenticatedTableauDeBordRoute
@@ -866,6 +874,7 @@ export interface FileRoutesById {
   '/_authenticated/decouvrir': typeof AuthenticatedDecouvrirRoute
   '/_authenticated/mes-achats': typeof AuthenticatedMesAchatsRoute
   '/_authenticated/mes-annonces': typeof AuthenticatedMesAnnoncesRoute
+  '/_authenticated/mes-fiches': typeof AuthenticatedMesFichesRoute
   '/_authenticated/mes-formations': typeof AuthenticatedMesFormationsRoute
   '/_authenticated/profil': typeof AuthenticatedProfilRoute
   '/_authenticated/tableau-de-bord': typeof AuthenticatedTableauDeBordRoute
@@ -968,6 +977,7 @@ export interface FileRouteTypes {
     | '/decouvrir'
     | '/mes-achats'
     | '/mes-annonces'
+    | '/mes-fiches'
     | '/mes-formations'
     | '/profil'
     | '/tableau-de-bord'
@@ -1068,6 +1078,7 @@ export interface FileRouteTypes {
     | '/decouvrir'
     | '/mes-achats'
     | '/mes-annonces'
+    | '/mes-fiches'
     | '/mes-formations'
     | '/profil'
     | '/tableau-de-bord'
@@ -1169,6 +1180,7 @@ export interface FileRouteTypes {
     | '/_authenticated/decouvrir'
     | '/_authenticated/mes-achats'
     | '/_authenticated/mes-annonces'
+    | '/_authenticated/mes-fiches'
     | '/_authenticated/mes-formations'
     | '/_authenticated/profil'
     | '/_authenticated/tableau-de-bord'
@@ -1521,6 +1533,13 @@ declare module '@tanstack/react-router' {
       path: '/mes-annonces'
       fullPath: '/mes-annonces'
       preLoaderRoute: typeof AuthenticatedMesAnnoncesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/mes-fiches': {
+      id: '/_authenticated/mes-fiches'
+      path: '/mes-fiches'
+      fullPath: '/mes-fiches'
+      preLoaderRoute: typeof AuthenticatedMesFichesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/mes-formations': {
@@ -2007,6 +2026,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDecouvrirRoute: typeof AuthenticatedDecouvrirRoute
   AuthenticatedMesAchatsRoute: typeof AuthenticatedMesAchatsRoute
   AuthenticatedMesAnnoncesRoute: typeof AuthenticatedMesAnnoncesRoute
+  AuthenticatedMesFichesRoute: typeof AuthenticatedMesFichesRoute
   AuthenticatedMesFormationsRoute: typeof AuthenticatedMesFormationsRoute
   AuthenticatedProfilRoute: typeof AuthenticatedProfilRoute
   AuthenticatedTableauDeBordRoute: typeof AuthenticatedTableauDeBordRoute
@@ -2047,6 +2067,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDecouvrirRoute: AuthenticatedDecouvrirRoute,
   AuthenticatedMesAchatsRoute: AuthenticatedMesAchatsRoute,
   AuthenticatedMesAnnoncesRoute: AuthenticatedMesAnnoncesRoute,
+  AuthenticatedMesFichesRoute: AuthenticatedMesFichesRoute,
   AuthenticatedMesFormationsRoute: AuthenticatedMesFormationsRoute,
   AuthenticatedProfilRoute: AuthenticatedProfilRoute,
   AuthenticatedTableauDeBordRoute: AuthenticatedTableauDeBordRoute,

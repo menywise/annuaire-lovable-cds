@@ -2,7 +2,7 @@
 \i tests/db/_helpers.sql
 BEGIN;
 -- Socle 1.6.1 : correctifs issus de l'audit du 13/10 (messagerie privée, stock de la boutique, forum,
--- formulaires ouverts aux visiteurs, revendication d'une fiche d'annuaire).
+-- formulaires ouverts aux visiteurs, revendication d'une fiche d'annuaire, fiche publiée et modifiée).
 -- b1 : membre · b2 : autre membre · b3 : tiers · b4 : administrateur (section 3)
 INSERT INTO auth.users (id, email) VALUES
   ('00000000-0000-0000-0000-0000000000b1', 'un@test.fr'),
@@ -564,6 +564,117 @@ SELECT pg_temp.as_anon();
 SELECT pg_temp.expect_sqlstate($$SELECT public.request_directory_claim('00000000-0000-0000-0000-000000000801')$$, '42501', 'revendication : visiteur');
 RESET ROLE;
 
+-- 6. Annuaire : une fiche publiée et modifiée repasse en attente de validation ----------------------------------------
+-- 803 : fiche publiée proposée par b1 · 804 : fiche publiée confiée à b2 (propriétaire) · 805 : brouillon de b1.
+INSERT INTO public.directory_listings (id, name, slug, description, website, phone, address, photos, hours, status, created_by, claimed_by, claimed_at) VALUES
+  ('00000000-0000-0000-0000-000000000803', 'Atelier relu', 'atelier-relu-test', 'Texte validé', 'https://exemple.test', '05 00 00 00 00', '1 rue du Test', '{}', '{"lundi":"9h-12h"}', 'published', '00000000-0000-0000-0000-0000000000b1', NULL, NULL),
+  ('00000000-0000-0000-0000-000000000804', 'Fiche confiée', 'fiche-confiee-test', 'Texte validé', '', '', '', '{}', '{}', 'published', NULL, '00000000-0000-0000-0000-0000000000b2', now()),
+  ('00000000-0000-0000-0000-000000000805', 'Brouillon de b1', 'brouillon-b1-test', '', '', '', '', '{}', '{}', 'draft', '00000000-0000-0000-0000-0000000000b1', NULL, NULL);
+INSERT INTO public.directory_categories (id, name, slug) VALUES
+  ('00000000-0000-0000-0000-000000000811', 'Catégorie de test', 'categorie-test-fiche-modifiee');
+CREATE FUNCTION pg_temp.etat_fiche(_id uuid) RETURNS text LANGUAGE sql AS
+  $f$SELECT status FROM public.directory_listings WHERE id = _id$f$;
+
+-- Modification sans changement : la fiche reste en ligne (mêmes valeurs renvoyées par le formulaire).
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000b1', 'un@test.fr');
+UPDATE public.directory_listings
+   SET name = 'Atelier relu', description = 'Texte validé', website = 'https://exemple.test', phone = '05 00 00 00 00',
+       address = '1 rue du Test', photos = '{}', hours = '{"lundi":"9h-12h"}', category_id = NULL, status = 'published'
+ WHERE id = '00000000-0000-0000-0000-000000000803';
+DO $$ BEGIN
+  IF pg_temp.etat_fiche('00000000-0000-0000-0000-000000000803') <> 'published'
+  THEN RAISE EXCEPTION 'fiche modifiée : mise à jour sans changement renvoyée en modération'; END IF;
+END $$;
+-- L'auteur modifie le nom, la description et le site web : la fiche repasse en attente, le contenu est enregistré.
+UPDATE public.directory_listings SET name = 'Atelier réécrit', description = 'Texte non relu', website = 'https://autre.test'
+ WHERE id = '00000000-0000-0000-0000-000000000803';
+DO $$ BEGIN
+  IF pg_temp.etat_fiche('00000000-0000-0000-0000-000000000803') <> 'draft'
+  THEN RAISE EXCEPTION 'fiche modifiée par son auteur : toujours en ligne'; END IF;
+  IF (SELECT name FROM public.directory_listings WHERE id = '00000000-0000-0000-0000-000000000803') <> 'Atelier réécrit'
+  THEN RAISE EXCEPTION 'fiche modifiée par son auteur : contenu non enregistré'; END IF;
+END $$;
+-- Il ne la republie pas lui-même ; il continue de corriger son brouillon.
+SELECT pg_temp.expect_sqlstate($$UPDATE public.directory_listings SET status = 'published' WHERE id = '00000000-0000-0000-0000-000000000803'$$, '42501', 'fiche modifiée : l''auteur republie');
+UPDATE public.directory_listings SET description = 'Texte corrigé' WHERE id = '00000000-0000-0000-0000-000000000803';
+UPDATE public.directory_listings SET name = 'Brouillon retouché' WHERE id = '00000000-0000-0000-0000-000000000805';
+DO $$ BEGIN
+  IF pg_temp.etat_fiche('00000000-0000-0000-0000-000000000803') <> 'draft'
+     OR pg_temp.etat_fiche('00000000-0000-0000-0000-000000000805') <> 'draft'
+  THEN RAISE EXCEPTION 'fiche modifiée : brouillon sorti de son état'; END IF;
+END $$;
+RESET ROLE;
+-- Le visiteur ne la voit plus.
+SELECT pg_temp.as_anon();
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM public.directory_listings WHERE id = '00000000-0000-0000-0000-000000000803')
+  THEN RAISE EXCEPTION 'fiche modifiée : encore visible du visiteur'; END IF;
+END $$;
+RESET ROLE;
+
+-- L'administrateur publie de nouveau, puis modifie le contenu : la fiche reste en ligne.
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000b4', 'admin@test.fr');
+UPDATE public.directory_listings SET status = 'published' WHERE id = '00000000-0000-0000-0000-000000000803';
+UPDATE public.directory_listings SET name = 'Atelier corrigé par l''équipe', phone = '05 11 11 11 11'
+ WHERE id = '00000000-0000-0000-0000-000000000803';
+RESET ROLE;
+DO $$ BEGIN
+  IF pg_temp.etat_fiche('00000000-0000-0000-0000-000000000803') <> 'published'
+  THEN RAISE EXCEPTION 'fiche modifiée par l''administrateur : renvoyée en modération'; END IF;
+END $$;
+-- Le rôle de service (fonctions du socle) n'est pas concerné non plus.
+UPDATE public.directory_listings SET address = '2 rue du Test' WHERE id = '00000000-0000-0000-0000-000000000803';
+DO $$ BEGIN
+  IF pg_temp.etat_fiche('00000000-0000-0000-0000-000000000803') <> 'published'
+  THEN RAISE EXCEPTION 'fiche modifiée hors session : renvoyée en modération'; END IF;
+END $$;
+
+-- Chaque champ visible renvoie la fiche en attente : adresse, téléphone, photos, catégorie, horaires.
+DO $$
+DECLARE
+  _champ text;
+BEGIN
+  FOREACH _champ IN ARRAY ARRAY[
+    $c$address = '3 rue du Test'$c$, $c$phone = '05 22 22 22 22'$c$, $c$photos = '{https://exemple.test/a.jpg}'$c$,
+    $c$category_id = '00000000-0000-0000-0000-000000000811'$c$, $c$hours = '{"mardi":"9h-12h"}'$c$,
+    $c$excerpt = 'Nouveau résumé'$c$, $c$cover_url = 'https://exemple.test/c.jpg'$c$, $c$city = 'Ailleurs'$c$]
+  LOOP
+    UPDATE public.directory_listings SET status = 'published' WHERE id = '00000000-0000-0000-0000-000000000803';
+    PERFORM pg_temp.as_user('00000000-0000-0000-0000-0000000000b1', 'un@test.fr');
+    EXECUTE 'UPDATE public.directory_listings SET ' || _champ || ' WHERE id = ''00000000-0000-0000-0000-000000000803''';
+    RESET ROLE;
+    IF pg_temp.etat_fiche('00000000-0000-0000-0000-000000000803') <> 'draft'
+    THEN RAISE EXCEPTION 'fiche modifiée : % ne renvoie pas en modération', _champ; END IF;
+  END LOOP;
+END $$;
+
+-- Le propriétaire d'une fiche confiée suit la même règle ; il garde le droit de l'archiver.
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000b2', 'deux@test.fr');
+UPDATE public.directory_listings SET website = 'https://proprietaire.test' WHERE id = '00000000-0000-0000-0000-000000000804';
+RESET ROLE;
+DO $$ BEGIN
+  IF pg_temp.etat_fiche('00000000-0000-0000-0000-000000000804') <> 'draft'
+  THEN RAISE EXCEPTION 'fiche modifiée par son propriétaire : toujours en ligne'; END IF;
+END $$;
+UPDATE public.directory_listings SET status = 'published' WHERE id = '00000000-0000-0000-0000-000000000804';
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000b2', 'deux@test.fr');
+UPDATE public.directory_listings SET status = 'archived', name = 'Fiche retirée' WHERE id = '00000000-0000-0000-0000-000000000804';
+RESET ROLE;
+DO $$ BEGIN
+  IF pg_temp.etat_fiche('00000000-0000-0000-0000-000000000804') <> 'archived'
+  THEN RAISE EXCEPTION 'fiche modifiée : archivage par le propriétaire perdu'; END IF;
+END $$;
+-- Un tiers ne modifie toujours rien.
+UPDATE public.directory_listings SET status = 'published' WHERE id = '00000000-0000-0000-0000-000000000803';
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000b3', 'tiers@test.fr');
+UPDATE public.directory_listings SET name = 'Détournée' WHERE id = '00000000-0000-0000-0000-000000000803';
+RESET ROLE;
+DO $$ BEGIN
+  IF pg_temp.etat_fiche('00000000-0000-0000-0000-000000000803') <> 'published'
+     OR (SELECT name FROM public.directory_listings WHERE id = '00000000-0000-0000-0000-000000000803') = 'Détournée'
+  THEN RAISE EXCEPTION 'fiche modifiée par un tiers'; END IF;
+END $$;
+
 -- Rejouable (toujours en dernier) ---------------------------------------------------------------------------------------
 \i supabase/migrations/20261013120000_v1_6_1_correctifs_audit.sql
 DO $$ BEGIN
@@ -589,6 +700,15 @@ END $$;
 SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000b1', 'un@test.fr');
 SELECT pg_temp.expect_sqlstate($$SELECT public.request_directory_claim('00000000-0000-0000-0000-000000000801')$$, 'CDS03', 'rejeu : revendication en attente écrasée');
 RESET ROLE;
+-- Rejeu : la fiche 803 (publiée) repasse toujours en attente quand son auteur la modifie.
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000b1', 'un@test.fr');
+UPDATE public.directory_listings SET description = 'Texte modifié après rejeu' WHERE id = '00000000-0000-0000-0000-000000000803';
+RESET ROLE;
+DO $$ BEGIN
+  IF pg_temp.etat_fiche('00000000-0000-0000-0000-000000000803') <> 'draft'
+     OR (SELECT count(*) FROM pg_trigger WHERE tgname = 'directory_listings_guard') <> 1
+  THEN RAISE EXCEPTION 'rejeu : fiche modifiée restée en ligne'; END IF;
+END $$;
 -- Existant hors borne : la migration passe, la contrainte reste NOT VALID et s'applique aux nouvelles lignes.
 ALTER TABLE public.contact_messages DROP CONSTRAINT contact_messages_email_format;
 INSERT INTO public.contact_messages (name, email, subject, message) VALUES ('Ancien', 'ancienne-saisie', 'Objet', 'Texte');

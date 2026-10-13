@@ -10,6 +10,8 @@
 --    révèle pas une adresse déjà inscrite, clics et affichages acceptés pour une campagne en cours.
 -- 5. Annuaire : une demande de revendication en attente n'est plus écrasée par celle d'un autre
 --    membre. La seconde demande est refusée avec un message ; le même membre peut redemander.
+-- 6. Annuaire : une fiche publiée dont l'auteur ou le propriétaire modifie le contenu visible repasse
+--    en attente de validation (brouillon), comme une petite annonce. L'administrateur publie de nouveau.
 -- Rejouable sans danger.
 
 -- 1. Messagerie privée -----------------------------------------------------------------------------
@@ -624,3 +626,49 @@ END;
 $$;
 REVOKE ALL ON FUNCTION public.request_directory_claim(uuid) FROM PUBLIC, anon;
 GRANT EXECUTE ON FUNCTION public.request_directory_claim(uuid) TO authenticated;
+
+-- 6. Annuaire : une fiche publiée et modifiée repasse en attente de validation ------------------------
+-- Avant : l'auteur ou le propriétaire d'une fiche publiée changeait le nom, la description ou le site
+-- web, et la fiche restait en ligne sans relecture. Les petites annonces repassent déjà en attente à
+-- chaque modification (guard_marketplace_listing_update) : même règle ici.
+-- L'attente de validation de l'annuaire est l'état « draft » : c'est celui d'une fiche proposée par un
+-- membre, que l'administrateur publie. La fiche modifiée quitte donc le site jusqu'à sa relecture.
+-- Contenu visible : tout ce que les pages publiques affichent (nom, adresse de la page, résumé,
+-- description, catégorie, mots-clés, adresse, position, coordonnées, site, images, horaires).
+-- Une mise à jour qui ne change aucune de ces valeurs laisse la fiche en ligne. L'administrateur et
+-- les fonctions du socle (rôle de service, fonctions à droits élevés) ne sont pas concernés.
+-- Les interdits d'origine sont repris tels quels : publication, vérification, mise en avant, offre et
+-- propriété restent à l'administration.
+CREATE OR REPLACE FUNCTION public.guard_directory_listing_update()
+RETURNS trigger LANGUAGE plpgsql SET search_path = public AS $$
+BEGIN
+  IF current_user NOT IN ('authenticated', 'anon') OR public.has_role(auth.uid(), 'admin') THEN
+    RETURN NEW;
+  END IF;
+  IF NEW.verified IS DISTINCT FROM OLD.verified
+     OR NEW.featured IS DISTINCT FROM OLD.featured
+     OR NEW.plan IS DISTINCT FROM OLD.plan
+     OR NEW.claimed_by IS DISTINCT FROM OLD.claimed_by
+     OR NEW.claimed_at IS DISTINCT FROM OLD.claimed_at
+     OR NEW.claim_requested_by IS DISTINCT FROM OLD.claim_requested_by
+     OR NEW.claim_requested_at IS DISTINCT FROM OLD.claim_requested_at
+     OR NEW.created_by IS DISTINCT FROM OLD.created_by
+     OR (NEW.status IS DISTINCT FROM OLD.status AND NEW.status = 'published') THEN
+    RAISE EXCEPTION 'Modification réservée à l''administration' USING ERRCODE = '42501';
+  END IF;
+  IF OLD.status = 'published' AND NEW.status = 'published'
+     AND (NEW.name, NEW.slug, NEW.excerpt, NEW.description, NEW.category_id, NEW.tags,
+          NEW.address, NEW.postal_code, NEW.city, NEW.departement, NEW.latitude, NEW.longitude,
+          NEW.phone, NEW.email, NEW.website, NEW.logo_url, NEW.cover_url, NEW.photos, NEW.hours)
+         IS DISTINCT FROM
+         (OLD.name, OLD.slug, OLD.excerpt, OLD.description, OLD.category_id, OLD.tags,
+          OLD.address, OLD.postal_code, OLD.city, OLD.departement, OLD.latitude, OLD.longitude,
+          OLD.phone, OLD.email, OLD.website, OLD.logo_url, OLD.cover_url, OLD.photos, OLD.hours) THEN
+    NEW.status := 'draft';
+  END IF;
+  RETURN NEW;
+END;
+$$;
+DROP TRIGGER IF EXISTS directory_listings_guard ON public.directory_listings;
+CREATE TRIGGER directory_listings_guard BEFORE UPDATE ON public.directory_listings
+  FOR EACH ROW EXECUTE FUNCTION public.guard_directory_listing_update();

@@ -170,6 +170,7 @@ const SOCLE_PROTECTED_PATHS: ReadonlyArray<{ prefix: string; anyOf: readonly Fea
   { prefix: "/decouvrir", anyOf: ["onboarding"] },
   { prefix: "/mes-achats", anyOf: ["shop"] },
   { prefix: "/mes-annonces", anyOf: ["marketplace"] },
+  { prefix: "/mes-fiches", anyOf: ["directory"] },
   { prefix: "/mes-formations", anyOf: ["lms"] },
   { prefix: "/messagerie", anyOf: ["messaging"] },
 ];

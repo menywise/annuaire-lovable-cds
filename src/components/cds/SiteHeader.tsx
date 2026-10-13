@@ -134,6 +134,12 @@ function buildMemberNav(): NavItem[] {
       module: "shop",
     },
     {
+      to: "/mes-fiches",
+      label: "Mes fiches",
+      title: "Suivre et mettre à jour vos fiches de l'annuaire",
+      module: "directory",
+    },
+    {
       to: "/mes-annonces",
       label: "Mes annonces",
       title: "Gérer vos annonces publiées",

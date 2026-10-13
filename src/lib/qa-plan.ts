@@ -214,6 +214,7 @@ export const QA_PAGES: QaPage[] = [
   { path: "/decouvrir", label: "Découvrir", role: "membre", module: "onboarding" },
   { path: "/messagerie", label: "Messagerie", role: "membre", module: "messaging" },
   { path: "/mes-annonces", label: "Mes annonces", role: "membre", module: "marketplace" },
+  { path: "/mes-fiches", label: "Mes fiches", role: "membre", module: "directory" },
   { path: "/mes-formations", label: "Mes formations", role: "membre", module: "lms" },
   { path: "/mes-achats", label: "Mes achats", role: "membre", module: "shop" },
   { path: "/crm", label: "Suivi de contacts", role: "membre", module: "crm" },
