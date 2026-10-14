@@ -13,17 +13,9 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { listFaq } from "@/lib/content.functions";
+import { slugify } from "@/lib/format";
 import { breadcrumbJsonLd, jsonLdScript, seo } from "@/lib/seo";
 import { requireFeature, isFeatureOn } from "@/config/features";
-
-function anchorOf(value: string) {
-  return value
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
-}
 
 export const Route = createFileRoute("/faq")({
   beforeLoad: () => requireFeature("faq"),
@@ -112,7 +104,7 @@ function FaqPage() {
             {categories.map((category) => (
               <a
                 key={category}
-                href={`#${anchorOf(category)}`}
+                href={`#${slugify(category)}`}
                 title={`Aller à la section : ${category}`}
                 className="inline-flex min-h-11 items-center rounded-md border border-border bg-card px-3 text-xs font-medium text-muted-foreground hover:text-foreground"
               >
@@ -129,13 +121,13 @@ function FaqPage() {
           </p>
         ) : (
           categories.map((category) => (
-            <section key={category} id={anchorOf(category)} className="mt-8 scroll-mt-20">
+            <section key={category} id={slugify(category)} className="mt-8 scroll-mt-20">
               <h2 className="text-base font-semibold text-foreground">{category}</h2>
               <Accordion type="single" collapsible className="mt-2">
                 {visible
                   .filter((i) => i.category === category)
                   .map((item) => (
-                    <AccordionItem key={item.id} value={item.id} id={anchorOf(item.question)}>
+                    <AccordionItem key={item.id} value={item.id} id={slugify(item.question)}>
                       <AccordionTrigger className="text-left">{item.question}</AccordionTrigger>
                       <AccordionContent className="text-muted-foreground">
                         {item.answer}

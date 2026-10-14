@@ -1,26 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
-import { createClient } from "@supabase/supabase-js";
-import type { Database } from "@/integrations/supabase/types";
+import { publicClient } from "@/lib/supabase-public";
 import { check } from "@/lib/check";
-
-/** Client public (lecture seule) utilisable pendant le rendu serveur. */
-function publicClient() {
-  const key = process.env["SUPABASE_PUBLISHABLE_KEY"]!;
-  const url = process.env["SUPABASE_URL"]!;
-  return createClient<Database>(url, key, {
-    auth: { persistSession: false, autoRefreshToken: false },
-    global: {
-      fetch: (input, init) => {
-        const h = new Headers(init?.headers);
-        if (key.startsWith("sb_") && h.get("Authorization") === `Bearer ${key}`) {
-          h.delete("Authorization");
-        }
-        h.set("apikey", key);
-        return fetch(input, { ...init, headers: h });
-      },
-    },
-  });
-}
 
 export type ForumCategory = {
   id: string;
@@ -30,17 +10,6 @@ export type ForumCategory = {
   color: string;
   position: number;
 };
-
-export const listCategories = createServerFn({ method: "GET" }).handler(async () => {
-  const data = check(
-    await publicClient()
-      .from("forum_categories")
-      .select("id, slug, name, description, color, position")
-      .order("position", { ascending: true }),
-    { contexte: "forum_categories" },
-  );
-  return (data ?? []) as ForumCategory[];
-});
 
 /** Nombre de sujets affichés dans la vue d'ensemble (les plus récemment actifs). */
 const OVERVIEW_TOPICS = 200;

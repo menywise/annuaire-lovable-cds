@@ -12,6 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
+import { slugify } from "@/lib/format";
 import { lirePrix } from "@/lib/prix";
 import { seo } from "@/lib/seo";
 import { requireAnyFeature, withActiveModules } from "@/config/features";
@@ -67,15 +68,6 @@ type Reload = () => Promise<void>;
 
 const cardClass =
   "rounded-xl border border-border bg-card p-5 shadow-[var(--shadow-card-tactile)] sm:p-6";
-
-function slugify(value: string) {
-  return value
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
-}
 
 function splitTags(value: string) {
   return value

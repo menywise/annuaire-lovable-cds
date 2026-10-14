@@ -1,6 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { createClient } from "@supabase/supabase-js";
-import type { Database } from "@/integrations/supabase/types";
+import { publicClient } from "@/lib/supabase-public";
 import { check } from "@/lib/check";
 import { readingMinutes } from "@/lib/reading";
 import {
@@ -11,25 +10,6 @@ import {
   type BlogListInput,
   type BlogListPost,
 } from "@/lib/blog";
-
-/** Client public (lecture seule) utilisable pendant le rendu serveur. */
-function publicClient() {
-  const key = process.env["SUPABASE_PUBLISHABLE_KEY"]!;
-  const url = process.env["SUPABASE_URL"]!;
-  return createClient<Database>(url, key, {
-    auth: { persistSession: false, autoRefreshToken: false },
-    global: {
-      fetch: (input, init) => {
-        const h = new Headers(init?.headers);
-        if (key.startsWith("sb_") && h.get("Authorization") === `Bearer ${key}`) {
-          h.delete("Authorization");
-        }
-        h.set("apikey", key);
-        return fetch(input, { ...init, headers: h });
-      },
-    },
-  });
-}
 
 export const listFaq = createServerFn({ method: "GET" }).handler(async () => {
   const data = check(
@@ -248,30 +228,6 @@ export const listSitemapTopics = createServerFn({ method: "GET" }).handler(async
   );
   return data ?? [];
 });
-
-export const getTopic = createServerFn({ method: "GET" })
-  .inputValidator((input: { id: string }) => input)
-  .handler(async ({ data: input }) => {
-    const client = publicClient();
-    const topic = check(
-      await client
-        .from("forum_topics")
-        .select("id, title, content, author_name, locked, created_at")
-        .eq("id", input.id)
-        .maybeSingle(),
-      { contexte: "forum_topics" },
-    );
-    if (!topic) return null;
-    const replies = check(
-      await client
-        .from("forum_replies")
-        .select("id, author_name, content, created_at, moderation_note, moderated_at")
-        .eq("topic_id", topic.id)
-        .order("created_at", { ascending: true }),
-      { contexte: "forum_replies" },
-    );
-    return { topic, replies: replies ?? [] };
-  });
 
 /* Pages libres (module « pages ») : la base ne renvoie que les pages publiées, module allumé.
    Le contenu brut (`data`) est normalisé par `toPageRow` (src/lib/pages.ts) côté route. */

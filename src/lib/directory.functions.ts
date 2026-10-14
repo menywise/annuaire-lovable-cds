@@ -6,26 +6,6 @@ import { laterOf } from "@/lib/sitemap";
 const LISTING_FIELDS =
   "id, name, slug, excerpt, description, city, postal_code, address, departement, phone, email, website, logo_url, cover_url, photos, hours, plan, featured, verified, tags, category_id, claimed_by, latitude, longitude, created_at";
 
-export type DirectoryCategory = {
-  id: string;
-  name: string;
-  slug: string;
-  description: string;
-  icon: string;
-  position: number;
-};
-
-/** Catégories de l'annuaire métier, dans l'ordre choisi en administration. */
-export const listDirectoryCategories = createServerFn({ method: "GET" }).handler(async () => {
-  const data = check(
-    await publicClient()
-      .from("directory_categories")
-      .select("id, name, slug, description, icon, position")
-      .order("position", { ascending: true }),
-  );
-  return data ?? [];
-});
-
 /** Fiches publiées, mises en avant d'abord. */
 export const listDirectoryListings = createServerFn({ method: "GET" }).handler(async () => {
   const client = publicClient();

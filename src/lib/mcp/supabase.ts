@@ -49,13 +49,6 @@ function supabasePublishableKey(): string {
   throw new Error("Aucune clé publique Supabase disponible");
 }
 
-/** Client sans identité : RLS appliquée au rôle anonyme (contenus publics). */
-export function supabaseAnon() {
-  return createClient<Database>(supabaseProjectUrl(), supabasePublishableKey(), {
-    auth: { persistSession: false, autoRefreshToken: false },
-  });
-}
-
 /** Client portant le jeton vérifié de l'appelant : RLS appliquée à cet utilisateur. */
 export function supabaseForUser(ctx: ToolContext) {
   const token = ctx.getToken();

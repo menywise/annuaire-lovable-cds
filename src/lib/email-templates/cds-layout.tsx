@@ -6,7 +6,6 @@ import {
   Container,
   Head,
   Heading,
-  Hr,
   Html,
   Link,
   Preview,
@@ -83,8 +82,6 @@ export const CdsNote = ({ children }: { children: React.ReactNode }) => (
   <Text style={note}>{children}</Text>
 )
 
-export const CdsDivider = () => <Hr style={hr} />
-
 const main = {
   backgroundColor: CDS_COLORS.background,
   fontFamily:
@@ -136,7 +133,6 @@ const button = {
   padding: '12px 24px',
   textDecoration: 'none',
 }
-const hr = { borderColor: CDS_COLORS.border, margin: '24px 0' }
 const footer = {
   color: CDS_COLORS.textLight,
   fontSize: '12px',
