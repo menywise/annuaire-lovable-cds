@@ -102,7 +102,8 @@ function AdminUsersPage() {
     setBusy(null);
     if (error) {
       toast.error("Ajout impossible.", {
-        description: error.code === "23505" ? "Cette adresse est déjà dans la liste." : error.message,
+        description:
+          error.code === "23505" ? "Cette adresse est déjà dans la liste." : error.message,
       });
       return;
     }
@@ -170,7 +171,13 @@ function AdminUsersPage() {
               <li key={row.email} className="flex flex-wrap items-center gap-3 px-4 py-2 text-sm">
                 <span className="min-w-0 flex-1 break-all text-foreground">{row.email}</span>
                 {busy === row.email ? (
-                  <Button type="button" variant="outline" size="sm" disabled title="Retrait en cours">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    disabled
+                    title="Retrait en cours"
+                  >
                     Retirer
                   </Button>
                 ) : (

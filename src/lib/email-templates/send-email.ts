@@ -1,21 +1,20 @@
-import * as React from 'react'
-import { render } from '@react-email/render'
-import { EmailAPIError, sendLovableEmail } from '@lovable.dev/email-js'
-import { TEMPLATES } from './registry'
+import * as React from "react";
+import { render } from "@react-email/render";
+import { EmailAPIError, sendLovableEmail } from "@lovable.dev/email-js";
+import { TEMPLATES } from "./registry";
 
 // Server-only: reads LOVABLE_API_KEY. Never import from client components.
 
 // Identité d'envoi : lue dans les réglages du site (CDS, lot 13 a), jamais écrite en dur.
 
 export type SendTemplateEmailResult =
-  | { sent: true }
-  | { sent: false; reason: 'recipient_suppressed' }
+  { sent: true } | { sent: false; reason: "recipient_suppressed" };
 
 export interface SendTemplateEmailOptions {
-  templateData?: Record<string, any>
+  templateData?: Record<string, any>;
   /** Dedupes retries of the same logical send; defaults to a random UUID (no dedupe). */
-  idempotencyKey?: string
-  replyTo?: string
+  idempotencyKey?: string;
+  replyTo?: string;
 }
 
 /**
@@ -28,38 +27,36 @@ export interface SendTemplateEmailOptions {
 export async function sendTemplateEmail(
   templateName: string,
   to: string,
-  options: SendTemplateEmailOptions = {}
+  options: SendTemplateEmailOptions = {},
 ): Promise<SendTemplateEmailResult> {
-  const apiKey = process.env['LOVABLE_API_KEY']
+  const apiKey = process.env["LOVABLE_API_KEY"];
   if (!apiKey) {
-    throw new Error('LOVABLE_API_KEY is not configured')
+    throw new Error("LOVABLE_API_KEY is not configured");
   }
 
-  const { emailIdentity } = await import('@/lib/email-identity.server')
-  const identity = await emailIdentity()
+  const { emailIdentity } = await import("@/lib/email-identity.server");
+  const identity = await emailIdentity();
 
-  const template = TEMPLATES[templateName]
+  const template = TEMPLATES[templateName];
   if (!template) {
     throw new Error(
-      `Template '${templateName}' not found. Available: ${Object.keys(TEMPLATES).join(', ')}`
-    )
+      `Template '${templateName}' not found. Available: ${Object.keys(TEMPLATES).join(", ")}`,
+    );
   }
 
   // Template-level `to` takes precedence — notification templates always
   // send to their fixed address.
-  const recipient = template.to || to
+  const recipient = template.to || to;
   if (!recipient) {
-    throw new Error('Recipient is required (the template defines no fixed recipient)')
+    throw new Error("Recipient is required (the template defines no fixed recipient)");
   }
 
-  const templateData = options.templateData ?? {}
-  const element = React.createElement(template.component, templateData)
-  const html = await render(element)
-  const text = await render(element, { plainText: true })
+  const templateData = options.templateData ?? {};
+  const element = React.createElement(template.component, templateData);
+  const html = await render(element);
+  const text = await render(element, { plainText: true });
   const subject =
-    typeof template.subject === 'function'
-      ? template.subject(templateData)
-      : template.subject
+    typeof template.subject === "function" ? template.subject(templateData) : template.subject;
 
   try {
     await sendLovableEmail(
@@ -70,19 +67,19 @@ export async function sendTemplateEmail(
         subject,
         html,
         text,
-        purpose: 'transactional',
+        purpose: "transactional",
         label: templateName,
         idempotency_key: options.idempotencyKey || crypto.randomUUID(),
         ...(options.replyTo ? { reply_to: options.replyTo } : {}),
       },
-      { apiKey, sendUrl: process.env['LOVABLE_SEND_URL'] }
-    )
+      { apiKey, sendUrl: process.env["LOVABLE_SEND_URL"] },
+    );
   } catch (error) {
-    if (error instanceof EmailAPIError && error.code === 'recipient_suppressed') {
-      return { sent: false, reason: 'recipient_suppressed' }
+    if (error instanceof EmailAPIError && error.code === "recipient_suppressed") {
+      return { sent: false, reason: "recipient_suppressed" };
     }
-    throw error
+    throw error;
   }
 
-  return { sent: true }
+  return { sent: true };
 }

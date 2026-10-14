@@ -7,12 +7,7 @@ import { erreurChargement } from "@/components/cds/ErreurChargement";
 import { ModerationNote } from "@/components/cds/ModerationNote";
 import { ReportButton } from "@/components/cds/ReportButton";
 import { ShareButtons } from "@/components/cds/ShareButtons";
-import {
-  CategoryBadge,
-  FollowButton,
-  LikeButton,
-  MemberName,
-} from "@/components/cds/ForumParts";
+import { CategoryBadge, FollowButton, LikeButton, MemberName } from "@/components/cds/ForumParts";
 import { RichText, RichTextEditor, richTextToPlain } from "@/lib/richtext";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -201,7 +196,11 @@ function TopicPage() {
                 <RichText value={item.content} className="mt-2 text-sm text-muted-foreground" />
                 <ModerationNote note={item.moderation_note} at={item.moderated_at} />
                 <div className="mt-3 flex flex-wrap items-center gap-2">
-                  <ReportButton contentType="reponse" contentId={item.id} authorId={item.author_id} />
+                  <ReportButton
+                    contentType="reponse"
+                    contentId={item.id}
+                    authorId={item.author_id}
+                  />
                   <LikeButton replyId={item.id} initialCount={item.likes} />
                   {isOwner ? (
                     <button

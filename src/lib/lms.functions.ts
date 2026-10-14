@@ -102,7 +102,11 @@ export const getLesson = createServerFn({ method: "GET" })
     const preview = content?.[0] ?? null;
     return {
       course,
-      lesson: { ...lesson, content: preview?.content ?? null, video_url: preview?.video_url ?? null },
+      lesson: {
+        ...lesson,
+        content: preview?.content ?? null,
+        video_url: preview?.video_url ?? null,
+      },
       lessons: ordered,
     };
   });

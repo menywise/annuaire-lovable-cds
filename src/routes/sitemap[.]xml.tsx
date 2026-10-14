@@ -67,7 +67,9 @@ export const Route = createFileRoute("/sitemap.xml")({
       GET: async ({ request }) => {
         const site = await loadSiteConfig().catch(() => fallbackSiteConfig);
         // Adresses absolues exigées : sans URL réglée en admin, celle de la requête.
-        const base = /^https?:\/\//.test(site.brand.url) ? site.brand.url : new URL(request.url).origin;
+        const base = /^https?:\/\//.test(site.brand.url)
+          ? site.brand.url
+          : new URL(request.url).origin;
         const dynamic: SitemapPage[] = [];
         // Date réelle des pages d'accueil de module : celle de leur contenu le plus récent.
         const indexDates = new Map<string, string | undefined>();

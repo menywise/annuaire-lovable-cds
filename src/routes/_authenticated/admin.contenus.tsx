@@ -78,7 +78,8 @@ function splitTags(value: string) {
 
 /** Message d'erreur lisible pour les erreurs les plus courantes. */
 function explain(error: { code?: string; message?: string } | null) {
-  if (error?.code === "23505") return "Cette adresse (slug) est déjà utilisée par un autre article.";
+  if (error?.code === "23505")
+    return "Cette adresse (slug) est déjà utilisée par un autre article.";
   return "Réessayez dans un instant.";
 }
 

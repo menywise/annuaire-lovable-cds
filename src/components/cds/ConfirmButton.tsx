@@ -61,7 +61,12 @@ export function ConfirmButton({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel disabled={busy}>Annuler</AlertDialogCancel>
-          <Button type="button" variant="destructive" disabled={busy} onClick={() => void confirm()}>
+          <Button
+            type="button"
+            variant="destructive"
+            disabled={busy}
+            onClick={() => void confirm()}
+          >
             {busy ? "Suppression…" : confirmLabel}
           </Button>
         </AlertDialogFooter>

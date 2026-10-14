@@ -231,7 +231,8 @@ export const listSitemapTopics = createServerFn({ method: "GET" }).handler(async
 
 /* Pages libres (module « pages ») : la base ne renvoie que les pages publiées, module allumé.
    Le contenu brut (`data`) est normalisé par `toPageRow` (src/lib/pages.ts) côté route. */
-const PAGE_COLUMNS = "id, slug, title, description, data, is_home, published, published_at, updated_at";
+const PAGE_COLUMNS =
+  "id, slug, title, description, data, is_home, published, published_at, updated_at";
 
 export const getHomePage = createServerFn({ method: "GET" }).handler(async () => {
   return check(

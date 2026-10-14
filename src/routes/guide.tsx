@@ -107,8 +107,8 @@ function GuidePage() {
           Réutiliser le socle sur un nouveau projet
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Le socle est un modèle complet : fondations visuelles, composants, pages de compte et pages
-          légales prêtes à l'emploi. Voici la marche à suivre.
+          Le socle est un modèle complet : fondations visuelles, composants, pages de compte et
+          pages légales prêtes à l'emploi. Voici la marche à suivre.
         </p>
 
         <div className="mt-8 space-y-4">
