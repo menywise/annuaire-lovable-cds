@@ -109,7 +109,7 @@ function withoutProtected(text: string, protectedTerms: string[]) {
 export function auditTexts(
   page: PageTexts,
   rules: TextRules,
-  opts: { vitrine?: boolean; protege?: string[] } = {},
+  opts: { vitrine?: boolean | undefined; protege?: string[] } = {},
 ): TextAudit {
   const anomalies: TextAnomaly[] = [];
   const g = (regle: string): Gravite => rules.gravite[regle] ?? "mineur";

@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   verifications:
-    name: Types, tests, base de données, build
+    name: Types, style, tests, base de données, build
     # Version figée : ubuntu-latest passe à Ubuntu 26 le 19/10/2026 ; les navigateurs de test
     # (Playwright) s'installent par paquets propres à chaque version. À relever une fois Ubuntu 26 pris en charge.
     runs-on: ubuntu-24.04
@@ -41,6 +41,8 @@ jobs:
         run: npm install --no-package-lock --no-audit --no-fund
       - name: Types
         run: npx tsc --noEmit -p .
+      - name: Style (eslint et prettier, fichiers générés exclus)
+        run: npx eslint .
       - name: Tests unitaires
         run: node --test tests/unit/*.test.ts
       - name: Migrations et règles d'accès
@@ -73,6 +75,8 @@ jobs:
           npm install --no-package-lock --no-audit --no-fund
           npm install --no-save --no-package-lock --no-audit --no-fund playwright@1.56.1 axe-core@4.13.0 html-validate@11.16.1
           npx playwright install --with-deps chromium
+      - name: Types de la recette (playwright requis, hors tsconfig.json du socle)
+        run: npx tsc --noEmit -p tests/e2e
       - name: Site en local
         run: |
           nohup npx vite dev --port 8080 --host 127.0.0.1 > vite.log 2>&1 &

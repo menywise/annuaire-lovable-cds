@@ -1,5 +1,8 @@
 {
-  "include": ["src/**/*.ts", "src/**/*.tsx", "vite.config.ts", "eslint.config.js"],
+  "include": ["src/**/*.ts", "src/**/*.tsx", "tests/**/*.ts", "vite.config.ts", "eslint.config.js"],
+  // tests/e2e importe playwright, installé par le robot de recette seulement (jamais dans
+  // package.json) : contrôlé à part par tests/e2e/tsconfig.json, dans le travail « recette ».
+  "exclude": ["node_modules", "tests/e2e"],
   "compilerOptions": {
     "target": "ES2022",
     "jsx": "react-jsx",

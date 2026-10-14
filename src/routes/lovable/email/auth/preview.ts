@@ -8,7 +8,9 @@ import { RecoveryEmail } from "@/lib/email-templates/recovery";
 import { EmailChangeEmail } from "@/lib/email-templates/email-change";
 import { ReauthenticationEmail } from "@/lib/email-templates/reauthentication";
 
-const EMAIL_TEMPLATES: Record<string, React.ComponentType<any>> = {
+// Les props de chaque gabarit sont typées dans son fichier ; ici le nom vient de la requête et les
+// données de sampleData, d'où un composant sans props déclarées.
+const EMAIL_TEMPLATES: Record<string, React.ElementType> = {
   signup: SignupEmail,
   invite: InviteEmail,
   magiclink: MagicLinkEmail,
