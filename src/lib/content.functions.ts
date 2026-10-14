@@ -2,6 +2,15 @@ import { createServerFn } from "@tanstack/react-start";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
 import { check } from "@/lib/check";
+import { readingMinutes } from "@/lib/reading";
+import {
+  BLOG_PAGE_SIZE,
+  cleanBlogPage,
+  cleanBlogSearch,
+  cleanBlogTag,
+  type BlogListInput,
+  type BlogListPost,
+} from "@/lib/blog";
 
 /** Client public (lecture seule) utilisable pendant le rendu serveur. */
 function publicClient() {
@@ -48,13 +57,107 @@ export const listPlans = createServerFn({ method: "GET" }).handler(async () => {
   return data ?? [];
 });
 
-export const listPosts = createServerFn({ method: "GET" }).handler(async () => {
+/** Articles au plus dans le flux RSS : les plus récents. */
+const FEED_LIMIT = 50;
+/** Adresses d'articles au plus dans le plan du site. */
+const SITEMAP_POSTS_LIMIT = 5000;
+
+/**
+ * Page de la liste des articles : filtrée et paginée en base (recherche dans le titre, le
+ * résumé et le texte, étiquette exacte), sans jamais envoyer le texte complet au navigateur.
+ * `tags` : toutes les étiquettes des articles publiés, pour le filtre, quelle que soit la page.
+ */
+export const listBlogPage = createServerFn({ method: "GET" })
+  .inputValidator((input: Partial<BlogListInput>): BlogListInput => ({
+    page: cleanBlogPage(input?.page),
+    q: cleanBlogSearch(input?.q),
+    tag: cleanBlogTag(input?.tag),
+  }))
+  .handler(async ({ data: input }) => {
+    const client = publicClient();
+    /** Mêmes filtres pour le décompte et pour la page : publié, étiquette, recherche. */
+    const filtered = <
+      T extends { contains(column: "tags", value: string[]): T; or(filters: string): T },
+    >(
+      query: T,
+    ): T => {
+      let result = query;
+      if (input.tag) result = result.contains("tags", [input.tag]);
+      if (input.q) {
+        const motif = `%${input.q}%`;
+        result = result.or(`title.ilike.${motif},excerpt.ilike.${motif},content.ilike.${motif}`);
+      }
+      return result;
+    };
+    // Décompte d'abord : une page au-delà de la dernière est ramenée à la dernière, sans erreur
+    // (PostgREST refuse un décalage supérieur au nombre de lignes).
+    const [countRes, tagsRes] = await Promise.all([
+      filtered(
+        client
+          .from("blog_posts")
+          .select("id", { count: "exact", head: true })
+          .eq("published", true),
+      ),
+      client.from("blog_posts").select("tags").eq("published", true),
+    ]);
+    check(countRes, { contexte: "blog_posts" });
+    const tagRows = check(tagsRes, { contexte: "blog_posts" }) ?? [];
+    const total = countRes.count ?? 0;
+    const pageCount = Math.max(1, Math.ceil(total / BLOG_PAGE_SIZE));
+    const page = Math.min(input.page, pageCount);
+    const from = (page - 1) * BLOG_PAGE_SIZE;
+    const rows =
+      total === 0
+        ? []
+        : (check(
+            await filtered(
+              client
+                .from("blog_posts")
+                .select("id, slug, title, excerpt, content, cover_url, published_at, tags")
+                .eq("published", true),
+            )
+              .order("published_at", { ascending: false })
+              .range(from, from + BLOG_PAGE_SIZE - 1),
+            { contexte: "blog_posts" },
+          ) ?? []);
+    const posts: BlogListPost[] = rows.map(({ content, ...post }) => ({
+      ...post,
+      reading_minutes: readingMinutes(content),
+    }));
+    return {
+      posts,
+      total,
+      page,
+      pageCount,
+      tags: [...new Set(tagRows.flatMap((row) => row.tags ?? []))].sort((a, b) =>
+        a.localeCompare(b, "fr"),
+      ),
+    };
+  });
+
+/** Flux RSS : titre, résumé, date et adresse des articles les plus récents, sans le texte. */
+export const listFeedPosts = createServerFn({ method: "GET" }).handler(async () => {
   const data = check(
     await publicClient()
       .from("blog_posts")
-      .select("id, slug, title, excerpt, content, cover_url, published_at, tags")
+      .select("slug, title, excerpt, published_at")
       .eq("published", true)
-      .order("published_at", { ascending: false }),
+      .order("published_at", { ascending: false })
+      .limit(FEED_LIMIT),
+    { contexte: "blog_posts" },
+  );
+  return data ?? [];
+});
+
+/** Plan du site : adresse et date réelle de modification de chaque article publié. */
+export const listSitemapPosts = createServerFn({ method: "GET" }).handler(async () => {
+  const data = check(
+    await publicClient()
+      .from("blog_posts")
+      .select("slug, updated_at, published_at")
+      .eq("published", true)
+      .order("published_at", { ascending: false })
+      .limit(SITEMAP_POSTS_LIMIT),
     { contexte: "blog_posts" },
   );
   return data ?? [];
@@ -131,12 +234,17 @@ export const listReviews = createServerFn({ method: "GET" }).handler(async () =>
   return data ?? [];
 });
 
-export const listTopics = createServerFn({ method: "GET" }).handler(async () => {
+/** Adresses de sujets au plus dans le plan du site. */
+const SITEMAP_TOPICS_LIMIT = 5000;
+
+/** Plan du site : identifiant et date réelle de dernière activité de chaque sujet du forum. */
+export const listSitemapTopics = createServerFn({ method: "GET" }).handler(async () => {
   const data = check(
     await publicClient()
       .from("forum_topics")
-      .select("id, title, content, author_name, locked, created_at")
-      .order("created_at", { ascending: false }),
+      .select("id, created_at, updated_at, last_activity_at")
+      .order("created_at", { ascending: false })
+      .limit(SITEMAP_TOPICS_LIMIT),
     { contexte: "forum_topics" },
   );
   return data ?? [];

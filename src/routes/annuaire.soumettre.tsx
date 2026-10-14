@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RichTextEditor } from "@/lib/richtext";
 import { requireFeature, isFeatureOn } from "@/config/features";
-import { listDirectoryListings } from "@/lib/directory.functions";
+import { listDirectoryFormOptions } from "@/lib/directory.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { seo } from "@/lib/seo";
@@ -15,7 +15,8 @@ import { slugify } from "@/lib/format";
 
 export const Route = createFileRoute("/annuaire/soumettre")({
   beforeLoad: () => requireFeature("directory"),
-  loader: () => listDirectoryListings(),
+  // Seules les listes du formulaire : catégories, et départements si la géographie est allumée.
+  loader: () => listDirectoryFormOptions({ data: { geo: isFeatureOn("geo") } }),
   head: () =>
     seo({
       title: "Ajouter votre fiche à l'annuaire",

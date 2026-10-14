@@ -42,6 +42,23 @@ export const getShopCatalog = createServerFn({ method: "GET" }).handler(async ()
   return { products: data ?? [], settings, failed: Boolean(error) };
 });
 
+/** Adresses de produits au plus dans le plan du site. */
+const SITEMAP_PRODUCTS_LIMIT = 5000;
+
+/** Plan du site : adresse et date réelle de modification de chaque produit publié. */
+export const listSitemapProducts = createServerFn({ method: "GET" }).handler(async () => {
+  const data = check(
+    await publicClient()
+      .from("shop_products")
+      .select("slug, updated_at")
+      .eq("published", true)
+      .order("position", { ascending: true })
+      .limit(SITEMAP_PRODUCTS_LIMIT),
+    { contexte: "shop_products" },
+  );
+  return data ?? [];
+});
+
 /** Fiche d'un produit publié. */
 export const getShopProduct = createServerFn({ method: "GET" })
   .inputValidator((input: { slug: string }) => ({ slug: String(input?.slug ?? "").slice(0, 120) }))

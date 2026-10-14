@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { publicClient } from "@/lib/supabase-public";
 import { check } from "@/lib/check";
+import { laterOf } from "@/lib/sitemap";
 
 const LISTING_FIELDS =
   "id, name, slug, excerpt, description, city, postal_code, address, departement, phone, email, website, logo_url, cover_url, photos, hours, plan, featured, verified, tags, category_id, claimed_by, latitude, longitude, created_at";
@@ -53,6 +54,64 @@ export const listDirectoryListings = createServerFn({ method: "GET" }).handler(a
     ratings: check(reviewsRes) ?? [],
   };
 });
+
+/** Colonnes d'une fiche dans une liste (page d'une catégorie) : jamais la fiche complète. */
+const CARD_FIELDS = "id, name, slug, excerpt, city, plan, verified, featured, category_id";
+
+/** Fiches d'une liste au plus (page d'une catégorie). */
+const CATEGORY_LIMIT = 500;
+
+/** Page d'une catégorie : la catégorie et ses fiches publiées, filtrées en base. */
+export const getDirectoryCategory = createServerFn({ method: "GET" })
+  .inputValidator((input: { slug: string }) => ({ slug: String(input?.slug ?? "").slice(0, 120) }))
+  .handler(async ({ data: input }) => {
+    const client = publicClient();
+    const category = check(
+      await client
+        .from("directory_categories")
+        .select("id, name, slug, description, icon, position")
+        .eq("slug", input.slug)
+        .maybeSingle(),
+    );
+    if (!category) return null;
+    const listings = check(
+      await client
+        .from("directory_listings")
+        .select(CARD_FIELDS)
+        .eq("status", "published")
+        .eq("category_id", category.id)
+        .order("featured", { ascending: false })
+        .order("name", { ascending: true })
+        .limit(CATEGORY_LIMIT),
+    );
+    return { category, listings: listings ?? [] };
+  });
+
+/**
+ * Listes du formulaire de dépôt d'une fiche : les catégories et, si `geo` est demandé, les
+ * départements. Aucune fiche n'est chargée.
+ */
+export const listDirectoryFormOptions = createServerFn({ method: "GET" })
+  .inputValidator((input: { geo: boolean }) => ({ geo: Boolean(input?.geo) }))
+  .handler(async ({ data: input }) => {
+    const client = publicClient();
+    const [categoriesRes, departementsRes] = await Promise.all([
+      client
+        .from("directory_categories")
+        .select("id, name, slug, description, icon, position")
+        .order("position", { ascending: true }),
+      input.geo
+        ? client
+            .from("geo_departements")
+            .select("code, nom, region, slug")
+            .order("code", { ascending: true })
+        : Promise.resolve({ data: [], error: null }),
+    ]);
+    return {
+      categories: check(categoriesRes) ?? [],
+      departements: check(departementsRes) ?? [],
+    };
+  });
 
 /** Détail d'une fiche publiée, avec ses avis validés et des fiches proches. */
 export const getDirectoryListing = createServerFn({ method: "GET" })
@@ -216,9 +275,14 @@ export const getCommune = createServerFn({ method: "GET" })
 /** Plafond d'adresses de fiches dans le plan du site. */
 const SITEMAP_LIMIT = 5000;
 
+/** Adresse d'un plan du site avec sa date réelle de modification (ISO) ou `null`. */
+export type SitemapEntry = { slug: string; updated_at: string | null };
+
 /**
- * Adresses publiques de l'annuaire pour le plan du site : fiches publiées, catégories et,
- * si `geo` est demandé, départements qui ont au moins une fiche publiée.
+ * Adresses publiques de l'annuaire pour le plan du site, chacune avec sa date réelle de
+ * modification : fiches publiées, catégories (date de la catégorie ou de sa fiche la plus
+ * récemment modifiée) et, si `geo` est demandé, départements qui ont au moins une fiche publiée
+ * (date de la fiche la plus récemment modifiée du département).
  */
 export const listDirectorySitemap = createServerFn({ method: "GET" })
   .inputValidator((input: { geo: boolean }) => ({ geo: Boolean(input?.geo) }))
@@ -227,25 +291,47 @@ export const listDirectorySitemap = createServerFn({ method: "GET" })
     const [listingsRes, categoriesRes] = await Promise.all([
       client
         .from("directory_listings")
-        .select("slug, departement")
+        .select("slug, departement, category_id, updated_at")
         .eq("status", "published")
         .order("name", { ascending: true })
         .limit(SITEMAP_LIMIT),
-      client.from("directory_categories").select("slug").order("position").limit(500),
+      client
+        .from("directory_categories")
+        .select("id, slug, updated_at")
+        .order("position")
+        .limit(500),
     ]);
     const listings = check(listingsRes) ?? [];
     const categories = check(categoriesRes) ?? [];
-    let departements: string[] = [];
+    const byCategory = new Map<string, string | null>();
+    const byDepartement = new Map<string, string | null>();
+    for (const l of listings) {
+      if (l.category_id) {
+        byCategory.set(l.category_id, laterOf(byCategory.get(l.category_id), l.updated_at));
+      }
+      if (l.departement) {
+        byDepartement.set(l.departement, laterOf(byDepartement.get(l.departement), l.updated_at));
+      }
+    }
+    let departements: SitemapEntry[] = [];
     if (input.geo) {
-      const codes = [...new Set(listings.map((l) => l.departement).filter((c) => c !== null))];
+      const codes = [...byDepartement.keys()];
       if (codes.length) {
-        const rows = check(await client.from("geo_departements").select("slug").in("code", codes));
-        departements = (rows ?? []).map((d) => d.slug);
+        const rows = check(
+          await client.from("geo_departements").select("code, slug").in("code", codes),
+        );
+        departements = (rows ?? []).map((d) => ({
+          slug: d.slug,
+          updated_at: byDepartement.get(d.code) ?? null,
+        }));
       }
     }
     return {
-      listings: listings.map((l) => l.slug),
-      categories: categories.map((c) => c.slug),
+      listings: listings.map((l) => ({ slug: l.slug, updated_at: l.updated_at })),
+      categories: categories.map((c) => ({
+        slug: c.slug,
+        updated_at: laterOf(c.updated_at, byCategory.get(c.id)),
+      })),
       departements,
     };
   });
