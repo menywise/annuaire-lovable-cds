@@ -4,7 +4,7 @@ BEGIN;
 -- Socle 1.6.1 : correctifs issus de l'audit du 13/10 (messagerie privée, stock de la boutique, forum,
 -- formulaires ouverts aux visiteurs, revendication d'une fiche d'annuaire, fiche publiée et modifiée,
 -- adresse confirmée exigée pour les administrateurs nommés d'avance, prix négatifs refusés, plan directeur
--- et feuille de route du socle retirés du pilotage).
+-- et feuille de route du socle retirés du pilotage, verrou de ligne du sujet à la création d'une réponse).
 -- b1 : membre · b2 : autre membre · b3 : tiers · b4 : administrateur (section 3)
 INSERT INTO auth.users (id, email) VALUES
   ('00000000-0000-0000-0000-0000000000b1', 'un@test.fr'),
@@ -1048,6 +1048,76 @@ SET client_min_messages = warning;
 \i supabase/migrations/20261013120000_v1_6_1_correctifs_audit.sql
 RESET client_min_messages;
 SELECT pg_temp.index_tous();
+
+-- 13. Forum : la ligne du sujet est verrouillée pendant la création d'une réponse (correctif C1) -----------------------
+-- La course elle-même (réponse envoyée à l'instant où un modérateur verrouille le sujet) demande deux sessions :
+-- ce fichier n'en a qu'une. Ici : forme du garde (droits du propriétaire, verrou FOR NO KEY UPDATE, clause WHEN
+-- sur le rôle appelant) et comportement inchangé : sujet ouvert accepté, activité mise à jour par
+-- forum_replies_touch_topic dans la même transaction (sans interblocage avec le verrou) ; sujet verrouillé refusé
+-- pour un membre qui n'est pas l'auteur du sujet comme pour l'auteur ; administrateur et serveur acceptés.
+RESET ROLE;
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_proc WHERE proname = 'guard_forum_reply_insert' AND prosecdef AND prosrc LIKE '%FOR NO KEY UPDATE%')
+  THEN RAISE EXCEPTION 'garde des réponses : pas de verrou de ligne avec les droits du propriétaire'; END IF;
+  IF (SELECT tgqual IS NULL FROM pg_trigger WHERE tgname = 'forum_replies_guard_insert')
+  THEN RAISE EXCEPTION 'garde des réponses : déclencheur sans clause WHEN sur le rôle appelant'; END IF;
+END $$;
+-- Sujet ouvert de b1 : b2, qui n'en est pas l'auteur, répond ; valeurs forcées, activité du sujet mise à jour.
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000b1', 'un@test.fr');
+INSERT INTO public.forum_topics (id, author_id, title, content) VALUES
+  ('00000000-0000-0000-0000-0000000000f8', '00000000-0000-0000-0000-0000000000b1', 'Sujet ouvert', 'Texte');
+RESET ROLE;
+UPDATE public.forum_topics SET last_activity_at = '2020-01-01' WHERE id = '00000000-0000-0000-0000-0000000000f8';
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000b2', 'deux@test.fr');
+INSERT INTO public.forum_replies (id, topic_id, author_id, author_name, content, accepted, created_at) VALUES
+  ('00000000-0000-0000-0000-0000000000f9', '00000000-0000-0000-0000-0000000000f8', '00000000-0000-0000-0000-0000000000b2',
+   'Admin officiel', 'Réponse', true, '2099-01-01');
+RESET ROLE;
+DO $$
+DECLARE _r public.forum_replies;
+BEGIN
+  SELECT * INTO _r FROM public.forum_replies WHERE id = '00000000-0000-0000-0000-0000000000f9';
+  IF _r.accepted OR _r.created_at <> now() OR _r.author_name <> public.forum_author_name('00000000-0000-0000-0000-0000000000b2')
+     OR _r.author_name = 'Admin officiel' OR _r.content <> 'Réponse'
+  THEN RAISE EXCEPTION 'sujet ouvert : réponse réécrite autrement (%, %, %)', _r.accepted, _r.created_at, _r.author_name; END IF;
+  IF (SELECT last_activity_at FROM public.forum_topics WHERE id = '00000000-0000-0000-0000-0000000000f8') <> now()
+  THEN RAISE EXCEPTION 'sujet ouvert : activité non mise à jour après la réponse'; END IF;
+END $$;
+-- Sujet verrouillé : refusé, code 42501, pour un membre qui n'est pas l'auteur du sujet comme pour l'auteur.
+UPDATE public.forum_topics SET locked = true WHERE id = '00000000-0000-0000-0000-0000000000f8';
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000b2', 'deux@test.fr');
+SELECT pg_temp.expect_sqlstate($$INSERT INTO public.forum_replies (topic_id, author_id, content) VALUES ('00000000-0000-0000-0000-0000000000f8', '00000000-0000-0000-0000-0000000000b2', 'Malgré le verrou')$$, '42501', 'réponse d''un membre dans un sujet verrouillé');
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000b1', 'un@test.fr');
+SELECT pg_temp.expect_sqlstate($$INSERT INTO public.forum_replies (topic_id, author_id, content) VALUES ('00000000-0000-0000-0000-0000000000f8', '00000000-0000-0000-0000-0000000000b1', 'Malgré le verrou')$$, '42501', 'réponse de l''auteur dans son sujet verrouillé');
+RESET ROLE;
+-- Administrateur et serveur : acceptés dans le sujet verrouillé, valeurs gardées.
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000b4', 'admin@test.fr');
+INSERT INTO public.forum_replies (id, topic_id, author_id, author_name, content, accepted) VALUES
+  ('00000000-0000-0000-0000-0000000000fa', '00000000-0000-0000-0000-0000000000f8', '00000000-0000-0000-0000-0000000000b4',
+   'Équipe', 'Réponse de l''équipe', true);
+RESET ROLE;
+INSERT INTO public.forum_replies (id, topic_id, author_id, author_name, content) VALUES
+  ('00000000-0000-0000-0000-0000000000fb', '00000000-0000-0000-0000-0000000000f8', '00000000-0000-0000-0000-0000000000b1',
+   'Exemple', 'Réponse du serveur');
+DO $$ BEGIN
+  IF (SELECT count(*) FROM public.forum_replies WHERE topic_id = '00000000-0000-0000-0000-0000000000f8') <> 3
+  THEN RAISE EXCEPTION 'sujet verrouillé : % réponses au lieu de 3', (SELECT count(*) FROM public.forum_replies WHERE topic_id = '00000000-0000-0000-0000-0000000000f8'); END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.forum_replies WHERE id = '00000000-0000-0000-0000-0000000000fa' AND accepted AND author_name = 'Équipe')
+  THEN RAISE EXCEPTION 'administrateur : réponse réécrite'; END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.forum_replies WHERE id = '00000000-0000-0000-0000-0000000000fb' AND author_name = 'Exemple')
+  THEN RAISE EXCEPTION 'serveur : réponse réécrite'; END IF;
+END $$;
+-- Rejeu : un seul déclencheur, même forme, sujet verrouillé toujours refusé.
+SET client_min_messages = warning;
+\i supabase/migrations/20261013120000_v1_6_1_correctifs_audit.sql
+RESET client_min_messages;
+DO $$ BEGIN
+  IF (SELECT count(*) FROM pg_trigger WHERE tgname = 'forum_replies_guard_insert' AND tgqual IS NOT NULL) <> 1
+  THEN RAISE EXCEPTION 'rejeu : déclencheur des réponses'; END IF;
+END $$;
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000b2', 'deux@test.fr');
+SELECT pg_temp.expect_sqlstate($$INSERT INTO public.forum_replies (topic_id, author_id, content) VALUES ('00000000-0000-0000-0000-0000000000f8', '00000000-0000-0000-0000-0000000000b2', 'Après rejeu')$$, '42501', 'rejeu : réponse dans un sujet verrouillé');
+RESET ROLE;
 
 -- Rejouable (toujours en dernier) ---------------------------------------------------------------------------------------
 \i supabase/migrations/20261013120000_v1_6_1_correctifs_audit.sql

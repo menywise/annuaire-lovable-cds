@@ -27,6 +27,8 @@
 -- 12. Index manquants : clés étrangères sans index (réponses, commentaires, « j'aime », suivis,
 --    thématiques, inscriptions, progression, actions CRM, annonces, paiements, voisinages), tris et
 --    filtres du forum (dernière activité, auteur) ; index en double du voisinage géographique retiré.
+-- 13. Forum (correctif C1) : la ligne du sujet est verrouillée pendant la création d'une réponse ;
+--    une réponse envoyée à l'instant où un modérateur verrouille le sujet est refusée.
 -- Rejouable sans danger.
 
 -- 1. Messagerie privée -----------------------------------------------------------------------------
@@ -999,3 +1001,44 @@ CREATE INDEX IF NOT EXISTS marketplace_listings_departement_idx ON public.market
 -- doit retirer les lignes où elle est le voisin) ; index en double par commune retiré.
 CREATE INDEX IF NOT EXISTS geo_adjacency_neighbor_idx ON public.geo_adjacency (neighbor_id);
 DROP INDEX IF EXISTS public.geo_adjacency_place_idx;
+
+-- 13. Forum : la ligne du sujet est verrouillée pendant la création d'une réponse (correctif C1) -------
+-- Le garde de la section 3 lisait l'état du sujet sans verrou : une réponse envoyée à l'instant où un
+-- modérateur verrouille le sujet pouvait encore passer (lecture avant son UPDATE, insertion après).
+-- La ligne du sujet est maintenant lue sous verrou FOR NO KEY UPDATE, le verrou que prend l'UPDATE du
+-- modérateur comme celui de forum_replies_touch_topic : le contrôle attend la fin d'un verrouillage
+-- en cours et relit l'état validé ; un verrouillage lancé pendant la réponse attend son insertion.
+-- Pas FOR SHARE : deux réponses simultanées au même sujet tiendraient chacune un verrou partagé, puis
+-- forum_replies_touch_topic (AFTER INSERT, UPDATE du sujet) demanderait pour chacune le verrou que
+-- l'autre bloque : interblocage. FOR NO KEY UPDATE met les réponses d'un même sujet en file, comme le
+-- faisait déjà la mise à jour de last_activity_at, et laisse passer les verrous de clé (FOR KEY SHARE)
+-- des clés étrangères vers le sujet (« j'aime », suivis), que FOR UPDATE bloquerait.
+-- Un verrou de ligne passe par les règles de modification (USING des règles UPDATE) : un membre qui
+-- n'est pas l'auteur du sujet ne verrait pas la ligne et le contrôle n'aurait rien à refuser. La
+-- fonction s'exécute donc avec les droits du propriétaire, et le rôle appelant est filtré par la
+-- clause WHEN du déclencheur (évaluée avec le rôle appelant), comme en 4.2. Le reste est inchangé :
+-- l'administrateur garde la main, jamais « retenue » à la création, date à maintenant, nom relu
+-- depuis le profil ; le serveur et les fonctions internes ne sont pas concernés.
+CREATE OR REPLACE FUNCTION public.guard_forum_reply_insert()
+RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
+DECLARE
+  _locked boolean;
+BEGIN
+  IF auth.uid() IS NOT NULL AND public.has_role(auth.uid(), 'admin') THEN
+    RETURN NEW;
+  END IF;
+  SELECT t.locked INTO _locked FROM public.forum_topics t WHERE t.id = NEW.topic_id FOR NO KEY UPDATE;
+  IF _locked THEN
+    RAISE EXCEPTION 'Discussion verrouillée' USING ERRCODE = '42501';
+  END IF;
+  NEW.accepted := false;
+  NEW.created_at := now();
+  NEW.author_name := public.forum_author_name(auth.uid());
+  RETURN NEW;
+END;
+$$;
+REVOKE ALL ON FUNCTION public.guard_forum_reply_insert() FROM PUBLIC, anon, authenticated;
+DROP TRIGGER IF EXISTS forum_replies_guard_insert ON public.forum_replies;
+CREATE TRIGGER forum_replies_guard_insert BEFORE INSERT ON public.forum_replies
+  FOR EACH ROW WHEN (current_user IN ('anon', 'authenticated'))
+  EXECUTE FUNCTION public.guard_forum_reply_insert();
