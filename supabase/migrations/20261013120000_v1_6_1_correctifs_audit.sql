@@ -29,7 +29,11 @@
 --    filtres du forum (dernière activité, auteur) ; index en double du voisinage géographique retiré.
 -- 13. Forum (correctif C1) : la ligne du sujet est verrouillée pendant la création d'une réponse ;
 --    une réponse envoyée à l'instant où un modérateur verrouille le sujet est refusée.
--- Rejouable sans danger.
+-- 14. Grille de conformité : le point de la boutique dit le stock réservé à la commande ; les points
+--    du pilotage repassent « à vérifier » dans une base laissée sans plan ni feuille de route. Version
+--    1.6.1 (correctif) inscrite dans socle_versions ; réglage « socle » jamais revu à la baisse.
+-- Rejouable sans danger. Les expressions régulières écrivent le point « [.] », sans antislash : l'éditeur
+-- SQL de Lovable le refuse, et les blocs de supabase/seed/v1_6_1/ reprennent ce texte tel quel.
 
 -- 1. Messagerie privée -----------------------------------------------------------------------------
 -- Messages : seule la colonne read_at reste modifiable. Le retrait au niveau de la table retire aussi
@@ -416,7 +420,7 @@ ALTER TABLE public.contact_messages
 ALTER TABLE public.contact_messages
   ADD CONSTRAINT contact_messages_name_len CHECK (char_length(name) BETWEEN 1 AND 120) NOT VALID,
   ADD CONSTRAINT contact_messages_email_format CHECK (
-    char_length(email) <= 254 AND email ~ '^[^@[:space:]]+@[^@[:space:]]+\.[^@[:space:]]+$') NOT VALID,
+    char_length(email) <= 254 AND email ~ '^[^@[:space:]]+@[^@[:space:]]+[.][^@[:space:]]+$') NOT VALID,
   ADD CONSTRAINT contact_messages_subject_len CHECK (char_length(subject) BETWEEN 1 AND 200) NOT VALID,
   ADD CONSTRAINT contact_messages_message_len CHECK (char_length(message) BETWEEN 1 AND 5000) NOT VALID;
 
@@ -426,7 +430,7 @@ ALTER TABLE public.newsletter_subscribers
   DROP CONSTRAINT IF EXISTS newsletter_subscribers_source_len;
 ALTER TABLE public.newsletter_subscribers
   ADD CONSTRAINT newsletter_subscribers_email_format CHECK (
-    char_length(email) <= 254 AND email ~ '^[^@[:space:]]+@[^@[:space:]]+\.[^@[:space:]]+$') NOT VALID,
+    char_length(email) <= 254 AND email ~ '^[^@[:space:]]+@[^@[:space:]]+[.][^@[:space:]]+$') NOT VALID,
   ADD CONSTRAINT newsletter_subscribers_first_name_len CHECK (
     first_name IS NULL OR char_length(first_name) <= 80) NOT VALID,
   ADD CONSTRAINT newsletter_subscribers_source_len CHECK (char_length(source) BETWEEN 1 AND 40) NOT VALID;
@@ -517,7 +521,7 @@ DECLARE
   _name text := nullif(btrim(coalesce(_first_name, '')), '');
   _from text := public.newsletter_known_source(_source);
 BEGIN
-  IF char_length(_mail) > 254 OR _mail !~ '^[^@[:space:]]+@[^@[:space:]]+\.[^@[:space:]]+$' THEN
+  IF char_length(_mail) > 254 OR _mail !~ '^[^@[:space:]]+@[^@[:space:]]+[.][^@[:space:]]+$' THEN
     RAISE EXCEPTION 'Adresse e-mail invalide' USING ERRCODE = '22023';
   END IF;
   IF char_length(_name) > 80 THEN
@@ -1042,3 +1046,38 @@ DROP TRIGGER IF EXISTS forum_replies_guard_insert ON public.forum_replies;
 CREATE TRIGGER forum_replies_guard_insert BEFORE INSERT ON public.forum_replies
   FOR EACH ROW WHEN (current_user IN ('anon', 'authenticated'))
   EXECUTE FUNCTION public.guard_forum_reply_insert();
+
+-- 14. Grille de conformité et version ----------------------------------------------------------------
+-- 14.1 Grille. Le point V0-K-BOUTIQUE affirmait « stock lu en base au paiement » ; depuis la section 2
+-- le stock est réservé à la commande et rendu si elle expire, le paiement ne le décompte plus. Texte
+-- d'origine exact seulement (même règle qu'en section 10) : un texte retouché par un administrateur reste.
+UPDATE public.template_checks
+SET requirement = 'Prix et livraison lus en base à la commande ; stock réservé à la commande, rendu si elle expire ; fichiers dans un espace privé, liens signés de 5 minutes réservés à l''acheteur ; commande conservée et anonymisée avec le compte.'
+WHERE code = 'V0-K-BOUTIQUE'
+  AND requirement = 'Prix, livraison et stock lus en base au paiement ; fichiers dans un espace privé, liens signés de 5 minutes réservés à l''acheteur ; commande conservée et anonymisée avec le compte.';
+
+-- Les points PIL-1 (feuille de route) et PIL-2 (plan directeur) étaient livrés « conforme » avec le plan
+-- et la feuille de route du socle, que la section 9 retire. Dans une base restée sans aucune ligne, le
+-- cap du projet et ses lots sont à écrire : le point repasse « à vérifier ». Une base qui a ses propres
+-- lignes, ou un point déjà retouché par un administrateur (état ou preuve), n'est pas concernée.
+UPDATE public.template_checks SET status = 'a_verifier'
+WHERE code = 'PIL-1' AND status = 'conforme' AND evidence = ''
+  AND NOT EXISTS (SELECT 1 FROM public.roadmap_items);
+UPDATE public.template_checks SET status = 'a_verifier'
+WHERE code = 'PIL-2' AND status = 'conforme' AND evidence = ''
+  AND NOT EXISTS (SELECT 1 FROM public.masterplan_sections);
+
+-- 14.2 Version 1.6.1 : correctif (numérotation palier / brique / correctif), publiée le 14/10/2026.
+-- Le réglage « socle » n'est jamais revu à la baisse.
+INSERT INTO public.socle_versions (version, niveau, publie_le, resume, detail, migration_reference)
+VALUES ('1.6.1', 'correctif', '2026-10-14',
+  'Correctifs de l''audit du 13/10 : messagerie, boutique, forum, formulaires publics, annuaire, administrateurs, prix, pilotage, compteurs et index.',
+  'Messages et conversations verrouillés ; stock réservé à la commande ; garde-fous du forum à la création et verrou du sujet ; bornes et plafonds des formulaires publics, abonnement discret, régie bornée ; revendication d''annuaire non écrasée et fiche modifiée relue ; adresse confirmée exigée pour les administrateurs nommés d''avance ; prix négatifs refusés ; plan et feuille de route du socle retirés ; compteurs calculés en base ; index des clés étrangères et des tris.',
+  '20261013120000_v1_6_1_correctifs_audit')
+ON CONFLICT (version) DO NOTHING;
+INSERT INTO public.site_settings (key, value)
+VALUES ('socle', jsonb_build_object('version', '1.6.1', 'publie_le', '2026-10-14',
+  'migration_reference', '20261013120000_v1_6_1_correctifs_audit'))
+ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = now()
+WHERE string_to_array(coalesce(public.site_settings.value ->> 'version', '0.0.0'), '.')::int[]
+      < string_to_array('1.6.1', '.')::int[];

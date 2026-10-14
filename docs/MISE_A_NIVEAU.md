@@ -7,11 +7,13 @@ installation.
 ## Ce qu'il faut savoir avant
 
 - **La référence d'une version est une migration du dépôt du socle**, jamais le journal de
-  migrations de la plateforme. Version courante : **1.6.0**, migration
-  `20261007220000_v1_6_0_activites`.
+  migrations de la plateforme. Version courante : **1.6.1**, migration
+  `20261013120000_v1_6_1_correctifs_audit`.
 - **Ordre code / base.** En général la base passe avant le code (le nouveau code lit ce que la base
   vient de recevoir). Exception 1.4.1 : le code d'abord, car la base supprime une colonne que
-  l'ancien code lit. Le `LISEZMOI.md` des blocs de chaque version donne l'ordre.
+  l'ancien code lit. La 1.6.1 suit la règle générale, mais le code doit suivre aussitôt : entre les
+  deux, l'ancien formulaire de la lettre d'information refuse les inscriptions. Le `LISEZMOI.md` des
+  blocs de chaque version donne l'ordre.
 - **Chaque base dit ce qu'elle embarque.** `socle_versions` liste les versions publiées du socle.
   `socle_installation` trace la vie de cette base (vide dans le socle). Le réglage « socle » de
   `site_settings` donne la version en un coup d'œil.

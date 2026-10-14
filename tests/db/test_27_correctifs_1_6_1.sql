@@ -4,7 +4,8 @@ BEGIN;
 -- Socle 1.6.1 : correctifs issus de l'audit du 13/10 (messagerie privée, stock de la boutique, forum,
 -- formulaires ouverts aux visiteurs, revendication d'une fiche d'annuaire, fiche publiée et modifiée,
 -- adresse confirmée exigée pour les administrateurs nommés d'avance, prix négatifs refusés, plan directeur
--- et feuille de route du socle retirés du pilotage, verrou de ligne du sujet à la création d'une réponse).
+-- et feuille de route du socle retirés du pilotage, verrou de ligne du sujet à la création d'une réponse, grille de
+-- conformité et version 1.6.1).
 -- b1 : membre · b2 : autre membre · b3 : tiers · b4 : administrateur (section 3)
 INSERT INTO auth.users (id, email) VALUES
   ('00000000-0000-0000-0000-0000000000b1', 'un@test.fr'),
@@ -1118,6 +1119,63 @@ END $$;
 SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000b2', 'deux@test.fr');
 SELECT pg_temp.expect_sqlstate($$INSERT INTO public.forum_replies (topic_id, author_id, content) VALUES ('00000000-0000-0000-0000-0000000000f8', '00000000-0000-0000-0000-0000000000b2', 'Après rejeu')$$, '42501', 'rejeu : réponse dans un sujet verrouillé');
 RESET ROLE;
+
+-- 14. Grille de conformité et version ----------------------------------------------------------------------------------
+RESET ROLE;
+DO $$ BEGIN
+  IF (SELECT requirement FROM public.template_checks WHERE code = 'V0-K-BOUTIQUE')
+     NOT LIKE 'Prix et livraison lus en base à la commande ; stock réservé à la commande, rendu si elle expire ; %'
+  THEN RAISE EXCEPTION 'point boutique de la grille non réécrit'; END IF;
+  -- Base neuve : la section 9 a retiré le plan et la feuille de route du socle, PIL-1 et PIL-2 repassent à vérifier.
+  IF (SELECT count(*) FROM public.template_checks WHERE code IN ('PIL-1', 'PIL-2') AND status = 'a_verifier') <> 2
+  THEN RAISE EXCEPTION 'points du pilotage toujours conformes sans plan ni feuille de route'; END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.socle_versions WHERE version = '1.6.1' AND niveau = 'correctif'
+                   AND publie_le = '2026-10-14' AND migration_reference = '20261013120000_v1_6_1_correctifs_audit')
+  THEN RAISE EXCEPTION 'version 1.6.1 absente'; END IF;
+  IF (SELECT value FROM public.site_settings WHERE key = 'socle')
+     <> '{"version": "1.6.1", "publie_le": "2026-10-14", "migration_reference": "20261013120000_v1_6_1_correctifs_audit"}'::jsonb
+  THEN RAISE EXCEPTION 'réglage socle'; END IF;
+END $$;
+-- Base d'un clone qui a son propre plan (lignes de l'administrateur laissées par la section 9) : PIL-2 marqué
+-- conforme reste conforme, PIL-1 avec une preuve aussi ; un point boutique retouché par l'administrateur est gardé.
+UPDATE public.template_checks SET status = 'conforme' WHERE code = 'PIL-2';
+UPDATE public.template_checks SET status = 'conforme', evidence = 'Lots suivis dans Pilotage' WHERE code = 'PIL-1';
+UPDATE public.template_checks SET requirement = 'Prix, livraison et stock lus en base au paiement ; et nos fichiers.' WHERE code = 'V0-K-BOUTIQUE';
+SET client_min_messages = warning;
+\i supabase/migrations/20261013120000_v1_6_1_correctifs_audit.sql
+RESET client_min_messages;
+DO $$ BEGIN
+  IF (SELECT count(*) FROM public.template_checks WHERE code IN ('PIL-1', 'PIL-2') AND status = 'conforme') <> 2
+  THEN RAISE EXCEPTION 'points du pilotage d''un clone avec son plan rétrogradés'; END IF;
+  IF (SELECT requirement FROM public.template_checks WHERE code = 'V0-K-BOUTIQUE') <> 'Prix, livraison et stock lus en base au paiement ; et nos fichiers.'
+  THEN RAISE EXCEPTION 'point boutique retouché par l''administrateur modifié'; END IF;
+END $$;
+-- Plan et feuille de route vidés : PIL-2 (sans preuve) repasse à vérifier au rejeu ; PIL-1 (preuve écrite) reste.
+DELETE FROM public.masterplan_sections;
+DELETE FROM public.roadmap_items;
+SET client_min_messages = warning;
+\i supabase/migrations/20261013120000_v1_6_1_correctifs_audit.sql
+RESET client_min_messages;
+DO $$ BEGIN
+  IF (SELECT status FROM public.template_checks WHERE code = 'PIL-2') <> 'a_verifier' THEN RAISE EXCEPTION 'PIL-2 conforme sans plan'; END IF;
+  IF (SELECT status FROM public.template_checks WHERE code = 'PIL-1') <> 'conforme' THEN RAISE EXCEPTION 'PIL-1 avec preuve rétrogradé'; END IF;
+END $$;
+-- Réglage « socle » jamais revu à la baisse, toujours relevé, version jamais dupliquée.
+UPDATE public.site_settings SET value = '{"version": "1.10.0"}' WHERE key = 'socle';
+SET client_min_messages = warning;
+\i supabase/migrations/20261013120000_v1_6_1_correctifs_audit.sql
+RESET client_min_messages;
+DO $$ BEGIN
+  IF (SELECT value ->> 'version' FROM public.site_settings WHERE key = 'socle') <> '1.10.0' THEN RAISE EXCEPTION 'réglage revu à la baisse'; END IF;
+  IF (SELECT count(*) FROM public.socle_versions WHERE version = '1.6.1') <> 1 THEN RAISE EXCEPTION 'doublon de version'; END IF;
+END $$;
+UPDATE public.site_settings SET value = '{"version": "1.6.0"}' WHERE key = 'socle';
+SET client_min_messages = warning;
+\i supabase/migrations/20261013120000_v1_6_1_correctifs_audit.sql
+RESET client_min_messages;
+DO $$ BEGIN
+  IF (SELECT value ->> 'version' FROM public.site_settings WHERE key = 'socle') <> '1.6.1' THEN RAISE EXCEPTION 'réglage non relevé'; END IF;
+END $$;
 
 -- Rejouable (toujours en dernier) ---------------------------------------------------------------------------------------
 \i supabase/migrations/20261013120000_v1_6_1_correctifs_audit.sql
