@@ -973,13 +973,81 @@ SET client_min_messages = warning;
 \i supabase/migrations/20261013120000_v1_6_1_correctifs_audit.sql
 RESET client_min_messages;
 DO $$ BEGIN
-  IF (SELECT count(*) FROM pg_indexes WHERE indexname IN ('forum_replies_topic_idx', 'forum_likes_topic_idx', 'forum_likes_reply_idx', 'lms_enrollments_course_idx')) <> 4
+  IF (SELECT count(*) FROM pg_indexes WHERE indexname IN ('forum_replies_topic_created_idx', 'forum_likes_topic_idx', 'forum_likes_reply_idx', 'lms_enrollments_course_idx')) <> 4
   THEN RAISE EXCEPTION 'rejeu : index des compteurs'; END IF;
   IF (SELECT likes FROM public.forum_topic_counts(ARRAY['00000000-0000-0000-0000-000000000f90'::uuid])) <> 1200
      OR (SELECT learners FROM public.lms_course_learners() WHERE course_id = '00000000-0000-0000-0000-000000000a90') <> 1100
      OR pg_temp.fiches('75') <> 1100
   THEN RAISE EXCEPTION 'rejeu : compteurs changés'; END IF;
 END $$;
+
+-- 12. Index manquants --------------------------------------------------------------------------------------------------
+-- Chaque index attendu existe, sur la bonne table et les bonnes colonnes (définition lue dans pg_indexes) ;
+-- l'index en double du voisinage et la forme (topic_id) seule des réponses n'existent plus ; la contrainte
+-- unique (place_id, neighbor_id) du voisinage reste. Rejeu : rien ne change.
+RESET ROLE;
+CREATE OR REPLACE FUNCTION pg_temp.index_attendu(_nom text, _table text, _colonnes text) RETURNS void LANGUAGE plpgsql AS $$
+DECLARE t text; d text;
+BEGIN
+  SELECT tablename, regexp_replace(indexdef, '^.* USING btree ', '') INTO t, d
+    FROM pg_indexes WHERE schemaname = 'public' AND indexname = _nom;
+  IF t IS NULL THEN RAISE EXCEPTION 'index % absent', _nom; END IF;
+  IF t <> _table THEN RAISE EXCEPTION 'index % sur % au lieu de %', _nom, t, _table; END IF;
+  IF d <> _colonnes THEN RAISE EXCEPTION 'index % : % au lieu de %', _nom, d, _colonnes; END IF;
+END $$;
+CREATE OR REPLACE FUNCTION pg_temp.index_tous() RETURNS void LANGUAGE plpgsql AS $$
+BEGIN
+  -- Forum
+  PERFORM pg_temp.index_attendu('forum_replies_topic_created_idx', 'forum_replies', '(topic_id, created_at)');
+  PERFORM pg_temp.index_attendu('forum_replies_author_idx', 'forum_replies', '(author_id)');
+  PERFORM pg_temp.index_attendu('forum_likes_topic_idx', 'forum_likes', '(topic_id) WHERE (topic_id IS NOT NULL)');
+  PERFORM pg_temp.index_attendu('forum_likes_reply_idx', 'forum_likes', '(reply_id) WHERE (reply_id IS NOT NULL)');
+  PERFORM pg_temp.index_attendu('forum_follows_topic_idx', 'forum_follows', '(topic_id)');
+  PERFORM pg_temp.index_attendu('forum_topics_category_idx', 'forum_topics', '(category_id)');
+  PERFORM pg_temp.index_attendu('forum_topics_last_activity_idx', 'forum_topics', '(last_activity_at DESC)');
+  PERFORM pg_temp.index_attendu('forum_topics_author_idx', 'forum_topics', '(author_id)');
+  -- Blog
+  PERFORM pg_temp.index_attendu('blog_comments_post_created_idx', 'blog_comments', '(post_id, created_at)');
+  -- Formations et paiements
+  PERFORM pg_temp.index_attendu('lms_enrollments_course_idx', 'lms_enrollments', '(course_id)');
+  PERFORM pg_temp.index_attendu('lms_progress_lesson_idx', 'lms_progress', '(lesson_id)');
+  PERFORM pg_temp.index_attendu('payments_course_idx', 'payments', '(course_id) WHERE (course_id IS NOT NULL)');
+  -- Prospection
+  PERFORM pg_temp.index_attendu('crm_actions_prospect_idx', 'crm_actions', '(prospect_id) WHERE (prospect_id IS NOT NULL)');
+  -- Petites annonces
+  PERFORM pg_temp.index_attendu('marketplace_listings_category_idx', 'marketplace_listings', '(category_id) WHERE (category_id IS NOT NULL)');
+  PERFORM pg_temp.index_attendu('marketplace_listings_departement_idx', 'marketplace_listings', '(departement) WHERE (departement IS NOT NULL)');
+  -- Géographie
+  PERFORM pg_temp.index_attendu('geo_adjacency_neighbor_idx', 'geo_adjacency', '(neighbor_id)');
+  -- Retirés
+  IF EXISTS (SELECT 1 FROM pg_indexes WHERE schemaname = 'public' AND indexname IN ('geo_adjacency_place_idx', 'forum_replies_topic_idx'))
+  THEN RAISE EXCEPTION 'index en double toujours présent'; END IF;
+  -- La contrainte unique du voisinage, dont l'index sert aux recherches par place_id, est toujours là.
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint c
+    WHERE c.conrelid = 'public.geo_adjacency'::regclass AND c.contype = 'u'
+      AND (SELECT array_agg(a.attname ORDER BY k.ord) FROM unnest(c.conkey) WITH ORDINALITY k(attnum, ord)
+           JOIN pg_attribute a ON a.attrelid = c.conrelid AND a.attnum = k.attnum) = ARRAY['place_id', 'neighbor_id']::name[])
+  THEN RAISE EXCEPTION 'contrainte unique (place_id, neighbor_id) du voisinage absente'; END IF;
+END $$;
+SELECT pg_temp.index_tous();
+-- Un index partiel sert bien aux recherches par valeur (la condition « = » implique IS NOT NULL) et à la
+-- mise à NULL par la clé étrangère : vérifié sur le plan, parcours séquentiel interdit.
+SET LOCAL enable_seqscan = off;
+DO $$
+DECLARE ligne text; plan text := '';
+BEGIN
+  FOR ligne IN EXECUTE 'EXPLAIN SELECT id FROM public.payments WHERE course_id = ''00000000-0000-0000-0000-000000000a90''' LOOP
+    plan := plan || ligne || ' ';
+  END LOOP;
+  IF plan NOT LIKE '%payments_course_idx%' THEN RAISE EXCEPTION 'plan sans payments_course_idx : %', plan; END IF;
+END $$;
+RESET enable_seqscan;
+-- Rejeu de la migration : mêmes index, rien en double.
+SET client_min_messages = warning;
+\i supabase/migrations/20261013120000_v1_6_1_correctifs_audit.sql
+RESET client_min_messages;
+SELECT pg_temp.index_tous();
 
 -- Rejouable (toujours en dernier) ---------------------------------------------------------------------------------------
 \i supabase/migrations/20261013120000_v1_6_1_correctifs_audit.sql

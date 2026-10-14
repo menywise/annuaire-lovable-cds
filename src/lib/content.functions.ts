@@ -177,25 +177,24 @@ export const getPost = createServerFn({ method: "GET" })
       { contexte: "blog_posts" },
     );
     if (!post) return null;
-    const comments = check(
-      await client
+    // Commentaires et articles voisins ne dépendent que de l'article : en parallèle.
+    const [commentsRes, othersRes] = await Promise.all([
+      client
         .from("blog_comments")
         .select("id, author_name, content, created_at, moderation_note, moderated_at")
         .eq("post_id", post.id)
         .eq("approved", true)
         .order("created_at", { ascending: true }),
-      { contexte: "blog_comments" },
-    );
-    const others = check(
-      await client
+      client
         .from("blog_posts")
         .select("id, slug, title, excerpt, published_at, tags")
         .eq("published", true)
         .neq("id", post.id)
         .order("published_at", { ascending: false })
         .limit(12),
-      { contexte: "blog_posts" },
-    );
+    ]);
+    const comments = check(commentsRes, { contexte: "blog_comments" });
+    const others = check(othersRes, { contexte: "blog_posts" });
     const tags = post.tags ?? [];
     const related = (others ?? [])
       .map((item) => ({

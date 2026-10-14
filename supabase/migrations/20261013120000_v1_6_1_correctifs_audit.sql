@@ -24,6 +24,9 @@
 -- 11. Compteurs calculés en base : réponses et « j'aime » par sujet et par thématique du forum,
 --    inscrits par formation, fiches publiées par département. Le serveur ne charge plus de table
 --    entière ni d'échantillon pour compter.
+-- 12. Index manquants : clés étrangères sans index (réponses, commentaires, « j'aime », suivis,
+--    thématiques, inscriptions, progression, actions CRM, annonces, paiements, voisinages), tris et
+--    filtres du forum (dernière activité, auteur) ; index en double du voisinage géographique retiré.
 -- Rejouable sans danger.
 
 -- 1. Messagerie privée -----------------------------------------------------------------------------
@@ -851,8 +854,8 @@ WHERE code LIKE 'MOD-%'
 -- 11.1 Forum. Sujets, réponses et « j'aime » sont lisibles de tous (règles « … visibles ») : les
 -- fonctions s'exécutent avec les droits de l'appelant, les règles d'accès des tables s'appliquent
 -- donc telles quelles. Index sur les clés de regroupement : les compteurs se calculent sans parcourir
--- les tables entières.
-CREATE INDEX IF NOT EXISTS forum_replies_topic_idx ON public.forum_replies (topic_id);
+-- les tables entières. Celui des réponses par sujet, forum_replies (topic_id, created_at), est créé
+-- à la section 12 (il sert aussi au tri des réponses d'un sujet).
 CREATE INDEX IF NOT EXISTS forum_likes_topic_idx ON public.forum_likes (topic_id) WHERE topic_id IS NOT NULL;
 CREATE INDEX IF NOT EXISTS forum_likes_reply_idx ON public.forum_likes (reply_id) WHERE reply_id IS NOT NULL;
 
@@ -950,3 +953,49 @@ LANGUAGE sql STABLE SET search_path = public AS $$
 $$;
 REVOKE ALL ON FUNCTION public.directory_departement_counts() FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.directory_departement_counts() TO anon, authenticated, service_role;
+
+-- 12. Index manquants -------------------------------------------------------------------------------
+-- Constat : plusieurs clés étrangères n'ont pas d'index. PostgreSQL n'en crée pas pour une clé
+-- étrangère : chaque suppression ou mise à jour de la ligne visée (ON DELETE CASCADE / SET NULL)
+-- parcourt la table entière, et chaque lecture « les lignes de ce parent » (réponses d'un sujet,
+-- commentaires d'un article, progression d'une leçon…) fait de même. Les tris de la vue d'ensemble
+-- du forum (dernière activité) et les filtres par auteur (page d'un membre, tableau de bord) n'ont
+-- pas d'index non plus. Enfin geo_adjacency_place_idx (place_id) doublait la contrainte unique
+-- (place_id, neighbor_id), dont l'index sert déjà aux recherches par place_id.
+-- Tous les index sont créés IF NOT EXISTS : rejeu sans effet. Aucun résultat de requête ne change.
+
+-- 12.1 Forum. Réponses d'un sujet dans l'ordre (détail d'un sujet, dernières réponses de la vue
+-- d'ensemble, compteurs de la section 11) ; « j'aime » et suivis d'un sujet (cascade à la suppression
+-- d'un sujet ; forum_follows n'a que l'unicité (user_id, topic_id), inutilisable pour topic_id seul) ;
+-- sujets d'une thématique (page d'une thématique, SET NULL à la suppression d'une thématique) ;
+-- tri par dernière activité (vue d'ensemble, plan du site, recherche) ; sujets et réponses d'un auteur.
+-- Les index forum_likes_topic_idx et forum_likes_reply_idx sont créés à la section 11.1.
+DROP INDEX IF EXISTS public.forum_replies_topic_idx; -- forme (topic_id) seule d'une version de travail
+CREATE INDEX IF NOT EXISTS forum_replies_topic_created_idx ON public.forum_replies (topic_id, created_at);
+CREATE INDEX IF NOT EXISTS forum_replies_author_idx ON public.forum_replies (author_id);
+CREATE INDEX IF NOT EXISTS forum_follows_topic_idx ON public.forum_follows (topic_id);
+CREATE INDEX IF NOT EXISTS forum_topics_category_idx ON public.forum_topics (category_id);
+CREATE INDEX IF NOT EXISTS forum_topics_last_activity_idx ON public.forum_topics (last_activity_at DESC);
+CREATE INDEX IF NOT EXISTS forum_topics_author_idx ON public.forum_topics (author_id);
+
+-- 12.2 Blog : commentaires d'un article dans l'ordre (page d'un article, cascade à la suppression).
+CREATE INDEX IF NOT EXISTS blog_comments_post_created_idx ON public.blog_comments (post_id, created_at);
+
+-- 12.3 Formations : progression par leçon (cascade à la suppression d'une leçon ; l'unicité
+-- (user_id, lesson_id) ne sert qu'aux recherches par membre) ; paiements d'une formation (SET NULL à
+-- la suppression). L'index lms_enrollments_course_idx est créé à la section 11.2.
+CREATE INDEX IF NOT EXISTS lms_progress_lesson_idx ON public.lms_progress (lesson_id);
+CREATE INDEX IF NOT EXISTS payments_course_idx ON public.payments (course_id) WHERE course_id IS NOT NULL;
+
+-- 12.4 Prospection : actions d'un prospect (fiche d'un prospect, SET NULL à sa suppression).
+CREATE INDEX IF NOT EXISTS crm_actions_prospect_idx ON public.crm_actions (prospect_id) WHERE prospect_id IS NOT NULL;
+
+-- 12.5 Petites annonces : annonces d'une catégorie et d'un département (pages de catégorie et de
+-- département, SET NULL à la suppression de la catégorie).
+CREATE INDEX IF NOT EXISTS marketplace_listings_category_idx ON public.marketplace_listings (category_id) WHERE category_id IS NOT NULL;
+CREATE INDEX IF NOT EXISTS marketplace_listings_departement_idx ON public.marketplace_listings (departement) WHERE departement IS NOT NULL;
+
+-- 12.6 Géographie : voisinages par commune voisine (cascade à la suppression d'une commune, qui
+-- doit retirer les lignes où elle est le voisin) ; index en double par commune retiré.
+CREATE INDEX IF NOT EXISTS geo_adjacency_neighbor_idx ON public.geo_adjacency (neighbor_id);
+DROP INDEX IF EXISTS public.geo_adjacency_place_idx;

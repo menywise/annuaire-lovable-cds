@@ -16,10 +16,14 @@ import { requireFeature, isFeatureOn } from "@/config/features";
 
 export const Route = createFileRoute("/forum/")({
   beforeLoad: () => requireFeature("forum"),
-  loader: async () => ({
-    overview: await getForumOverview({ data: {} }),
-    members: await getTopMembers(),
-  }),
+  loader: async () => {
+    // Vue d'ensemble et membres actifs ne dépendent pas l'une de l'autre : en parallèle.
+    const [overview, members] = await Promise.all([
+      getForumOverview({ data: {} }),
+      getTopMembers(),
+    ]);
+    return { overview, members };
+  },
   head: () =>
     seo({
       title: "Forum de la communauté",

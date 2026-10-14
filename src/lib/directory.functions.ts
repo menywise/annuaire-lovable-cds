@@ -128,7 +128,17 @@ export const getDirectoryListing = createServerFn({ method: "GET" })
     );
     if (!listing) return null;
 
-    const [reviewsRes, categoryRes, departementRes] = await Promise.all([
+    // Fiches proches : même catégorie quand la fiche en a une. Ne dépend que de la fiche, comme les
+    // avis, la catégorie et le département : les quatre requêtes partent ensemble.
+    let nearbyQuery = client
+      .from("directory_listings")
+      .select("id, name, slug, excerpt, city, plan, verified")
+      .eq("status", "published")
+      .neq("id", listing.id)
+      .limit(6);
+    if (listing.category_id) nearbyQuery = nearbyQuery.eq("category_id", listing.category_id);
+
+    const [reviewsRes, categoryRes, departementRes, nearbyRes] = await Promise.all([
       client
         .from("directory_reviews")
         .select("id, author_name, rating, content, created_at, moderation_note, moderated_at")
@@ -149,23 +159,15 @@ export const getDirectoryListing = createServerFn({ method: "GET" })
             .eq("code", listing.departement)
             .maybeSingle()
         : Promise.resolve({ data: null, error: null }),
+      nearbyQuery,
     ]);
-
-    let nearbyQuery = client
-      .from("directory_listings")
-      .select("id, name, slug, excerpt, city, plan, verified")
-      .eq("status", "published")
-      .neq("id", listing.id)
-      .limit(6);
-    if (listing.category_id) nearbyQuery = nearbyQuery.eq("category_id", listing.category_id);
-    const nearby = check(await nearbyQuery);
 
     return {
       listing,
       reviews: check(reviewsRes) ?? [],
       category: check(categoryRes) ?? null,
       departement: check(departementRes) ?? null,
-      nearby: nearby ?? [],
+      nearby: check(nearbyRes) ?? [],
     };
   });
 
