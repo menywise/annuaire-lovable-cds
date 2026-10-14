@@ -11,14 +11,9 @@ export default tseslint.config(
       "dist",
       ".output",
       ".vinxi",
-      // Fichiers générés et fichiers propres à chaque installation (reformatés par Lovable) :
-      // même liste que .prettierignore.
+      // Fichiers générés et dossier généré ou reformaté par Lovable : même liste que .prettierignore.
       "src/routeTree.gen.ts",
-      "src/integrations/supabase/types.ts",
-      "src/integrations/supabase/auth-attacher.ts",
-      "src/integrations/supabase/auth-middleware.ts",
-      "src/integrations/supabase/client.server.ts",
-      "src/integrations/supabase/client.ts",
+      "src/integrations/supabase/",
     ],
   },
   {
