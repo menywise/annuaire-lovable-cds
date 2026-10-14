@@ -5,4 +5,16 @@ dist
 pnpm-lock.yaml
 package-lock.json
 bun.lock
-routeTree.gen.ts
+
+# Fichiers générés (régénérés au build ou depuis la base) : jamais reformatés à la main.
+src/routeTree.gen.ts
+src/integrations/supabase/types.ts
+
+# Fichiers propres à chaque installation, reformatés par Lovable (voir docs/MISE_A_NIVEAU.md).
+src/integrations/supabase/auth-attacher.ts
+src/integrations/supabase/auth-middleware.ts
+src/integrations/supabase/client.server.ts
+src/integrations/supabase/client.ts
+
+# SQL (migrations, blocs de l'éditeur, tests de base) : forme contrôlée par tests/db, jamais reformatée.
+*.sql
