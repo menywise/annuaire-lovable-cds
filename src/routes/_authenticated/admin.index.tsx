@@ -338,9 +338,14 @@ function AdminPage() {
             </div>
           </section>
 
-          <Button type="submit" disabled={saving} title="Enregistrer les paramètres du site">
-            {saving ? "Enregistrement…" : "Enregistrer"}
-          </Button>
+          <div className="space-y-2">
+            <Button type="submit" disabled={saving} title="Enregistrer les paramètres du site">
+              {saving ? "Enregistrement…" : "Enregistrer"}
+            </Button>
+            <p className="text-xs text-muted-foreground">
+              Vous voyez vos changements tout de suite ; les visiteurs les voient sous une minute.
+            </p>
+          </div>
         </form>
       )}
     </AdminShell>

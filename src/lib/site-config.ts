@@ -9,10 +9,13 @@ import { normaliserCouleur } from "./couleurs.ts";
  * Cycle de vie :
  * 1. Serveur : la route racine lit la base dans `beforeLoad` (avant toute autre
  *    route) et appelle `setSiteConfig`. Les `head()`, `seo()`, `isFeatureOn()`
- *    et le rendu HTML utilisent donc les valeurs saisies en admin.
+ *    et le rendu HTML utilisent donc les valeurs saisies en admin. La lecture
+ *    passe par un cache d'une minute par serveur (`site-config.cache.ts`).
  * 2. La route racine écrit la configuration dans la page (`window.__CDS_SITE__`),
  *    exécutée avant le code du navigateur : l'hydratation voit les mêmes valeurs.
- * 3. Après un enregistrement en admin, `setSiteConfig` puis rechargement.
+ * 3. Après un enregistrement en admin, `setSiteConfig` : la session de
+ *    l'administrateur voit le changement tout de suite, les autres visiteurs
+ *    sous une minute.
  *
  * Toutes les requêtes d'un même serveur lisent la même ligne : la valeur partagée
  * entre requêtes simultanées est identique, sauf pendant une modification en admin.
