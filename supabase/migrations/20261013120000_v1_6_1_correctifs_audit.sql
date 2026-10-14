@@ -21,6 +21,9 @@
 --    contenu exact. Une ligne écrite ou modifiée par un administrateur reste.
 -- 10. Grille de conformité : les points « Module fini » ne renvoient plus à un document retiré du dépôt
 --    (texte d'origine exact seulement ; un texte retouché par un administrateur reste).
+-- 11. Compteurs calculés en base : réponses et « j'aime » par sujet et par thématique du forum,
+--    inscrits par formation, fiches publiées par département. Le serveur ne charge plus de table
+--    entière ni d'échantillon pour compter.
 -- Rejouable sans danger.
 
 -- 1. Messagerie privée -----------------------------------------------------------------------------
@@ -832,3 +835,118 @@ UPDATE public.template_checks
 SET requirement = 'Les 8 critères d''un module fini : interrupteur, aucune trace éteint, accès testés, administration complète, états de page, SEO, test automatique, ligne cochée.'
 WHERE code LIKE 'MOD-%'
   AND requirement = 'Les 8 critères de V0.md §4 : interrupteur, aucune trace éteint, accès testés, administration complète, états de page, SEO, test automatique, ligne cochée.';
+
+-- 11. Compteurs calculés en base ----------------------------------------------------------------------
+-- Avant : pour afficher les compteurs, le serveur chargeait la table forum_likes entière et un
+-- échantillon de 500 réponses (vue d'ensemble du forum, détail d'un sujet : src/lib/community.functions.ts),
+-- la table lms_enrollments entière (catalogue des formations : src/lib/lms.functions.ts) et toutes les
+-- fiches publiées (liste des départements : src/lib/directory.functions.ts), puis comptait dans le
+-- serveur. Au-delà du plafond de lignes de l'interface de base (1000 par défaut) ou de l'échantillon,
+-- les chiffres affichés étaient faux. La table lms_enrollments n'est d'ailleurs pas lisible par le
+-- visiteur : le catalogue public ne pouvait pas compter les inscrits.
+-- Même modèle que forum_top_members : la base compte et renvoie des compteurs groupés. Chaque fonction
+-- renvoie une ligne par groupe, jamais une ligne par enregistrement, et ne renvoie rien quand son
+-- module est éteint (comme la recherche). Exécution accordée aux mêmes rôles que les lectures remplacées.
+
+-- 11.1 Forum. Sujets, réponses et « j'aime » sont lisibles de tous (règles « … visibles ») : les
+-- fonctions s'exécutent avec les droits de l'appelant, les règles d'accès des tables s'appliquent
+-- donc telles quelles. Index sur les clés de regroupement : les compteurs se calculent sans parcourir
+-- les tables entières.
+CREATE INDEX IF NOT EXISTS forum_replies_topic_idx ON public.forum_replies (topic_id);
+CREATE INDEX IF NOT EXISTS forum_likes_topic_idx ON public.forum_likes (topic_id) WHERE topic_id IS NOT NULL;
+CREATE INDEX IF NOT EXISTS forum_likes_reply_idx ON public.forum_likes (reply_id) WHERE reply_id IS NOT NULL;
+
+-- Par thématique : nombre de sujets, de réponses et de « j'aime » (sur les sujets et leurs réponses).
+-- Une ligne par thématique ayant au moins un sujet ; category_id nul pour les sujets sans thématique.
+-- Les totaux du forum sont la somme des lignes.
+CREATE OR REPLACE FUNCTION public.forum_category_counts()
+RETURNS TABLE (category_id uuid, topics bigint, replies bigint, likes bigint)
+LANGUAGE sql STABLE SET search_path = public AS $$
+  WITH r AS (
+    SELECT fr.topic_id, count(*) AS n FROM public.forum_replies fr GROUP BY fr.topic_id
+  ), l AS (
+    SELECT coalesce(fl.topic_id, fr.topic_id) AS topic_id, count(*) AS n
+    FROM public.forum_likes fl
+    LEFT JOIN public.forum_replies fr ON fr.id = fl.reply_id
+    GROUP BY coalesce(fl.topic_id, fr.topic_id)
+  )
+  SELECT t.category_id,
+         count(*) AS topics,
+         coalesce(sum(r.n), 0)::bigint AS replies,
+         coalesce(sum(l.n), 0)::bigint AS likes
+  FROM public.forum_topics t
+  LEFT JOIN r ON r.topic_id = t.id
+  LEFT JOIN l ON l.topic_id = t.id
+  WHERE public.module_enabled('forum')
+  GROUP BY t.category_id
+$$;
+REVOKE ALL ON FUNCTION public.forum_category_counts() FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.forum_category_counts() TO anon, authenticated, service_role;
+
+-- Par sujet : nombre de réponses et de « j'aime » portés par le sujet lui-même (pas ceux de ses
+-- réponses), pour les sujets demandés (une page : 500 au plus). Un sujet inconnu n'a pas de ligne.
+CREATE OR REPLACE FUNCTION public.forum_topic_counts(_topic_ids uuid[])
+RETURNS TABLE (topic_id uuid, replies bigint, likes bigint)
+LANGUAGE plpgsql STABLE SET search_path = public AS $$
+BEGIN
+  IF _topic_ids IS NULL OR cardinality(_topic_ids) = 0 THEN
+    RETURN;
+  END IF;
+  IF cardinality(_topic_ids) > 500 THEN
+    RAISE EXCEPTION 'Cinq cents sujets au plus par appel' USING ERRCODE = '22023';
+  END IF;
+  RETURN QUERY
+    SELECT t.id,
+           (SELECT count(*) FROM public.forum_replies fr WHERE fr.topic_id = t.id),
+           (SELECT count(*) FROM public.forum_likes fl WHERE fl.topic_id = t.id)
+    FROM public.forum_topics t
+    WHERE t.id = ANY (_topic_ids) AND public.module_enabled('forum');
+END;
+$$;
+REVOKE ALL ON FUNCTION public.forum_topic_counts(uuid[]) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.forum_topic_counts(uuid[]) TO anon, authenticated, service_role;
+
+-- Par réponse d'un sujet : nombre de « j'aime ». Une ligne par réponse aimée au moins une fois.
+CREATE OR REPLACE FUNCTION public.forum_reply_like_counts(_topic_id uuid)
+RETURNS TABLE (reply_id uuid, likes bigint)
+LANGUAGE sql STABLE SET search_path = public AS $$
+  SELECT fl.reply_id, count(*) AS likes
+  FROM public.forum_likes fl
+  JOIN public.forum_replies fr ON fr.id = fl.reply_id
+  WHERE fr.topic_id = _topic_id AND public.module_enabled('forum')
+  GROUP BY fl.reply_id
+$$;
+REVOKE ALL ON FUNCTION public.forum_reply_like_counts(uuid) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.forum_reply_like_counts(uuid) TO anon, authenticated, service_role;
+
+-- 11.2 Formations : inscrits par formation publiée. Les inscriptions ne sont lisibles que par
+-- l'inscrit et l'administrateur (lms_enrollments_read) : la fonction compte avec les droits du
+-- propriétaire et ne renvoie que des nombres, pour les formations publiées, module allumé. Aucune
+-- formation non publiée, aucun identifiant d'inscrit. Une formation publiée sans inscrit a une ligne à 0.
+CREATE INDEX IF NOT EXISTS lms_enrollments_course_idx ON public.lms_enrollments (course_id);
+
+CREATE OR REPLACE FUNCTION public.lms_course_learners()
+RETURNS TABLE (course_id uuid, learners bigint)
+LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS $$
+  SELECT c.id, count(e.id) AS learners
+  FROM public.lms_courses c
+  LEFT JOIN public.lms_enrollments e ON e.course_id = c.id
+  WHERE c.published AND public.module_enabled('lms')
+  GROUP BY c.id
+$$;
+REVOKE ALL ON FUNCTION public.lms_course_learners() FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.lms_course_learners() TO anon, authenticated, service_role;
+
+-- 11.3 Annuaire : fiches publiées par département. Droits de l'appelant (le visiteur ne lit que les
+-- fiches publiées) et filtre explicite sur l'état : un membre ne compte pas ses propres brouillons.
+-- Une ligne par département ayant au moins une fiche publiée. Index (status, departement) existants.
+CREATE OR REPLACE FUNCTION public.directory_departement_counts()
+RETURNS TABLE (departement text, listings bigint)
+LANGUAGE sql STABLE SET search_path = public AS $$
+  SELECT d.departement, count(*) AS listings
+  FROM public.directory_listings d
+  WHERE d.status = 'published' AND d.departement IS NOT NULL AND public.module_enabled('directory')
+  GROUP BY d.departement
+$$;
+REVOKE ALL ON FUNCTION public.directory_departement_counts() FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.directory_departement_counts() TO anon, authenticated, service_role;

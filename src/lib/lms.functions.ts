@@ -2,10 +2,13 @@ import { createServerFn } from "@tanstack/react-start";
 import { publicClient } from "@/lib/supabase-public";
 import { check } from "@/lib/check";
 
-/** Catalogue des formations publiées. */
+/**
+ * Catalogue des formations publiées. Le nombre d'inscrits par formation est compté par la base
+ * (lms_course_learners) : les inscriptions elles-mêmes ne sont pas lisibles par le visiteur.
+ */
 export const listCourses = createServerFn({ method: "GET" }).handler(async () => {
   const client = publicClient();
-  const [coursesRes, enrollmentsRes] = await Promise.all([
+  const [coursesRes, learnersRes] = await Promise.all([
     client
       .from("lms_courses")
       .select(
@@ -13,14 +16,12 @@ export const listCourses = createServerFn({ method: "GET" }).handler(async () =>
       )
       .eq("published", true)
       .order("position", { ascending: true }),
-    client.from("lms_enrollments").select("course_id"),
+    client.rpc("lms_course_learners"),
   ]);
   const courses = check(coursesRes, { contexte: "lms_courses" });
-  const enrollments = check(enrollmentsRes, { contexte: "lms_enrollments" });
+  const learners = check(learnersRes, { contexte: "lms_course_learners" });
   const counts = new Map<string, number>();
-  for (const row of enrollments ?? []) {
-    counts.set(row.course_id, (counts.get(row.course_id) ?? 0) + 1);
-  }
+  for (const row of learners ?? []) counts.set(row.course_id, Number(row.learners));
   return (courses ?? []).map((course) => ({ ...course, learners: counts.get(course.id) ?? 0 }));
 });
 

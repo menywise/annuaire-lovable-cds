@@ -835,6 +835,152 @@ DO $$ BEGIN
 END $$;
 DELETE FROM public.template_checks WHERE code IN ('MOD-essai_origine', 'MOD-essai_retouche');
 
+-- 11. Compteurs calculés en base ---------------------------------------------------------------------------------------
+-- Plus de lignes que le plafond de l'interface (1000) et que l'échantillon d'avant (500 réponses) :
+-- les compteurs restent justes. Un visiteur ne compte pas ce qu'il ne peut pas lire. Module éteint : rien.
+RESET ROLE;
+UPDATE public.site_settings SET value = value || '{"forum": true, "lms": true, "directory": true}' WHERE key = 'modules';
+
+-- 11.1 Forum : un sujet à 1 200 réponses et 1 200 « j'aime », deux réponses aimées (3 et 2 fois).
+INSERT INTO public.forum_categories (id, slug, name) VALUES ('00000000-0000-0000-0000-000000000c90', 'compteurs-161', 'Compteurs');
+INSERT INTO public.forum_topics (id, author_id, author_name, title, content, category_id) VALUES
+  ('00000000-0000-0000-0000-000000000f90', '00000000-0000-0000-0000-0000000000b1', 'Un', 'Sujet très commenté', 'Texte', '00000000-0000-0000-0000-000000000c90'),
+  ('00000000-0000-0000-0000-000000000f91', '00000000-0000-0000-0000-0000000000b2', 'Deux', 'Sujet sans réponse', 'Texte', '00000000-0000-0000-0000-000000000c90');
+INSERT INTO public.forum_replies (topic_id, author_id, author_name, content)
+  SELECT '00000000-0000-0000-0000-000000000f90', gen_random_uuid(), 'Robot', 'Réponse ' || g FROM generate_series(1, 1200) AS g;
+INSERT INTO public.forum_replies (id, topic_id, author_id, author_name, content) VALUES
+  ('00000000-0000-0000-0000-000000000e90', '00000000-0000-0000-0000-000000000f90', '00000000-0000-0000-0000-0000000000b2', 'Deux', 'Réponse aimée trois fois'),
+  ('00000000-0000-0000-0000-000000000e91', '00000000-0000-0000-0000-000000000f90', '00000000-0000-0000-0000-0000000000b3', 'Tiers', 'Réponse aimée deux fois');
+INSERT INTO public.forum_likes (user_id, topic_id)
+  SELECT gen_random_uuid(), '00000000-0000-0000-0000-000000000f90' FROM generate_series(1, 1200) AS g;
+INSERT INTO public.forum_likes (user_id, reply_id)
+  SELECT gen_random_uuid(), '00000000-0000-0000-0000-000000000e90' FROM generate_series(1, 3) AS g;
+INSERT INTO public.forum_likes (user_id, reply_id)
+  SELECT gen_random_uuid(), '00000000-0000-0000-0000-000000000e91' FROM generate_series(1, 2) AS g;
+
+SELECT pg_temp.as_anon();
+DO $$
+DECLARE _r record;
+BEGIN
+  SELECT * INTO _r FROM public.forum_topic_counts(ARRAY['00000000-0000-0000-0000-000000000f90'::uuid, '00000000-0000-0000-0000-000000000f91'::uuid, '00000000-0000-0000-0000-000000000000'::uuid])
+    WHERE topic_id = '00000000-0000-0000-0000-000000000f90';
+  IF _r.replies <> 1202 OR _r.likes <> 1200 THEN RAISE EXCEPTION 'compteurs du sujet : % réponses, % j''aime', _r.replies, _r.likes; END IF;
+  SELECT * INTO _r FROM public.forum_topic_counts(ARRAY['00000000-0000-0000-0000-000000000f90'::uuid, '00000000-0000-0000-0000-000000000f91'::uuid, '00000000-0000-0000-0000-000000000000'::uuid])
+    WHERE topic_id = '00000000-0000-0000-0000-000000000f91';
+  IF _r.replies <> 0 OR _r.likes <> 0 THEN RAISE EXCEPTION 'sujet sans réponse : % réponses, % j''aime', _r.replies, _r.likes; END IF;
+  IF (SELECT count(*) FROM public.forum_topic_counts(ARRAY['00000000-0000-0000-0000-000000000f90'::uuid, '00000000-0000-0000-0000-000000000f91'::uuid, '00000000-0000-0000-0000-000000000000'::uuid])) <> 2
+  THEN RAISE EXCEPTION 'un sujet inconnu a une ligne'; END IF;
+  IF (SELECT count(*) FROM public.forum_topic_counts(NULL)) <> 0 OR (SELECT count(*) FROM public.forum_topic_counts('{}'::uuid[])) <> 0
+  THEN RAISE EXCEPTION 'appel sans sujet'; END IF;
+  -- Par thématique : 2 sujets, 1 202 réponses, 1 205 j'aime (sujet et réponses). Les totaux sont la somme des lignes.
+  SELECT * INTO _r FROM public.forum_category_counts() WHERE category_id = '00000000-0000-0000-0000-000000000c90';
+  IF _r.topics <> 2 OR _r.replies <> 1202 OR _r.likes <> 1205
+  THEN RAISE EXCEPTION 'compteurs de la thématique : % sujets, % réponses, % j''aime', _r.topics, _r.replies, _r.likes; END IF;
+  IF (SELECT sum(topics) FROM public.forum_category_counts()) <> (SELECT count(*) FROM public.forum_topics)
+     OR (SELECT sum(replies) FROM public.forum_category_counts()) <> (SELECT count(*) FROM public.forum_replies)
+     OR (SELECT sum(likes) FROM public.forum_category_counts()) <> (SELECT count(*) FROM public.forum_likes)
+  THEN RAISE EXCEPTION 'totaux du forum différents des tables'; END IF;
+  -- Par réponse : seules les réponses aimées ont une ligne.
+  IF (SELECT count(*) FROM public.forum_reply_like_counts('00000000-0000-0000-0000-000000000f90')) <> 2
+     OR (SELECT likes FROM public.forum_reply_like_counts('00000000-0000-0000-0000-000000000f90') WHERE reply_id = '00000000-0000-0000-0000-000000000e90') <> 3
+     OR (SELECT likes FROM public.forum_reply_like_counts('00000000-0000-0000-0000-000000000f90') WHERE reply_id = '00000000-0000-0000-0000-000000000e91') <> 2
+  THEN RAISE EXCEPTION 'j''aime par réponse'; END IF;
+  IF (SELECT count(*) FROM public.forum_reply_like_counts('00000000-0000-0000-0000-000000000f91')) <> 0
+  THEN RAISE EXCEPTION 'j''aime d''un sujet sans réponse'; END IF;
+END $$;
+SELECT pg_temp.expect_sqlstate($$SELECT * FROM public.forum_topic_counts((SELECT array_agg(gen_random_uuid()) FROM generate_series(1, 501)))$$, '22023', 'plus de 500 sujets par appel');
+RESET ROLE;
+
+-- 11.2 Formations : 1 100 inscrits à une formation publiée, 5 à une formation non publiée, 0 à une troisième.
+INSERT INTO public.lms_courses (id, title, slug, published, price_cents) VALUES
+  ('00000000-0000-0000-0000-000000000a90', 'Suivie', 'suivie-161', true, 0),
+  ('00000000-0000-0000-0000-000000000a91', 'Cachée', 'cachee-161', false, 0),
+  ('00000000-0000-0000-0000-000000000a92', 'Déserte', 'deserte-161', true, 0);
+INSERT INTO public.lms_enrollments (user_id, course_id)
+  SELECT gen_random_uuid(), '00000000-0000-0000-0000-000000000a90' FROM generate_series(1, 1099) AS g;
+INSERT INTO public.lms_enrollments (user_id, course_id) VALUES ('00000000-0000-0000-0000-0000000000b1', '00000000-0000-0000-0000-000000000a90');
+INSERT INTO public.lms_enrollments (user_id, course_id)
+  SELECT gen_random_uuid(), '00000000-0000-0000-0000-000000000a91' FROM generate_series(1, 5) AS g;
+
+-- Le visiteur ne lit pas les inscriptions ; il obtient les nombres des formations publiées, et rien d'autre.
+SELECT pg_temp.as_anon();
+SELECT pg_temp.expect_error($$SELECT count(*) FROM public.lms_enrollments$$, 'visiteur lit les inscriptions');
+DO $$ BEGIN
+  IF (SELECT learners FROM public.lms_course_learners() WHERE course_id = '00000000-0000-0000-0000-000000000a90') <> 1100
+  THEN RAISE EXCEPTION 'inscrits de la formation publiée'; END IF;
+  IF (SELECT learners FROM public.lms_course_learners() WHERE course_id = '00000000-0000-0000-0000-000000000a92') <> 0
+  THEN RAISE EXCEPTION 'formation publiée sans inscrit : ligne à 0 attendue'; END IF;
+  IF EXISTS (SELECT 1 FROM public.lms_course_learners() WHERE course_id = '00000000-0000-0000-0000-000000000a91')
+  THEN RAISE EXCEPTION 'formation non publiée comptée'; END IF;
+END $$;
+-- Le membre inscrit lit sa seule inscription, et les mêmes nombres.
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000b1', 'un@test.fr');
+DO $$ BEGIN
+  IF (SELECT count(*) FROM public.lms_enrollments) <> 1 THEN RAISE EXCEPTION 'membre lit d''autres inscriptions'; END IF;
+  IF (SELECT learners FROM public.lms_course_learners() WHERE course_id = '00000000-0000-0000-0000-000000000a90') <> 1100
+  THEN RAISE EXCEPTION 'inscrits vus par un membre'; END IF;
+END $$;
+RESET ROLE;
+
+-- 11.3 Annuaire : 1 100 fiches publiées dans le 75, 7 brouillons de b1 dans le 75, 3 publiées dans le 13,
+-- 2 publiées sans département.
+INSERT INTO public.geo_departements (code, nom, region, slug) VALUES ('75', 'Paris', '', 'paris'), ('13', 'Bouches-du-Rhône', '', 'bouches-du-rhone')
+  ON CONFLICT (code) DO NOTHING;
+INSERT INTO public.directory_listings (name, slug, status, departement)
+  SELECT 'Fiche ' || g, 'fiche-161-' || g, 'published', '75' FROM generate_series(1, 1100) AS g;
+INSERT INTO public.directory_listings (name, slug, status, departement, created_by)
+  SELECT 'Brouillon ' || g, 'brouillon-161-' || g, 'draft', '75', '00000000-0000-0000-0000-0000000000b1' FROM generate_series(1, 7) AS g;
+INSERT INTO public.directory_listings (name, slug, status, departement)
+  SELECT 'Fiche sud ' || g, 'fiche-sud-161-' || g, 'published', '13' FROM generate_series(1, 3) AS g;
+INSERT INTO public.directory_listings (name, slug, status)
+  SELECT 'Fiche sans lieu ' || g, 'fiche-sans-lieu-161-' || g, 'published' FROM generate_series(1, 2) AS g;
+
+CREATE OR REPLACE FUNCTION pg_temp.fiches(_dep text) RETURNS bigint LANGUAGE sql AS $$
+  SELECT coalesce((SELECT listings FROM public.directory_departement_counts() WHERE departement = _dep), 0)
+$$;
+SELECT pg_temp.as_anon();
+DO $$ BEGIN
+  IF pg_temp.fiches('75') <> 1100 THEN RAISE EXCEPTION 'fiches du 75 (visiteur) : %', pg_temp.fiches('75'); END IF;
+  IF pg_temp.fiches('13') <> 3 THEN RAISE EXCEPTION 'fiches du 13 (visiteur) : %', pg_temp.fiches('13'); END IF;
+  IF EXISTS (SELECT 1 FROM public.directory_departement_counts() WHERE departement IS NULL)
+  THEN RAISE EXCEPTION 'fiches sans département comptées'; END IF;
+END $$;
+-- Le membre voit ses brouillons mais ne les compte pas.
+SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000b1', 'un@test.fr');
+DO $$ BEGIN
+  IF (SELECT count(*) FROM public.directory_listings WHERE status = 'draft' AND departement = '75') <> 7
+  THEN RAISE EXCEPTION 'le membre ne voit pas ses brouillons'; END IF;
+  IF pg_temp.fiches('75') <> 1100 THEN RAISE EXCEPTION 'fiches du 75 (membre) : %', pg_temp.fiches('75'); END IF;
+END $$;
+RESET ROLE;
+
+-- 11.4 Module éteint : aucune ligne, pour le visiteur comme pour le membre.
+UPDATE public.site_settings SET value = value || '{"forum": false, "lms": false, "directory": false}' WHERE key = 'modules';
+SELECT pg_temp.as_anon();
+DO $$ BEGIN
+  IF (SELECT count(*) FROM public.forum_category_counts()) <> 0
+     OR (SELECT count(*) FROM public.forum_topic_counts(ARRAY['00000000-0000-0000-0000-000000000f90'::uuid])) <> 0
+     OR (SELECT count(*) FROM public.forum_reply_like_counts('00000000-0000-0000-0000-000000000f90')) <> 0
+  THEN RAISE EXCEPTION 'forum éteint : compteurs renvoyés'; END IF;
+  IF (SELECT count(*) FROM public.lms_course_learners()) <> 0 THEN RAISE EXCEPTION 'formations éteintes : compteurs renvoyés'; END IF;
+  IF (SELECT count(*) FROM public.directory_departement_counts()) <> 0 THEN RAISE EXCEPTION 'annuaire éteint : compteurs renvoyés'; END IF;
+END $$;
+RESET ROLE;
+UPDATE public.site_settings SET value = value || '{"forum": true, "lms": true, "directory": true}' WHERE key = 'modules';
+
+-- 11.5 Rejeu : index et fonctions en place, compteurs inchangés.
+SET client_min_messages = warning;
+\i supabase/migrations/20261013120000_v1_6_1_correctifs_audit.sql
+RESET client_min_messages;
+DO $$ BEGIN
+  IF (SELECT count(*) FROM pg_indexes WHERE indexname IN ('forum_replies_topic_idx', 'forum_likes_topic_idx', 'forum_likes_reply_idx', 'lms_enrollments_course_idx')) <> 4
+  THEN RAISE EXCEPTION 'rejeu : index des compteurs'; END IF;
+  IF (SELECT likes FROM public.forum_topic_counts(ARRAY['00000000-0000-0000-0000-000000000f90'::uuid])) <> 1200
+     OR (SELECT learners FROM public.lms_course_learners() WHERE course_id = '00000000-0000-0000-0000-000000000a90') <> 1100
+     OR pg_temp.fiches('75') <> 1100
+  THEN RAISE EXCEPTION 'rejeu : compteurs changés'; END IF;
+END $$;
+
 -- Rejouable (toujours en dernier) ---------------------------------------------------------------------------------------
 \i supabase/migrations/20261013120000_v1_6_1_correctifs_audit.sql
 DO $$ BEGIN

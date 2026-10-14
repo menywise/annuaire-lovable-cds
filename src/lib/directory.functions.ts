@@ -169,20 +169,20 @@ export const getDirectoryListing = createServerFn({ method: "GET" })
     };
   });
 
-/** Liste des départements avec le nombre de fiches publiées dans chacun. */
+/**
+ * Liste des départements avec le nombre de fiches publiées dans chacun, compté par la base
+ * (directory_departement_counts) : les fiches ne sont pas chargées.
+ */
 export const listDepartements = createServerFn({ method: "GET" }).handler(async () => {
   const client = publicClient();
-  const [departementsRes, listingsRes] = await Promise.all([
+  const [departementsRes, countsRes] = await Promise.all([
     client.from("geo_departements").select("code, nom, region, slug, population").order("code"),
-    client.from("directory_listings").select("departement").eq("status", "published"),
+    client.rpc("directory_departement_counts"),
   ]);
   const departements = check(departementsRes);
-  const listings = check(listingsRes);
+  const rows = check(countsRes, { contexte: "directory_departement_counts" });
   const counts = new Map<string, number>();
-  for (const row of listings ?? []) {
-    if (!row.departement) continue;
-    counts.set(row.departement, (counts.get(row.departement) ?? 0) + 1);
-  }
+  for (const row of rows ?? []) counts.set(row.departement, Number(row.listings));
   return (departements ?? []).map((dep) => ({ ...dep, listings: counts.get(dep.code) ?? 0 }));
 });
 

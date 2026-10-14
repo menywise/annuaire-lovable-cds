@@ -2392,7 +2392,30 @@ export type Database = {
         Returns: boolean
       }
       delete_my_account: { Args: never; Returns: undefined }
+      directory_departement_counts: {
+        Args: never
+        Returns: {
+          departement: string
+          listings: number
+        }[]
+      }
       forum_author_name: { Args: { _user_id: string }; Returns: string }
+      forum_category_counts: {
+        Args: never
+        Returns: {
+          category_id: string | null
+          likes: number
+          replies: number
+          topics: number
+        }[]
+      }
+      forum_reply_like_counts: {
+        Args: { _topic_id: string }
+        Returns: {
+          likes: number
+          reply_id: string
+        }[]
+      }
       forum_top_members: {
         Args: { _since?: string }
         Returns: {
@@ -2402,6 +2425,14 @@ export type Database = {
           score: number
           topics: number
           user_id: string
+        }[]
+      }
+      forum_topic_counts: {
+        Args: { _topic_ids: string[] }
+        Returns: {
+          likes: number
+          replies: number
+          topic_id: string
         }[]
       }
       has_role: {
@@ -2419,6 +2450,13 @@ export type Database = {
       is_conversation_participant: {
         Args: { _conversation_id: string; _user_id: string }
         Returns: boolean
+      }
+      lms_course_learners: {
+        Args: never
+        Returns: {
+          course_id: string
+          learners: number
+        }[]
       }
       lms_lesson_content: {
         Args: { _lesson_id: string }
