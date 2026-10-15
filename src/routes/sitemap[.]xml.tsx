@@ -31,6 +31,7 @@ const pages: SitemapPage[] = [
   { path: "/membres", priority: "0.7", changefreq: "weekly", module: "members" },
   { path: "/temoignages", priority: "0.8", changefreq: "weekly", module: "testimonials" },
   { path: "/avis", priority: "0.8", changefreq: "weekly", module: "reviews" },
+  { path: "/ameliorations", priority: "0.5", changefreq: "weekly", module: "reports" },
   { path: "/plan-du-site", priority: "0.6", changefreq: "monthly" },
   { path: "/contact", priority: "0.7", changefreq: "yearly", module: "contact" },
   { path: "/login", priority: "0.5", changefreq: "yearly" },

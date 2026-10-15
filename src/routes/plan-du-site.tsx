@@ -103,6 +103,18 @@ const groupes: Array<{ title: string; links: PlanLink[] }> = [
         title: "Formulaire de contact protégé",
         module: "contact",
       },
+      {
+        to: "/ameliorations",
+        label: "Le site s'améliore grâce à vous",
+        title: "Les corrections apportées grâce aux signalements des lecteurs",
+        module: "reports",
+      },
+      {
+        to: "/signalement",
+        label: "Suivre mon signalement",
+        title: "Retrouver un signalement avec son code de suivi",
+        module: "reports",
+      },
     ],
   },
   {

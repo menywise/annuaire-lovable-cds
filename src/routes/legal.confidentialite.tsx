@@ -85,7 +85,7 @@ function ConfidentialitePage() {
             ? " Les commandes de la boutique sont conservées 10 ans, obligation comptable."
             : ""}
           {isFeatureOn("reports")
-            ? " Un signalement de contenu est conservé le temps de son traitement ; son auteur n'est jamais révélé à la personne signalée."
+            ? " Un signalement est conservé le temps de son traitement ; son auteur n'est jamais révélé à la personne signalée. L'adresse e-mail facultative d'un visiteur qui signale est effacée 3 mois après le traitement (12 mois au plus sans traitement) ; aucune adresse IP n'est enregistrée."
             : ""}
         </p>
       </Section>

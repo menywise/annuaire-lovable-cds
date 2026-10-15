@@ -2,7 +2,7 @@
  * CDS — Parcours cliqués (lot 9).
  *
  * Joue les parcours d'un vrai visiteur ou membre, du formulaire jusqu'au message de réussite :
- * inscription, contact (et son champ piège anti-robot), forum (sujet puis réponse), signalement,
+ * inscription, contact (et son champ piège anti-robot), forum (sujet puis réponse), signalement (membre et visiteur),
  * inscription à une formation offerte et leçon terminée. Échec si une étape n'aboutit pas ou si
  * la console affiche une erreur.
  *
@@ -207,9 +207,40 @@ const PARCOURS: Parcours[] = [
       await page.getByRole("button", { name: "Signaler", exact: true }).first().click();
       await page.getByLabel("Spam ou publicité non sollicitée").check();
       await page.locator("#report-details").fill(`${MARQUE} Signalement automatique.`);
-      await page.getByRole("button", { name: "Envoyer le signalement" }).click();
-      await texte(page, "Merci. L'équipe examine votre signalement");
-      etape("signalement envoyé");
+      // Le bouton d'envoi s'active après 3 secondes (délai anti-robot).
+      await page.getByRole("button", { name: "J'envoie mon signalement" }).click();
+      await texte(page, "Votre signalement est bien arrivé");
+      etape("signalement envoyé, code de suivi affiché");
+    },
+  },
+  {
+    id: "signalement-visiteur",
+    label: "Visiteur : signaler un oubli sans compte, puis le suivre",
+    role: "visiteur",
+    module: "reports",
+    ecrit: true,
+    async run({ page, reel, etape }) {
+      await page.goto(`${BASE}/ameliorations`, { waitUntil: "networkidle" });
+      await page.getByRole("button", { name: "Je signale une erreur sur le site" }).click();
+      await page.getByLabel("Une information manque").check();
+      const texteSignalement = `${MARQUE} Oubli signalé par un visiteur ${Date.now()}`;
+      await page.locator("#report-details").fill(texteSignalement);
+      await page.getByRole("button", { name: "J'envoie mon signalement" }).click();
+      await texte(page, "Votre signalement est bien arrivé");
+      const code = (await page.locator("p.font-mono").innerText()).trim();
+      if (!/^[0-9A-F]{10}$/.test(code)) throw new Error(`code de suivi inattendu : ${code}`);
+      etape("signalement envoyé sans compte, code de suivi affiché");
+      await page.goto(`${BASE}/signalement?code=${code}`, { waitUntil: "networkidle" });
+      await texte(page, "Reçu : l'équipe va l'examiner");
+      etape("suivi par code affiché");
+      if (reel) {
+        const lignes = await adminSelect(
+          `reports?select=id,source&tracking_code=eq.${encodeURIComponent(code)}`,
+        );
+        if (lignes.length !== 1)
+          throw new Error(`signalement absent de la base (${lignes.length})`);
+        etape("signalement présent dans l'écran admin");
+      }
     },
   },
   {

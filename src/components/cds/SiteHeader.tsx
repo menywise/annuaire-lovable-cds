@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { CookieBanner, openCookieBanner } from "@/components/cds/CookieBanner";
 import { NewsletterForm } from "@/components/cds/NewsletterForm";
 import { AdSlot } from "@/components/cds/AdSlot";
+import { ReportButton } from "@/components/cds/ReportButton";
 import { isFeatureOn, withActiveModules, type FeatureKey } from "@/config/features";
 import { GREFFE } from "@/greffe";
 
@@ -254,6 +255,12 @@ function buildFooterColumns(): Array<{ title: string; links: NavItem[] }> {
           module: "adNetwork",
         },
         {
+          to: "/ameliorations",
+          label: "Le site s'améliore grâce à vous",
+          title: "Les corrections apportées grâce aux signalements des lecteurs",
+          module: "reports",
+        },
+        {
           to: "/plan-du-site",
           label: "Plan du site",
           title: "Toutes les pages réunies sur une page",
@@ -488,6 +495,15 @@ export function SiteFooter() {
                     </Link>
                   </li>
                 ))}
+                {column.title === "Aide" && isFeatureOn("reports") ? (
+                  <li>
+                    <ReportButton
+                      contentType="page"
+                      label="Signaler une erreur sur cette page"
+                      className="text-sm font-normal sm:min-h-8"
+                    />
+                  </li>
+                ) : null}
                 {column.title === "Informations légales" ? (
                   <li>
                     <button
