@@ -23,7 +23,8 @@ export const Route = createFileRoute("/_authenticated/admin/signalements")({
   head: () =>
     seo({
       title: "Signalements",
-      description: "Contenus signalés par les membres et suivi de leur traitement.",
+      description:
+        "Erreurs, oublis, corrections proposées et contenus signalés par les visiteurs et les membres.",
       path: "/admin/signalements",
       noindex: true,
     }),
@@ -32,11 +33,16 @@ export const Route = createFileRoute("/_authenticated/admin/signalements")({
 
 type Report = {
   id: string;
-  reporter_id: string;
+  reporter_id: string | null;
+  source: string;
   content_type: string;
   content_id: string | null;
   reason: string;
   details: string | null;
+  proposed_value: string | null;
+  contact_email: string | null;
+  tracking_code: string | null;
+  public_note: string | null;
   reported_url: string | null;
   status: string;
   admin_note: string | null;
@@ -68,7 +74,7 @@ function AdminReportsPage() {
     let query = supabase
       .from("reports")
       .select(
-        "id, reporter_id, content_type, content_id, reason, details, reported_url, status, admin_note, handled_at, created_at",
+        "id, reporter_id, source, content_type, content_id, reason, details, proposed_value, contact_email, tracking_code, public_note, reported_url, status, admin_note, handled_at, created_at",
       )
       .order("created_at", { ascending: false })
       .limit(200);
@@ -81,7 +87,7 @@ function AdminReportsPage() {
     }
     const list = (data ?? []) as Report[];
     setRows(list);
-    const ids = [...new Set(list.map((r) => r.reporter_id))];
+    const ids = [...new Set(list.flatMap((r) => (r.reporter_id ? [r.reporter_id] : [])))];
     if (ids.length) {
       const { data: people } = await supabase
         .from("profiles")
@@ -100,7 +106,7 @@ function AdminReportsPage() {
   return (
     <AdminShell
       title="Signalements"
-      intro="Les contenus que les membres vous ont signalés. Ouvrez la page, modérez si besoin (écran Modération), puis classez le signalement avec une note. L'auteur du contenu ne voit jamais qui a signalé."
+      intro="Les erreurs, oublis et corrections proposées par les visiteurs et les membres, et les contenus à modérer. Ouvrez la page, corrigez ou modérez si besoin, puis classez le signalement. Une réponse publique sur un signalement « Action prise » apparaît sur la page « Le site s'améliore grâce à vous » et dans le suivi du signaleur. L'auteur du contenu ne voit jamais qui a signalé."
     >
       <div role="group" aria-label="Filtrer par statut" className="flex flex-wrap gap-2">
         {FILTERS.map((f) => (
@@ -137,7 +143,11 @@ function AdminReportsPage() {
             <ReportItem
               key={row.id}
               row={row}
-              reporter={names[row.reporter_id] ?? "Ancien membre"}
+              reporter={
+                row.source === "visiteur"
+                  ? "un visiteur"
+                  : (names[row.reporter_id ?? ""] ?? "Ancien membre")
+              }
               onChanged={load}
             />
           ))}
@@ -157,13 +167,18 @@ function ReportItem({
   onChanged: () => Promise<void>;
 }) {
   const [note, setNote] = useState(row.admin_note ?? "");
+  const [publicNote, setPublicNote] = useState(row.public_note ?? "");
   const [busy, setBusy] = useState(false);
 
   async function setStatus(status: ReportStatus) {
     setBusy(true);
     const { error } = await supabase
       .from("reports")
-      .update({ status, admin_note: note.trim().slice(0, 2000) || null })
+      .update({
+        status,
+        admin_note: note.trim().slice(0, 2000) || null,
+        public_note: publicNote.trim().slice(0, 500) || null,
+      })
       .eq("id", row.id);
     setBusy(false);
     if (error) {
@@ -188,6 +203,7 @@ function ReportItem({
     <li className="rounded-xl border border-border bg-card p-5">
       <div className="flex flex-wrap items-center gap-2">
         <Badge variant={statusVariant(row.status)}>{reportStatusLabel(row.status)}</Badge>
+        <Badge variant="outline">{row.source === "visiteur" ? "Visiteur" : "Membre"}</Badge>
         <span className="text-sm font-semibold text-foreground">
           {reportContentTypeLabel(row.content_type)} — {reportReasonLabel(row.reason)}
         </span>
@@ -195,7 +211,29 @@ function ReportItem({
       <p className="mt-1 text-xs text-muted-foreground">
         Signalé par {reporter} le {new Date(row.created_at).toLocaleString("fr-FR")}
         {row.handled_at ? ` · traité le ${new Date(row.handled_at).toLocaleString("fr-FR")}` : ""}
+        {row.tracking_code ? ` · code ${row.tracking_code}` : ""}
       </p>
+      {row.contact_email ? (
+        <p className="mt-1 text-xs text-muted-foreground">
+          Répondre au visiteur :{" "}
+          <a
+            href={`mailto:${row.contact_email}`}
+            title="Écrire au visiteur qui a signalé"
+            className="font-medium text-primary-text hover:underline"
+          >
+            {row.contact_email}
+          </a>{" "}
+          (adresse effacée 3 mois après le traitement)
+        </p>
+      ) : null}
+      {row.proposed_value ? (
+        <div className="mt-3">
+          <p className="text-xs font-medium text-foreground">Correction proposée</p>
+          <p className="mt-1 whitespace-pre-line rounded-lg border border-primary/30 bg-primary/5 px-3 py-2 text-sm text-foreground">
+            {row.proposed_value}
+          </p>
+        </div>
+      ) : null}
       {row.details ? (
         <p className="mt-3 whitespace-pre-line rounded-lg bg-muted px-3 py-2 text-sm text-foreground">
           {row.details}
@@ -223,12 +261,28 @@ function ReportItem({
         onChange={(e) => setNote(e.target.value)}
         className="mt-1"
       />
+      <label
+        className="mt-3 block text-xs font-medium text-foreground"
+        htmlFor={`public-${row.id}`}
+      >
+        Réponse publique (facultatif, 500 caractères) : affichée dans le suivi du signaleur et, avec
+        « Action prise », sur la page des améliorations. Sans nom ni donnée personnelle.
+      </label>
+      <Textarea
+        id={`public-${row.id}`}
+        value={publicNote}
+        maxLength={500}
+        rows={2}
+        onChange={(e) => setPublicNote(e.target.value)}
+        placeholder="Exemple : le numéro de téléphone de la fiche a été corrigé. Merci !"
+        className="mt-1"
+      />
       <div className="mt-3 flex flex-wrap gap-2">
         <Button
           size="sm"
           disabled={busy}
           onClick={() => void setStatus("action_prise")}
-          title="Le contenu a été modéré ou retiré"
+          title="La page a été corrigée, ou le contenu modéré ou retiré"
         >
           Action prise
         </Button>

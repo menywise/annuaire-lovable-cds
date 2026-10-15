@@ -8,6 +8,8 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
+# Verrou npm : jamais commité (bun.lock, registre Lovable, fait foi ; la CI installe sans verrou).
+package-lock.json
 dist
 dist-ssr
 .output

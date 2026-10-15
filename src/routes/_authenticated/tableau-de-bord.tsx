@@ -157,7 +157,12 @@ function DashboardPage() {
   }, [user]);
 
   const cards = [
-    { label: "Messages reçus", value: stats?.messages, adminOnly: true, module: "contact" as const },
+    {
+      label: "Messages reçus",
+      value: stats?.messages,
+      adminOnly: true,
+      module: "contact" as const,
+    },
     {
       label: "Abonnés à la lettre",
       value: stats?.subscribers,
@@ -243,7 +248,9 @@ function DashboardPage() {
         <h2 className="text-lg font-semibold text-foreground">Vos raccourcis</h2>
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
           {withActiveModules(raccourcis)
-            .filter((item) => role === "admin" || (item.to !== "/admin" && item.to !== "/admin/messages"))
+            .filter(
+              (item) => role === "admin" || (item.to !== "/admin" && item.to !== "/admin/messages"),
+            )
             .map((item) => (
               <Link
                 key={item.to}

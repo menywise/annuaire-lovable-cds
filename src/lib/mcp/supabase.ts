@@ -49,13 +49,6 @@ function supabasePublishableKey(): string {
   throw new Error("Aucune clé publique Supabase disponible");
 }
 
-/** Client sans identité : RLS appliquée au rôle anonyme (contenus publics). */
-export function supabaseAnon() {
-  return createClient<Database>(supabaseProjectUrl(), supabasePublishableKey(), {
-    auth: { persistSession: false, autoRefreshToken: false },
-  });
-}
-
 /** Client portant le jeton vérifié de l'appelant : RLS appliquée à cet utilisateur. */
 export function supabaseForUser(ctx: ToolContext) {
   const token = ctx.getToken();
@@ -66,15 +59,65 @@ export function supabaseForUser(ctx: ToolContext) {
   });
 }
 
-/** Adresse du site audité : paramètre de l'outil, sinon SITE_URL, sinon l'adresse réglée en admin. */
-export async function siteBaseUrl(override?: string): Promise<string> {
-  let base = override?.trim() || configuredEnv(["SITE_URL"]) || "";
-  if (!base) {
-    const { loadSiteConfig } = await import("@/lib/site-config.functions");
-    base = (await loadSiteConfig().catch(() => null))?.brand.url ?? "";
+function origine(adresse: string | undefined): string | null {
+  try {
+    const url = new URL(adresse ?? "");
+    return url.protocol === "https:" || url.protocol === "http:" ? url.origin : null;
+  } catch {
+    return null;
   }
-  if (!base) throw new Error("Adresse du site inconnue : indiquez base_url ou réglez-la en admin.");
-  return base.replace(/\/+$/, "");
+}
+
+/**
+ * Adresse du site audité : SITE_URL, sinon l'adresse réglée en admin, sinon ce serveur.
+ * `base_url` ne peut désigner que l'une de ces adresses : le serveur ne charge jamais une
+ * adresse choisie librement par l'appelant.
+ */
+export async function siteBaseUrl(override?: string): Promise<string> {
+  const { loadSiteConfig } = await import("@/lib/site-config.functions");
+  const reglee = origine((await loadSiteConfig().catch(() => null))?.brand.url);
+  let courante: string | null = null;
+  try {
+    const { getRequest } = await import("@tanstack/react-start/server");
+    courante = origine(getRequest().url);
+  } catch {
+    /* hors requête : seule l'adresse réglée compte */
+  }
+  const autorisees = [origine(configuredEnv(["SITE_URL"])), reglee, courante].filter(
+    (o): o is string => Boolean(o),
+  );
+  if (override?.trim()) {
+    const demandee = origine(override.trim());
+    if (!demandee || !autorisees.includes(demandee)) {
+      throw new Error(
+        `base_url refusée : seules l'adresse du site réglée en admin et celle de ce serveur sont acceptées (${autorisees.join(", ") || "aucune connue"}).`,
+      );
+    }
+    return demandee;
+  }
+  const base = autorisees[0];
+  if (!base) throw new Error("Adresse du site inconnue : réglez-la en admin.");
+  return base;
+}
+
+/**
+ * Charge une page du site en suivant ses redirections, cinq au plus, seulement vers la même
+ * origine : une redirection vers un autre site est refusée au lieu d'être suivie.
+ */
+export async function fetchMemeOrigine(adresse: string, signal?: AbortSignal) {
+  const depart = new URL(adresse).origin;
+  let url = adresse;
+  for (let etape = 0; etape <= 5; etape++) {
+    const res = await fetch(url, { signal: signal ?? null, redirect: "manual" });
+    const cible = res.status >= 300 && res.status < 400 ? res.headers.get("location") : null;
+    if (!cible) return { res, url };
+    const suivante = new URL(cible, url);
+    if (suivante.origin !== depart) {
+      throw new Error(`Redirection vers un autre site refusée : ${suivante.origin}`);
+    }
+    url = suivante.toString();
+  }
+  throw new Error("Trop de redirections (cinq au plus).");
 }
 
 export function textResult(payload: unknown) {

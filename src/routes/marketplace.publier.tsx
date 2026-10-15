@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
 import { PageShell } from "@/components/cds/SiteHeader";
+import { erreurChargement } from "@/components/cds/ErreurChargement";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,6 +14,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { seo } from "@/lib/seo";
 import { slugify } from "@/lib/format";
+import { lirePrix } from "@/lib/prix";
 
 export const Route = createFileRoute("/marketplace/publier")({
   beforeLoad: () => requireFeature("marketplace"),
@@ -24,11 +26,7 @@ export const Route = createFileRoute("/marketplace/publier")({
         "Décrivez ce que vous proposez, fixez votre prix et laissez les membres vous contacter en privé.",
       path: "/marketplace/publier",
     }),
-  errorComponent: () => (
-    <PageShell>
-      <p className="text-sm text-muted-foreground">Cette page n'a pas pu être chargée.</p>
-    </PageShell>
-  ),
+  errorComponent: erreurChargement("Cette page n'a pas pu être chargée."),
   notFoundComponent: () => (
     <PageShell>
       <p className="text-sm text-muted-foreground">Cette page n'existe pas.</p>
@@ -51,8 +49,14 @@ function PublishPage() {
     const data = new FormData(form);
     const title = String(data.get("title") ?? "").trim();
     if (!title) return;
+    const prix = lirePrix(String(data.get("price") ?? ""));
+    if (prix.cents === null) {
+      toast.error(prix.erreur, {
+        description: prix.detail ?? "Indiquez 0 pour une annonce donnée.",
+      });
+      return;
+    }
     setBusy(true);
-    const price = Math.round(Number(String(data.get("price") ?? "0").replace(",", ".")) * 100);
     const photos = String(data.get("photos") ?? "")
       .split("\n")
       .map((line) => line.trim())
@@ -65,7 +69,7 @@ function PublishPage() {
       slug: `${slugify(title)}-${Math.random().toString(36).slice(2, 7)}`,
       description: String(data.get("description") ?? "").trim(),
       category_id: String(data.get("category_id") ?? "") || null,
-      price_cents: Number.isFinite(price) && price > 0 ? price : 0,
+      price_cents: prix.cents,
       negotiable,
       city: String(data.get("city") ?? "").trim(),
       photos,

@@ -1,0 +1,10 @@
+{
+  // Contrôle des types de la recette automatisée : mêmes options que le socle, playwright requis
+  // (npm install --no-save playwright). Lancé par : npx tsc --noEmit -p tests/e2e
+  "extends": "../../tsconfig.json",
+  "include": ["*.ts"],
+  "exclude": [],
+  "compilerOptions": {
+    "types": ["node"]
+  }
+}

@@ -102,13 +102,15 @@ function AdminUsersPage() {
     setBusy(null);
     if (error) {
       toast.error("Ajout impossible.", {
-        description: error.code === "23505" ? "Cette adresse est déjà dans la liste." : error.message,
+        description:
+          error.code === "23505" ? "Cette adresse est déjà dans la liste." : error.message,
       });
       return;
     }
     setNewEmail("");
     toast.success("Adresse ajoutée.", {
-      description: "Le compte correspondant est administrateur, dès maintenant ou à son inscription.",
+      description:
+        "Le compte correspondant est administrateur dès que son adresse est confirmée, maintenant ou à son inscription.",
     });
     void load();
   }
@@ -157,8 +159,9 @@ function AdminUsersPage() {
       <section className="rounded-xl border border-border bg-card p-5 sm:p-6">
         <h2 className="text-base font-semibold text-foreground">Administrateurs nommés d'avance</h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          Ces adresses reçoivent le rôle administrateur à l'inscription ou à la prochaine
-          connexion. La liste peut rester vide : nommer un compte déjà inscrit se fait plus bas.
+          Ces adresses reçoivent le rôle administrateur à l'inscription ou à la prochaine connexion,
+          une fois l'adresse confirmée. La liste peut rester vide : nommer un compte déjà inscrit se
+          fait plus bas.
         </p>
         {studio === null ? (
           <Skeleton className="mt-4 h-16 w-full" />
@@ -168,7 +171,13 @@ function AdminUsersPage() {
               <li key={row.email} className="flex flex-wrap items-center gap-3 px-4 py-2 text-sm">
                 <span className="min-w-0 flex-1 break-all text-foreground">{row.email}</span>
                 {busy === row.email ? (
-                  <Button type="button" variant="outline" size="sm" disabled title="Retrait en cours">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    disabled
+                    title="Retrait en cours"
+                  >
                     Retirer
                   </Button>
                 ) : (

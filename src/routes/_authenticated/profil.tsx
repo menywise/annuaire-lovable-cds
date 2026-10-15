@@ -146,21 +146,11 @@ function ProfilPage() {
             <form className="space-y-4" onSubmit={savePassword}>
               <div className="space-y-1.5">
                 <Label htmlFor="password">Nouveau mot de passe</Label>
-                <PasswordInput
-                  id="password"
-                  name="password"
-                  autoComplete="new-password"
-                  required
-                />
+                <PasswordInput id="password" name="password" autoComplete="new-password" required />
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="confirm">Confirmer le mot de passe</Label>
-                <PasswordInput
-                  id="confirm"
-                  name="confirm"
-                  autoComplete="new-password"
-                  required
-                />
+                <PasswordInput id="confirm" name="confirm" autoComplete="new-password" required />
               </div>
               <Button type="submit" disabled={savingPassword}>
                 {savingPassword ? "Modification…" : "Modifier le mot de passe"}
@@ -211,9 +201,9 @@ function DeleteAccountCard() {
       <CardHeader>
         <CardTitle className="text-base">Supprimer mon compte</CardTitle>
         <CardDescription>
-          Définitif. Votre compte, votre profil, vos messages privés, vos annonces et votre suivi
-          de contacts sont effacés. Vos discussions, réponses, commentaires et avis restent en
-          ligne sous le nom « Ancien membre ».
+          Définitif. Votre compte, votre profil, vos messages privés, vos annonces et votre suivi de
+          contacts sont effacés. Vos discussions, réponses, commentaires et avis restent en ligne
+          sous le nom « Ancien membre ».
         </CardDescription>
       </CardHeader>
       <CardContent>

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { lovable } from "@/integrations/lovable/index";
+import { cheminInterne } from "@/lib/redirection";
 
 export function GoogleSignInButton({
   label = "Continuer avec Google",
@@ -15,8 +16,7 @@ export function GoogleSignInButton({
   async function onClick() {
     setBusy(true);
     setError(null);
-    const safe =
-      redirectTo && redirectTo.startsWith("/") && !redirectTo.startsWith("//") ? redirectTo : null;
+    const safe = cheminInterne(redirectTo) ?? null;
     const result = await lovable.auth.signInWithOAuth("google", {
       redirect_uri: safe ? `${window.location.origin}${safe}` : window.location.origin,
     });

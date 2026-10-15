@@ -285,18 +285,16 @@ function ProductsTab() {
     }
     const previous = files.find((f) => f.product_id === product.id);
     const fileName = `${slugify(product.title) || "fichier"}.${ext}`;
-    const { error: rowError } = await supabase
-      .from("shop_product_files")
-      .upsert(
-        {
-          product_id: product.id,
-          path,
-          file_name: fileName,
-          size_bytes: file.size,
-          updated_at: new Date().toISOString(),
-        },
-        { onConflict: "product_id" },
-      );
+    const { error: rowError } = await supabase.from("shop_product_files").upsert(
+      {
+        product_id: product.id,
+        path,
+        file_name: fileName,
+        size_bytes: file.size,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: "product_id" },
+    );
     if (rowError) {
       await supabase.storage.from("shop-files").remove([path]);
       toast.error("Fichier non enregistré.");

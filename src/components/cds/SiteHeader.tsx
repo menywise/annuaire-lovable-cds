@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { CookieBanner, openCookieBanner } from "@/components/cds/CookieBanner";
 import { NewsletterForm } from "@/components/cds/NewsletterForm";
 import { AdSlot } from "@/components/cds/AdSlot";
+import { ReportButton } from "@/components/cds/ReportButton";
 import { isFeatureOn, withActiveModules, type FeatureKey } from "@/config/features";
 import { GREFFE } from "@/greffe";
 
@@ -134,6 +135,12 @@ function buildMemberNav(): NavItem[] {
       module: "shop",
     },
     {
+      to: "/mes-fiches",
+      label: "Mes fiches",
+      title: "Suivre et mettre à jour vos fiches de l'annuaire",
+      module: "directory",
+    },
+    {
       to: "/mes-annonces",
       label: "Mes annonces",
       title: "Gérer vos annonces publiées",
@@ -246,6 +253,12 @@ function buildFooterColumns(): Array<{ title: string; links: NavItem[] }> {
           label: "Annoncer",
           title: "Réserver un emplacement publicitaire",
           module: "adNetwork",
+        },
+        {
+          to: "/ameliorations",
+          label: "Le site s'améliore grâce à vous",
+          title: "Les corrections apportées grâce aux signalements des lecteurs",
+          module: "reports",
         },
         {
           to: "/plan-du-site",
@@ -482,6 +495,15 @@ export function SiteFooter() {
                     </Link>
                   </li>
                 ))}
+                {column.title === "Aide" && isFeatureOn("reports") ? (
+                  <li>
+                    <ReportButton
+                      contentType="page"
+                      label="Signaler une erreur sur cette page"
+                      className="text-sm font-normal sm:min-h-8"
+                    />
+                  </li>
+                ) : null}
                 {column.title === "Informations légales" ? (
                   <li>
                     <button

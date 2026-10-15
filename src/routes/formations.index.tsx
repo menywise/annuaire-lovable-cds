@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { Clock, GraduationCap, Users } from "lucide-react";
 import { PageShell } from "@/components/cds/SiteHeader";
+import { erreurChargement } from "@/components/cds/ErreurChargement";
 import { AdSlot } from "@/components/cds/AdSlot";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -33,11 +34,7 @@ export const Route = createFileRoute("/formations/")({
         "Des parcours courts et concrets pour avancer à votre rythme : certains gratuits, d'autres payants, tous découpés en leçons faciles à reprendre.",
       path: "/formations",
     }),
-  errorComponent: () => (
-    <PageShell>
-      <p className="text-sm text-muted-foreground">Le catalogue n'a pas pu être chargé.</p>
-    </PageShell>
-  ),
+  errorComponent: erreurChargement("Le catalogue n'a pas pu être chargé."),
   notFoundComponent: () => (
     <PageShell>
       <p className="text-sm text-muted-foreground">Cette page n'existe pas.</p>

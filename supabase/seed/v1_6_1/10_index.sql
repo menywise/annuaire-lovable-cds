@@ -1,0 +1,15 @@
+DROP INDEX IF EXISTS public.forum_replies_topic_idx;
+CREATE INDEX IF NOT EXISTS forum_replies_topic_created_idx ON public.forum_replies (topic_id, created_at);
+CREATE INDEX IF NOT EXISTS forum_replies_author_idx ON public.forum_replies (author_id);
+CREATE INDEX IF NOT EXISTS forum_follows_topic_idx ON public.forum_follows (topic_id);
+CREATE INDEX IF NOT EXISTS forum_topics_category_idx ON public.forum_topics (category_id);
+CREATE INDEX IF NOT EXISTS forum_topics_last_activity_idx ON public.forum_topics (last_activity_at DESC);
+CREATE INDEX IF NOT EXISTS forum_topics_author_idx ON public.forum_topics (author_id);
+CREATE INDEX IF NOT EXISTS blog_comments_post_created_idx ON public.blog_comments (post_id, created_at);
+CREATE INDEX IF NOT EXISTS lms_progress_lesson_idx ON public.lms_progress (lesson_id);
+CREATE INDEX IF NOT EXISTS payments_course_idx ON public.payments (course_id) WHERE course_id IS NOT NULL;
+CREATE INDEX IF NOT EXISTS crm_actions_prospect_idx ON public.crm_actions (prospect_id) WHERE prospect_id IS NOT NULL;
+CREATE INDEX IF NOT EXISTS marketplace_listings_category_idx ON public.marketplace_listings (category_id) WHERE category_id IS NOT NULL;
+CREATE INDEX IF NOT EXISTS marketplace_listings_departement_idx ON public.marketplace_listings (departement) WHERE departement IS NOT NULL;
+CREATE INDEX IF NOT EXISTS geo_adjacency_neighbor_idx ON public.geo_adjacency (neighbor_id);
+DROP INDEX IF EXISTS public.geo_adjacency_place_idx;

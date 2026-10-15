@@ -6,7 +6,16 @@ import reactRefresh from "eslint-plugin-react-refresh";
 import tseslint from "typescript-eslint";
 
 export default tseslint.config(
-  { ignores: ["dist", ".output", ".vinxi"] },
+  {
+    ignores: [
+      "dist",
+      ".output",
+      ".vinxi",
+      // Fichiers générés et dossier généré ou reformaté par Lovable : même liste que .prettierignore.
+      "src/routeTree.gen.ts",
+      "src/integrations/supabase/",
+    ],
+  },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ["**/*.{ts,tsx}"],

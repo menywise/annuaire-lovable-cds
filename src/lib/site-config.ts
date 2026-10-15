@@ -9,10 +9,13 @@ import { normaliserCouleur } from "./couleurs.ts";
  * Cycle de vie :
  * 1. Serveur : la route racine lit la base dans `beforeLoad` (avant toute autre
  *    route) et appelle `setSiteConfig`. Les `head()`, `seo()`, `isFeatureOn()`
- *    et le rendu HTML utilisent donc les valeurs saisies en admin.
+ *    et le rendu HTML utilisent donc les valeurs saisies en admin. La lecture
+ *    passe par un cache d'une minute par serveur (`site-config.cache.ts`).
  * 2. La route racine écrit la configuration dans la page (`window.__CDS_SITE__`),
  *    exécutée avant le code du navigateur : l'hydratation voit les mêmes valeurs.
- * 3. Après un enregistrement en admin, `setSiteConfig` puis rechargement.
+ * 3. Après un enregistrement en admin, `setSiteConfig` : la session de
+ *    l'administrateur voit le changement tout de suite, les autres visiteurs
+ *    sous une minute.
  *
  * Toutes les requêtes d'un même serveur lisent la même ligne : la valeur partagée
  * entre requêtes simultanées est identique, sauf pendant une modification en admin.
@@ -165,7 +168,11 @@ export function isDomainName(value: string) {
 
 function cleanEmailDomains(email: BrandSettings["email"]): BrandSettings["email"] {
   const clean = (d: string) => {
-    const v = d.trim().toLowerCase().replace(/^https?:\/\//, "").replace(/\/.*$/, "");
+    const v = d
+      .trim()
+      .toLowerCase()
+      .replace(/^https?:\/\//, "")
+      .replace(/\/.*$/, "");
     return isDomainName(v) ? v : "";
   };
   return { senderDomain: clean(email.senderDomain), fromDomain: clean(email.fromDomain) };
@@ -217,7 +224,20 @@ export function setSiteConfig(next: SiteConfig) {
 
 /** Script à placer dans la page : transmet la configuration au navigateur avant l'hydratation. */
 export function siteConfigScript(config: SiteConfig = current) {
-  return `window.__CDS_SITE__=${JSON.stringify(config).replace(/</g, "\\u003c")};`;
+  return `window.__CDS_SITE__=${jsonPourScript(config)};`;
+}
+
+/**
+ * JSON sûr dans une balise script : un texte contenant `</script>` ne la ferme jamais.
+ * « < », « > », « & », U+2028 et U+2029 deviennent des séquences \uXXXX.
+ * Le JSON relu reste identique.
+ * Seule sérialisation des balises script du dépôt (configuration du site, données structurées).
+ */
+export function jsonPourScript(data: unknown) {
+  return JSON.stringify(data).replace(
+    /[<>&\u2028\u2029]/g,
+    (c) => `\\u${c.charCodeAt(0).toString(16).padStart(4, "0")}`,
+  );
 }
 
 /** Construit une URL absolue à partir d'un chemin interne (relative tant que l'URL n'est pas saisie). */

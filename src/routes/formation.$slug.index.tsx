@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { CheckCircle2, Clock, GraduationCap, PlayCircle } from "lucide-react";
 import { toast } from "sonner";
 import { PageShell } from "@/components/cds/SiteHeader";
+import { erreurChargement } from "@/components/cds/ErreurChargement";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { RichText } from "@/lib/richtext";
@@ -59,11 +60,7 @@ export const Route = createFileRoute("/formation/$slug/")({
       ],
     };
   },
-  errorComponent: () => (
-    <PageShell>
-      <p className="text-sm text-muted-foreground">Cette formation n'a pas pu être chargée.</p>
-    </PageShell>
-  ),
+  errorComponent: erreurChargement("Cette formation n'a pas pu être chargée."),
   notFoundComponent: () => (
     <PageShell>
       <p className="text-sm text-muted-foreground">

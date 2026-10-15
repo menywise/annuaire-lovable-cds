@@ -2,19 +2,16 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { MapPin } from "lucide-react";
 import { PageShell } from "@/components/cds/SiteHeader";
 import { requireFeature } from "@/config/features";
-import { listDirectoryListings } from "@/lib/directory.functions";
+import { getDirectoryCategory } from "@/lib/directory.functions";
 import { breadcrumbJsonLd, seo } from "@/lib/seo";
 
 export const Route = createFileRoute("/annuaire/categorie/$slug")({
   beforeLoad: () => requireFeature("directory"),
   loader: async ({ params }) => {
-    const data = await listDirectoryListings();
-    const category = data.categories.find((item) => item.slug === params.slug);
-    if (!category) throw notFound();
-    return {
-      category,
-      listings: data.listings.filter((item) => item.category_id === category.id),
-    };
+    // Catégorie et fiches filtrées en base : jamais l'annuaire entier.
+    const data = await getDirectoryCategory({ data: { slug: params.slug } });
+    if (!data) throw notFound();
+    return data;
   },
   head: ({ loaderData }) => {
     if (!loaderData) {

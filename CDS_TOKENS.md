@@ -14,7 +14,7 @@ Il n'existe **aucun** `tailwind.config.ts` ni `src/index.css` : en Tailwind v4 l
 ## Règles non négociables
 
 - Thème **clair uniquement**. Interdit : `.dark`, `dark:`, `prefers-color-scheme: dark`, `[data-theme="dark"]`.
-- Police unique : **Inter** (Google Fonts), chargée par `<link>` dans `src/routes/__root.tsx`. Aucune autre famille.
+- Police unique : **Inter**, hébergée par le site (`public/fonts/inter-latin-wght-normal.woff2`, variable, licence OFL dans `public/fonts/LICENCE-Inter-OFL.txt`), déclarée par `@font-face` dans `src/styles.css` et préchargée dans `src/routes/__root.tsx`. Aucun appel à Google Fonts. Aucune autre famille.
 - Taille de base : **16 px**, interlignage 1,5.
 - Contraste minimum **WCAG AA** (4,5:1 pour le texte, 3:1 pour les éléments graphiques).
 - Aucun texte en anglais sur les pages publiques.

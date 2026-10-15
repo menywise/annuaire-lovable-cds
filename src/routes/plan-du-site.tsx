@@ -10,13 +10,11 @@ export const Route = createFileRoute("/plan-du-site")({
   head: () =>
     seo({
       title: "Plan du site",
-      description:
-        `Toutes les pages de ${getSiteConfig().brand.name} réunies : découverte, offres, contenus, compte et documents légaux.`,
+      description: `Toutes les pages de ${getSiteConfig().brand.name} réunies : découverte, offres, contenus, compte et documents légaux.`,
       path: "/plan-du-site",
       type: "website",
     }),
-  loader: async () =>
-    isFeatureOn("pages") ? await listPublicPages().catch(() => []) : [],
+  loader: async () => (isFeatureOn("pages") ? await listPublicPages().catch(() => []) : []),
   component: PlanDuSitePage,
 });
 
@@ -33,15 +31,30 @@ const groupes: Array<{ title: string; links: PlanLink[] }> = [
     links: [
       { to: "/", label: "Accueil", title: "Revenir à la page d'accueil" },
       { to: "/a-propos", label: "À propos", title: "Qui édite le site et selon quels engagements" },
-      { to: "/recherche", label: "Recherche", title: "Rechercher dans tout le site", module: "search" },
+      {
+        to: "/recherche",
+        label: "Recherche",
+        title: "Rechercher dans tout le site",
+        module: "search",
+      },
       {
         to: "/demarrer",
         label: "Démarrer",
         title: "Parcours en trois étapes jusqu'à la création de compte",
         module: "onboarding",
       },
-      { to: "/tarifs", label: "Tarifs", title: "Comparer les offres et leurs contenus", module: "pricing" },
-      { to: "/composants", label: "Composants", title: "Bibliothèque de composants d'interface", module: "showcase" },
+      {
+        to: "/tarifs",
+        label: "Tarifs",
+        title: "Comparer les offres et leurs contenus",
+        module: "pricing",
+      },
+      {
+        to: "/composants",
+        label: "Composants",
+        title: "Bibliothèque de composants d'interface",
+        module: "showcase",
+      },
       {
         to: "/guide",
         label: "Guide de réutilisation",
@@ -54,17 +67,54 @@ const groupes: Array<{ title: string; links: PlanLink[] }> = [
     title: "Échanger",
     links: [
       { to: "/blog", label: "Blog", title: "Articles et méthodes", module: "blog" },
-      { to: "/faq", label: "Questions fréquentes", title: "Réponses aux questions courantes", module: "faq" },
-      { to: "/forum", label: "Forum", title: "Poser une question à la communauté", module: "forum" },
+      {
+        to: "/faq",
+        label: "Questions fréquentes",
+        title: "Réponses aux questions courantes",
+        module: "faq",
+      },
+      {
+        to: "/forum",
+        label: "Forum",
+        title: "Poser une question à la communauté",
+        module: "forum",
+      },
       {
         to: "/membres",
         label: "Annuaire des membres",
         title: "Découvrir les membres de la communauté",
         module: "members",
       },
-      { to: "/temoignages", label: "Témoignages", title: "Lire ce que la communauté a obtenu", module: "testimonials" },
-      { to: "/avis", label: "Avis", title: "Retours d'expérience des utilisateurs", module: "reviews" },
-      { to: "/contact", label: "Contact", title: "Formulaire de contact protégé", module: "contact" },
+      {
+        to: "/temoignages",
+        label: "Témoignages",
+        title: "Lire ce que la communauté a obtenu",
+        module: "testimonials",
+      },
+      {
+        to: "/avis",
+        label: "Avis",
+        title: "Retours d'expérience des utilisateurs",
+        module: "reviews",
+      },
+      {
+        to: "/contact",
+        label: "Contact",
+        title: "Formulaire de contact protégé",
+        module: "contact",
+      },
+      {
+        to: "/ameliorations",
+        label: "Le site s'améliore grâce à vous",
+        title: "Les corrections apportées grâce aux signalements des lecteurs",
+        module: "reports",
+      },
+      {
+        to: "/signalement",
+        label: "Suivre mon signalement",
+        title: "Retrouver un signalement avec son code de suivi",
+        module: "reports",
+      },
     ],
   },
   {
@@ -89,7 +139,12 @@ const groupes: Array<{ title: string; links: PlanLink[] }> = [
         title: "Faire le tour des fonctionnalités actives de votre espace",
         module: "onboarding",
       },
-      { to: "/messagerie", label: "Messagerie", title: "Vos échanges privés entre membres", module: "messaging" },
+      {
+        to: "/messagerie",
+        label: "Messagerie",
+        title: "Vos échanges privés entre membres",
+        module: "messaging",
+      },
       { to: "/profil", label: "Mon profil", title: "Nom affiché, profil public et mot de passe" },
       { to: "/compte", label: "Mon compte", title: "Rôle, session et messages reçus" },
     ],
@@ -122,7 +177,6 @@ const groupes: Array<{ title: string; links: PlanLink[] }> = [
   },
 ];
 
-
 /** Liens des briques optionnelles : présents seulement si la brique est active. */
 const modulesLinks: PlanLink[] = [
   {
@@ -138,12 +192,23 @@ const modulesLinks: PlanLink[] = [
     module: "directory",
   },
   {
+    to: "/mes-fiches",
+    label: "Mes fiches",
+    title: "Suivre et mettre à jour vos fiches de l'annuaire",
+    module: "directory",
+  },
+  {
     to: "/annuaire/departements",
     label: "Départements",
     title: "Parcourir l'annuaire département par département",
     module: "geo",
   },
-  { to: "/formations", label: "Formations", title: "Catalogue des formations en ligne", module: "lms" },
+  {
+    to: "/formations",
+    label: "Formations",
+    title: "Catalogue des formations en ligne",
+    module: "lms",
+  },
   {
     to: "/mes-formations",
     label: "Mes formations",
@@ -180,7 +245,12 @@ const modulesLinks: PlanLink[] = [
     title: "Gérer vos annonces publiées",
     module: "marketplace",
   },
-  { to: "/crm", label: "Mes contacts", title: "Suivre vos prospects et vos relances", module: "crm" },
+  {
+    to: "/crm",
+    label: "Mes contacts",
+    title: "Suivre vos prospects et vos relances",
+    module: "crm",
+  },
   {
     to: "/publicite",
     label: "Annoncer sur le site",

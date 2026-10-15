@@ -82,7 +82,10 @@ function AdminCrmPage() {
       intro="Les chiffres consolidés de tous les membres. Le détail de chaque fiche reste privé à son propriétaire."
     >
       {failed ? (
-        <p role="alert" className="mb-4 rounded-lg border border-destructive/40 p-4 text-sm text-destructive-text">
+        <p
+          role="alert"
+          className="mb-4 rounded-lg border border-destructive/40 p-4 text-sm text-destructive-text"
+        >
           Une partie des chiffres n'a pas pu être chargée. Rechargez la page.
         </p>
       ) : null}
@@ -111,7 +114,10 @@ function AdminCrmPage() {
             <h2 className="text-sm font-semibold text-foreground">Répartition par étape</h2>
             <ul className="mt-3 grid gap-2 sm:grid-cols-3">
               {byStage.map((item) => (
-                <li key={item.value} className="flex items-center justify-between rounded-lg bg-muted px-3 py-2 text-sm">
+                <li
+                  key={item.value}
+                  className="flex items-center justify-between rounded-lg bg-muted px-3 py-2 text-sm"
+                >
                   <span className="text-muted-foreground">{item.label}</span>
                   <span className="font-semibold text-foreground">{item.count}</span>
                 </li>

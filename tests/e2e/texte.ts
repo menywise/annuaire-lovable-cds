@@ -3,7 +3,7 @@
  * Applique docs/redaction/text-rules.json dans l'ordre imposé par AUDIT_TEXTE_CDS.md et
  * calcule le score sur 100. Module sans dépendance : utilisé par le robot et les tests.
  *
- * Choix d'application (voir V0.md, lot 7) :
+ * Choix d'application (lot 7 du plan V0, conservé dans l'historique git) :
  * - le nom du site (marque) est ajouté aux termes protégés : ce n'est pas du vocabulaire interne ;
  * - longueur minimale du h1 et marqueur de cible : pages vitrines seulement (accueil, tarifs…),
  *   une page de connexion ou une page légale n'a pas à nommer « artisan » en 40 caractères ;
@@ -109,7 +109,7 @@ function withoutProtected(text: string, protectedTerms: string[]) {
 export function auditTexts(
   page: PageTexts,
   rules: TextRules,
-  opts: { vitrine?: boolean; protege?: string[] } = {},
+  opts: { vitrine?: boolean | undefined; protege?: string[] } = {},
 ): TextAudit {
   const anomalies: TextAnomaly[] = [];
   const g = (regle: string): Gravite => rules.gravite[regle] ?? "mineur";

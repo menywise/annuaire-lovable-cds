@@ -13,7 +13,11 @@ export function editorName(brand: BrandSettings) {
  * Moyen de contact cité dans les documents légaux : le formulaire si le module
  * Contact est actif, sinon un courrier au siège social saisi en admin.
  */
-export function ContactChannel({ title = "Nous écrire via le formulaire de contact protégé" }: { title?: string }) {
+export function ContactChannel({
+  title = "Nous écrire via le formulaire de contact protégé",
+}: {
+  title?: string;
+}) {
   const { settings } = useBrandSettings();
   if (isFeatureOn("contact")) {
     return (

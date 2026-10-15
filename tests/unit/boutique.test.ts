@@ -78,7 +78,12 @@ test("réglages : valeurs hors bornes ramenées, pays nettoyés", () => {
 
 test("adresse de livraison en lignes lisibles", () => {
   assert.deepEqual(
-    formatAddress({ line1: "1 rue de la Paix", postal_code: "75002", city: "Paris", country: "FR" }),
+    formatAddress({
+      line1: "1 rue de la Paix",
+      postal_code: "75002",
+      city: "Paris",
+      country: "FR",
+    }),
     ["1 rue de la Paix", "75002 Paris", "FR"],
   );
   assert.deepEqual(formatAddress("x"), []);

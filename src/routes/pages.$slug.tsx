@@ -1,5 +1,6 @@
 import { createFileRoute, Link, notFound, redirect } from "@tanstack/react-router";
 import { PageShell } from "@/components/cds/SiteHeader";
+import { erreurChargement } from "@/components/cds/ErreurChargement";
 import { PageRender } from "@/components/cds/PageSections";
 import { requireFeature } from "@/config/features";
 import { getPublicPage } from "@/lib/content.functions";
@@ -35,11 +36,7 @@ export const Route = createFileRoute("/pages/$slug")({
       ],
     };
   },
-  errorComponent: () => (
-    <PageShell>
-      <p className="text-sm text-muted-foreground">Cette page n'a pas pu être chargée.</p>
-    </PageShell>
-  ),
+  errorComponent: erreurChargement("Cette page n'a pas pu être chargée."),
   notFoundComponent: () => (
     <PageShell>
       <h1 className="text-2xl font-bold text-foreground">Page introuvable</h1>

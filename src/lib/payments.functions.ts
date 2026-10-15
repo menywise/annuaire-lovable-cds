@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { getRequest } from "@tanstack/react-start/server";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { check, decrireErreurBase } from "@/lib/check";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -29,14 +30,19 @@ export const startCourseCheckout = createServerFn({ method: "POST" })
     if (!stripeSecretKey()) throw new Error("Le paiement en ligne n'est pas encore configuré.");
     if (!data.waiver) throw new Error("Cochez la renonciation au droit de rétractation.");
 
+    const { isSessionAttached } = await import("@/lib/paiement-rattachement");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: rows, error } = await supabaseAdmin.rpc("payment_start_course", {
-      _user_id: context.userId,
-      _course_id: data.courseId,
-      _waiver: data.waiver,
-    });
+    // Les refus de la base (formation déjà réglée, paiement désactivé…) s'affichent au membre.
+    const rows = check(
+      await supabaseAdmin.rpc("payment_start_course", {
+        _user_id: context.userId,
+        _course_id: data.courseId,
+        _waiver: data.waiver,
+      }),
+      { contexte: "payment_start_course", metier: true },
+    );
     const payment = rows?.[0];
-    if (error || !payment) throw new Error(error?.message ?? "Paiement impossible.");
+    if (!payment) throw new Error("Paiement impossible.");
 
     // Tentatives précédentes (autre onglet, nouvel essai) : leurs sessions Stripe sont fermées
     // avant d'en ouvrir une nouvelle, pour qu'un membre ne puisse jamais payer deux fois.
@@ -64,10 +70,28 @@ export const startCourseCheckout = createServerFn({ method: "POST" })
       await supabaseAdmin.from("payments").update({ status: "failed" }).eq("id", payment.id);
       throw new Error("Stripe n'a pas pu ouvrir la page de paiement. Réessayez dans un instant.");
     }
-    await supabaseAdmin.rpc("payment_attach_session", {
+    // Sans rattachement, le webhook ne retrouverait pas ce paiement : le client ne part pas payer.
+    const { error: attachError } = await supabaseAdmin.rpc("payment_attach_session", {
       _payment_id: payment.id,
       _session_id: session.id,
     });
+    if (attachError) console.error(decrireErreurBase(attachError, "payment_attach_session"));
+    const { data: attached, error: readError } = attachError
+      ? { data: null, error: null }
+      : await supabaseAdmin
+          .from("payments")
+          .select("stripe_session_id")
+          .eq("id", payment.id)
+          .maybeSingle();
+    if (readError) console.error(decrireErreurBase(readError, "payments"));
+    if (!isSessionAttached(attached, session.id)) {
+      console.error(
+        `[paiement] session ${session.id} non rattachée au paiement ${payment.id} : session expirée`,
+      );
+      await expireCheckoutSession(session.id).catch(() => "unknown");
+      await supabaseAdmin.from("payments").update({ status: "failed" }).eq("id", payment.id);
+      throw new Error("Le paiement n'a pas pu être préparé. Rien n'a été débité. Réessayez.");
+    }
     return { url: session.url };
   });
 
@@ -75,10 +99,10 @@ export const startCourseCheckout = createServerFn({ method: "POST" })
 export const paymentsConfigStatus = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { data: isAdmin } = await context.supabase.rpc("has_role", {
-      _user_id: context.userId,
-      _role: "admin",
-    });
+    const isAdmin = check(
+      await context.supabase.rpc("has_role", { _user_id: context.userId, _role: "admin" }),
+      { contexte: "has_role" },
+    );
     if (!isAdmin) throw new Error("Réservé aux administrateurs.");
     const { stripeMode, stripeWebhookSecret } = await import("@/lib/stripe.server");
     return { mode: stripeMode(), webhook: Boolean(stripeWebhookSecret()) };

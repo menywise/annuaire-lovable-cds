@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Quote } from "lucide-react";
 import { toast } from "sonner";
 import { PageShell } from "@/components/cds/SiteHeader";
+import { erreurChargement } from "@/components/cds/ErreurChargement";
 import { ModerationNote } from "@/components/cds/ModerationNote";
 import { ReportButton } from "@/components/cds/ReportButton";
 import { Button } from "@/components/ui/button";
@@ -13,7 +14,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { listTestimonials } from "@/lib/community.functions";
 import { absoluteUrl } from "@/lib/site-config";
-import { seo } from "@/lib/seo";
+import { jsonLdScript, seo } from "@/lib/seo";
 import { requireFeature } from "@/config/features";
 
 export const Route = createFileRoute("/temoignages")({
@@ -30,32 +31,25 @@ export const Route = createFileRoute("/temoignages")({
     return {
       ...base,
       scripts: [
-        {
-          type: "application/ld+json",
-          children: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "ItemList",
-            name: "Témoignages",
-            url: absoluteUrl("/temoignages"),
-            itemListElement: (loaderData ?? []).slice(0, 10).map((item, index) => ({
-              "@type": "ListItem",
-              position: index + 1,
-              item: {
-                "@type": "Review",
-                author: { "@type": "Person", name: item.author_name },
-                reviewBody: item.content,
-              },
-            })),
-          }),
-        },
+        jsonLdScript({
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          name: "Témoignages",
+          url: absoluteUrl("/temoignages"),
+          itemListElement: (loaderData ?? []).slice(0, 10).map((item, index) => ({
+            "@type": "ListItem",
+            position: index + 1,
+            item: {
+              "@type": "Review",
+              author: { "@type": "Person", name: item.author_name },
+              reviewBody: item.content,
+            },
+          })),
+        }),
       ],
     };
   },
-  errorComponent: () => (
-    <PageShell>
-      <p className="text-sm text-muted-foreground">Les témoignages n'ont pas pu être chargés.</p>
-    </PageShell>
-  ),
+  errorComponent: erreurChargement("Les témoignages n'ont pas pu être chargés."),
   notFoundComponent: () => (
     <PageShell>
       <p className="text-sm text-muted-foreground">Cette page n'existe pas.</p>

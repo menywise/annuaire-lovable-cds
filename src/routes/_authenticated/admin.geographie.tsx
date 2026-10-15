@@ -46,21 +46,20 @@ function AdminGeoPage() {
 
   useEffect(() => {
     void (async () => {
+      // Fiches publiées par département comptées par la base : les fiches ne sont pas chargées.
       const [deps, listings] = await Promise.all([
         supabase
           .from("geo_departements")
           .select("code, nom, region, slug, population")
           .order("code"),
-        supabase.from("directory_listings").select("departement").eq("status", "published"),
+        supabase.rpc("directory_departement_counts"),
       ]);
       if (deps.error || listings.error) {
         setFailed(true);
         return;
       }
       const counts = new Map<string, number>();
-      for (const item of listings.data ?? []) {
-        if (item.departement) counts.set(item.departement, (counts.get(item.departement) ?? 0) + 1);
-      }
+      for (const item of listings.data ?? []) counts.set(item.departement, Number(item.listings));
       setRows((deps.data ?? []).map((dep) => ({ ...dep, listings: counts.get(dep.code) ?? 0 })));
     })();
   }, []);

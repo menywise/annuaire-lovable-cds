@@ -18,7 +18,11 @@ type AdminNavItem = {
 
 function buildAdminNav(): AdminNavItem[] {
   return withActiveModules<AdminNavItem>([
-    { to: "/admin/demarrage", label: "Démarrage", title: "Ce qui reste à régler pour lancer le site" },
+    {
+      to: "/admin/demarrage",
+      label: "Démarrage",
+      title: "Ce qui reste à régler pour lancer le site",
+    },
     { to: "/admin", label: "Paramètres", title: "Identité du site, mentions légales et hébergeur" },
     { to: "/admin/modules", label: "Modules", title: "Allumer ou éteindre les modules du site" },
     {
@@ -56,7 +60,12 @@ function buildAdminNav(): AdminNavItem[] {
       title: "Contenus signalés par les membres",
       module: "reports",
     },
-    { to: "/admin/forum", label: "Forum", title: "Gérer les thématiques du forum", module: "forum" },
+    {
+      to: "/admin/forum",
+      label: "Forum",
+      title: "Gérer les thématiques du forum",
+      module: "forum",
+    },
     {
       to: "/admin/temoignages",
       label: "Témoignages",
@@ -75,7 +84,12 @@ function buildAdminNav(): AdminNavItem[] {
       title: "Départements couverts et fiches rattachées",
       module: "geo",
     },
-    { to: "/admin/crm", label: "Contacts", title: "Vue consolidée du suivi des contacts", module: "crm" },
+    {
+      to: "/admin/crm",
+      label: "Contacts",
+      title: "Vue consolidée du suivi des contacts",
+      module: "crm",
+    },
     {
       to: "/admin/formations",
       label: "Formations",
@@ -195,7 +209,10 @@ export function AdminShell({
         <h1 className="mt-2 text-3xl font-bold text-foreground">{title}</h1>
         <p className="mt-2 text-sm text-muted-foreground">{intro}</p>
 
-        <nav aria-label="Sections d'administration" className="mt-6 flex flex-wrap gap-2 rounded-xl border border-border bg-card p-2 shadow-[var(--shadow-card-tactile)]">
+        <nav
+          aria-label="Sections d'administration"
+          className="mt-6 flex flex-wrap gap-2 rounded-xl border border-border bg-card p-2 shadow-[var(--shadow-card-tactile)]"
+        >
           {buildAdminNav().map((item) => (
             <Link
               key={item.to}
