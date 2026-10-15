@@ -57,3 +57,12 @@ test("la commande de la boutique demande bien cette durée", () => {
   );
   assert.match(texte, /expiresInSeconds: BOUTIQUE_SESSION_SECONDES/);
 });
+
+test("le panier annonce la réserve de 30 minutes", () => {
+  const texte = readFileSync(
+    join(import.meta.dirname, "..", "..", "src", "routes", "boutique.panier.tsx"),
+    "utf8",
+  );
+  assert.match(texte, /restent réservés 30 minutes/);
+  assert.equal(BOUTIQUE_SESSION_SECONDES - 60, 30 * 60);
+});
