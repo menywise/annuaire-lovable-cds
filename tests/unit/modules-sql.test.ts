@@ -18,7 +18,9 @@ function latestSqlDefaults(): Record<string, boolean> {
     .reverse();
   for (const f of files) {
     const sql = readFileSync(join(dir, f), "utf8");
-    const m = /FUNCTION public\.module_defaults\(\)[\s\S]*?SELECT '(\{[\s\S]*?\})'::jsonb/.exec(sql);
+    const m = /FUNCTION public\.module_defaults\(\)[\s\S]*?SELECT '(\{[\s\S]*?\})'::jsonb/.exec(
+      sql,
+    );
     if (m) return JSON.parse(m[1]!) as Record<string, boolean>;
   }
   throw new Error("module_defaults() introuvable dans les migrations");

@@ -20,7 +20,6 @@ export const Route = createFileRoute("/_authenticated/compte")({
   component: ComptePage,
 });
 
-
 function ComptePage() {
   const navigate = useNavigate();
   const { user } = useAuth();

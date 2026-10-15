@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { getRequest } from "@tanstack/react-start/server";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { publicClient } from "@/lib/supabase-public";
+import { check, decrireErreurBase } from "@/lib/check";
 import {
   CART_MAX_LINES,
   CART_MAX_QUANTITY,
@@ -19,11 +20,10 @@ const PRODUCT_COLUMNS =
   "id, slug, title, summary, description, kind, price_cents, currency, image_url, stock, position";
 
 async function readSettings(client: ReturnType<typeof publicClient>) {
-  const { data } = await client
-    .from("site_settings")
-    .select("value")
-    .eq("key", SHOP_SETTINGS_KEY)
-    .maybeSingle();
+  const data = check(
+    await client.from("site_settings").select("value").eq("key", SHOP_SETTINGS_KEY).maybeSingle(),
+    { contexte: "site_settings" },
+  );
   return normalizeShopSettings(data?.value);
 }
 
@@ -42,12 +42,29 @@ export const getShopCatalog = createServerFn({ method: "GET" }).handler(async ()
   return { products: data ?? [], settings, failed: Boolean(error) };
 });
 
+/** Adresses de produits au plus dans le plan du site. */
+const SITEMAP_PRODUCTS_LIMIT = 5000;
+
+/** Plan du site : adresse et date réelle de modification de chaque produit publié. */
+export const listSitemapProducts = createServerFn({ method: "GET" }).handler(async () => {
+  const data = check(
+    await publicClient()
+      .from("shop_products")
+      .select("slug, updated_at")
+      .eq("published", true)
+      .order("position", { ascending: true })
+      .limit(SITEMAP_PRODUCTS_LIMIT),
+    { contexte: "shop_products" },
+  );
+  return data ?? [];
+});
+
 /** Fiche d'un produit publié. */
 export const getShopProduct = createServerFn({ method: "GET" })
   .inputValidator((input: { slug: string }) => ({ slug: String(input?.slug ?? "").slice(0, 120) }))
   .handler(async ({ data }) => {
     const client = publicClient();
-    const [{ data: product }, settings] = await Promise.all([
+    const [productRes, settings] = await Promise.all([
       client
         .from("shop_products")
         .select(PRODUCT_COLUMNS)
@@ -56,6 +73,7 @@ export const getShopProduct = createServerFn({ method: "GET" })
         .maybeSingle(),
       readSettings(client),
     ]);
+    const product = check(productRes, { contexte: "shop_products" });
     return product ? { product, settings } : null;
   });
 
@@ -71,11 +89,14 @@ export const getShopProducts = createServerFn({ method: "POST" })
     const client = publicClient();
     const settings = await readSettings(client);
     if (data.ids.length === 0) return { products: [], settings };
-    const { data: products } = await client
-      .from("shop_products")
-      .select(PRODUCT_COLUMNS)
-      .eq("published", true)
-      .in("id", data.ids);
+    const products = check(
+      await client
+        .from("shop_products")
+        .select(PRODUCT_COLUMNS)
+        .eq("published", true)
+        .in("id", data.ids),
+      { contexte: "shop_products" },
+    );
     return { products: products ?? [], settings };
   });
 
@@ -116,20 +137,31 @@ export const startShopCheckout = createServerFn({ method: "POST" })
     },
   )
   .handler(async ({ data, context }) => {
-    const { stripeSecretKey, createCheckoutSession, expireCheckoutSession } =
-      await import("@/lib/stripe.server");
+    const {
+      stripeSecretKey,
+      createCheckoutSession,
+      expireCheckoutSession,
+      BOUTIQUE_SESSION_SECONDES,
+    } = await import("@/lib/stripe.server");
     if (!stripeSecretKey()) throw new Error("Le paiement en ligne n'est pas encore configuré.");
 
+    const { isSessionAttached } = await import("@/lib/paiement-rattachement");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: rows, error } = await supabaseAdmin.rpc("shop_start_checkout", {
-      _user_id: context.userId,
-      _items: data.items,
-      _waiver: data.waiver,
-    });
+    // Les refus de la base (panier vide, produit épuisé, quantité…) s'affichent au membre.
+    const rows = check(
+      await supabaseAdmin.rpc("shop_start_checkout", {
+        _user_id: context.userId,
+        _items: data.items,
+        _waiver: data.waiver,
+      }),
+      { contexte: "shop_start_checkout", metier: true },
+    );
     const order = (rows as unknown as CheckoutRow[] | null)?.[0];
-    if (error || !order) throw new Error(error?.message ?? "Commande impossible.");
+    if (!order) throw new Error("Commande impossible.");
 
     // Commande précédente encore ouverte chez Stripe (autre onglet) : fermée avant d'en ouvrir une.
+    // Son stock est déjà rendu : toute commande qui passe à « expired » le rend, une seule fois
+    // (déclencheur shop_orders_release_stock, migration 1.6.1).
     for (const old of order.superseded_sessions ?? []) {
       if ((await expireCheckoutSession(old)) === "paid") {
         await supabaseAdmin
@@ -160,8 +192,11 @@ export const startShopCheckout = createServerFn({ method: "POST" })
       successUrl: `${origin}/mes-achats?paiement=reussi&commande=${order.order_number}`,
       cancelUrl: `${origin}/boutique/panier?paiement=annule`,
       shippingCountries: order.countries,
+      // Réserve de stock limitée à 30 minutes : la session expire, le stock revient.
+      expiresInSeconds: BOUTIQUE_SESSION_SECONDES,
     });
     if (!session) {
+      // Commande abandonnée : le passage à « expired » rend son stock réservé.
       await supabaseAdmin.from("payments").update({ status: "failed" }).eq("id", order.payment_id);
       await supabaseAdmin
         .from("shop_orders")
@@ -169,10 +204,33 @@ export const startShopCheckout = createServerFn({ method: "POST" })
         .eq("id", order.order_id);
       throw new Error("Stripe n'a pas pu ouvrir la page de paiement. Réessayez dans un instant.");
     }
-    await supabaseAdmin.rpc("payment_attach_session", {
+    // Sans rattachement, le webhook ne retrouverait pas ce paiement : le client ne part pas payer.
+    const { error: attachError } = await supabaseAdmin.rpc("payment_attach_session", {
       _payment_id: order.payment_id,
       _session_id: session.id,
     });
+    if (attachError) console.error(decrireErreurBase(attachError, "payment_attach_session"));
+    const { data: attached, error: readError } = attachError
+      ? { data: null, error: null }
+      : await supabaseAdmin
+          .from("payments")
+          .select("stripe_session_id")
+          .eq("id", order.payment_id)
+          .maybeSingle();
+    if (readError) console.error(decrireErreurBase(readError, "payments"));
+    if (!isSessionAttached(attached, session.id)) {
+      console.error(
+        `[paiement] session ${session.id} non rattachée au paiement ${order.payment_id} : session expirée`,
+      );
+      await expireCheckoutSession(session.id).catch(() => "unknown");
+      // Commande abandonnée : le passage à « expired » rend son stock réservé.
+      await supabaseAdmin.from("payments").update({ status: "failed" }).eq("id", order.payment_id);
+      await supabaseAdmin
+        .from("shop_orders")
+        .update({ status: "expired" })
+        .eq("id", order.order_id);
+      throw new Error("Le paiement n'a pas pu être préparé. Rien n'a été débité. Réessayez.");
+    }
     return { url: session.url };
   });
 
@@ -185,12 +243,16 @@ export const downloadPurchase = createServerFn({ method: "POST" })
   })
   .handler(async ({ data, context }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: rows, error } = await supabaseAdmin.rpc("shop_download", {
-      _user_id: context.userId,
-      _item_id: data.itemId,
-    });
+    // Les refus de la base (limite de téléchargements, achat d'un autre membre) s'affichent au membre.
+    const rows = check(
+      await supabaseAdmin.rpc("shop_download", {
+        _user_id: context.userId,
+        _item_id: data.itemId,
+      }),
+      { contexte: "shop_download", metier: true },
+    );
     const file = rows?.[0];
-    if (error || !file) throw new Error(error?.message ?? "Achat introuvable.");
+    if (!file) throw new Error("Achat introuvable.");
     const { data: signed, error: signError } = await supabaseAdmin.storage
       .from("shop-files")
       .createSignedUrl(file.path, 300, { download: file.file_name });

@@ -1,9 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Check } from "lucide-react";
 import { PageShell } from "@/components/cds/SiteHeader";
+import { erreurChargement } from "@/components/cds/ErreurChargement";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { listPlans } from "@/lib/content.functions";
+import { formatPrice } from "@/lib/format";
 import { seo } from "@/lib/seo";
 import { requireFeature, isFeatureOn } from "@/config/features";
 
@@ -18,11 +20,7 @@ export const Route = createFileRoute("/tarifs")({
       path: "/tarifs",
       type: "website",
     }),
-  errorComponent: () => (
-    <PageShell>
-      <p className="text-sm text-muted-foreground">Les offres n'ont pas pu être chargées.</p>
-    </PageShell>
-  ),
+  errorComponent: erreurChargement("Les offres n'ont pas pu être chargées."),
   notFoundComponent: () => (
     <PageShell>
       <p className="text-sm text-muted-foreground">Cette page n'existe pas.</p>
@@ -30,15 +28,6 @@ export const Route = createFileRoute("/tarifs")({
   ),
   component: TarifsPage,
 });
-
-function formatPrice(cents: number, currency: string) {
-  if (cents === 0) return "Gratuit";
-  return new Intl.NumberFormat("fr-FR", {
-    style: "currency",
-    currency,
-    minimumFractionDigits: cents % 100 === 0 ? 0 : 2,
-  }).format(cents / 100);
-}
 
 function TarifsPage() {
   const plans = Route.useLoaderData();

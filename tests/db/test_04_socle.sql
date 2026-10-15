@@ -2,11 +2,12 @@
 \i tests/db/_helpers.sql
 BEGIN;
 -- a1 : premier compte (administrateur) · a2 : membre · a3 : membre qui supprime son compte · a4 : futur admin du studio
-INSERT INTO auth.users (id, email) VALUES
-  ('00000000-0000-0000-0000-0000000000a1', 'admin@test.fr'),
-  ('00000000-0000-0000-0000-0000000000a2', 'membre@test.fr'),
-  ('00000000-0000-0000-0000-0000000000a3', 'partant@test.fr'),
-  ('00000000-0000-0000-0000-0000000000a4', 'associe@test.fr');
+-- (adresse confirmée : la liste des adresses nommées d'avance ne promeut qu'un compte confirmé)
+INSERT INTO auth.users (id, email, email_confirmed_at) VALUES
+  ('00000000-0000-0000-0000-0000000000a1', 'admin@test.fr', NULL),
+  ('00000000-0000-0000-0000-0000000000a2', 'membre@test.fr', NULL),
+  ('00000000-0000-0000-0000-0000000000a3', 'partant@test.fr', NULL),
+  ('00000000-0000-0000-0000-0000000000a4', 'associe@test.fr', now());
 SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a1', 'admin@test.fr');
 SELECT public.bootstrap_current_user('Administrateur');
 SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000a2', 'membre@test.fr');

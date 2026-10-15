@@ -1,5 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { PageShell } from "@/components/cds/SiteHeader";
+import { erreurChargement } from "@/components/cds/ErreurChargement";
 import { CategoryBadge, TopicMeta } from "@/components/cds/ForumParts";
 import { richTextToPlain } from "@/lib/richtext";
 import { getForumOverview } from "@/lib/community.functions";
@@ -34,11 +35,7 @@ export const Route = createFileRoute("/forum/categorie/$slug")({
       ],
     };
   },
-  errorComponent: () => (
-    <PageShell>
-      <p className="text-sm text-muted-foreground">Cette thématique n'a pas pu être chargée.</p>
-    </PageShell>
-  ),
+  errorComponent: erreurChargement("Cette thématique n'a pas pu être chargée."),
   notFoundComponent: () => (
     <PageShell>
       <h1 className="text-2xl font-bold text-foreground">Thématique introuvable</h1>

@@ -50,6 +50,8 @@ function CartPage() {
   const [failed, setFailed] = useState(false);
   const [waiver, setWaiver] = useState(false);
   const [paying, setPaying] = useState(false);
+  // Relecture du stock après un refus : les quantités au-delà du stock restant s'affichent.
+  const [reload, setReload] = useState(0);
   const ids = cart.map((l) => l.productId).join(",");
 
   useEffect(() => {
@@ -77,7 +79,7 @@ function CartPage() {
     return () => {
       cancelled = true;
     };
-  }, [ready, ids]);
+  }, [ready, ids, reload]);
 
   // Lignes du panier dont le produit est toujours en vente.
   const lines = useMemo(
@@ -100,6 +102,8 @@ function CartPage() {
     settings,
   );
   const tooMany = lines.some((l) => l.product.stock !== null && l.quantity > l.product.stock);
+  // Stock limité : réservé à la commande, rendu si la page de paiement expire (30 minutes).
+  const reserved = lines.some((l) => l.product.stock !== null);
 
   useEffect(() => {
     // Produits retirés de la vente : ils quittent le panier.
@@ -123,6 +127,7 @@ function CartPage() {
       window.location.assign(url);
     } catch (err) {
       setPaying(false);
+      setReload((n) => n + 1);
       toast.error("Commande impossible.", {
         description: err instanceof Error ? err.message : "Réessayez dans un instant.",
       });
@@ -293,6 +298,11 @@ function CartPage() {
                   {tooMany ? (
                     <p className="mt-2 text-xs text-muted-foreground">
                       Ajustez les quantités au stock disponible pour commander.
+                    </p>
+                  ) : null}
+                  {reserved ? (
+                    <p className="mt-2 text-xs text-muted-foreground">
+                      Vos articles en stock limité restent réservés 30 minutes, le temps de payer.
                     </p>
                   ) : null}
                   <p className="mt-3 text-xs text-muted-foreground">

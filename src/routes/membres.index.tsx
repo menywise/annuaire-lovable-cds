@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageShell } from "@/components/cds/SiteHeader";
+import { erreurChargement } from "@/components/cds/ErreurChargement";
 import { listMembers } from "@/lib/community.functions";
 import { seo } from "@/lib/seo";
 import { requireFeature } from "@/config/features";
@@ -15,11 +16,7 @@ export const Route = createFileRoute("/membres/")({
       path: "/membres",
       type: "website",
     }),
-  errorComponent: () => (
-    <PageShell>
-      <p className="text-sm text-muted-foreground">L'annuaire n'a pas pu être chargé.</p>
-    </PageShell>
-  ),
+  errorComponent: erreurChargement("L'annuaire n'a pas pu être chargé."),
   notFoundComponent: () => (
     <PageShell>
       <p className="text-sm text-muted-foreground">Cette page n'existe pas.</p>

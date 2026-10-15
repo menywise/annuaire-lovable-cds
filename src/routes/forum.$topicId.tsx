@@ -3,15 +3,11 @@ import { useEffect, useState } from "react";
 import { CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { PageShell } from "@/components/cds/SiteHeader";
+import { erreurChargement } from "@/components/cds/ErreurChargement";
 import { ModerationNote } from "@/components/cds/ModerationNote";
 import { ReportButton } from "@/components/cds/ReportButton";
 import { ShareButtons } from "@/components/cds/ShareButtons";
-import {
-  CategoryBadge,
-  FollowButton,
-  LikeButton,
-  MemberName,
-} from "@/components/cds/ForumParts";
+import { CategoryBadge, FollowButton, LikeButton, MemberName } from "@/components/cds/ForumParts";
 import { RichText, RichTextEditor, richTextToPlain } from "@/lib/richtext";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -47,11 +43,7 @@ export const Route = createFileRoute("/forum/$topicId")({
       ],
     };
   },
-  errorComponent: () => (
-    <PageShell>
-      <p className="text-sm text-muted-foreground">Cette discussion n'a pas pu être chargée.</p>
-    </PageShell>
-  ),
+  errorComponent: erreurChargement("Cette discussion n'a pas pu être chargée."),
   notFoundComponent: () => (
     <PageShell>
       <h1 className="text-2xl font-bold text-foreground">Discussion introuvable</h1>
@@ -204,7 +196,11 @@ function TopicPage() {
                 <RichText value={item.content} className="mt-2 text-sm text-muted-foreground" />
                 <ModerationNote note={item.moderation_note} at={item.moderated_at} />
                 <div className="mt-3 flex flex-wrap items-center gap-2">
-                  <ReportButton contentType="reponse" contentId={item.id} authorId={item.author_id} />
+                  <ReportButton
+                    contentType="reponse"
+                    contentId={item.id}
+                    authorId={item.author_id}
+                  />
                   <LikeButton replyId={item.id} initialCount={item.likes} />
                   {isOwner ? (
                     <button

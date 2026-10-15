@@ -1,5 +1,5 @@
 /**
- * CDS — Plan de recette (inspiré de Goldwing : lib/qa-checklist.ts et admin.recettage.tsx).
+ * CDS — Plan de recette (liste de contrôle et écran /admin/recettage).
  *
  * Fichier SANS dépendance ni alias « @/ » : il est lu à la fois par l'écran /admin/recettage
  * et par le robot `tests/e2e/recette.ts` (Node l'exécute directement).
@@ -110,6 +110,8 @@ export const QA_PAGES: QaPage[] = [
     discover: { from: "/membres", match: "^/membres/[^/?#]+$" },
   },
   { path: "/temoignages", label: "Témoignages", role: "visiteur", module: "testimonials" },
+  { path: "/ameliorations", label: "Améliorations", role: "visiteur", module: "reports" },
+  { path: "/signalement", label: "Suivi d'un signalement", role: "visiteur", module: "reports" },
   { path: "/avis", label: "Avis", role: "visiteur", module: "reviews" },
   { path: "/tarifs", label: "Tarifs", role: "visiteur", module: "pricing", vitrine: true },
   { path: "/demarrer", label: "Démarrer", role: "visiteur", module: "onboarding", vitrine: true },
@@ -214,6 +216,7 @@ export const QA_PAGES: QaPage[] = [
   { path: "/decouvrir", label: "Découvrir", role: "membre", module: "onboarding" },
   { path: "/messagerie", label: "Messagerie", role: "membre", module: "messaging" },
   { path: "/mes-annonces", label: "Mes annonces", role: "membre", module: "marketplace" },
+  { path: "/mes-fiches", label: "Mes fiches", role: "membre", module: "directory" },
   { path: "/mes-formations", label: "Mes formations", role: "membre", module: "lms" },
   { path: "/mes-achats", label: "Mes achats", role: "membre", module: "shop" },
   { path: "/crm", label: "Suivi de contacts", role: "membre", module: "crm" },
@@ -529,7 +532,7 @@ export const QA_BUDGETS = {
 export const QA_CHECKLIST_TOTAL = QA_CHECKLIST.reduce((n, s) => n + s.items.length, 0);
 
 /**
- * Contrôles du catalogue d'audit (dépôt agents-mac97000, src/lib/audit-offer.ts) que le robot
+ * Contrôles du catalogue d'audit du robot (codes r1, r3, p2, s1, s3, l3) que le robot
  * mesure automatiquement. Les remarques du rapport commencent par leur code, ex. « [s1] … ».
  */
 export const QA_AUDIT_CODES: Record<string, { label: string; agent: string }> = {

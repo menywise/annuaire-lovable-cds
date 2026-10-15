@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Check } from "lucide-react";
 import { PageShell } from "@/components/cds/SiteHeader";
+import { erreurChargement } from "@/components/cds/ErreurChargement";
 import { NewsletterForm } from "@/components/cds/NewsletterForm";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -20,11 +21,7 @@ export const Route = createFileRoute("/demarrer")({
       path: "/demarrer",
       type: "website",
     }),
-  errorComponent: () => (
-    <PageShell>
-      <p className="text-sm text-muted-foreground">Cette page n'a pas pu être chargée.</p>
-    </PageShell>
-  ),
+  errorComponent: erreurChargement("Cette page n'a pas pu être chargée."),
   notFoundComponent: () => (
     <PageShell>
       <p className="text-sm text-muted-foreground">Cette page n'existe pas.</p>

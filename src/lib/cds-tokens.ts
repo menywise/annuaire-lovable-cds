@@ -75,6 +75,3 @@ export const cds = {
     maxContentWidth: "1200px",
   },
 } as const;
-
-export type CdsColors = keyof typeof cds.colors;
-export type CdsSubtle = keyof typeof cds.subtle;

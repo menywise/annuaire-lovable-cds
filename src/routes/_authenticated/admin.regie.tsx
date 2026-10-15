@@ -82,7 +82,10 @@ function AdminAdsPage() {
 
   const load = useCallback(async () => {
     const [p, c, e] = await Promise.all([
-      supabase.from("ad_placements").select("id, name, slug, location, format, active, width, height").order("name"),
+      supabase
+        .from("ad_placements")
+        .select("id, name, slug, location, format, active, width, height")
+        .order("name"),
       supabase
         .from("ad_campaigns")
         .select(
@@ -185,7 +188,10 @@ function AdminAdsPage() {
       title="Régie publicitaire"
       intro="Un emplacement décrit où l'encart s'affiche ; une campagne décide de ce qui y passe, et pendant combien de temps."
     >
-      <form onSubmit={addPlacement} className="grid gap-3 rounded-xl border border-border bg-card p-5 sm:grid-cols-3">
+      <form
+        onSubmit={addPlacement}
+        className="grid gap-3 rounded-xl border border-border bg-card p-5 sm:grid-cols-3"
+      >
         <div>
           <Label htmlFor="pl-name">Nom de l'emplacement</Label>
           <Input id="pl-name" name="name" required className="mt-1" placeholder="Bandeau blog" />
@@ -224,7 +230,10 @@ function AdminAdsPage() {
       </form>
 
       {failed ? (
-        <p role="alert" className="mt-6 rounded-lg border border-destructive/40 p-4 text-sm text-destructive-text">
+        <p
+          role="alert"
+          className="mt-6 rounded-lg border border-destructive/40 p-4 text-sm text-destructive-text"
+        >
           Une partie de la régie n'a pas pu être chargée.{" "}
           <button type="button" className="underline" onClick={() => void load()}>
             Réessayer
@@ -244,18 +253,25 @@ function AdminAdsPage() {
                   <div className="flex flex-wrap items-center gap-2">
                     <p className="text-sm font-semibold text-foreground">{item.name}</p>
                     <span className="text-xs text-muted-foreground">
-                      code « {item.slug} » · {LOCATIONS.find((l) => l.value === item.location)?.label ?? item.location} ·{" "}
+                      code « {item.slug} » ·{" "}
+                      {LOCATIONS.find((l) => l.value === item.location)?.label ?? item.location} ·{" "}
                       {count} campagne{count > 1 ? "s" : ""} · {item.active ? "actif" : "désactivé"}
                     </span>
                     <div className="ml-auto flex flex-wrap gap-2">
-                      <Button size="sm" variant="outline" onClick={() => setEditing(editing === key ? null : key)}>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setEditing(editing === key ? null : key)}
+                      >
                         {editing === key ? "Fermer" : "Modifier"}
                       </Button>
                       <ConfirmButton
                         title={`Supprimer l'emplacement ${item.name}`}
                         question={`Supprimer l'emplacement « ${item.name} » ?`}
                         detail={`Ses ${count} campagnes et leurs statistiques sont supprimées définitivement. Pour l'arrêter sans rien perdre, désactivez-le.`}
-                        onConfirm={() => removeRow("ad_placements", item.id, "Emplacement supprimé.")}
+                        onConfirm={() =>
+                          removeRow("ad_placements", item.id, "Emplacement supprimé.")
+                        }
                       />
                     </div>
                   </div>
@@ -265,7 +281,12 @@ function AdminAdsPage() {
                         idPrefix={key}
                         fields={[
                           { key: "name", label: "Nom", type: "text", required: true },
-                          { key: "location", label: "Position", type: "select", options: LOCATIONS },
+                          {
+                            key: "location",
+                            label: "Position",
+                            type: "select",
+                            options: LOCATIONS,
+                          },
                           { key: "format", label: "Format", type: "select", options: FORMATS },
                           { key: "width", label: "Largeur (px)", type: "number", nullable: true },
                           { key: "height", label: "Hauteur (px)", type: "number", nullable: true },
@@ -274,13 +295,19 @@ function AdminAdsPage() {
                         values={item}
                         onCancel={() => setEditing(null)}
                         onSave={async (changes) => {
-                          const ok = await write("ad_placements", item.id, changes, "Emplacement modifié.");
+                          const ok = await write(
+                            "ad_placements",
+                            item.id,
+                            changes,
+                            "Emplacement modifié.",
+                          );
                           if (ok) setEditing(null);
                           return ok;
                         }}
                       />
                       <p className="mt-2 text-xs text-muted-foreground">
-                        Le code « {item.slug} » n'est pas modifiable : il relie l'emplacement aux pages du site.
+                        Le code « {item.slug} » n'est pas modifiable : il relie l'emplacement aux
+                        pages du site.
                       </p>
                     </div>
                   ) : null}
@@ -289,7 +316,10 @@ function AdminAdsPage() {
             })}
           </ul>
 
-          <form onSubmit={addCampaign} className="mt-6 grid gap-3 rounded-xl border border-border bg-card p-5 sm:grid-cols-2">
+          <form
+            onSubmit={addCampaign}
+            className="mt-6 grid gap-3 rounded-xl border border-border bg-card p-5 sm:grid-cols-2"
+          >
             <div>
               <Label htmlFor="ca-placement">Emplacement</Label>
               <select
@@ -328,7 +358,14 @@ function AdminAdsPage() {
             </div>
             <div>
               <Label htmlFor="ca-link">Lien de destination</Label>
-              <Input id="ca-link" name="link_url" type="url" required className="mt-1" placeholder="https://" />
+              <Input
+                id="ca-link"
+                name="link_url"
+                type="url"
+                required
+                className="mt-1"
+                placeholder="https://"
+              />
             </div>
             <div className="sm:col-span-2">
               <ImageField key={campaignFormKey} id="ca-image" name="image_url" label="Visuel" />
@@ -368,7 +405,8 @@ function AdminAdsPage() {
           <ul className="mt-3 space-y-3">
             {campaigns.map((item) => {
               const stat = stats[item.id] ?? { impressions: 0, clicks: 0 };
-              const ctr = stat.impressions > 0 ? ((stat.clicks / stat.impressions) * 100).toFixed(1) : "0,0";
+              const ctr =
+                stat.impressions > 0 ? ((stat.clicks / stat.impressions) * 100).toFixed(1) : "0,0";
               return (
                 <li key={item.id} className="rounded-xl border border-border bg-card p-5">
                   <div className="flex flex-wrap items-center gap-2">
@@ -381,7 +419,9 @@ function AdminAdsPage() {
                   <div className="mt-3 flex flex-wrap gap-2">
                     <Button
                       variant={item.active ? "outline" : "default"}
-                      title={item.active ? "Mettre cette campagne en pause" : "Activer cette campagne"}
+                      title={
+                        item.active ? "Mettre cette campagne en pause" : "Activer cette campagne"
+                      }
                       onClick={() =>
                         void write(
                           "ad_campaigns",
@@ -395,7 +435,9 @@ function AdminAdsPage() {
                     </Button>
                     <Button
                       variant="outline"
-                      onClick={() => setEditing(editing === `ca:${item.id}` ? null : `ca:${item.id}`)}
+                      onClick={() =>
+                        setEditing(editing === `ca:${item.id}` ? null : `ca:${item.id}`)
+                      }
                     >
                       {editing === `ca:${item.id}` ? "Fermer" : "Modifier"}
                     </Button>
@@ -423,7 +465,13 @@ function AdminAdsPage() {
                           { key: "contact_email", label: "E-mail de l'annonceur", type: "email" },
                           { key: "title", label: "Message affiché", type: "text", required: true },
                           { key: "alt_text", label: "Description du visuel", type: "text" },
-                          { key: "link_url", label: "Lien de destination", type: "url", required: true, wide: true },
+                          {
+                            key: "link_url",
+                            label: "Lien de destination",
+                            type: "url",
+                            required: true,
+                            wide: true,
+                          },
                           { key: "image_url", label: "Visuel", type: "image", nullable: true },
                           { key: "starts_at", label: "Début", type: "datetime" },
                           { key: "ends_at", label: "Fin", type: "datetime" },
@@ -433,7 +481,12 @@ function AdminAdsPage() {
                         values={item}
                         onCancel={() => setEditing(null)}
                         onSave={async (changes) => {
-                          const ok = await write("ad_campaigns", item.id, changes, "Campagne modifiée.");
+                          const ok = await write(
+                            "ad_campaigns",
+                            item.id,
+                            changes,
+                            "Campagne modifiée.",
+                          );
                           if (ok) setEditing(null);
                           return ok;
                         }}

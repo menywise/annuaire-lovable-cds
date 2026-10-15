@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AProposRouteImport } from './routes/a-propos'
+import { Route as AmeliorationsRouteImport } from './routes/ameliorations'
 import { Route as AvisRouteImport } from './routes/avis'
 import { Route as ComposantsRouteImport } from './routes/composants'
 import { Route as ContactRouteImport } from './routes/contact'
@@ -30,6 +31,7 @@ import { Route as RechercheRouteImport } from './routes/recherche'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as RssDotxmlRouteImport } from './routes/rss[.]xml'
+import { Route as SignalementRouteImport } from './routes/signalement'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TarifsRouteImport } from './routes/tarifs'
@@ -40,6 +42,7 @@ import { Route as AuthenticatedCompteRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedDecouvrirRouteImport } from './routes/_authenticated/decouvrir'
 import { Route as AuthenticatedMesAchatsRouteImport } from './routes/_authenticated/mes-achats'
 import { Route as AuthenticatedMesAnnoncesRouteImport } from './routes/_authenticated/mes-annonces'
+import { Route as AuthenticatedMesFichesRouteImport } from './routes/_authenticated/mes-fiches'
 import { Route as AuthenticatedMesFormationsRouteImport } from './routes/_authenticated/mes-formations'
 import { Route as AuthenticatedProfilRouteImport } from './routes/_authenticated/profil'
 import { Route as AuthenticatedTableauDeBordRouteImport } from './routes/_authenticated/tableau-de-bord'
@@ -121,6 +124,11 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
 const AProposRoute = AProposRouteImport.update({
   id: '/a-propos',
   path: '/a-propos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AmeliorationsRoute = AmeliorationsRouteImport.update({
+  id: '/ameliorations',
+  path: '/ameliorations',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AvisRoute = AvisRouteImport.update({
@@ -213,6 +221,11 @@ const RssDotxmlRoute = RssDotxmlRouteImport.update({
   path: '/rss.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SignalementRoute = SignalementRouteImport.update({
+  id: '/signalement',
+  path: '/signalement',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
   path: '/signup',
@@ -265,6 +278,11 @@ const AuthenticatedMesAnnoncesRoute =
     path: '/mes-annonces',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedMesFichesRoute = AuthenticatedMesFichesRouteImport.update({
+  id: '/mes-fiches',
+  path: '/mes-fiches',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedMesFormationsRoute =
   AuthenticatedMesFormationsRouteImport.update({
     id: '/mes-formations',
@@ -636,6 +654,7 @@ const LovableEmailTransactionalPreviewRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/a-propos': typeof AProposRoute
+  '/ameliorations': typeof AmeliorationsRoute
   '/avis': typeof AvisRoute
   '/composants': typeof ComposantsRoute
   '/contact': typeof ContactRoute
@@ -654,6 +673,7 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/rss.xml': typeof RssDotxmlRoute
+  '/signalement': typeof SignalementRoute
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tarifs': typeof TarifsRoute
@@ -664,6 +684,7 @@ export interface FileRoutesByFullPath {
   '/decouvrir': typeof AuthenticatedDecouvrirRoute
   '/mes-achats': typeof AuthenticatedMesAchatsRoute
   '/mes-annonces': typeof AuthenticatedMesAnnoncesRoute
+  '/mes-fiches': typeof AuthenticatedMesFichesRoute
   '/mes-formations': typeof AuthenticatedMesFormationsRoute
   '/profil': typeof AuthenticatedProfilRoute
   '/tableau-de-bord': typeof AuthenticatedTableauDeBordRoute
@@ -736,6 +757,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/a-propos': typeof AProposRoute
+  '/ameliorations': typeof AmeliorationsRoute
   '/avis': typeof AvisRoute
   '/composants': typeof ComposantsRoute
   '/contact': typeof ContactRoute
@@ -754,6 +776,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/rss.xml': typeof RssDotxmlRoute
+  '/signalement': typeof SignalementRoute
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tarifs': typeof TarifsRoute
@@ -764,6 +787,7 @@ export interface FileRoutesByTo {
   '/decouvrir': typeof AuthenticatedDecouvrirRoute
   '/mes-achats': typeof AuthenticatedMesAchatsRoute
   '/mes-annonces': typeof AuthenticatedMesAnnoncesRoute
+  '/mes-fiches': typeof AuthenticatedMesFichesRoute
   '/mes-formations': typeof AuthenticatedMesFormationsRoute
   '/profil': typeof AuthenticatedProfilRoute
   '/tableau-de-bord': typeof AuthenticatedTableauDeBordRoute
@@ -838,6 +862,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/a-propos': typeof AProposRoute
+  '/ameliorations': typeof AmeliorationsRoute
   '/avis': typeof AvisRoute
   '/composants': typeof ComposantsRoute
   '/contact': typeof ContactRoute
@@ -856,6 +881,7 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/rss.xml': typeof RssDotxmlRoute
+  '/signalement': typeof SignalementRoute
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tarifs': typeof TarifsRoute
@@ -866,6 +892,7 @@ export interface FileRoutesById {
   '/_authenticated/decouvrir': typeof AuthenticatedDecouvrirRoute
   '/_authenticated/mes-achats': typeof AuthenticatedMesAchatsRoute
   '/_authenticated/mes-annonces': typeof AuthenticatedMesAnnoncesRoute
+  '/_authenticated/mes-fiches': typeof AuthenticatedMesFichesRoute
   '/_authenticated/mes-formations': typeof AuthenticatedMesFormationsRoute
   '/_authenticated/profil': typeof AuthenticatedProfilRoute
   '/_authenticated/tableau-de-bord': typeof AuthenticatedTableauDeBordRoute
@@ -940,6 +967,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/a-propos'
+    | '/ameliorations'
     | '/avis'
     | '/composants'
     | '/contact'
@@ -958,6 +986,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/robots.txt'
     | '/rss.xml'
+    | '/signalement'
     | '/signup'
     | '/sitemap.xml'
     | '/tarifs'
@@ -968,6 +997,7 @@ export interface FileRouteTypes {
     | '/decouvrir'
     | '/mes-achats'
     | '/mes-annonces'
+    | '/mes-fiches'
     | '/mes-formations'
     | '/profil'
     | '/tableau-de-bord'
@@ -1040,6 +1070,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/a-propos'
+    | '/ameliorations'
     | '/avis'
     | '/composants'
     | '/contact'
@@ -1058,6 +1089,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/robots.txt'
     | '/rss.xml'
+    | '/signalement'
     | '/signup'
     | '/sitemap.xml'
     | '/tarifs'
@@ -1068,6 +1100,7 @@ export interface FileRouteTypes {
     | '/decouvrir'
     | '/mes-achats'
     | '/mes-annonces'
+    | '/mes-fiches'
     | '/mes-formations'
     | '/profil'
     | '/tableau-de-bord'
@@ -1141,6 +1174,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/a-propos'
+    | '/ameliorations'
     | '/avis'
     | '/composants'
     | '/contact'
@@ -1159,6 +1193,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/robots.txt'
     | '/rss.xml'
+    | '/signalement'
     | '/signup'
     | '/sitemap.xml'
     | '/tarifs'
@@ -1169,6 +1204,7 @@ export interface FileRouteTypes {
     | '/_authenticated/decouvrir'
     | '/_authenticated/mes-achats'
     | '/_authenticated/mes-annonces'
+    | '/_authenticated/mes-fiches'
     | '/_authenticated/mes-formations'
     | '/_authenticated/profil'
     | '/_authenticated/tableau-de-bord'
@@ -1243,6 +1279,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AProposRoute: typeof AProposRoute
+  AmeliorationsRoute: typeof AmeliorationsRoute
   AvisRoute: typeof AvisRoute
   ComposantsRoute: typeof ComposantsRoute
   ContactRoute: typeof ContactRoute
@@ -1261,6 +1298,7 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   RssDotxmlRoute: typeof RssDotxmlRoute
+  SignalementRoute: typeof SignalementRoute
   SignupRoute: typeof SignupRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TarifsRoute: typeof TarifsRoute
@@ -1325,6 +1363,13 @@ declare module '@tanstack/react-router' {
       path: '/a-propos'
       fullPath: '/a-propos'
       preLoaderRoute: typeof AProposRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ameliorations': {
+      id: '/ameliorations'
+      path: '/ameliorations'
+      fullPath: '/ameliorations'
+      preLoaderRoute: typeof AmeliorationsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/avis': {
@@ -1453,6 +1498,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RssDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/signalement': {
+      id: '/signalement'
+      path: '/signalement'
+      fullPath: '/signalement'
+      preLoaderRoute: typeof SignalementRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/signup': {
       id: '/signup'
       path: '/signup'
@@ -1521,6 +1573,13 @@ declare module '@tanstack/react-router' {
       path: '/mes-annonces'
       fullPath: '/mes-annonces'
       preLoaderRoute: typeof AuthenticatedMesAnnoncesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/mes-fiches': {
+      id: '/_authenticated/mes-fiches'
+      path: '/mes-fiches'
+      fullPath: '/mes-fiches'
+      preLoaderRoute: typeof AuthenticatedMesFichesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/mes-formations': {
@@ -2007,6 +2066,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDecouvrirRoute: typeof AuthenticatedDecouvrirRoute
   AuthenticatedMesAchatsRoute: typeof AuthenticatedMesAchatsRoute
   AuthenticatedMesAnnoncesRoute: typeof AuthenticatedMesAnnoncesRoute
+  AuthenticatedMesFichesRoute: typeof AuthenticatedMesFichesRoute
   AuthenticatedMesFormationsRoute: typeof AuthenticatedMesFormationsRoute
   AuthenticatedProfilRoute: typeof AuthenticatedProfilRoute
   AuthenticatedTableauDeBordRoute: typeof AuthenticatedTableauDeBordRoute
@@ -2047,6 +2107,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDecouvrirRoute: AuthenticatedDecouvrirRoute,
   AuthenticatedMesAchatsRoute: AuthenticatedMesAchatsRoute,
   AuthenticatedMesAnnoncesRoute: AuthenticatedMesAnnoncesRoute,
+  AuthenticatedMesFichesRoute: AuthenticatedMesFichesRoute,
   AuthenticatedMesFormationsRoute: AuthenticatedMesFormationsRoute,
   AuthenticatedProfilRoute: AuthenticatedProfilRoute,
   AuthenticatedTableauDeBordRoute: AuthenticatedTableauDeBordRoute,
@@ -2091,6 +2152,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AProposRoute: AProposRoute,
+  AmeliorationsRoute: AmeliorationsRoute,
   AvisRoute: AvisRoute,
   ComposantsRoute: ComposantsRoute,
   ContactRoute: ContactRoute,
@@ -2109,6 +2171,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   RobotsDottxtRoute: RobotsDottxtRoute,
   RssDotxmlRoute: RssDotxmlRoute,
+  SignalementRoute: SignalementRoute,
   SignupRoute: SignupRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TarifsRoute: TarifsRoute,

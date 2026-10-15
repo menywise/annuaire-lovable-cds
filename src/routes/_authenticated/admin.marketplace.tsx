@@ -106,7 +106,10 @@ function AdminMarketplacePage() {
       </details>
 
       {failed ? (
-        <p role="alert" className="mt-6 rounded-lg border border-destructive/40 p-4 text-sm text-destructive-text">
+        <p
+          role="alert"
+          className="mt-6 rounded-lg border border-destructive/40 p-4 text-sm text-destructive-text"
+        >
           Les annonces n'ont pas pu être chargées.{" "}
           <button type="button" className="underline" onClick={() => void load()}>
             Réessayer
@@ -144,7 +147,9 @@ function AdminMarketplacePage() {
                 <div className="mt-3 flex flex-wrap gap-2">
                   <Button
                     variant={item.approved ? "outline" : "default"}
-                    title={item.approved ? "Retirer cette annonce du site" : "Valider cette annonce"}
+                    title={
+                      item.approved ? "Retirer cette annonce du site" : "Valider cette annonce"
+                    }
                     onClick={() =>
                       void update(
                         item.id,
@@ -187,7 +192,10 @@ function AdminMarketplacePage() {
                     title="Supprimer définitivement cette annonce"
                     question={`Supprimer l'annonce « ${item.title} » ?`}
                     onConfirm={async () => {
-                      const { error } = await supabase.from("marketplace_listings").delete().eq("id", item.id);
+                      const { error } = await supabase
+                        .from("marketplace_listings")
+                        .delete()
+                        .eq("id", item.id);
                       if (error) toast.error("Annonce non supprimée.");
                       else {
                         toast.success("Annonce supprimée.");
@@ -202,7 +210,12 @@ function AdminMarketplacePage() {
                       idPrefix={`mk-${item.id}`}
                       fields={[
                         { key: "title", label: "Titre", type: "text", required: true },
-                        { key: "slug", label: "Adresse (/marketplace/…)", type: "text", required: true },
+                        {
+                          key: "slug",
+                          label: "Adresse (/marketplace/…)",
+                          type: "text",
+                          required: true,
+                        },
                         {
                           key: "category_id",
                           label: "Catégorie",
@@ -270,7 +283,10 @@ function ListingPhotos({ item, onSaved }: { item: Listing; onSaved: () => void }
 
   async function save(event: React.FormEvent) {
     event.preventDefault();
-    const { error } = await supabase.from("marketplace_listings").update({ photos }).eq("id", item.id);
+    const { error } = await supabase
+      .from("marketplace_listings")
+      .update({ photos })
+      .eq("id", item.id);
     if (error) toast.error("Photos non enregistrées.");
     else {
       toast.success("Photos enregistrées.");
@@ -280,7 +296,13 @@ function ListingPhotos({ item, onSaved }: { item: Listing; onSaved: () => void }
 
   return (
     <form onSubmit={save} className="mt-4 space-y-3 border-t border-border pt-4">
-      <ImageListField id={`mk-photos-${item.id}`} label="Photos" value={photos} onChange={setPhotos} max={5} />
+      <ImageListField
+        id={`mk-photos-${item.id}`}
+        label="Photos"
+        value={photos}
+        onChange={setPhotos}
+        max={5}
+      />
       <Button type="submit" size="sm">
         Enregistrer les photos
       </Button>

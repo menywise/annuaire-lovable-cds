@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { MapPin } from "lucide-react";
 import { toast } from "sonner";
 import { PageShell } from "@/components/cds/SiteHeader";
+import { erreurChargement } from "@/components/cds/ErreurChargement";
 import { Button } from "@/components/ui/button";
 import { RichText } from "@/lib/richtext";
 import { requireFeature } from "@/config/features";
@@ -10,7 +11,7 @@ import { getMarketplaceListing } from "@/lib/marketplace.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { absoluteUrl } from "@/lib/site-config";
-import { breadcrumbJsonLd, seo } from "@/lib/seo";
+import { breadcrumbJsonLd, jsonLdScript, seo } from "@/lib/seo";
 import { formatDate, formatPrice } from "@/lib/format";
 import { ReportButton } from "@/components/cds/ReportButton";
 
@@ -42,31 +43,24 @@ export const Route = createFileRoute("/marketplace/$slug")({
           { name: "Petites annonces", path: "/marketplace" },
           { name: listing.title, path: `/marketplace/${listing.slug}` },
         ]),
-        {
-          type: "application/ld+json",
-          children: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Product",
-            name: listing.title,
-            description,
-            url: absoluteUrl(`/marketplace/${listing.slug}`),
-            ...(photo ? { image: photo } : {}),
-            offers: {
-              "@type": "Offer",
-              price: (listing.price_cents / 100).toFixed(2),
-              priceCurrency: listing.currency ?? "EUR",
-              availability: "https://schema.org/InStock",
-            },
-          }),
-        },
+        jsonLdScript({
+          "@context": "https://schema.org",
+          "@type": "Product",
+          name: listing.title,
+          description,
+          url: absoluteUrl(`/marketplace/${listing.slug}`),
+          ...(photo ? { image: photo } : {}),
+          offers: {
+            "@type": "Offer",
+            price: (listing.price_cents / 100).toFixed(2),
+            priceCurrency: listing.currency ?? "EUR",
+            availability: "https://schema.org/InStock",
+          },
+        }),
       ],
     };
   },
-  errorComponent: () => (
-    <PageShell>
-      <p className="text-sm text-muted-foreground">Cette annonce n'a pas pu être chargée.</p>
-    </PageShell>
-  ),
+  errorComponent: erreurChargement("Cette annonce n'a pas pu être chargée."),
   notFoundComponent: () => (
     <PageShell>
       <p className="text-sm text-muted-foreground">

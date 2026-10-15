@@ -1,6 +1,6 @@
 /**
  * CDS — Module D « Paiement » : appels à Stripe côté serveur uniquement.
- * Repris de Goldwing (create-checkout-session, stripe-webhook), sans SDK : l'API REST suffit.
+ * Sans SDK : l'API REST suffit (création de session Checkout, webhook).
  *
  * Secrets lus dans l'environnement du serveur, jamais en base, jamais dans le code, jamais logués :
  * - STRIPE_SECRET_KEY : clé secrète (sk_test_… ou sk_live_…)
@@ -10,6 +10,14 @@
 const STRIPE_API = "https://api.stripe.com/v1";
 /** Écart maximal accepté entre l'horodatage signé et l'horloge du serveur. */
 const SIGNATURE_TOLERANCE_SECONDS = 300;
+
+/**
+ * Durée de vie d'une page de paiement de la boutique, donc de la réserve de stock : 30 minutes.
+ * Stripe exige au moins 30 minutes après la création de la session, mesurées avec sa propre
+ * horloge : une minute de marge évite un refus. À l'expiration, le webhook
+ * checkout.session.expired rend le stock (payment_mark_status).
+ */
+export const BOUTIQUE_SESSION_SECONDES = 30 * 60 + 60;
 
 export function stripeSecretKey() {
   return process.env["STRIPE_SECRET_KEY"] ?? "";
@@ -38,6 +46,8 @@ export type CheckoutInput = {
   cancelUrl: string;
   /** Codes pays (FR, BE…) : Stripe demande alors l'adresse de livraison. */
   shippingCountries?: ReadonlyArray<string>;
+  /** Durée de vie de la session en secondes ; sans valeur, celle de Stripe (24 heures). */
+  expiresInSeconds?: number;
 };
 
 /** Crée une session Stripe Checkout (paiement unique). Les montants viennent de la base. */
@@ -61,6 +71,9 @@ export async function createCheckoutSession(input: CheckoutInput) {
     params.set(`shipping_address_collection[allowed_countries][${i}]`, country);
   });
   if (input.email) params.set("customer_email", input.email);
+  if (input.expiresInSeconds) {
+    params.set("expires_at", String(Math.floor(Date.now() / 1000) + input.expiresInSeconds));
+  }
 
   const res = await fetch(`${STRIPE_API}/checkout/sessions`, {
     method: "POST",

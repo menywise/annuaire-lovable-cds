@@ -91,7 +91,8 @@ function AdminForumPage() {
 
   async function move(index: number, delta: number) {
     if (!categories) return;
-    if (!(await moveRow("forum_categories", categories, index, delta))) toast.error("Ordre non enregistré.");
+    if (!(await moveRow("forum_categories", categories, index, delta)))
+      toast.error("Ordre non enregistré.");
     void load();
   }
 
@@ -198,7 +199,8 @@ function CategoryRow({
   const [name, setName] = useState(category.name);
   const [description, setDescription] = useState(category.description);
   const [color, setColor] = useState(category.color);
-  const dirty = name !== category.name || description !== category.description || color !== category.color;
+  const dirty =
+    name !== category.name || description !== category.description || color !== category.color;
   const id = (field: string) => `${field}-${category.id}`;
 
   return (
@@ -220,7 +222,11 @@ function CategoryRow({
         </div>
         <div className="space-y-1.5">
           <Label htmlFor={id("desc")}>Description</Label>
-          <Input id={id("desc")} value={description} onChange={(e) => setDescription(e.target.value)} />
+          <Input
+            id={id("desc")}
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
         </div>
         <div className="space-y-1.5">
           <Label htmlFor={id("color")}>Couleur</Label>

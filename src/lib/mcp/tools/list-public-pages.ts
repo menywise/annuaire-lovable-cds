@@ -1,6 +1,7 @@
 import { defineTool } from "@lovable.dev/mcp-js";
 import { z } from "zod";
-import { errorResult, siteBaseUrl, textResult } from "../supabase";
+import { requireAdmin } from "../guard";
+import { errorResult, fetchMemeOrigine, siteBaseUrl, textResult } from "../supabase";
 
 export default defineTool({
   name: "list_public_pages",
@@ -12,14 +13,19 @@ export default defineTool({
       .string()
       .url()
       .optional()
-      .describe("Adresse du site à auditer, si différente de la production."),
+      .describe("Adresse du site : celle réglée en admin ou celle de ce serveur (préproduction)."),
   },
   annotations: { readOnlyHint: true, openWorldHint: true },
   handler: async ({ base_url }, ctx) => {
-    const base = await siteBaseUrl(base_url).catch(() => null);
-    if (!base) return errorResult("Adresse du site inconnue : indiquez base_url.");
+    let base: string;
     try {
-      const res = await fetch(`${base}/sitemap.xml`, { signal: ctx.signal });
+      await requireAdmin(ctx);
+      base = await siteBaseUrl(base_url);
+    } catch (e) {
+      return errorResult((e as Error).message);
+    }
+    try {
+      const { res } = await fetchMemeOrigine(`${base}/sitemap.xml`, ctx.signal);
       if (!res.ok) return errorResult(`Plan du site inaccessible (${res.status}).`);
       const xml = await res.text();
       const urls = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);

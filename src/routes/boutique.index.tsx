@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { Download, Package } from "lucide-react";
 import { PageShell } from "@/components/cds/SiteHeader";
+import { erreurChargement } from "@/components/cds/ErreurChargement";
 import { Label } from "@/components/ui/label";
 import { requireFeature } from "@/config/features";
 import { getShopCatalog } from "@/lib/shop.functions";
@@ -19,11 +20,7 @@ export const Route = createFileRoute("/boutique/")({
         "Objets expédiés chez vous, guides PDF et livres numériques à télécharger dès le paiement.",
       path: "/boutique",
     }),
-  errorComponent: () => (
-    <PageShell>
-      <p className="text-sm text-muted-foreground">La boutique n'a pas pu être chargée.</p>
-    </PageShell>
-  ),
+  errorComponent: erreurChargement("La boutique n'a pas pu être chargée."),
   component: ShopPage,
 });
 

@@ -1,34 +1,136 @@
 /**
- * Lot 13 a : le socle ne contient rien de propre à un projet. Chaque clone règle son nom, son
- * adresse et son domaine d'envoi dans l'administration ; le code n'en garde aucune trace.
+ * Lot 13 a, étendu par le socle 1.6.1 : le socle ne contient rien de propre à un projet. Chaque clone
+ * règle son nom, son adresse et son domaine d'envoi dans l'administration ; ni le code, ni les
+ * documents, ni le SQL, ni les tests n'en gardent de trace : aucun domaine, aucun dépôt, aucun prénom,
+ * aucun nom de projet réel, aucun chemin de disque.
  * Lancer : node --test tests/unit/*.test.ts
  */
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readdirSync, readFileSync, statSync } from "node:fs";
-import { join } from "node:path";
+import { join, relative } from "node:path";
 
-const ROOT = join(import.meta.dirname, "..", "..", "src");
-// Domaines et noms propres à un projet du studio : jamais dans le code du socle.
-const FORBIDDEN = [/manuelrohaut\.fr/i, /cds-mac97000\.lovable\.app/i];
+const DEPOT = join(import.meta.dirname, "..", "..");
+const SRC = join(DEPOT, "src");
 
-function files(dir: string): string[] {
+// Motifs interdits partout dans le socle : domaines, dépôts, prénoms, projets réels, chemins de disque.
+// Les exemples neutres (exemple.fr, « le premier clone ») sont les seuls admis dans les documents.
+const FORBIDDEN: { motif: RegExp; raison: string }[] = [
+  { motif: /manuelrohaut/i, raison: "domaine d'un projet réel" },
+  { motif: /mac97000/i, raison: "suffixe des dépôts d'un studio réel" },
+  { motif: /menywise/i, raison: "organisation GitHub d'un studio réel" },
+  { motif: /\bManu\b/, raison: "prénom" },
+  { motif: /\bRohaut\b/i, raison: "nom de famille" },
+  { motif: /goldwing/i, raison: "nom d'un autre projet" },
+  { motif: /kairognosia|skiagnosia/i, raison: "nom d'un autre projet" },
+  { motif: /holokai/i, raison: "nom d'un autre projet (coffre de notes)" },
+  { motif: /\bunuhi\b/i, raison: "nom d'un outil d'un autre projet" },
+  { motif: /annuaire-lovable-cds/i, raison: "dépôt d'un clone réel" },
+  { motif: /community\.cube\.fr/i, raison: "site de référence d'un autre projet" },
+  { motif: /\/Users\/|\/home\/[a-z]/, raison: "chemin de disque" },
+  { motif: /\b[A-Z]:\\[A-Za-z_]/, raison: "chemin de disque Windows" },
+];
+
+// Dossiers du socle passés au peigne fin, depuis la racine du dépôt.
+const DOSSIERS = ["src", "docs", "supabase", "tests", ".github", ".lovable", "public"];
+// Dossiers jamais lus : dépendances, builds, historique git, rapports du robot.
+const DOSSIERS_IGNORES = new Set([
+  "node_modules",
+  "dist",
+  ".output",
+  ".vinxi",
+  ".nitro",
+  ".git",
+  "rapport",
+]);
+// Fichiers propres à l'installation (Lovable les écrit), fichiers générés et fichiers binaires.
+const EXEMPTES = new Set([
+  ".env",
+  "bun.lock",
+  "supabase/config.toml",
+  ".lovable/mcp/manifest.json",
+  "src/routeTree.gen.ts",
+  // Ce test lui-même porte la liste des motifs.
+  "tests/unit/socle-neutre.test.ts",
+  // Migration publiée (lot 11) : une ligne de commentaire nomme le clone dont le modèle de données
+  // a été repris. Une migration publiée ne se modifie plus ; le texte reste dans l'historique.
+  "supabase/migrations/20260930190000_v0_lot11_geographie.sql",
+]);
+const BINAIRES = /\.(png|jpe?g|gif|webp|ico|svg|woff2?|ttf|pdf|zip)$/i;
+
+function fichiers(dir: string): string[] {
   return readdirSync(dir).flatMap((name) => {
     const path = join(dir, name);
-    if (statSync(path).isDirectory()) return files(path);
-    return /\.(ts|tsx)$/.test(name) && name !== "routeTree.gen.ts" ? [path] : [];
+    if (statSync(path).isDirectory()) return DOSSIERS_IGNORES.has(name) ? [] : fichiers(path);
+    return [path];
   });
 }
 
-test("aucun domaine de projet écrit en dur dans src/", () => {
+function fichiersDuSocle(): string[] {
+  const racine = readdirSync(DEPOT)
+    .map((name) => join(DEPOT, name))
+    .filter((path) => !statSync(path).isDirectory());
+  const dossiers = DOSSIERS.flatMap((d) => fichiers(join(DEPOT, d)));
+  return [...racine, ...dossiers].filter((path) => {
+    const rel = relative(DEPOT, path);
+    return !EXEMPTES.has(rel) && !BINAIRES.test(rel);
+  });
+}
+
+function occurrences(paths: string[]): string[] {
   const hits: string[] = [];
-  for (const file of files(ROOT)) {
+  for (const file of paths) {
     const text = readFileSync(file, "utf8");
-    for (const pattern of FORBIDDEN) {
-      if (pattern.test(text)) hits.push(`${file.slice(ROOT.length + 1)} : ${pattern}`);
+    for (const { motif, raison } of FORBIDDEN) {
+      if (motif.test(text)) hits.push(`${relative(DEPOT, file)} : ${motif} (${raison})`);
     }
   }
-  assert.deepEqual(hits, []);
+  return hits;
+}
+
+test("aucune identité de projet réel dans le socle (racine, src/, docs/, supabase/, tests/)", () => {
+  const paths = fichiersDuSocle();
+  assert.ok(
+    paths.some((p) => p.endsWith(join("docs", "CLONER.md"))),
+    "docs/ est bien parcouru",
+  );
+  assert.ok(
+    paths.some((p) => p.includes(join("supabase", "migrations"))),
+    "supabase/migrations/ est bien parcouru",
+  );
+  assert.ok(
+    paths.some((p) => p.endsWith("README.md")),
+    "la racine est bien parcourue",
+  );
+  assert.deepEqual(occurrences(paths), []);
+});
+
+test("les motifs interdits détectent bien une identité glissée dans un texte", () => {
+  const essais = [
+    "voir https://cds-mac97000.lovable.app",
+    "dépôt menywise/annuaire-mac97000",
+    "validé par Manu le 30/09",
+    "repris de Goldwing",
+    "destination vault : _HOLOKAI\\03_PROJETS\\CDS",
+    "copié depuis C:\\Projets\\site",
+    "copié depuis /Users/quelquun/site",
+  ];
+  for (const texte of essais) {
+    assert.ok(
+      FORBIDDEN.some(({ motif }) => motif.test(texte)),
+      `non détecté : ${texte}`,
+    );
+  }
+  // Les exemples neutres passent.
+  for (const texte of [
+    "exemple.fr",
+    "le premier clone",
+    "premier-clone.lovable.app",
+    "mode manuel",
+    "Manuel d'utilisation",
+  ]) {
+    assert.ok(!FORBIDDEN.some(({ motif }) => motif.test(texte)), `faux positif : ${texte}`);
+  }
 });
 
 test("les e-mails lisent leur identité dans les réglages", () => {
@@ -36,7 +138,7 @@ test("les e-mails lisent leur identité dans les réglages", () => {
     "routes/lovable/email/auth/webhook.ts",
     "lib/email-templates/send-email.ts",
   ]) {
-    const text = readFileSync(join(ROOT, file), "utf8");
+    const text = readFileSync(join(SRC, file), "utf8");
     assert.match(text, /emailIdentity\(/, file);
     assert.doesNotMatch(text, /const SENDER_DOMAIN\s*=/, file);
   }

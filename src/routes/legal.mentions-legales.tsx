@@ -9,8 +9,7 @@ export const Route = createFileRoute("/legal/mentions-legales")({
   head: () =>
     seo({
       title: "Mentions légales",
-      description:
-        `Mentions légales de ${editorName(getSiteConfig().brand)} : éditeur, directeur de la publication, hébergeur et propriété intellectuelle.`,
+      description: `Mentions légales de ${editorName(getSiteConfig().brand)} : éditeur, directeur de la publication, hébergeur et propriété intellectuelle.`,
       path: "/legal/mentions-legales",
       type: "article",
     }),
@@ -28,7 +27,9 @@ function MentionsLegalesPage() {
         <p>
           {[
             editor,
-            legal.form && legal.capital ? `${legal.form} au capital de ${legal.capital}` : legal.form,
+            legal.form && legal.capital
+              ? `${legal.form} au capital de ${legal.capital}`
+              : legal.form,
             legal.rcs ? `immatriculée au ${legal.rcs}` : "",
             [legal.address, legal.country].filter(Boolean).join(", ")
               ? `siège social : ${[legal.address, legal.country].filter(Boolean).join(", ")}`
@@ -40,8 +41,8 @@ function MentionsLegalesPage() {
         </p>
         {legal.publisher ? <p>Directeur de la publication : {legal.publisher}.</p> : null}
         <p>
-          Contact : <ContactChannel /> (aucune adresse e-mail n'est publiée en clair, afin de limiter
-          le spam).
+          Contact : <ContactChannel /> (aucune adresse e-mail n'est publiée en clair, afin de
+          limiter le spam).
         </p>
       </Section>
 
@@ -63,22 +64,22 @@ function MentionsLegalesPage() {
       <Section title="Propriété intellectuelle">
         <p>
           L'ensemble des contenus du site (textes, images, marques, logos, code source) est la
-          propriété de {editor} ou de ses partenaires. Toute reproduction ou représentation,
-          totale ou partielle, sans autorisation écrite préalable est interdite.
+          propriété de {editor} ou de ses partenaires. Toute reproduction ou représentation, totale
+          ou partielle, sans autorisation écrite préalable est interdite.
         </p>
       </Section>
 
       <Section title="Responsabilité">
         <p>
-          {editor} s'efforce d'assurer l'exactitude des informations publiées mais ne saurait
-          être tenue responsable des erreurs, omissions ou indisponibilités temporaires du service.
+          {editor} s'efforce d'assurer l'exactitude des informations publiées mais ne saurait être
+          tenue responsable des erreurs, omissions ou indisponibilités temporaires du service.
         </p>
       </Section>
 
       <Section title="Liens externes">
         <p>
-          Les liens vers des sites tiers sont fournis à titre informatif ; {editor} n'exerce
-          aucun contrôle sur leur contenu et décline toute responsabilité à leur égard.
+          Les liens vers des sites tiers sont fournis à titre informatif ; {editor} n'exerce aucun
+          contrôle sur leur contenu et décline toute responsabilité à leur égard.
         </p>
       </Section>
 

@@ -4,11 +4,11 @@
 EN-TÊTE
 * pourquoi          : référentiel de rédaction du socle commun CDS, applicable à
                       tous les sites du Studio de création d'entreprises
-* destination vault : _HOLOKAI\03_PROJETS\CDS\CHARTE_REDACTION_CDS.md
+* emplacement       : docs/redaction/CHARTE_REDACTION_CDS.md
 * public visé       : visiteurs des sites — indépendants, artisans, solopreneurs
 * version           : v1.0
 * état              : actif
-* rédigé par        : Claude, sous DT Unuhi (peut contenir des erreurs)
+* rédigé par        : Claude (peut contenir des erreurs)
 ```
 
 ---
@@ -218,7 +218,7 @@ Elles vont dans la revue humaine, pas dans `text-rules.json`.
 
 ```
 HISTORIQUE
-* v1.0 — 2026-09-29 — Création sous DT Unuhi. Formule tonale héritée du socle.
+* v1.0 — 2026-09-29 — Création. Formule tonale héritée du socle.
     Arbitrage CTA : verbe d'action en tête = infinitif ou première personne,
     jamais impératif nu (conflit résolu en faveur de la règle socle).
     Vouvoiement et seuils de longueur signalés comme choix de style.

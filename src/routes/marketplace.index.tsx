@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { MapPin } from "lucide-react";
 import { PageShell } from "@/components/cds/SiteHeader";
+import { erreurChargement } from "@/components/cds/ErreurChargement";
 import { AdSlot } from "@/components/cds/AdSlot";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,11 +22,7 @@ export const Route = createFileRoute("/marketplace/")({
         "Les annonces publiées par les membres : matériel, services et opportunités. Vous contactez le vendeur directement par messagerie privée.",
       path: "/marketplace",
     }),
-  errorComponent: () => (
-    <PageShell>
-      <p className="text-sm text-muted-foreground">Les annonces n'ont pas pu être chargées.</p>
-    </PageShell>
-  ),
+  errorComponent: erreurChargement("Les annonces n'ont pas pu être chargées."),
   notFoundComponent: () => (
     <PageShell>
       <p className="text-sm text-muted-foreground">Cette page n'existe pas.</p>

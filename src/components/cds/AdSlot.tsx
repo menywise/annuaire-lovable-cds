@@ -28,18 +28,16 @@ export function AdSlot({ placement, className }: { placement: string; className?
 
     async function load() {
       const now = new Date().toISOString();
-      const { data: slot } = await supabase
-        .from("ad_placements")
-        .select("id")
-        .eq("slug", placement)
-        .eq("active", true)
-        .abortSignal(controller.signal)
-        .maybeSingle();
-      if (!slot || cancelled) return;
+      // Une seule requête : les campagnes actives de l'emplacement actif portant ce slug, par
+      // jointure interne sur ad_placements (filtre sur la table liée). Emplacement inconnu ou
+      // éteint : aucune ligne, comme avant.
       const { data: campaigns } = await supabase
         .from("ad_campaigns")
-        .select("id, title, image_url, link_url, alt_text, advertiser, type, starts_at, ends_at")
-        .eq("placement_id", slot.id)
+        .select(
+          "id, title, image_url, link_url, alt_text, advertiser, type, starts_at, ends_at, ad_placements!inner(id)",
+        )
+        .eq("ad_placements.slug", placement)
+        .eq("ad_placements.active", true)
         .eq("active", true)
         .or(`starts_at.is.null,starts_at.lte.${now}`)
         .limit(20)

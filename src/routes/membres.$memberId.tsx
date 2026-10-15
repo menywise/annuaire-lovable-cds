@@ -2,6 +2,7 @@ import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-ro
 import { useState } from "react";
 import { toast } from "sonner";
 import { PageShell } from "@/components/cds/SiteHeader";
+import { erreurChargement } from "@/components/cds/ErreurChargement";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -24,7 +25,8 @@ export const Route = createFileRoute("/membres/$memberId")({
     const base = seo({
       title: profile?.display_name ?? "Profil membre",
       description: (
-        profile?.bio || `${profile?.display_name ?? "Ce membre"} contribue à la communauté ${getSiteConfig().brand.name}.`
+        profile?.bio ||
+        `${profile?.display_name ?? "Ce membre"} contribue à la communauté ${getSiteConfig().brand.name}.`
       ).slice(0, 155),
       path: `/membres/${params.memberId}`,
       type: "article",
@@ -40,11 +42,7 @@ export const Route = createFileRoute("/membres/$memberId")({
       ],
     };
   },
-  errorComponent: () => (
-    <PageShell>
-      <p className="text-sm text-muted-foreground">Ce profil n'a pas pu être chargé.</p>
-    </PageShell>
-  ),
+  errorComponent: erreurChargement("Ce profil n'a pas pu être chargé."),
   notFoundComponent: () => (
     <PageShell>
       <h1 className="text-2xl font-bold text-foreground">Profil introuvable</h1>
@@ -119,7 +117,11 @@ function MemberPage() {
           </span>
           <div>
             <h1 className="text-2xl font-bold text-foreground">{profile.display_name}</h1>
-            <ReportButton contentType="membre" contentId={profile.user_id} authorId={profile.user_id} />
+            <ReportButton
+              contentType="membre"
+              contentId={profile.user_id}
+              authorId={profile.user_id}
+            />
             {profile.job_title ? (
               <p className="text-sm text-muted-foreground">{profile.job_title}</p>
             ) : null}
@@ -156,7 +158,9 @@ function MemberPage() {
             <section className="mt-10">
               <h2 className="text-lg font-semibold text-foreground">Discussions ouvertes</h2>
               {topics.length === 0 ? (
-                <p className="mt-2 text-sm text-muted-foreground">Aucune discussion pour l'instant.</p>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Aucune discussion pour l'instant.
+                </p>
               ) : (
                 <ul className="mt-3 space-y-2 text-sm">
                   {topics.map((topic) => (

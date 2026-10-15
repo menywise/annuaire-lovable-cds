@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { lirePrix } from "@/lib/prix";
 
 /**
  * CDS — Formulaire d'édition générique de l'administration.
@@ -70,7 +71,8 @@ function fromField(spec: FieldSpec, value: string | boolean): unknown {
         .map((t) => t.trim())
         .filter(Boolean);
     case "euros":
-      return Math.max(0, Math.round(Number(text.replace(",", ".") || 0) * 100));
+      // Un montant illisible ou négatif est arrêté avant, dans submit().
+      return lirePrix(text).cents ?? 0;
     case "number":
       return text === "" ? (spec.nullable ? null : 0) : Number(text);
     case "datetime":
@@ -110,6 +112,16 @@ export function RecordEditor({
     if (missing) {
       toast.error(`« ${missing.label} » est obligatoire.`);
       return;
+    }
+    for (const f of fields) {
+      if (f.type !== "euros") continue;
+      const prix = lirePrix(String(draft[f.key] ?? ""));
+      if (prix.cents === null) {
+        toast.error(prix.erreur, {
+          description: prix.detail ?? `Champ « ${f.label} » : indiquez 0 ou plus.`,
+        });
+        return;
+      }
     }
     const changes = Object.fromEntries(
       fields.map((f) => [f.key, fromField(f, draft[f.key] ?? "")]),

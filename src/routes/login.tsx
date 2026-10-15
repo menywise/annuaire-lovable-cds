@@ -13,22 +13,17 @@ import { GoogleSignInButton } from "@/components/cds/GoogleSignInButton";
 
 import { seo } from "@/lib/seo";
 import { getSiteConfig } from "@/lib/site-config";
-
-function safeNext(value: unknown): string | undefined {
-  // Chemin interne uniquement : « // » et « /\ » mèneraient vers un autre site.
-  return typeof value === "string" && /^\/(?![/\\])/.test(value) ? value : undefined;
-}
+import { cheminInterne } from "@/lib/redirection";
 
 export const Route = createFileRoute("/login")({
   validateSearch: (s: Record<string, unknown>): { next?: string } => {
-    const next = safeNext(s["next"]);
+    const next = cheminInterne(s["next"]);
     return next ? { next } : {};
   },
   head: () =>
     seo({
       title: "Connexion",
-      description:
-        `Connectez-vous à votre espace personnel ${getSiteConfig().brand.name} avec votre adresse e-mail et votre mot de passe.`,
+      description: `Connectez-vous à votre espace personnel ${getSiteConfig().brand.name} avec votre adresse e-mail et votre mot de passe.`,
       path: "/login",
       type: "website",
     }),

@@ -5,7 +5,7 @@ import { isModuleOn, onlyActive, type FeatureKey } from "@/config/modules";
 export type { FeatureKey } from "@/config/modules";
 
 /**
- * CDS — Interrupteurs des modules (V0.md §2).
+ * CDS — Interrupteurs des modules.
  *
  * L'état est stocké en base (`site_settings`, clé « modules »), lu côté serveur
  * au chargement de la route racine, et se règle dans l'écran d'administration
