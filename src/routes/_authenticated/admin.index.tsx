@@ -77,10 +77,17 @@ function ColorField({
           onChange={(e) => onChange(e.target.value)}
           className="h-9 max-md:h-11 w-12 shrink-0 cursor-pointer rounded-md border border-input bg-card p-1"
         />
-        <Input id={id} value={value} placeholder="#334155" onChange={(e) => onChange(e.target.value)} />
+        <Input
+          id={id}
+          value={value}
+          placeholder="#334155"
+          onChange={(e) => onChange(e.target.value)}
+        />
       </div>
       <p className="text-xs text-muted-foreground">
-        {value.trim() && !valide ? "Format attendu : #rrggbb. Valeur ignorée à l'enregistrement." : hint}
+        {value.trim() && !valide
+          ? "Format attendu : #rrggbb. Valeur ignorée à l'enregistrement."
+          : hint}
       </p>
     </div>
   );
@@ -100,7 +107,8 @@ function AdminPage() {
     try {
       await saveBrandSettings(settings);
       toast.success("Paramètres enregistrés.", {
-        description: "Titres, mentions légales, sitemap et partages utilisent désormais ces informations.",
+        description:
+          "Titres, mentions légales, sitemap et partages utilisent désormais ces informations.",
       });
     } catch {
       toast.error("Enregistrement impossible.", {
@@ -263,23 +271,27 @@ function AdminPage() {
           <section className="rounded-xl border border-border bg-card p-6">
             <h2 className="text-base font-semibold text-foreground">Apparence</h2>
             <p className="mt-1 text-sm text-muted-foreground">
-              Couleurs, logo et icônes du site. Laissez vide pour garder l'habillage neutre du socle.
-              Les images se choisissent dans la médiathèque ou se collent sous forme d'adresse
-              https.
+              Couleurs, logo et icônes du site. Laissez vide pour garder l'habillage neutre du
+              socle. Les images se choisissent dans la médiathèque ou se collent sous forme
+              d'adresse https.
             </p>
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
               <ColorField
                 id="couleurPrincipale"
                 label="Couleur principale"
                 value={settings.apparence.couleurPrincipale}
-                onChange={(v) => patch({ apparence: { ...settings.apparence, couleurPrincipale: v } })}
+                onChange={(v) =>
+                  patch({ apparence: { ...settings.apparence, couleurPrincipale: v } })
+                }
                 hint="Boutons, liens et focus. Les teintes de texte sont ajustées pour rester lisibles."
               />
               <ColorField
                 id="couleurNavigateur"
                 label="Couleur de la barre du navigateur"
                 value={settings.apparence.couleurNavigateur}
-                onChange={(v) => patch({ apparence: { ...settings.apparence, couleurNavigateur: v } })}
+                onChange={(v) =>
+                  patch({ apparence: { ...settings.apparence, couleurNavigateur: v } })
+                }
                 hint="Barre d'adresse sur téléphone. Vide : fond clair du site."
               />
               <ImageField
@@ -328,7 +340,9 @@ function AdminPage() {
                   id="accueilTexte"
                   rows={4}
                   value={settings.accueil.texte}
-                  onChange={(e) => patch({ accueil: { ...settings.accueil, texte: e.target.value } })}
+                  onChange={(e) =>
+                    patch({ accueil: { ...settings.accueil, texte: e.target.value } })
+                  }
                 />
                 <p className="text-xs text-muted-foreground">
                   Vide : signature du pied de page. Sert aussi de description pour les moteurs de
@@ -338,9 +352,14 @@ function AdminPage() {
             </div>
           </section>
 
-          <Button type="submit" disabled={saving} title="Enregistrer les paramètres du site">
-            {saving ? "Enregistrement…" : "Enregistrer"}
-          </Button>
+          <div className="space-y-2">
+            <Button type="submit" disabled={saving} title="Enregistrer les paramètres du site">
+              {saving ? "Enregistrement…" : "Enregistrer"}
+            </Button>
+            <p className="text-xs text-muted-foreground">
+              Vous voyez vos changements tout de suite ; les visiteurs les voient sous une minute.
+            </p>
+          </div>
         </form>
       )}
     </AdminShell>

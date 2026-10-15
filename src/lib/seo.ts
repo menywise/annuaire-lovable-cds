@@ -1,5 +1,6 @@
-import { absoluteUrl, getSiteConfig } from "@/lib/site-config";
-import { siteLocale } from "@/config/brand";
+// Chemins relatifs : le fichier est aussi chargé tel quel par les tests unitaires (node --test).
+import { absoluteUrl, getSiteConfig, jsonPourScript } from "./site-config.ts";
+import { siteLocale } from "../config/brand.ts";
 
 type SeoInput = {
   /** Titre de la page, sans le suffixe de marque. */
@@ -19,20 +20,14 @@ type SeoInput = {
  * title, description, canonical auto-référent, Open Graph et Twitter.
  * Nom et URL viennent des paramètres saisis en admin (`site_settings`).
  */
-export function seo({
-  title,
-  description,
-  path,
-  type = "website",
-  noindex,
-  image,
-}: SeoInput) {
+export function seo({ title, description, path, type = "website", noindex, image }: SeoInput) {
   const { brand } = getSiteConfig();
   // Image réglée en admin (Paramètres → Apparence), sinon image neutre de public/.
   image ??= absoluteUrl(brand.apparence.imagePartage || "/image-partage.png");
   // Garde-fou pour les textes saisis en admin (devise, extrait d'article) : 160 caractères au plus.
   description = clampText(description, 160);
-  const fullTitle = !brand.shortName || title.includes(brand.shortName) ? title : `${title} — ${brand.shortName}`;
+  const fullTitle =
+    !brand.shortName || title.includes(brand.shortName) ? title : `${title} — ${brand.shortName}`;
   const url = absoluteUrl(path);
 
   const meta: Array<Record<string, string>> = [
@@ -65,21 +60,30 @@ export function seo({
   };
 }
 
-/** Fil d'Ariane structuré (JSON-LD) pour les pages profondes. */
-export function breadcrumbJsonLd(items: Array<{ name: string; path: string }>) {
+/**
+ * Balise de données structurées (JSON-LD), seule sortie `application/ld+json` du dépôt.
+ * Le routeur injecte `children` tel quel dans la balise script : un titre saisi par un
+ * visiteur contenant `</script>` fermerait la balise : `jsonPourScript` l'en empêche.
+ */
+export function jsonLdScript(data: Record<string, unknown>) {
   return {
     type: "application/ld+json",
-    children: JSON.stringify({
-      "@context": "https://schema.org",
-      "@type": "BreadcrumbList",
-      itemListElement: items.map((item, index) => ({
-        "@type": "ListItem",
-        position: index + 1,
-        name: item.name,
-        item: absoluteUrl(item.path),
-      })),
-    }),
+    children: jsonPourScript(data),
   };
+}
+
+/** Fil d'Ariane structuré (JSON-LD) pour les pages profondes. */
+export function breadcrumbJsonLd(items: Array<{ name: string; path: string }>) {
+  return jsonLdScript({
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: items.map((item, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: item.name,
+      item: absoluteUrl(item.path),
+    })),
+  });
 }
 
 /** Coupe un texte au dernier mot entier avant `max` caractères, avec « … ». */

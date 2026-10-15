@@ -12,11 +12,12 @@ DO $$ BEGIN
   IF EXISTS (SELECT 1 FROM public.studio_admins) THEN RAISE EXCEPTION 'adresses installées par une migration'; END IF;
 END $$;
 
-INSERT INTO auth.users (id, email) VALUES
-  ('00000000-0000-0000-0000-0000000000b1', 'premier@test.fr'),
-  ('00000000-0000-0000-0000-0000000000b2', 'second@test.fr'),
-  ('00000000-0000-0000-0000-0000000000b3', 'troisieme@test.fr'),
-  ('00000000-0000-0000-0000-0000000000b4', 'nomme@test.fr');
+-- b4 : adresse confirmée, car la liste des adresses nommées d'avance ne promeut qu'un compte confirmé.
+INSERT INTO auth.users (id, email, email_confirmed_at) VALUES
+  ('00000000-0000-0000-0000-0000000000b1', 'premier@test.fr', NULL),
+  ('00000000-0000-0000-0000-0000000000b2', 'second@test.fr', NULL),
+  ('00000000-0000-0000-0000-0000000000b3', 'troisieme@test.fr', NULL),
+  ('00000000-0000-0000-0000-0000000000b4', 'nomme@test.fr', now());
 
 -- 1. Le premier inscrit devient administrateur ; le verrou se ferme sur lui.
 SELECT pg_temp.as_user('00000000-0000-0000-0000-0000000000b1', 'premier@test.fr');

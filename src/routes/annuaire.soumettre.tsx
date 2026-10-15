@@ -1,13 +1,14 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
 import { PageShell } from "@/components/cds/SiteHeader";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RichTextEditor } from "@/lib/richtext";
 import { requireFeature, isFeatureOn } from "@/config/features";
-import { listDirectoryListings } from "@/lib/directory.functions";
+import { listDirectoryFormOptions } from "@/lib/directory.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { seo } from "@/lib/seo";
@@ -15,7 +16,8 @@ import { slugify } from "@/lib/format";
 
 export const Route = createFileRoute("/annuaire/soumettre")({
   beforeLoad: () => requireFeature("directory"),
-  loader: () => listDirectoryListings(),
+  // Seules les listes du formulaire : catégories, et départements si la géographie est allumée.
+  loader: () => listDirectoryFormOptions({ data: { geo: isFeatureOn("geo") } }),
   head: () =>
     seo({
       title: "Ajouter votre fiche à l'annuaire",
@@ -39,8 +41,9 @@ export const Route = createFileRoute("/annuaire/soumettre")({
 function SubmitListingPage() {
   const { categories, departements } = Route.useLoaderData();
   const { user } = useAuth();
-  const navigate = useNavigate();
   const [busy, setBusy] = useState(false);
+  // Fiche envoyée : la confirmation remplace le formulaire et reste à l'écran.
+  const [sent, setSent] = useState(false);
 
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -80,7 +83,7 @@ function SubmitListingPage() {
       return;
     }
     toast.success("Fiche envoyée.", { description: "Elle sera publiée après relecture." });
-    void navigate({ to: "/annuaire" });
+    setSent(true);
   }
 
   return (
@@ -103,6 +106,22 @@ function SubmitListingPage() {
             </Link>{" "}
             pour créer votre fiche et la modifier ensuite quand vous voulez.
           </p>
+        ) : sent ? (
+          <Alert className="mt-6">
+            <AlertTitle>Fiche envoyée</AlertTitle>
+            <AlertDescription>
+              <p>
+                Votre fiche attend une validation. Elle paraît dans l'annuaire dès que l'équipe l'a
+                relue ; vous pouvez encore la corriger d'ici là.
+              </p>
+              {/* Le suivi est réservé au membre connecté, dans l'espace de l'annuaire. */}
+              {isFeatureOn("directory") ? (
+                <Button asChild className="mt-4" title="Suivre l'état de vos fiches">
+                  <Link to="/mes-fiches">Suivre ma fiche dans « Mes fiches »</Link>
+                </Button>
+              ) : null}
+            </AlertDescription>
+          </Alert>
         ) : (
           <form
             onSubmit={submit}

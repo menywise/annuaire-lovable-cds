@@ -1,4 +1,4 @@
-/** Signalements (repris de Goldwing) : types de contenus, motifs et statuts. Mêmes listes qu'en base. */
+/** Signalements : types de contenus, motifs et statuts. Mêmes listes qu'en base. */
 
 export const REPORT_CONTENT_TYPES = [
   { value: "article", label: "Article" },
@@ -35,7 +35,6 @@ export const REPORT_STATUSES = [
 ] as const;
 
 export type ReportContentType = (typeof REPORT_CONTENT_TYPES)[number]["value"];
-export type ReportReason = (typeof REPORT_REASONS)[number]["value"];
 export type ReportStatus = (typeof REPORT_STATUSES)[number]["value"];
 
 const labelOf = (list: ReadonlyArray<{ value: string; label: string }>, value: string | null) =>

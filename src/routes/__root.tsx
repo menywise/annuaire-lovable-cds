@@ -1,8 +1,7 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   Outlet,
   Link,
-  createRootRouteWithContext,
+  createRootRoute,
   useRouter,
   HeadContent,
   Scripts,
@@ -17,6 +16,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { siteLocale } from "@/config/brand";
 import { absoluteUrl, getSiteConfig, setSiteConfig, siteConfigScript } from "@/lib/site-config";
 import { cssCouleurPrincipale } from "@/lib/couleurs";
+import { jsonLdScript } from "@/lib/seo";
 import { loadSiteConfig } from "@/lib/site-config.functions";
 import { isFeatureOn } from "@/config/features";
 import { isPathOff } from "@/config/modules";
@@ -133,7 +133,7 @@ function organizationJsonLd() {
   };
 }
 
-export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
+export const Route = createRootRoute({
   /**
    * Paramètres du site lus en base AVANT toute autre route : titres, canonical,
    * JSON-LD et interrupteurs des modules sont justes dans le HTML indexé.
@@ -172,11 +172,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           rel: "stylesheet",
           href: appCss,
         },
-        { rel: "preconnect", href: "https://fonts.googleapis.com" },
-        { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+        // Police Inter servie par le site (déclarée dans src/styles.css) : préchargée, sans tiers.
         {
-          rel: "stylesheet",
-          href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap",
+          rel: "preload",
+          href: "/fonts/inter-latin-wght-normal.woff2",
+          as: "font",
+          type: "font/woff2",
+          crossOrigin: "anonymous",
         },
         // Icônes réglées en admin (Paramètres → Apparence), sinon icônes neutres de public/.
         { rel: "icon", href: brand.apparence.favicon || "/favicon.png" },
@@ -186,10 +188,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       scripts: [
         // Doit précéder le code du navigateur : l'hydratation relit ces valeurs.
         { children: siteConfigScript() },
-        {
-          type: "application/ld+json",
-          children: JSON.stringify(organizationJsonLd()),
-        },
+        jsonLdScript(organizationJsonLd()),
       ],
     };
   },
@@ -217,13 +216,11 @@ function RootShell({ children }: { children: ReactNode }) {
 }
 
 function RootComponent() {
-  const { queryClient } = Route.useRouteContext();
-
   return (
-    <QueryClientProvider client={queryClient}>
+    <>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
       <Toaster />
-    </QueryClientProvider>
+    </>
   );
 }

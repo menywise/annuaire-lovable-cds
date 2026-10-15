@@ -1935,6 +1935,7 @@ export type Database = {
           order_id: string
           product_id: string | null
           quantity: number
+          reserved_quantity: number
           title: string
           unit_price_cents: number
         }
@@ -1945,6 +1946,7 @@ export type Database = {
           order_id: string
           product_id?: string | null
           quantity: number
+          reserved_quantity?: number
           title: string
           unit_price_cents: number
         }
@@ -1955,6 +1957,7 @@ export type Database = {
           order_id?: string
           product_id?: string | null
           quantity?: number
+          reserved_quantity?: number
           title?: string
           unit_price_cents?: number
         }
@@ -2363,6 +2366,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      ad_campaign_is_live: { Args: { _campaign_id: string }; Returns: boolean }
       admin_list_users: {
         Args: never
         Returns: {
@@ -2388,6 +2392,30 @@ export type Database = {
         Returns: boolean
       }
       delete_my_account: { Args: never; Returns: undefined }
+      directory_departement_counts: {
+        Args: never
+        Returns: {
+          departement: string
+          listings: number
+        }[]
+      }
+      forum_author_name: { Args: { _user_id: string }; Returns: string }
+      forum_category_counts: {
+        Args: never
+        Returns: {
+          category_id: string | null
+          likes: number
+          replies: number
+          topics: number
+        }[]
+      }
+      forum_reply_like_counts: {
+        Args: { _topic_id: string }
+        Returns: {
+          likes: number
+          reply_id: string
+        }[]
+      }
       forum_top_members: {
         Args: { _since?: string }
         Returns: {
@@ -2397,6 +2425,14 @@ export type Database = {
           score: number
           topics: number
           user_id: string
+        }[]
+      }
+      forum_topic_counts: {
+        Args: { _topic_ids: string[] }
+        Returns: {
+          likes: number
+          replies: number
+          topic_id: string
         }[]
       }
       has_role: {
@@ -2414,6 +2450,13 @@ export type Database = {
       is_conversation_participant: {
         Args: { _conversation_id: string; _user_id: string }
         Returns: boolean
+      }
+      lms_course_learners: {
+        Args: never
+        Returns: {
+          course_id: string
+          learners: number
+        }[]
       }
       lms_lesson_content: {
         Args: { _lesson_id: string }
@@ -2507,6 +2550,11 @@ export type Database = {
           superseded_sessions: string[]
         }[]
       }
+      newsletter_known_source: { Args: { _source: string }; Returns: string }
+      newsletter_subscribe: {
+        Args: { _email: string; _first_name?: string; _source?: string }
+        Returns: undefined
+      }
       purge_contact_messages: { Args: never; Returns: number }
       recette_purge: { Args: { _membre?: string }; Returns: Json }
       request_directory_claim: {
@@ -2535,6 +2583,7 @@ export type Database = {
           path: string
         }[]
       }
+      shop_release_stock: { Args: { _order_id: string }; Returns: boolean }
       shop_set_customer: {
         Args: { _address: Json; _email: string; _name: string; _session_id: string }
         Returns: boolean

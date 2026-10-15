@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { listPosts } from "@/lib/content.functions";
+import { listFeedPosts } from "@/lib/content.functions";
 import { isModuleOn } from "@/config/modules";
 import { fallbackSiteConfig } from "@/lib/site-config";
 import { loadSiteConfig } from "@/lib/site-config.functions";
@@ -29,7 +29,7 @@ export const Route = createFileRoute("/rss.xml")({
         };
         let items = "";
         try {
-          const posts = await listPosts();
+          const posts = await listFeedPosts();
           items = posts
             .map((post) => {
               const url = `${brand.url}/blog/${post.slug}`;

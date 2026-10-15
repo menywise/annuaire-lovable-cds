@@ -1,12 +1,12 @@
-import * as React from 'react'
-import { createAuthEmailHandler } from '@lovable.dev/email-js'
-import { createFileRoute } from '@tanstack/react-router'
-import { SignupEmail } from '@/lib/email-templates/signup'
-import { InviteEmail } from '@/lib/email-templates/invite'
-import { MagicLinkEmail } from '@/lib/email-templates/magic-link'
-import { RecoveryEmail } from '@/lib/email-templates/recovery'
-import { EmailChangeEmail } from '@/lib/email-templates/email-change'
-import { ReauthenticationEmail } from '@/lib/email-templates/reauthentication'
+import * as React from "react";
+import { createAuthEmailHandler } from "@lovable.dev/email-js";
+import { createFileRoute } from "@tanstack/react-router";
+import { SignupEmail } from "@/lib/email-templates/signup";
+import { InviteEmail } from "@/lib/email-templates/invite";
+import { MagicLinkEmail } from "@/lib/email-templates/magic-link";
+import { RecoveryEmail } from "@/lib/email-templates/recovery";
+import { EmailChangeEmail } from "@/lib/email-templates/email-change";
+import { ReauthenticationEmail } from "@/lib/email-templates/reauthentication";
 
 // Identité d'envoi : lue dans les réglages du site (CDS, lot 13 a), jamais écrite en dur.
 // The SDK handler owns verification, dispatch, and retry semantics; this file
@@ -15,27 +15,27 @@ export const Route = createFileRoute("/lovable/email/auth/webhook")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const { emailIdentity } = await import('@/lib/email-identity.server')
-        let identity
+        const { emailIdentity } = await import("@/lib/email-identity.server");
+        let identity;
         try {
-          identity = await emailIdentity(request)
+          identity = await emailIdentity(request);
         } catch (error) {
-          console.error(error)
+          console.error(error);
           return Response.json(
-            { error: error instanceof Error ? error.message : 'Configuration des e-mails absente' },
-            { status: 500 }
-          )
+            { error: error instanceof Error ? error.message : "Configuration des e-mails absente" },
+            { status: 500 },
+          );
         }
-        const SITE_NAME = identity.siteName
-        const SITE_URL = identity.siteUrl
+        const SITE_NAME = identity.siteName;
+        const SITE_URL = identity.siteUrl;
         const handler = createAuthEmailHandler({
-          apiKey: process.env['LOVABLE_API_KEY']!,
+          apiKey: process.env["LOVABLE_API_KEY"]!,
           from: `${SITE_NAME} <noreply@${identity.fromDomain}>`,
           senderDomain: identity.senderDomain,
-          sendUrl: process.env['LOVABLE_SEND_URL'],
+          sendUrl: process.env["LOVABLE_SEND_URL"],
           emails: {
             signup: {
-              subject: 'Confirmez votre adresse e-mail',
+              subject: "Confirmez votre adresse e-mail",
               render: (data) =>
                 React.createElement(SignupEmail, {
                   siteName: SITE_NAME,
@@ -45,7 +45,7 @@ export const Route = createFileRoute("/lovable/email/auth/webhook")({
                 }),
             },
             invite: {
-              subject: 'Vous êtes invité à nous rejoindre',
+              subject: "Vous êtes invité à nous rejoindre",
               render: (data) =>
                 React.createElement(InviteEmail, {
                   siteName: SITE_NAME,
@@ -54,7 +54,7 @@ export const Route = createFileRoute("/lovable/email/auth/webhook")({
                 }),
             },
             magiclink: {
-              subject: 'Votre lien de connexion',
+              subject: "Votre lien de connexion",
               render: (data) =>
                 React.createElement(MagicLinkEmail, {
                   siteName: SITE_NAME,
@@ -63,7 +63,7 @@ export const Route = createFileRoute("/lovable/email/auth/webhook")({
                 }),
             },
             recovery: {
-              subject: 'Réinitialisation de votre mot de passe',
+              subject: "Réinitialisation de votre mot de passe",
               render: (data) =>
                 React.createElement(RecoveryEmail, {
                   siteName: SITE_NAME,
@@ -72,30 +72,30 @@ export const Route = createFileRoute("/lovable/email/auth/webhook")({
                 }),
             },
             email_change: {
-              subject: 'Confirmez votre nouvelle adresse e-mail',
+              subject: "Confirmez votre nouvelle adresse e-mail",
               render: (data) =>
                 React.createElement(EmailChangeEmail, {
                   siteName: SITE_NAME,
                   siteUrl: SITE_URL,
-                  oldEmail: data.old_email ?? '',
+                  oldEmail: data.old_email ?? "",
                   email: data.email,
-                  newEmail: data.new_email ?? '',
+                  newEmail: data.new_email ?? "",
                   confirmationUrl: data.url,
                 }),
             },
             reauthentication: {
-              subject: 'Votre code de vérification',
+              subject: "Votre code de vérification",
               render: (data) =>
                 React.createElement(ReauthenticationEmail, {
                   siteName: SITE_NAME,
                   siteUrl: SITE_URL,
-                  token: data.token ?? '',
+                  token: data.token ?? "",
                 }),
             },
           },
-        })
-        return handler(request)
+        });
+        return handler(request);
       },
     },
   },
-})
+});

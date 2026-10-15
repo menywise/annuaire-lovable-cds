@@ -1,5 +1,5 @@
 /**
- * CDS — Liste des modules (V0.md §2 et §3), dépendances et état par défaut.
+ * CDS — Liste des modules, dépendances et état par défaut.
  * Fichier sans dépendance : partagé par le serveur, le navigateur et l'admin.
  * L'état par défaut est identique à `public.module_defaults()` en base.
  * `socle: true` : outil d'administration (pilotage, médiathèque, recherche), toujours allumé.
@@ -12,29 +12,101 @@ import { GREFFE } from "../greffe/index.ts";
 export const MODULES = [
   { key: "blog", label: "Blog, commentaires, RSS", requires: [], defaultOn: false, socle: false },
   { key: "faq", label: "FAQ", requires: [], defaultOn: false, socle: false },
-  { key: "contact", label: "Contact et boîte de réception", requires: [], defaultOn: false, socle: false },
-  { key: "newsletter", label: "Lettre d'information", requires: [], defaultOn: false, socle: false },
+  {
+    key: "contact",
+    label: "Contact et boîte de réception",
+    requires: [],
+    defaultOn: false,
+    socle: false,
+  },
+  {
+    key: "newsletter",
+    label: "Lettre d'information",
+    requires: [],
+    defaultOn: false,
+    socle: false,
+  },
   { key: "forum", label: "Forum", requires: [], defaultOn: false, socle: false },
-  { key: "members", label: "Membres (annuaire des membres, profils publics)", requires: [], defaultOn: false, socle: false },
-  { key: "messaging", label: "Messagerie privée", requires: ["members"], defaultOn: false, socle: false },
+  {
+    key: "members",
+    label: "Membres (annuaire des membres, profils publics)",
+    requires: [],
+    defaultOn: false,
+    socle: false,
+  },
+  {
+    key: "messaging",
+    label: "Messagerie privée",
+    requires: ["members"],
+    defaultOn: false,
+    socle: false,
+  },
   { key: "testimonials", label: "Témoignages", requires: [], defaultOn: false, socle: false },
   { key: "reviews", label: "Avis notés", requires: [], defaultOn: false, socle: false },
   { key: "pricing", label: "Tarifs", requires: [], defaultOn: false, socle: false },
-  { key: "onboarding", label: "Parcours « Démarrer »", requires: [], defaultOn: false, socle: false },
+  {
+    key: "onboarding",
+    label: "Parcours « Démarrer »",
+    requires: [],
+    defaultOn: false,
+    socle: false,
+  },
   { key: "directory", label: "Annuaire métier", requires: [], defaultOn: false, socle: false },
-  { key: "geo", label: "Géographie (régions, départements, intercommunalités, communes)", requires: ["directory"], defaultOn: false, socle: false },
+  {
+    key: "geo",
+    label: "Géographie (régions, départements, intercommunalités, communes)",
+    requires: ["directory"],
+    defaultOn: false,
+    socle: false,
+  },
   { key: "crm", label: "Suivi de contacts (CRM)", requires: [], defaultOn: false, socle: false },
   { key: "lms", label: "Formations", requires: [], defaultOn: false, socle: false },
-  { key: "marketplace", label: "Petites annonces", requires: ["messaging"], defaultOn: false, socle: false },
+  {
+    key: "marketplace",
+    label: "Petites annonces",
+    requires: ["messaging"],
+    defaultOn: false,
+    socle: false,
+  },
   { key: "adNetwork", label: "Régie publicitaire", requires: [], defaultOn: false, socle: false },
   { key: "studio", label: "Pilotage, conformité, MCP", requires: [], defaultOn: true, socle: true },
   { key: "showcase", label: "Composants et guide", requires: [], defaultOn: false, socle: false },
-  { key: "media", label: "Médiathèque (envoi d'images et de fichiers)", requires: [], defaultOn: true, socle: true },
-  { key: "pages", label: "Pages libres par sections (dont l'accueil)", requires: [], defaultOn: false, socle: false },
-  { key: "payments", label: "Paiement en ligne (Stripe) des formations", requires: ["lms"], defaultOn: false, socle: false },
-  { key: "reports", label: "Signalements de contenus", requires: [], defaultOn: false, socle: false },
+  {
+    key: "media",
+    label: "Médiathèque (envoi d'images et de fichiers)",
+    requires: [],
+    defaultOn: true,
+    socle: true,
+  },
+  {
+    key: "pages",
+    label: "Pages libres par sections (dont l'accueil)",
+    requires: [],
+    defaultOn: false,
+    socle: false,
+  },
+  {
+    key: "payments",
+    label: "Paiement en ligne (Stripe) des formations",
+    requires: ["lms"],
+    defaultOn: false,
+    socle: false,
+  },
+  {
+    key: "reports",
+    label: "Signalements de contenus",
+    requires: [],
+    defaultOn: false,
+    socle: false,
+  },
   { key: "search", label: "Recherche globale", requires: [], defaultOn: true, socle: true },
-  { key: "shop", label: "Boutique (objets, PDF, e-books)", requires: [], defaultOn: false, socle: false },
+  {
+    key: "shop",
+    label: "Boutique (objets, PDF, e-books)",
+    requires: [],
+    defaultOn: false,
+    socle: false,
+  },
 ] as const satisfies ReadonlyArray<{
   key: string;
   label: string;
@@ -170,6 +242,7 @@ const SOCLE_PROTECTED_PATHS: ReadonlyArray<{ prefix: string; anyOf: readonly Fea
   { prefix: "/decouvrir", anyOf: ["onboarding"] },
   { prefix: "/mes-achats", anyOf: ["shop"] },
   { prefix: "/mes-annonces", anyOf: ["marketplace"] },
+  { prefix: "/mes-fiches", anyOf: ["directory"] },
   { prefix: "/mes-formations", anyOf: ["lms"] },
   { prefix: "/messagerie", anyOf: ["messaging"] },
 ];

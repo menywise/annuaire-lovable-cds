@@ -1,12 +1,16 @@
-import type { ComponentType } from 'react'
+import type { ElementType } from "react";
+
+/** Données d'un gabarit : objet JSON fourni par l'appelant (ou previewData), sans forme garantie. */
+export type TemplateData = Record<string, unknown>;
 
 export interface TemplateEntry {
-  component: ComponentType<any>
-  subject: string | ((data: Record<string, any>) => string)
-  displayName?: string
-  previewData?: Record<string, any>
+  /** Composant React du gabarit ; ses props sont typées dans son fichier, pas ici. */
+  component: ElementType;
+  subject: string | ((data: TemplateData) => string);
+  displayName?: string;
+  previewData?: TemplateData;
   /** Fixed recipient — overrides caller-provided recipientEmail when set. */
-  to?: string
+  to?: string;
 }
 
 /**
@@ -20,4 +24,4 @@ export interface TemplateEntry {
 export const TEMPLATES: Record<string, TemplateEntry> = {
   // Add templates here as they are created, e.g.:
   // 'welcome': welcomeTemplate,
-}
+};

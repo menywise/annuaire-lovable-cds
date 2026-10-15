@@ -1,6 +1,7 @@
 import { defineTool } from "@lovable.dev/mcp-js";
 import { z } from "zod";
-import { errorResult, siteBaseUrl, textResult } from "../supabase";
+import { requireAdmin } from "../guard";
+import { errorResult, fetchMemeOrigine, siteBaseUrl, textResult } from "../supabase";
 
 function all(html: string, re: RegExp) {
   return [...html.matchAll(re)];
@@ -23,20 +24,26 @@ export default defineTool({
       .string()
       .url()
       .optional()
-      .describe("Adresse du site, si différente de la production."),
+      .describe("Adresse du site : celle réglée en admin ou celle de ce serveur (préproduction)."),
   },
   annotations: { readOnlyHint: true, openWorldHint: true },
   handler: async ({ path, base_url }, ctx) => {
-    const base = await siteBaseUrl(base_url).catch(() => null);
-    if (!base) return errorResult("Adresse du site inconnue : indiquez base_url.");
+    let base: string;
+    try {
+      await requireAdmin(ctx);
+      base = await siteBaseUrl(base_url);
+    } catch (e) {
+      return errorResult((e as Error).message);
+    }
     const url = `${base}${path.startsWith("/") ? path : `/${path}`}`;
     try {
-      const res = await fetch(url, { signal: ctx.signal, redirect: "follow" });
+      const { res, url: finale } = await fetchMemeOrigine(url, ctx.signal);
       const html = await res.text();
       const links = all(html, /<a\b[^>]*>/gi);
       const images = all(html, /<img\b[^>]*>/gi);
       return textResult({
         url,
+        ...(finale !== url ? { url_finale: finale } : {}),
         statut: res.status,
         langue: html.match(/<html[^>]+lang=["']([^"']+)["']/i)?.[1] ?? null,
         titre: html.match(/<title[^>]*>([^<]*)<\/title>/i)?.[1] ?? null,

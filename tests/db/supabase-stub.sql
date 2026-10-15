@@ -11,9 +11,12 @@ CREATE SCHEMA auth;
 GRANT USAGE ON SCHEMA auth TO anon, authenticated, service_role;
 GRANT USAGE ON SCHEMA public TO anon, authenticated, service_role;
 
+-- email_confirmed_at : vide tant que l'adresse n'est pas confirmée, comme chez Supabase. Les tests qui
+-- comptent sur une promotion par la liste des adresses nommées d'avance le renseignent.
 CREATE TABLE auth.users (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   email text,
+  email_confirmed_at timestamptz,
   raw_user_meta_data jsonb NOT NULL DEFAULT '{}'::jsonb,
   last_sign_in_at timestamptz,
   created_at timestamptz NOT NULL DEFAULT now()

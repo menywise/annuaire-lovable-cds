@@ -29,15 +29,13 @@ Le bloc 4 supprime de `studio_admins` les adresses dont le compte existe déjà 
 administrateur. Le rôle reste acquis dans `user_roles` : personne ne perd ses droits. Sur une base
 sans aucun compte, il vide la liste (elle ne peut venir que d'une ancienne migration).
 
-## Projet « Annuaire Lovable CDS »
+## Clone où un compte existe déjà, sans administrateur
 
-Un compte existe, sans administrateur. Après les blocs 1 à 4, ce compte devient administrateur à sa
-prochaine connexion (déconnexion puis reconnexion).
+Après les blocs 1 à 4, ce compte devient administrateur à sa prochaine connexion (déconnexion puis
+reconnexion).
 
-## Habillage du socle CDS lui-même
+## Habillage
 
-Le socle est désormais neutre (couleur ardoise, icônes sans marque). Pour retrouver l'habillage de
-ce projet : Administration → Paramètres → Apparence, couleur principale `#0d6efd`, puis logo, icônes
-et image de partage déposés dans la médiathèque. Les anciennes images restent récupérables dans
-l'historique git (`public/og-cds.jpg`, `public/favicon.png`, `public/apple-touch-icon.png`,
-`public/icon-512.png` au commit `5638236`).
+Le socle est neutre (couleur ardoise, icônes sans marque). Chaque projet règle son habillage dans
+Administration → Paramètres → Apparence : couleur principale, puis logo, icônes et image de partage
+déposés dans la médiathèque.

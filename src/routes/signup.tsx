@@ -18,8 +18,7 @@ export const Route = createFileRoute("/signup")({
   head: () =>
     seo({
       title: "Créer un compte",
-      description:
-        `Créez votre compte ${getSiteConfig().brand.name} en quelques secondes : nom, adresse e-mail et mot de passe, avec confirmation par e-mail.`,
+      description: `Créez votre compte ${getSiteConfig().brand.name} en quelques secondes : nom, adresse e-mail et mot de passe, avec confirmation par e-mail.`,
       path: "/signup",
       type: "website",
     }),
