@@ -110,6 +110,8 @@ export const QA_PAGES: QaPage[] = [
     discover: { from: "/membres", match: "^/membres/[^/?#]+$" },
   },
   { path: "/temoignages", label: "Témoignages", role: "visiteur", module: "testimonials" },
+  { path: "/ameliorations", label: "Améliorations", role: "visiteur", module: "reports" },
+  { path: "/signalement", label: "Suivi d'un signalement", role: "visiteur", module: "reports" },
   { path: "/avis", label: "Avis", role: "visiteur", module: "reviews" },
   { path: "/tarifs", label: "Tarifs", role: "visiteur", module: "pricing", vitrine: true },
   { path: "/demarrer", label: "Démarrer", role: "visiteur", module: "onboarding", vitrine: true },

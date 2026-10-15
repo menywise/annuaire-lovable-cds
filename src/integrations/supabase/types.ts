@@ -1807,6 +1807,7 @@ export type Database = {
       reports: {
         Row: {
           admin_note: string | null
+          contact_email: string | null
           content_id: string | null
           content_type: string
           created_at: string
@@ -1814,13 +1815,18 @@ export type Database = {
           handled_at: string | null
           handled_by: string | null
           id: string
+          proposed_value: string | null
+          public_note: string | null
           reason: string
           reported_url: string | null
-          reporter_id: string
+          reporter_id: string | null
+          source: string
           status: string
+          tracking_code: string | null
         }
         Insert: {
           admin_note?: string | null
+          contact_email?: string | null
           content_id?: string | null
           content_type: string
           created_at?: string
@@ -1828,13 +1834,18 @@ export type Database = {
           handled_at?: string | null
           handled_by?: string | null
           id?: string
+          proposed_value?: string | null
+          public_note?: string | null
           reason: string
           reported_url?: string | null
-          reporter_id: string
+          reporter_id?: string | null
+          source?: string
           status?: string
+          tracking_code?: string | null
         }
         Update: {
           admin_note?: string | null
+          contact_email?: string | null
           content_id?: string | null
           content_type?: string
           created_at?: string
@@ -1842,10 +1853,14 @@ export type Database = {
           handled_at?: string | null
           handled_by?: string | null
           id?: string
+          proposed_value?: string | null
+          public_note?: string | null
           reason?: string
           reported_url?: string | null
-          reporter_id?: string
+          reporter_id?: string | null
+          source?: string
           status?: string
+          tracking_code?: string | null
         }
         Relationships: []
       }
@@ -2556,7 +2571,42 @@ export type Database = {
         Returns: undefined
       }
       purge_contact_messages: { Args: never; Returns: number }
+      purge_report_contacts: { Args: never; Returns: number }
       recette_purge: { Args: { _membre?: string }; Returns: Json }
+      report_improvements: {
+        Args: { _limit?: number }
+        Returns: {
+          content_type: string
+          handled_at: string
+          id: string
+          public_note: string
+          reason: string
+          reported_url: string
+        }[]
+      }
+      report_status: {
+        Args: { _code: string }
+        Returns: {
+          created_at: string
+          handled_at: string
+          public_note: string
+          reason: string
+          status: string
+        }[]
+      }
+      report_submit: {
+        Args: {
+          _contact_email?: string
+          _content_id?: string
+          _content_type: string
+          _details?: string
+          _proposed_value?: string
+          _reason: string
+          _reported_url?: string
+          _trap?: string
+        }
+        Returns: string
+      }
       request_directory_claim: {
         Args: { _listing_id: string }
         Returns: boolean

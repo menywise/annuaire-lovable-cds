@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AProposRouteImport } from './routes/a-propos'
+import { Route as AmeliorationsRouteImport } from './routes/ameliorations'
 import { Route as AvisRouteImport } from './routes/avis'
 import { Route as ComposantsRouteImport } from './routes/composants'
 import { Route as ContactRouteImport } from './routes/contact'
@@ -30,6 +31,7 @@ import { Route as RechercheRouteImport } from './routes/recherche'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as RssDotxmlRouteImport } from './routes/rss[.]xml'
+import { Route as SignalementRouteImport } from './routes/signalement'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TarifsRouteImport } from './routes/tarifs'
@@ -124,6 +126,11 @@ const AProposRoute = AProposRouteImport.update({
   path: '/a-propos',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AmeliorationsRoute = AmeliorationsRouteImport.update({
+  id: '/ameliorations',
+  path: '/ameliorations',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AvisRoute = AvisRouteImport.update({
   id: '/avis',
   path: '/avis',
@@ -212,6 +219,11 @@ const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
 const RssDotxmlRoute = RssDotxmlRouteImport.update({
   id: '/rss.xml',
   path: '/rss.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SignalementRoute = SignalementRouteImport.update({
+  id: '/signalement',
+  path: '/signalement',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SignupRoute = SignupRouteImport.update({
@@ -642,6 +654,7 @@ const LovableEmailTransactionalPreviewRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/a-propos': typeof AProposRoute
+  '/ameliorations': typeof AmeliorationsRoute
   '/avis': typeof AvisRoute
   '/composants': typeof ComposantsRoute
   '/contact': typeof ContactRoute
@@ -660,6 +673,7 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/rss.xml': typeof RssDotxmlRoute
+  '/signalement': typeof SignalementRoute
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tarifs': typeof TarifsRoute
@@ -743,6 +757,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/a-propos': typeof AProposRoute
+  '/ameliorations': typeof AmeliorationsRoute
   '/avis': typeof AvisRoute
   '/composants': typeof ComposantsRoute
   '/contact': typeof ContactRoute
@@ -761,6 +776,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/rss.xml': typeof RssDotxmlRoute
+  '/signalement': typeof SignalementRoute
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tarifs': typeof TarifsRoute
@@ -846,6 +862,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/a-propos': typeof AProposRoute
+  '/ameliorations': typeof AmeliorationsRoute
   '/avis': typeof AvisRoute
   '/composants': typeof ComposantsRoute
   '/contact': typeof ContactRoute
@@ -864,6 +881,7 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/rss.xml': typeof RssDotxmlRoute
+  '/signalement': typeof SignalementRoute
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tarifs': typeof TarifsRoute
@@ -949,6 +967,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/a-propos'
+    | '/ameliorations'
     | '/avis'
     | '/composants'
     | '/contact'
@@ -967,6 +986,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/robots.txt'
     | '/rss.xml'
+    | '/signalement'
     | '/signup'
     | '/sitemap.xml'
     | '/tarifs'
@@ -1050,6 +1070,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/a-propos'
+    | '/ameliorations'
     | '/avis'
     | '/composants'
     | '/contact'
@@ -1068,6 +1089,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/robots.txt'
     | '/rss.xml'
+    | '/signalement'
     | '/signup'
     | '/sitemap.xml'
     | '/tarifs'
@@ -1152,6 +1174,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/a-propos'
+    | '/ameliorations'
     | '/avis'
     | '/composants'
     | '/contact'
@@ -1170,6 +1193,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/robots.txt'
     | '/rss.xml'
+    | '/signalement'
     | '/signup'
     | '/sitemap.xml'
     | '/tarifs'
@@ -1255,6 +1279,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AProposRoute: typeof AProposRoute
+  AmeliorationsRoute: typeof AmeliorationsRoute
   AvisRoute: typeof AvisRoute
   ComposantsRoute: typeof ComposantsRoute
   ContactRoute: typeof ContactRoute
@@ -1273,6 +1298,7 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   RssDotxmlRoute: typeof RssDotxmlRoute
+  SignalementRoute: typeof SignalementRoute
   SignupRoute: typeof SignupRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TarifsRoute: typeof TarifsRoute
@@ -1337,6 +1363,13 @@ declare module '@tanstack/react-router' {
       path: '/a-propos'
       fullPath: '/a-propos'
       preLoaderRoute: typeof AProposRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ameliorations': {
+      id: '/ameliorations'
+      path: '/ameliorations'
+      fullPath: '/ameliorations'
+      preLoaderRoute: typeof AmeliorationsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/avis': {
@@ -1463,6 +1496,13 @@ declare module '@tanstack/react-router' {
       path: '/rss.xml'
       fullPath: '/rss.xml'
       preLoaderRoute: typeof RssDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/signalement': {
+      id: '/signalement'
+      path: '/signalement'
+      fullPath: '/signalement'
+      preLoaderRoute: typeof SignalementRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/signup': {
@@ -2112,6 +2152,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AProposRoute: AProposRoute,
+  AmeliorationsRoute: AmeliorationsRoute,
   AvisRoute: AvisRoute,
   ComposantsRoute: ComposantsRoute,
   ContactRoute: ContactRoute,
@@ -2130,6 +2171,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   RobotsDottxtRoute: RobotsDottxtRoute,
   RssDotxmlRoute: RssDotxmlRoute,
+  SignalementRoute: SignalementRoute,
   SignupRoute: SignupRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TarifsRoute: TarifsRoute,

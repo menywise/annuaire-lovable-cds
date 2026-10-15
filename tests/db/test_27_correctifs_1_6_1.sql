@@ -1132,8 +1132,9 @@ DO $$ BEGIN
   IF NOT EXISTS (SELECT 1 FROM public.socle_versions WHERE version = '1.6.1' AND niveau = 'correctif'
                    AND publie_le = '2026-10-14' AND migration_reference = '20261013120000_v1_6_1_correctifs_audit')
   THEN RAISE EXCEPTION 'version 1.6.1 absente'; END IF;
-  IF (SELECT value FROM public.site_settings WHERE key = 'socle')
-     <> '{"version": "1.6.1", "publie_le": "2026-10-14", "migration_reference": "20261013120000_v1_6_1_correctifs_audit"}'::jsonb
+  -- Réglage relevé au moins à 1.6.1 (une version suivante le relève encore).
+  IF string_to_array((SELECT value ->> 'version' FROM public.site_settings WHERE key = 'socle'), '.')::int[]
+     < string_to_array('1.6.1', '.')::int[]
   THEN RAISE EXCEPTION 'réglage socle'; END IF;
 END $$;
 -- Base d'un clone qui a son propre plan (lignes de l'administrateur laissées par la section 9) : PIL-2 marqué
