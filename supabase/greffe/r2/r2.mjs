@@ -9,8 +9,7 @@ import { chromium } from "playwright-core";
 import { readFileSync, writeFileSync } from "node:fs";
 
 const CHROME = process.env.CHROME_PATH;
-const UA =
-  "AnnuaireSitesLovable-R2/1.0 (lecture des mentions legales ; contact : manuel.rohaut@gmail.com)";
+const UA = "AnnuaireSitesLovable-R2/1.0 (lecture des mentions legales, une page par seconde)";
 const pause = (ms) => new Promise((r) => setTimeout(r, ms));
 const ETIQUETTE = /(SIRE[NT]|RCS|R\.C\.S|immatricul|n[°o]\s*d'?entreprise)/gi;
 const NOMBRE = /(?<!\d)(\d{3}[\s. ]?\d{3}[\s. ]?\d{3}(?:[\s. ]?\d{5})?)(?!\d)/g;
