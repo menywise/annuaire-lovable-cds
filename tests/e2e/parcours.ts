@@ -220,6 +220,27 @@ const PARCOURS: Parcours[] = [
     module: "reports",
     ecrit: true,
     async run({ page, reel, etape }) {
+      if (!reel) {
+        // Envoi et suivi passent par des fonctions (POST /rpc) : réponses de la base imitées.
+        await page.route(`${SUPABASE_URL}/rest/v1/rpc/report_submit**`, (route) =>
+          route.fulfill({ status: 200, contentType: "application/json", body: '"ABCDEF1234"' }),
+        );
+        await page.route(`${SUPABASE_URL}/rest/v1/rpc/report_status**`, (route) =>
+          route.fulfill({
+            status: 200,
+            contentType: "application/json",
+            body: JSON.stringify([
+              {
+                status: "en_attente",
+                reason: "oubli",
+                created_at: new Date().toISOString(),
+                handled_at: null,
+                public_note: null,
+              },
+            ]),
+          }),
+        );
+      }
       await page.goto(`${BASE}/ameliorations`, { waitUntil: "networkidle" });
       await page.getByRole("button", { name: "Je signale une erreur sur le site" }).click();
       await page.getByLabel("Une information manque").check();
