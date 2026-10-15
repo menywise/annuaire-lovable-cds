@@ -137,8 +137,12 @@ export const startShopCheckout = createServerFn({ method: "POST" })
     },
   )
   .handler(async ({ data, context }) => {
-    const { stripeSecretKey, createCheckoutSession, expireCheckoutSession } =
-      await import("@/lib/stripe.server");
+    const {
+      stripeSecretKey,
+      createCheckoutSession,
+      expireCheckoutSession,
+      BOUTIQUE_SESSION_SECONDES,
+    } = await import("@/lib/stripe.server");
     if (!stripeSecretKey()) throw new Error("Le paiement en ligne n'est pas encore configuré.");
 
     const { isSessionAttached } = await import("@/lib/paiement-rattachement");
@@ -188,6 +192,8 @@ export const startShopCheckout = createServerFn({ method: "POST" })
       successUrl: `${origin}/mes-achats?paiement=reussi&commande=${order.order_number}`,
       cancelUrl: `${origin}/boutique/panier?paiement=annule`,
       shippingCountries: order.countries,
+      // Réserve de stock limitée à 30 minutes : la session expire, le stock revient.
+      expiresInSeconds: BOUTIQUE_SESSION_SECONDES,
     });
     if (!session) {
       // Commande abandonnée : le passage à « expired » rend son stock réservé.

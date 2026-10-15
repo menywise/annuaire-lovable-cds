@@ -102,6 +102,8 @@ function CartPage() {
     settings,
   );
   const tooMany = lines.some((l) => l.product.stock !== null && l.quantity > l.product.stock);
+  // Stock limité : réservé à la commande, rendu si la page de paiement expire (30 minutes).
+  const reserved = lines.some((l) => l.product.stock !== null);
 
   useEffect(() => {
     // Produits retirés de la vente : ils quittent le panier.
@@ -296,6 +298,11 @@ function CartPage() {
                   {tooMany ? (
                     <p className="mt-2 text-xs text-muted-foreground">
                       Ajustez les quantités au stock disponible pour commander.
+                    </p>
+                  ) : null}
+                  {reserved ? (
+                    <p className="mt-2 text-xs text-muted-foreground">
+                      Vos articles en stock limité restent réservés 30 minutes, le temps de payer.
                     </p>
                   ) : null}
                   <p className="mt-3 text-xs text-muted-foreground">
