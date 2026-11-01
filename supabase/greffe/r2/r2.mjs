@@ -133,14 +133,17 @@ function sql(lid, r) {
   if (r.statut === "trouve") {
     const g = r.registre;
     const page = r.pages_lues[r.pages_lues.length - 1];
-    const preuve = `SIREN ${g.siren} lu sur ${page} ; registre des entreprises : NAF ${g.naf}, siège ${g.libelle_commune ?? ""} (${g.commune ?? ""}), état ${g.etat ?? ""}`;
-    lignes.push(
-      `INSERT INTO public.greffe_classements (listing_id, axe, rang, valeur, regle, version_regle, preuve, confiance)
+    const preuve = `SIREN ${g.siren} lu sur ${page} ; registre des entreprises : NAF ${g.naf ?? ""}, siège ${g.libelle_commune ?? ""} (${g.commune ?? ""}), état ${g.etat ?? ""}`;
+    // Registre sans NAF (entreprise non diffusible, par exemple) : pas de classement d'activité, et l'activité déjà connue du site reste en place.
+    if (g.naf) {
+      lignes.push(
+        `INSERT INTO public.greffe_classements (listing_id, axe, rang, valeur, regle, version_regle, preuve, confiance)
 ` +
-        `SELECT ${q(lid)}, 'activite', 1, CASE WHEN EXISTS (SELECT 1 FROM public.activites WHERE code = ${q(g.naf)}) THEN ${q(g.naf)} ELSE 'NAF:' || ${q(g.naf)} END, 'A-NAF-SIREN', '${VERSION}', ${q(preuve)}, 'source'
+          `SELECT ${q(lid)}, 'activite', 1, CASE WHEN EXISTS (SELECT 1 FROM public.activites WHERE code = ${q(g.naf)}) THEN ${q(g.naf)} ELSE 'NAF:' || ${q(g.naf)} END, 'A-NAF-SIREN', '${VERSION}', ${q(preuve)}, 'source'
 ` +
-        `ON CONFLICT (listing_id, axe, rang, version_regle) DO UPDATE SET valeur = excluded.valeur, preuve = excluded.preuve, confiance = excluded.confiance, classe_le = now();`,
-    );
+          `ON CONFLICT (listing_id, axe, rang, version_regle) DO UPDATE SET valeur = excluded.valeur, preuve = excluded.preuve, confiance = excluded.confiance, classe_le = now();`,
+      );
+    }
     if (g.commune) {
       lignes.push(
         `INSERT INTO public.greffe_classements (listing_id, axe, rang, valeur, regle, version_regle, preuve, confiance)
@@ -151,13 +154,15 @@ function sql(lid, r) {
       );
     }
     lignes.push(
-      `UPDATE public.greffe_sites SET siren = ${q(g.siren)}, pays = 'FR',
+      g.naf
+        ? `UPDATE public.greffe_sites SET siren = ${q(g.siren)}, pays = 'FR',
 ` +
-        `  activite_code = (SELECT code FROM public.activites WHERE code = ${q(g.naf)}),
+            `  activite_code = (SELECT code FROM public.activites WHERE code = ${q(g.naf)}),
 ` +
-        `  activite_categorie = coalesce((SELECT categorie FROM public.activites WHERE code = ${q(g.naf)}), activite_categorie)
+            `  activite_categorie = coalesce((SELECT categorie FROM public.activites WHERE code = ${q(g.naf)}), activite_categorie)
 ` +
-        `WHERE listing_id = ${q(lid)};`,
+            `WHERE listing_id = ${q(lid)};`
+        : `UPDATE public.greffe_sites SET siren = ${q(g.siren)}, pays = 'FR' WHERE listing_id = ${q(lid)};`,
     );
   }
   return lignes.join("\n");
